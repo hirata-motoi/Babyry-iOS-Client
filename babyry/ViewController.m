@@ -56,7 +56,7 @@
         [childQuery whereKey:@"createdBy" equalTo:currentUser];
         NSArray *childArrayFoundFromParse = [childQuery findObjects];
         // childが既にいる場合 もろもろデータ取得
-        // ChildArray - index -- name (String)
+        // childArray - index -- name (String)
         //                    |- images (UIImage in Array)
         //                    |- month (Array)
         //                    |- date (Array)
@@ -124,18 +124,22 @@
                 NSLog(@"childSubDic : %d, childArray : %d", [childSubDic count], [_childArray count]);
             }
         } else {
+            // childいない場合
             NSLog(@"no child");
+            // いない事はまずあり得ない。
+            // User作った段階で一人childつくるから
+            // 万が一ここに遷移した時のために一人目のchildを作る必要があるかも(TODO)
         }
     } else {
         // currentUserがいない場合でもなにか表示する?
         NSLog(@"no user");
+        // currentUserがいない。ログインしていない。
+        // それでもchildArrayにダミーデータを入れておかないと起動時に落ちる
+        // 本来はこのケースでは空のViewを出す方が良い (TODO)
+        NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
+        [childSubDic setObject:@"栽培マン1号" forKey:@"name"];
+        _childArray = [_childArray arrayByAddingObject:childSubDic];
     }
-    /*
-    if ([[_childDic objectForKey:@"name"] count] < 1){
-        NSLog(@"temporary make first child");
-         [_childDic setObject:@[@"栽培マン1号"] forKey:@"name"];
-    }
-    */
     
     NSLog(@"make pages");
         
@@ -175,11 +179,13 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    NSLog(@"viewDidAppear@ViewController");
      
     if (![PFUser currentUser]) { // No user logged in
+        NSLog(@"No User Logged In");
         [self openLoginView];
     } else {
-        NSLog(@"Comeback!");
+        NSLog(@"Comeback! User logged in");
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
         [childQuery whereKey:@"createdBy" equalTo:[PFUser currentUser]];
@@ -191,6 +197,8 @@
             child[@"name"] = @"栽培マン1号";
             [child save];
         }
+        // もう一度読み込み
+        [self viewDidLoad];
     }
 }
 
@@ -215,6 +223,7 @@
 // Sent to the delegate when a PFUser is logged in.
 // ログイン後の処理
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+    NSLog(@"didLogInUser");
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
@@ -317,23 +326,7 @@
     // StoryBoardとひも付け
     NSLog(@"StoryBoardとひも付け in viewControllerAtIndex");
     PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
-    /*
-    NSLog(@"一週間分の画像貼付け");
-    NSLog(@"childArray %@", _childArray[index]);
-    NSArray *weekImageFromParse = [_childArray[index] objectForKey:@"images"];
-    // forでまわそう。。。
-    
-    pageContentViewController.weekImage1 = weekImageFromParse[0];
-    pageContentViewController.weekImage2 = weekImageFromParse[1];
-    pageContentViewController.weekImage3 = weekImageFromParse[2];
-    pageContentViewController.weekImage4 = weekImageFromParse[3];
-    pageContentViewController.weekImage5 = weekImageFromParse[4];
-    pageContentViewController.weekImage6 = weekImageFromParse[5];
-    pageContentViewController.weekImage7 = weekImageFromParse[6];
-    // タイトル付け
-    pageContentViewController.titleText = [_childArray[index] objectForKey:@"name"];
-    // page index
-    */
+
     pageContentViewController.pageIndex = index;
     pageContentViewController.childArray = _childArray;
     
@@ -469,9 +462,6 @@
     NSLog(@"add child");
     int page_count = [_childArray count];
     NSLog(@"page count %d", page_count);
-    //_childArray = [_childArray arrayByAddingObject:[NSString stringWithFormat:@"栽培マン%d号", page_count + 1]];
-    //NSMutableDictionary *newChild
-    //[_childDic setObject:childSubDic forKey:c[@"ObjectId"]];
 
     // Parseにchild追加
     PFObject *child = [PFObject objectWithClassName:@"Child"];
