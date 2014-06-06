@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
+		8899C1F01941EEC300CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EF1941EEC300CD7909 /* FacebookSDK.framework */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -46,6 +47,7 @@
 
 /* Begin PBXFileReference section */
 		8899C1EB1941EAAE00CD7909 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
+		8899C1EF1941EEC300CD7909 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -94,6 +96,7 @@
 				88B18CB41938160E00ED630C /* MobileCoreServices.framework in Frameworks */,
 				8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */,
 				88B18CB21938160500ED630C /* SystemConfiguration.framework in Frameworks */,
+				8899C1F01941EEC300CD7909 /* FacebookSDK.framework in Frameworks */,
 				88B18CB0193815FC00ED630C /* CFNetwork.framework in Frameworks */,
 				88B18CAE193815F400ED630C /* AudioToolbox.framework in Frameworks */,
 				88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */,
@@ -136,6 +139,7 @@
 		88B18C75193814CE00ED630C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8899C1EF1941EEC300CD7909 /* FacebookSDK.framework */,
 				8899C1EB1941EAAE00CD7909 /* Parse.framework */,
 				88B1909C1938D23700ED630C /* Social.framework */,
 				88B190981938CE9E00ED630C /* Accounts.framework */,
@@ -430,13 +434,12 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kenjiszk/Downloads,
-					"/Users/kenjiszk/github_public/IntegratingFacebookTutorial/IntegratingFacebookTutorial-iOS",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = babyry;
 				WRAPPER_EXTENSION = app;
 			};
@@ -449,13 +452,12 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kenjiszk/Downloads,
-					"/Users/kenjiszk/github_public/IntegratingFacebookTutorial/IntegratingFacebookTutorial-iOS",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = babyry;
 				WRAPPER_EXTENSION = app;
 			};
