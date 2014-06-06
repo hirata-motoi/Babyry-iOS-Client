@@ -1,0 +1,99 @@
+//
+//  UploadViewController.m
+//  babyrydev
+//
+//  Created by kenjiszk on 2014/06/04.
+//  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
+//
+
+#import "UploadViewController.h"
+#import "PageContentViewController.h"
+
+@interface UploadViewController ()
+
+@end
+
+@implementation UploadViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    
+    // get pageIndex, imageIndex
+    NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+- (IBAction)openPhotoLibrary:(UIButton *)sender {
+// インタフェース使用可能なら
+	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
+	{
+        // UIImageControllerの初期化
+		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc]init];
+		[imagePickerController setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+		[imagePickerController setAllowsEditing:YES];
+		[imagePickerController setDelegate:self];
+		
+        [self presentViewController:imagePickerController animated:YES completion: nil];
+	}
+	else
+	{
+		NSLog(@"photo library invalid.");
+	}
+}
+
+- (IBAction)uploadViewBackButton:(UIButton *)sender {
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    // オリジナル画像
+    NSLog(@"imagePickerController");
+	UIImage *originalImage = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+    [self dismissViewControllerAnimated:YES completion:nil];
+    // ImageViewにセット
+    [self.uploadedImageView setImage:originalImage];
+    
+    NSLog(@"Make PFFile");
+    NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
+    PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
+    
+    NSLog(@"Save To Parse");
+    PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    childImage[@"imageFile"] = imageFile;
+    // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
+    childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+    childImage[@"imageOf"] = _childObjectId;
+    childImage[@"bestFlag"] = @"false";
+    [childImage saveInBackground];
+    NSLog(@"saved");
+}
+
+@end
