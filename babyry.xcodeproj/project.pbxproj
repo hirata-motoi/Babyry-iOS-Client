@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -21,7 +22,6 @@
 		88B18C98193814CF00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
 		88B18CA0193814CF00ED630C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88B18C9E193814CF00ED630C /* InfoPlist.strings */; };
 		88B18CA2193814CF00ED630C /* babyryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B18CA1193814CF00ED630C /* babyryTests.m */; };
-		88B18CAC193814F900ED630C /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CAB193814F900ED630C /* Parse.framework */; };
 		88B18CAE193815F400ED630C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CAD193815F400ED630C /* AudioToolbox.framework */; };
 		88B18CB0193815FC00ED630C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CAF193815FC00ED630C /* CFNetwork.framework */; };
 		88B18CB21938160500ED630C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CB11938160500ED630C /* SystemConfiguration.framework */; };
@@ -29,7 +29,6 @@
 		88B18CB61938162100ED630C /* libz.1.1.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CB51938162100ED630C /* libz.1.1.3.dylib */; };
 		88B18CB81938162A00ED630C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CB71938162A00ED630C /* Security.framework */; };
 		88B18CBA1938163100ED630C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CB91938163100ED630C /* QuartzCore.framework */; };
-		88B190951938AEF800ED630C /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B190941938AEF800ED630C /* FacebookSDK.framework */; };
 		88B1909D1938D23700ED630C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B1909C1938D23700ED630C /* Social.framework */; };
 		88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FB7193B2D52009474DC /* PageContentViewController.m */; };
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
@@ -46,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8899C1EB1941EAAE00CD7909 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -65,7 +65,6 @@
 		88B18C9D193814CF00ED630C /* babyryTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "babyryTests-Info.plist"; sourceTree = "<group>"; };
 		88B18C9F193814CF00ED630C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88B18CA1193814CF00ED630C /* babyryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = babyryTests.m; sourceTree = "<group>"; };
-		88B18CAB193814F900ED630C /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = ../../../../Downloads/Parse.framework; sourceTree = "<group>"; };
 		88B18CAD193815F400ED630C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		88B18CAF193815FC00ED630C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		88B18CB11938160500ED630C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -73,7 +72,6 @@
 		88B18CB51938162100ED630C /* libz.1.1.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.1.3.dylib; path = usr/lib/libz.1.1.3.dylib; sourceTree = SDKROOT; };
 		88B18CB71938162A00ED630C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		88B18CB91938163100ED630C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		88B190941938AEF800ED630C /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FacebookSDK.framework; path = "../../../../github_public/IntegratingFacebookTutorial/IntegratingFacebookTutorial-iOS/FacebookSDK.framework"; sourceTree = "<group>"; };
 		88B190961938CCDE00ED630C /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		88B190981938CE9E00ED630C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		88B1909C1938D23700ED630C /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -94,12 +92,11 @@
 				88B18CB61938162100ED630C /* libz.1.1.3.dylib in Frameworks */,
 				88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */,
 				88B18CB41938160E00ED630C /* MobileCoreServices.framework in Frameworks */,
-				88B190951938AEF800ED630C /* FacebookSDK.framework in Frameworks */,
+				8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */,
 				88B18CB21938160500ED630C /* SystemConfiguration.framework in Frameworks */,
 				88B18CB0193815FC00ED630C /* CFNetwork.framework in Frameworks */,
 				88B18CAE193815F400ED630C /* AudioToolbox.framework in Frameworks */,
 				88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */,
-				88B18CAC193814F900ED630C /* Parse.framework in Frameworks */,
 				88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -139,10 +136,10 @@
 		88B18C75193814CE00ED630C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8899C1EB1941EAAE00CD7909 /* Parse.framework */,
 				88B1909C1938D23700ED630C /* Social.framework */,
 				88B190981938CE9E00ED630C /* Accounts.framework */,
 				88B190961938CCDE00ED630C /* Twitter.framework */,
-				88B190941938AEF800ED630C /* FacebookSDK.framework */,
 				88B18CB91938163100ED630C /* QuartzCore.framework */,
 				88B18CB71938162A00ED630C /* Security.framework */,
 				88B18CB51938162100ED630C /* libz.1.1.3.dylib */,
@@ -150,7 +147,6 @@
 				88B18CB11938160500ED630C /* SystemConfiguration.framework */,
 				88B18CAF193815FC00ED630C /* CFNetwork.framework */,
 				88B18CAD193815F400ED630C /* AudioToolbox.framework */,
-				88B18CAB193814F900ED630C /* Parse.framework */,
 				88B18C76193814CE00ED630C /* Foundation.framework */,
 				88B18C78193814CE00ED630C /* CoreGraphics.framework */,
 				88B18C7A193814CE00ED630C /* UIKit.framework */,
@@ -436,6 +432,7 @@
 					"$(inherited)",
 					/Users/kenjiszk/Downloads,
 					"/Users/kenjiszk/github_public/IntegratingFacebookTutorial/IntegratingFacebookTutorial-iOS",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
@@ -454,6 +451,7 @@
 					"$(inherited)",
 					/Users/kenjiszk/Downloads,
 					"/Users/kenjiszk/github_public/IntegratingFacebookTutorial/IntegratingFacebookTutorial-iOS",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
