@@ -105,8 +105,13 @@
                         if ([ci[@"date"] isEqualToString:[NSString stringWithFormat:@"D%@", date]]) {
                             NSLog(@"found image");
                             //NSLog(@"%@", ci[@"imageFile"]);
-                            NSData *tmpImageData = [ci[@"imageFile"] getData];
-                            childImageArray = [childImageArray arrayByAddingObject:[UIImage imageWithData:tmpImageData]];
+                            if(ci[@"imageFile"]) {
+                                NSData *tmpImageData = [ci[@"imageFile"] getData];
+                                childImageArray = [childImageArray arrayByAddingObject:[UIImage imageWithData:tmpImageData]];
+                            } else {
+                                // 何らかの理由で画像だけ消されている場合
+                                childImageArray = [childImageArray arrayByAddingObject:[UIImage imageNamed:@"NoImage"]];
+                            }
                             notFoundInParse = 1;
                         }
                     }
