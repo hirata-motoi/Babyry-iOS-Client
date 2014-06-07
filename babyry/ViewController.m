@@ -126,7 +126,7 @@
                 [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
                 [childSubDic setObject:c.objectId forKey:@"objectId"];
                 _childArray = [_childArray arrayByAddingObject:childSubDic];
-                NSLog(@"childSubDic : %d, childArray : %d", [childSubDic count], [_childArray count]);
+                //NSLog(@"childSubDic : %d, childArray : %d", [childSubDic count], [_childArray count]);
             }
         } else {
             // childいない場合
@@ -320,7 +320,7 @@
 
 - (PageContentViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    NSLog(@"index:%dのviewController", index);
+    //NSLog(@"index:%dのviewController", index);
     // 設定されたページが0か、indexがpageTitlesよりも多かったらnil返す
     if (([_childArray count] == 0) || (index >= [_childArray count])) {
         NSLog(@"設定されたページが0か、indexがpageTitlesよりも多かったらnil返す");

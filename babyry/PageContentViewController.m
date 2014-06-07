@@ -39,10 +39,19 @@
     self.weekUImageView5.image = [_childArray[_pageIndex] objectForKey:@"images"][4];
     self.weekUImageView6.image = [_childArray[_pageIndex] objectForKey:@"images"][5];
     self.weekUImageView7.image = [_childArray[_pageIndex] objectForKey:@"images"][6];
-    self.titleLabel.text = self.titleText;
+    self.titleLabel.text = [_childArray[_pageIndex] objectForKey:@"name"];
+
+    // forでね。。。
+    self.dateLabel1.text = [_childArray[_pageIndex] objectForKey:@"date"][0];
+    self.dateLabel2.text = [_childArray[_pageIndex] objectForKey:@"date"][1];
+    self.dateLabel3.text = [_childArray[_pageIndex] objectForKey:@"date"][2];
+    self.dateLabel4.text = [_childArray[_pageIndex] objectForKey:@"date"][3];
+    self.dateLabel5.text = [_childArray[_pageIndex] objectForKey:@"date"][4];
+    self.dateLabel6.text = [_childArray[_pageIndex] objectForKey:@"date"][5];
+    self.dateLabel7.text = [_childArray[_pageIndex] objectForKey:@"date"][6];
     
     NSLog(@"%@", _childArray);
-    NSLog(@"index %d", _pageIndex);
+    //NSLog(@"index %d", _pageIndex);
 
     // TODO
     //[self.logoutButton addTarget:self action:@selector(logout:) forControlEvents:UIControlEventTouchDown];
@@ -58,9 +67,9 @@
 {
      
     UITouch *touch = [touches anyObject];
-    NSLog( @"%d",touch.view.tag );
+    //NSLog( @"%d",touch.view.tag );
     if (touch.view.tag > 0 && touch.view.tag < 8) {
-        NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
+        //NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
         UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
         //uploadViewController.pageIndex = _pageIndex;
         //uploadViewController.imageIndex = touch.view.tag;
