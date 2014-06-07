@@ -85,14 +85,28 @@
     NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
     PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
-    NSLog(@"Save To Parse");
-    PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-    childImage[@"imageFile"] = imageFile;
-    // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
-    childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
-    childImage[@"imageOf"] = _childObjectId;
-    childImage[@"bestFlag"] = @"false";
-    [childImage saveInBackground];
+    // Parseに既に画像があるかどうかを確認
+    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+    NSLog(@"first query : %@", [imageQuery findObjects]);
+    [imageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    NSLog(@"first second query : %@", [imageQuery findObjects]);
+    
+    NSArray *imageArray = [imageQuery findObjects];
+    if ([imageArray count] > 0) {
+        NSLog(@"image objectId%@", imageArray[0]);
+        imageArray[0][@"imageFile"] = imageFile;
+        [imageArray[0] saveInBackground];
+    } else {
+        NSLog(@"Insert To Parse");
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        childImage[@"imageFile"] = imageFile;
+        // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
+        childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+        childImage[@"imageOf"] = _childObjectId;
+        childImage[@"bestFlag"] = @"false";
+        [childImage saveInBackground];
+    }
     NSLog(@"saved");
 }
 
