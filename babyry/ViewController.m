@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ImageCache.h"
 
 @interface ViewController ()
 
@@ -18,162 +19,6 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    
-    // 今日の日付取得 ParseからChildImageを取得するため
-    // ChildImageは、月ごとにChildImageYYYYMMというクラスに保存する
-    // 全ておなじクラスに入れるとパフォーマンス問題が発生するのと、一度に1000件が取得maxのため
-    // TODO この処理はNW状況によっては時間がかかるのでキャッシュ使うのと、backgroundで実行するようにする
-    NSLog(@"set date and month");
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyyMMdd"];
-    NSDate *date = [NSDate date];
-    //NSString *dateStr = [formatter stringFromDate:date];
-    // TopPage用に一週間の日付を取得しておく
-    NSArray *weekDateArray = [[NSArray alloc] init];
-    weekDateArray = @[];
-    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *comps = [cal components:NSYearCalendarUnit fromDate:date];
-    for (int i = 0; i < 7; i++) {
-        [comps setDay:-i];
-        [comps setMonth:0];
-        [comps setYear:0];
-        NSDate *_date = [cal dateByAddingComponents:comps toDate:date options:0];
-        NSLog(@"%@ : %@", date, _date);
-        NSString *_dateStr = [formatter stringFromDate:_date];
-        weekDateArray = [weekDateArray arrayByAddingObject:_dateStr];
-    }
-    for (NSString *str in weekDateArray) {
-        NSLog(@"%@", str);
-    }
-    
-    NSLog(@"set user's data");
-    _childArray = [[NSArray alloc] init];
-    _childArray = @[];
-    PFObject *currentUser = [PFUser currentUser];
-    if (currentUser) {
-        NSLog(@"user exist. %@", currentUser.objectId);
-        PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
-        [childQuery whereKey:@"createdBy" equalTo:currentUser];
-        NSArray *childArrayFoundFromParse = [childQuery findObjects];
-        // childが既にいる場合 もろもろデータ取得
-        // childArray - index -- name (String)
-        //                    |- images (UIImage in Array)
-        //                    |- month (Array)
-        //                    |- date (Array)
-        //                    |- child.objectId (String)
-        if ([childArrayFoundFromParse count] > 0) {
-            NSLog(@"Child exist.");
-            for (PFObject *c in childArrayFoundFromParse) {
-                NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
-                NSLog(@"child id %@", c.objectId);
-                // 名前取得、この配列がPageViewの数の元になる
-                [childSubDic setObject:c[@"name"] forKey:@"name"];
-                NSLog(@"%@", c[@"name"]);
-                
-                // 各childにひもづく7日分のImageを取得
-                NSArray *childImageArray = @[];
-                NSArray *dateOfChildImageArray = @[];
-                NSArray *monthOfChildImageArray = @[];
-                // 同じ月を何度も引かないようにchildImageQueryを使い回す
-                NSString *monthAlreadySearched = @"no_date";
-                // 月で取得したクエリ結果をキャッシュ
-                NSArray *childMonthImageArray = [[NSArray alloc] init];
-                for (NSString *date in weekDateArray) {
-                    NSLog(@"date : %@", date);
-                    // 日から月を取得
-                    NSString *month = [date substringToIndex:6];
-                    //NSLog(@"month : %@", month);
-                    
-                    // 日、月代入
-                    dateOfChildImageArray = [dateOfChildImageArray arrayByAddingObject:date];
-                    monthOfChildImageArray = [monthOfChildImageArray arrayByAddingObject:month];
-                    
-                    // 以前取得したmonthと異なる場合(月またぎ) クエリを取得し直す
-                    if (![monthAlreadySearched isEqualToString:month]) {
-                        //NSLog(@"not much! get monthry childimage. monthAlreadySearched:%@ month:%@", monthAlreadySearched, month);
-                        // ChildImageYYYYMM をえらびーの
-                        PFQuery *childMonthImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", month]];
-                        // imageOf = childId をひきーの
-                        [childMonthImageQuery whereKey:@"imageOf" equalTo:c.objectId];
-                        childMonthImageArray = [childMonthImageQuery findObjects];
-                        monthAlreadySearched = month;
-                    }
-                    // dateと一致するobjectを見つけたら格納
-                    int notFoundInParse = 0;
-                    for (PFObject *ci in childMonthImageArray) {
-                        NSLog(@"comparison %@ : %@", ci[@"date"], date);
-                        if ([ci[@"date"] isEqualToString:[NSString stringWithFormat:@"D%@", date]]) {
-                            NSLog(@"found image");
-                            //NSLog(@"%@", ci[@"imageFile"]);
-                            if(ci[@"imageFile"]) {
-                                NSData *tmpImageData = [ci[@"imageFile"] getData];
-                                childImageArray = [childImageArray arrayByAddingObject:[UIImage imageWithData:tmpImageData]];
-                            } else {
-                                // 何らかの理由で画像だけ消されている場合
-                                childImageArray = [childImageArray arrayByAddingObject:[UIImage imageNamed:@"NoImage"]];
-                            }
-                            notFoundInParse = 1;
-                        }
-                    }
-                    // notFoundInParseが0 : 画像がParseに無い NoImageつっこむ
-                    if (notFoundInParse == 0) {
-                        //NSLog(@"no element in childMonthImageArray");
-                        childImageArray = [childImageArray arrayByAddingObject:[UIImage imageNamed:@"NoImage"]];
-                    }
-                }
-                [childSubDic setObject:childImageArray forKey:@"images"];
-                [childSubDic setObject:dateOfChildImageArray forKey:@"date"];
-                [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
-                [childSubDic setObject:c.objectId forKey:@"objectId"];
-                _childArray = [_childArray arrayByAddingObject:childSubDic];
-                //NSLog(@"childSubDic : %d, childArray : %d", [childSubDic count], [_childArray count]);
-            }
-        } else {
-            // childいない場合
-            NSLog(@"no child");
-            // いない事はまずあり得ない。
-            // User作った段階で一人childつくるから
-            // 万が一ここに遷移した時のために一人目のchildを作る必要があるかも(TODO)
-        }
-    } else {
-        // currentUserがいない場合でもなにか表示する?
-        NSLog(@"no user");
-        // currentUserがいない。ログインしていない。
-        // それでもchildArrayにダミーデータを入れておかないと起動時に落ちる
-        // 本来はこのケースでは空のViewを出す方が良い (TODO)
-        NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
-        [childSubDic setObject:@"栽培マン1号" forKey:@"name"];
-        _childArray = [_childArray arrayByAddingObject:childSubDic];
-    }
-    
-    NSLog(@"make pages");
-        
-    // Create page view controller
-    NSLog(@"storyboardのPageViewControllerのidとひも付け");
-    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-    _pageViewController.dataSource = self;
-    
-    NSLog(@"0ページ目を表示");
-    PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
-    NSArray *viewControllers = @[startingViewController];
-    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-    
-    // Change the size of page view controller
-    NSLog(@"view controllerのサイズ変更");
-    _pageViewController.view.frame = CGRectMake(0, 44, self.view.frame.size.width, self.view.frame.size.height);
-    
-    NSLog(@"view追加");
-    [self addChildViewController:_pageViewController];
-    [self.view addSubview:_pageViewController.view];
-    [_pageViewController didMoveToParentViewController:self];
-    
-    // +ボタンがなぜかでないけどスルー
-    NSLog(@"addChild ボタン追加");
-    (void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
-    
-    // logoutButton
-    NSLog(@"logout ボタン追加");
-    (void)[self.logoutButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(logout)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -184,26 +29,26 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear@ViewController");
+    //NSLog(@"viewDidAppear@ViewController");
      
     if (![PFUser currentUser]) { // No user logged in
-        NSLog(@"No User Logged In");
+        //NSLog(@"No User Logged In");
         [self openLoginView];
     } else {
-        NSLog(@"Comeback! User logged in");
+        //NSLog(@"Comeback! User logged in");
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
         [childQuery whereKey:@"createdBy" equalTo:[PFUser currentUser]];
         NSArray *childArray = [childQuery findObjects];
         if ([childArray count] < 1) {
-            NSLog(@"make child");
+            //NSLog(@"make child");
             PFObject *child = [PFObject objectWithClassName:@"Child"];
             [child setObject:[PFUser currentUser] forKey:@"createdBy"];
             child[@"name"] = @"栽培マン1号";
             [child save];
         }
-        // もう一度読み込み
-        [self viewDidLoad];
+        // 再読み込み
+        [self loadPages];
     }
 }
 
@@ -228,14 +73,14 @@
 // Sent to the delegate when a PFUser is logged in.
 // ログイン後の処理
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
-    NSLog(@"didLogInUser");
+    //NSLog(@"didLogInUser");
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 // Sent to the delegate when the log in attempt fails.
 // ログインが失敗したら
 - (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
-    NSLog(@"Failed to log in...");
+    //NSLog(@"Failed to log in...");
 }
  
 // Sent to the delegate when the log in screen is dismissed.
@@ -280,12 +125,12 @@
  
 // Sent to the delegate when the sign up attempt fails.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
-    NSLog(@"Failed to sign up...");
+    //NSLog(@"Failed to sign up...");
 }
  
 // Sent to the delegate when the sign up screen is dismissed.
 - (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
-    NSLog(@"User dismissed the signUpViewController");
+    //NSLog(@"User dismissed the signUpViewController");
 }
 
 // pragma mark - Page View Controller Data Source
@@ -323,13 +168,13 @@
     //NSLog(@"index:%dのviewController", index);
     // 設定されたページが0か、indexがpageTitlesよりも多かったらnil返す
     if (([_childArray count] == 0) || (index >= [_childArray count])) {
-        NSLog(@"設定されたページが0か、indexがpageTitlesよりも多かったらnil返す");
+        //NSLog(@"設定されたページが0か、indexがpageTitlesよりも多かったらnil返す");
         return nil;
     }
     
     // 新しいpageContentViewController返す
     // StoryBoardとひも付け
-    NSLog(@"StoryBoardとひも付け in viewControllerAtIndex");
+    //NSLog(@"StoryBoardとひも付け in viewControllerAtIndex");
     PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
 
     pageContentViewController.pageIndex = index;
@@ -464,9 +309,9 @@
 
 - (void)addChild
 {
-    NSLog(@"add child");
+    //NSLog(@"add child");
     int page_count = [_childArray count];
-    NSLog(@"page count %d", page_count);
+    //NSLog(@"page count %d", page_count);
 
     // Parseにchild追加
     PFObject *child = [PFObject objectWithClassName:@"Child"];
@@ -485,6 +330,174 @@
 {
     [PFUser logOut];
     [self viewDidAppear:true];
+}
+
+-(void)loadPages
+{
+    // 今日の日付取得 ParseからChildImageを取得するため
+    // ChildImageは、月ごとにChildImageYYYYMMというクラスに保存する
+    // 全ておなじクラスに入れるとパフォーマンス問題が発生するのと、一度に1000件が取得maxのため
+    // TODO この処理はNW状況によっては時間がかかるのでキャッシュ使うのと、backgroundで実行するようにする
+    //NSLog(@"set date and month");
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyyMMdd"];
+    NSDate *date = [NSDate date];
+    //NSString *dateStr = [formatter stringFromDate:date];
+    // TopPage用に一週間の日付を取得しておく
+    NSArray *weekDateArray = [[NSArray alloc] init];
+    weekDateArray = @[];
+    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *comps = [cal components:NSYearCalendarUnit fromDate:date];
+    for (int i = 0; i < 7; i++) {
+        [comps setDay:-i];
+        [comps setMonth:0];
+        [comps setYear:0];
+        NSDate *_date = [cal dateByAddingComponents:comps toDate:date options:0];
+        //NSLog(@"%@ : %@", date, _date);
+        NSString *_dateStr = [formatter stringFromDate:_date];
+        weekDateArray = [weekDateArray arrayByAddingObject:_dateStr];
+    }
+    
+    //NSLog(@"set user's data");
+    _childArray = [[NSArray alloc] init];
+    _childArray = @[];
+    PFObject *currentUser = [PFUser currentUser];
+    if (currentUser) {
+        //NSLog(@"user exist. %@", currentUser.objectId);
+        PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
+        [childQuery whereKey:@"createdBy" equalTo:currentUser];
+        NSArray *childArrayFoundFromParse = [childQuery findObjects];
+        // childが既にいる場合 もろもろデータ取得
+        // childArray - index -- name (String)
+        //                    |- images (UIImage in Array)
+        //                    |- month (Array)
+        //                    |- date (Array)
+        //                    |- child.objectId (String)
+        if ([childArrayFoundFromParse count] > 0) {
+            //NSLog(@"Child exist.");
+            // 同じ月を何度も引かないようにchildImageQueryを使い回す
+            // TODO 月またぐと結局何度も引いちゃうからobjectをArrayに持たせる方が良いかもね
+            NSString *monthAlreadySearched = @"no_date";
+            for (PFObject *c in childArrayFoundFromParse) {
+                NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
+                //NSLog(@"child id %@", c.objectId);
+                // 名前取得、この配列がPageViewの数の元になる
+                [childSubDic setObject:c[@"name"] forKey:@"name"];
+                //NSLog(@"%@", c[@"name"]);
+                
+                // 各childにひもづく7日分のImageを取得
+                NSArray *childImageArray = @[];
+                NSArray *dateOfChildImageArray = @[];
+                NSArray *monthOfChildImageArray = @[];
+                // 月で取得したクエリ結果をキャッシュ
+                NSArray *childMonthImageArray = [[NSArray alloc] init];
+                // キャッシュ用object
+                ImageCache *ic = [[ImageCache alloc]init];
+                for (NSString *date in weekDateArray) {
+                    // cache check
+                    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@", c.objectId, date];
+                    NSData *imageCacheData = [ic getCache:imageCachePath];
+                    //NSLog(@"date : %@", date);
+                    // 日から月を取得
+                    NSString *month = [date substringToIndex:6];
+                    //NSLog(@"month : %@", month);
+                
+                    // 日、月代入
+                    dateOfChildImageArray = [dateOfChildImageArray arrayByAddingObject:date];
+                    monthOfChildImageArray = [monthOfChildImageArray arrayByAddingObject:month];
+                    
+                    if (!imageCacheData) {
+                        // 以前取得したmonthと異なる場合(月またぎ) クエリを取得し直す
+                        if (![monthAlreadySearched isEqualToString:month]) {
+                            //NSLog(@"not much! get monthry childimage. monthAlreadySearched:%@ month:%@", monthAlreadySearched, month);
+                            // ChildImageYYYYMM をえらびーの
+                            PFQuery *childMonthImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", month]];
+                            // imageOf = childId をひきーの
+                            [childMonthImageQuery whereKey:@"imageOf" equalTo:c.objectId];
+                            childMonthImageArray = [childMonthImageQuery findObjects];
+                            monthAlreadySearched = month;
+                        }
+                        // dateと一致するobjectを見つけたら格納
+                        int notFoundInParse = 0;
+                        for (PFObject *ci in childMonthImageArray) {
+                            //NSLog(@"comparison %@ : %@", ci[@"date"], date);
+                            if ([ci[@"date"] isEqualToString:[NSString stringWithFormat:@"D%@", date]]) {
+                                //NSLog(@"found image");
+                                //NSLog(@"%@", ci[@"imageFile"]);
+                                if(ci[@"imageFile"]) {
+                                    NSData *tmpImageData = [ci[@"imageFile"] getData];
+                                    childImageArray = [childImageArray arrayByAddingObject:[UIImage imageWithData:tmpImageData]];
+                                } else {
+                                    // 何らかの理由で画像だけ消されている場合
+                                    childImageArray = [childImageArray arrayByAddingObject:[UIImage imageNamed:@"NoImage"]];
+                                }
+                                notFoundInParse = 1;
+                            }
+                        }
+                        // notFoundInParseが0 : 画像がParseに無い NoImageつっこむ
+                        if (notFoundInParse == 0) {
+                            //NSLog(@"no element in childMonthImageArray");
+                            childImageArray = [childImageArray arrayByAddingObject:[UIImage imageNamed:@"NoImage"]];
+                        }
+                    } else {
+                        //NSLog(@"cache found!!!");
+                        // cacheDataを突っ込む
+                        childImageArray = [childImageArray arrayByAddingObject:[[UIImage alloc] initWithData:imageCacheData]];
+                    }
+                }
+                [childSubDic setObject:childImageArray forKey:@"images"];
+                [childSubDic setObject:dateOfChildImageArray forKey:@"date"];
+                [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
+                [childSubDic setObject:c.objectId forKey:@"objectId"];
+                _childArray = [_childArray arrayByAddingObject:childSubDic];
+                //NSLog(@"childSubDic : %d, childArray : %d", [childSubDic count], [_childArray count]);
+            }
+        } else {
+            // childいない場合
+            //NSLog(@"no child");
+            // いない事はまずあり得ない。
+            // User作った段階で一人childつくるから
+            // 万が一ここに遷移した時のために一人目のchildを作る必要があるかも(TODO)
+        }
+    } else {
+        // currentUserがいない場合でもなにか表示する?
+        //NSLog(@"no user");
+        // currentUserがいない。ログインしていない。
+        // それでもchildArrayにダミーデータを入れておかないと起動時に落ちる
+        // 本来はこのケースでは空のViewを出す方が良い (TODO)
+        NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
+        [childSubDic setObject:@"栽培マン1号" forKey:@"name"];
+        _childArray = [_childArray arrayByAddingObject:childSubDic];
+    }
+    
+    //NSLog(@"make pages");
+        
+    // Create page view controller
+    //NSLog(@"storyboardのPageViewControllerのidとひも付け");
+    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
+    _pageViewController.dataSource = self;
+    
+    //NSLog(@"0ページ目を表示");
+    PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
+    NSArray *viewControllers = @[startingViewController];
+    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    
+    // Change the size of page view controller
+    //NSLog(@"view controllerのサイズ変更");
+    _pageViewController.view.frame = CGRectMake(0, 44, self.view.frame.size.width, self.view.frame.size.height);
+    
+    //NSLog(@"view追加");
+    [self addChildViewController:_pageViewController];
+    [self.view addSubview:_pageViewController.view];
+    [_pageViewController didMoveToParentViewController:self];
+    
+    // +ボタンがなぜかでないけどスルー
+    //NSLog(@"addChild ボタン追加");
+    (void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
+    
+    // logoutButton
+    //NSLog(@"logout ボタン追加");
+    (void)[self.logoutButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(logout)];
 }
 
 @end

@@ -76,6 +76,7 @@
         uploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
         uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][touch.view.tag -1];
         uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][touch.view.tag -1];
+        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"images"][touch.view.tag -1];
         
         [self presentViewController:uploadViewController animated:YES completion:NULL];
     }

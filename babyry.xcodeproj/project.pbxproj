@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8814A99A1945469B0010F516 /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9991945469B0010F516 /* ImageCache.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
@@ -46,6 +47,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8814A9881944572A0010F516 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		8814A9981945469B0010F516 /* ImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCache.h; sourceTree = "<group>"; };
+		8814A9991945469B0010F516 /* ImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCache.m; sourceTree = "<group>"; };
 		8899C1EB1941EAAE00CD7909 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,6 +121,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8814A997194546640010F516 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8814A9981945469B0010F516 /* ImageCache.h */,
+				8814A9991945469B0010F516 /* ImageCache.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		88B18C6A193814CE00ED630C = {
 			isa = PBXGroup;
 			children = (
@@ -139,6 +152,7 @@
 		88B18C75193814CE00ED630C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8814A9881944572A0010F516 /* CoreData.framework */,
 				8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */,
 				8899C1EB1941EAAE00CD7909 /* Parse.framework */,
 				88B1909C1938D23700ED630C /* Social.framework */,
@@ -162,6 +176,7 @@
 		88B18C7C193814CE00ED630C /* babyry */ = {
 			isa = PBXGroup;
 			children = (
+				8814A997194546640010F516 /* Model */,
 				88B18C85193814CE00ED630C /* AppDelegate.h */,
 				88B18C86193814CE00ED630C /* AppDelegate.m */,
 				88B89FBC193EDC04009474DC /* UploadViewController.h */,
@@ -307,6 +322,7 @@
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
+				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

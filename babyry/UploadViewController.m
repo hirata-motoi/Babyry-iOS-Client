@@ -8,6 +8,7 @@
 
 #import "UploadViewController.h"
 #import "PageContentViewController.h"
+#import "ImageCache.h"
 
 @interface UploadViewController ()
 
@@ -29,8 +30,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    // set uploadedImage
+    _uploadedImageView.image = _uploadedImage;
+    
     // get pageIndex, imageIndex
-    NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
+    NSLog(@"received childObjectId:%@ month:%@ date:%@ image:%@", _childObjectId, _month, _date, _uploadedImageView.image);
 }
 
 - (void)didReceiveMemoryWarning
@@ -82,8 +86,13 @@
     [self.uploadedImageView setImage:originalImage];
     
     NSLog(@"Make PFFile");
+    // TODO jpegのみになってる
     NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
     PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
+    
+    // ローカルキャッシュに保存
+    ImageCache *ic = [[ImageCache alloc] init];
+    [ic setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
     
     // Parseに既に画像があるかどうかを確認
     PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];

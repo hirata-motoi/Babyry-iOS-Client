@@ -18,5 +18,6 @@
 @property NSString *childObjectId;
 @property NSString *month;
 @property NSString *date;
+@property UIImage *uploadedImage;
 
 @end

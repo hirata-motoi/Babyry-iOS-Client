@@ -70,12 +70,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "babyry/UploadViewController.m"
-            timestampString = "423668718.01525"
+            timestampString = "424023078.76814"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
             landmarkName = "-imagePickerController:didFinishPickingMediaWithInfo:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "babyry/ImageCache.m"
+            timestampString = "423971055.669815"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "13"
+            endingLineNumber = "13"
+            landmarkName = "-setCache:image:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
