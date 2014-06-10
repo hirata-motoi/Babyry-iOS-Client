@@ -113,7 +113,7 @@
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
-        childImage[@"bestFlag"] = @"false";
+        childImage[@"bestFlag"] = @"unchoosed";
         [childImage saveInBackground];
     }
     NSLog(@"saved");

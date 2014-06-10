@@ -16,7 +16,9 @@
 
 - (IBAction)startWalkthrough:(id)sender;
 
+@property (strong, nonatomic) PFObject *currentUser;
 @property (strong, nonatomic) UIPageViewController *pageViewController;
-@property (strong, nonatomic) NSArray *childArray;
+@property (strong, nonatomic) NSMutableArray *childArray;
+@property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 
 @end

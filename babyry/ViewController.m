@@ -30,20 +30,24 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     //NSLog(@"viewDidAppear@ViewController");
-     
-    if (![PFUser currentUser]) { // No user logged in
+    
+    _currentUser = [PFUser currentUser];
+
+    if (!_currentUser) { // No user logged in
         //NSLog(@"No User Logged In");
         [self openLoginView];
     } else {
         //NSLog(@"Comeback! User logged in");
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
-        [childQuery whereKey:@"createdBy" equalTo:[PFUser currentUser]];
-        NSArray *childArray = [childQuery findObjects];
-        if ([childArray count] < 1) {
+        [childQuery whereKey:@"createdBy" equalTo:_currentUser];
+        // networkから引く nwが駄目なら cacheから
+        childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+        _childArrayFoundFromParse = [childQuery findObjects];
+        if ([_childArrayFoundFromParse count] < 1) {
             //NSLog(@"make child");
             PFObject *child = [PFObject objectWithClassName:@"Child"];
-            [child setObject:[PFUser currentUser] forKey:@"createdBy"];
+            [child setObject:_currentUser forKey:@"createdBy"];
             child[@"name"] = @"栽培マン1号";
             [child save];
         }
@@ -315,7 +319,7 @@
 
     // Parseにchild追加
     PFObject *child = [PFObject objectWithClassName:@"Child"];
-    [child setObject:[PFUser currentUser] forKey:@"createdBy"];
+    [child setObject:_currentUser forKey:@"createdBy"];
     child[@"name"] = [NSString stringWithFormat:@"栽培マン%d号", page_count + 1];
     [child saveInBackground];
     
@@ -338,6 +342,7 @@
     // ChildImageは、月ごとにChildImageYYYYMMというクラスに保存する
     // 全ておなじクラスに入れるとパフォーマンス問題が発生するのと、一度に1000件が取得maxのため
     // TODO この処理はNW状況によっては時間がかかるのでキャッシュ使うのと、backgroundで実行するようにする
+    // TODO 長くなりそうなので適度にModelに分けていく
     //NSLog(@"set date and month");
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyyMMdd"];
@@ -359,26 +364,25 @@
     }
     
     //NSLog(@"set user's data");
-    _childArray = [[NSArray alloc] init];
-    _childArray = @[];
-    PFObject *currentUser = [PFUser currentUser];
-    if (currentUser) {
+    _childArray = [[NSMutableArray alloc] init];
+
+    if (_currentUser) {
         //NSLog(@"user exist. %@", currentUser.objectId);
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
-        [childQuery whereKey:@"createdBy" equalTo:currentUser];
-        NSArray *childArrayFoundFromParse = [childQuery findObjects];
+        [childQuery whereKey:@"createdBy" equalTo:_currentUser];
         // childが既にいる場合 もろもろデータ取得
         // childArray - index -- name (String)
+        //                    |- bestFlag (String)
         //                    |- images (UIImage in Array)
         //                    |- month (Array)
         //                    |- date (Array)
         //                    |- child.objectId (String)
-        if ([childArrayFoundFromParse count] > 0) {
+        if ([_childArrayFoundFromParse count] > 0) {
             //NSLog(@"Child exist.");
-            // 同じ月を何度も引かないようにchildImageQueryを使い回す
-            // TODO 月またぐと結局何度も引いちゃうからobjectをArrayに持たせる方が良いかもね
-            NSString *monthAlreadySearched = @"no_date";
-            for (PFObject *c in childArrayFoundFromParse) {
+            // 同じ月を何度も引かないようにchildImageQueryの結果をつかいまわす
+            NSMutableDictionary *childMonthImageDic = [[NSMutableDictionary alloc] init];
+            int childIndex = 0;
+            for (PFObject *c in _childArrayFoundFromParse) {
                 NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
                 //NSLog(@"child id %@", c.objectId);
                 // 名前取得、この配列がPageViewの数の元になる
@@ -386,13 +390,13 @@
                 //NSLog(@"%@", c[@"name"]);
                 
                 // 各childにひもづく7日分のImageを取得
-                NSArray *childImageArray = @[];
-                NSArray *dateOfChildImageArray = @[];
-                NSArray *monthOfChildImageArray = @[];
-                // 月で取得したクエリ結果をキャッシュ
-                NSArray *childMonthImageArray = [[NSArray alloc] init];
+                NSMutableArray *childImageArray = [[NSMutableArray alloc] init];
+                NSMutableArray *dateOfChildImageArray = [[NSMutableArray alloc] init];
+                NSMutableArray *monthOfChildImageArray = [[NSMutableArray alloc] init];
+
                 // キャッシュ用object
                 ImageCache *ic = [[ImageCache alloc]init];
+                int weekIndex = 0;
                 for (NSString *date in weekDateArray) {
                     // cache check
                     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@", c.objectId, date];
@@ -403,33 +407,42 @@
                     //NSLog(@"month : %@", month);
                 
                     // 日、月代入
-                    dateOfChildImageArray = [dateOfChildImageArray arrayByAddingObject:date];
-                    monthOfChildImageArray = [monthOfChildImageArray arrayByAddingObject:month];
+                    [dateOfChildImageArray insertObject:date atIndex:weekIndex];
+                    [monthOfChildImageArray insertObject:month atIndex:weekIndex];
                     
+                    // ImageCacheがある場合には、そこから引っ張ってくる
+                    // 無い場合にはParseから引いてくる
                     if (!imageCacheData) {
                         // 以前取得したmonthと異なる場合(月またぎ) クエリを取得し直す
-                        if (![monthAlreadySearched isEqualToString:month]) {
+                        if (![childMonthImageDic objectForKey:month]) {
                             //NSLog(@"not much! get monthry childimage. monthAlreadySearched:%@ month:%@", monthAlreadySearched, month);
-                            // ChildImageYYYYMM をえらびーの
+                            //NSLog(@"ChildImageYYYYMM をえらびーの");
                             PFQuery *childMonthImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", month]];
-                            // imageOf = childId をひきーの
+                            //NSLog(@"imageOf = childId をひきーの");
+                            childMonthImageQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
                             [childMonthImageQuery whereKey:@"imageOf" equalTo:c.objectId];
-                            childMonthImageArray = [childMonthImageQuery findObjects];
-                            monthAlreadySearched = month;
+                            //NSLog(@"bestFlag = best をひきーの");
+                            [childMonthImageQuery whereKey:@"bestFlag" equalTo:@"best"];
+                            [childMonthImageDic setObject:[childMonthImageQuery findObjects] forKey:month];
                         }
                         // dateと一致するobjectを見つけたら格納
                         int notFoundInParse = 0;
-                        for (PFObject *ci in childMonthImageArray) {
+                        for (PFObject *ci in [childMonthImageDic objectForKey:month]) {
                             //NSLog(@"comparison %@ : %@", ci[@"date"], date);
                             if ([ci[@"date"] isEqualToString:[NSString stringWithFormat:@"D%@", date]]) {
                                 //NSLog(@"found image");
                                 //NSLog(@"%@", ci[@"imageFile"]);
                                 if(ci[@"imageFile"]) {
+                                    if ([childImageArray objectAtIndex:weekIndex]) {
+                                        // 同名Fileがある = まだbest shot選ばれていない
+                                        // それ用の画像をはめる(暫定的にno image)
+                                        [childImageArray insertObject:[UIImage imageNamed:@"NoImage"] atIndex:weekIndex];
+                                    }
                                     NSData *tmpImageData = [ci[@"imageFile"] getData];
-                                    childImageArray = [childImageArray arrayByAddingObject:[UIImage imageWithData:tmpImageData]];
+                                    [childImageArray insertObject:[UIImage imageWithData:tmpImageData] atIndex:weekIndex];
                                 } else {
                                     // 何らかの理由で画像だけ消されている場合
-                                    childImageArray = [childImageArray arrayByAddingObject:[UIImage imageNamed:@"NoImage"]];
+                                    [childImageArray insertObject:[UIImage imageNamed:@"NoImage"] atIndex:weekIndex];
                                 }
                                 notFoundInParse = 1;
                             }
@@ -437,20 +450,21 @@
                         // notFoundInParseが0 : 画像がParseに無い NoImageつっこむ
                         if (notFoundInParse == 0) {
                             //NSLog(@"no element in childMonthImageArray");
-                            childImageArray = [childImageArray arrayByAddingObject:[UIImage imageNamed:@"NoImage"]];
+                            [childImageArray insertObject:[UIImage imageNamed:@"NoImage"] atIndex:weekIndex];
                         }
                     } else {
                         //NSLog(@"cache found!!!");
                         // cacheDataを突っ込む
-                        childImageArray = [childImageArray arrayByAddingObject:[[UIImage alloc] initWithData:imageCacheData]];
+                        [childImageArray insertObject:[UIImage imageWithData:imageCacheData] atIndex:weekIndex];
                     }
+                    weekIndex++;
                 }
                 [childSubDic setObject:childImageArray forKey:@"images"];
                 [childSubDic setObject:dateOfChildImageArray forKey:@"date"];
                 [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
                 [childSubDic setObject:c.objectId forKey:@"objectId"];
-                _childArray = [_childArray arrayByAddingObject:childSubDic];
-                //NSLog(@"childSubDic : %d, childArray : %d", [childSubDic count], [_childArray count]);
+                [_childArray insertObject:childSubDic atIndex:childIndex];
+                childIndex++;
             }
         } else {
             // childいない場合
@@ -467,7 +481,7 @@
         // 本来はこのケースでは空のViewを出す方が良い (TODO)
         NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
         [childSubDic setObject:@"栽培マン1号" forKey:@"name"];
-        _childArray = [_childArray arrayByAddingObject:childSubDic];
+        [_childArray insertObject:childSubDic atIndex:0];
     }
     
     //NSLog(@"make pages");

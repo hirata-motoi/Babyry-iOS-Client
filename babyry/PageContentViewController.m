@@ -50,7 +50,7 @@
     self.dateLabel6.text = [_childArray[_pageIndex] objectForKey:@"date"][5];
     self.dateLabel7.text = [_childArray[_pageIndex] objectForKey:@"date"][6];
     
-    NSLog(@"%@", _childArray);
+    //NSLog(@"%@", _childArray);
     //NSLog(@"index %d", _pageIndex);
 
     // TODO
