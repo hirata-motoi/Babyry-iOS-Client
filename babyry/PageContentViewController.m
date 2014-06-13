@@ -63,9 +63,16 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    // ViewControllerにcurrentPageIndexを教える
+    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
+    vc.currentPageIndex = _pageIndex;
+}
+
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-     
     UITouch *touch = [touches anyObject];
     //NSLog( @"%d",touch.view.tag );
     if (touch.view.tag > 0 && touch.view.tag < 8) {
