@@ -18,6 +18,14 @@
 @property (weak, nonatomic) IBOutlet UIImageView *weekUImageView6;
 @property (weak, nonatomic) IBOutlet UIImageView *weekUImageView7;
 
+@property (weak, nonatomic) IBOutlet UILabel *monthLabel1;
+@property (weak, nonatomic) IBOutlet UILabel *monthLabel2;
+@property (weak, nonatomic) IBOutlet UILabel *monthLabel3;
+@property (weak, nonatomic) IBOutlet UILabel *monthLabel4;
+@property (weak, nonatomic) IBOutlet UILabel *monthLabel5;
+@property (weak, nonatomic) IBOutlet UILabel *monthLabel6;
+@property (weak, nonatomic) IBOutlet UILabel *monthLabel7;
+
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel1;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel2;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel3;
@@ -25,6 +33,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel5;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel6;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel7;
+
 
 @property NSString *weekImage1;
 @property NSString *weekImage2;

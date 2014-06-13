@@ -90,11 +90,6 @@
     NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
     PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
-    // ローカルキャッシュに保存
-    // ここではキャッシュに入れない
-    //ImageCache *ic = [[ImageCache alloc] init];
-    //[ic setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
-    
     // Parseに既に画像があるかどうかを確認
     PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];

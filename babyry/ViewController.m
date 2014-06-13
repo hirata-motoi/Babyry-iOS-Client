@@ -398,11 +398,13 @@
             PFQuery *childMonthImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", month]];
             childMonthImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
             [childMonthImageQuery whereKey:@"imageOf" equalTo:c.objectId];
+            // choosed(bestShot)を探す
+            [childMonthImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
             [childMonthImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if(!error) {
                     if ([objects count] == 0) {
                         //NSLog(@"no image in %@ %@", c[@"name"], month);
-                    } else if ([objects count] > 1) {
+                    } else if ([objects count] > 0) {
                         //NSLog(@"image found in %@ %@", c[@"name"], month);
                         for (PFObject *object in objects) {
                             // Parseから持って来たデータでchildArray更新する
@@ -427,6 +429,10 @@
                                             //NSLog(@"ここでParseに接続、表のUIが重くならないようならok。もしなるようならbackgroundに処理移す");
                                             NSData *tmpImageData = [object[@"imageFile"] getData];
                                             [[tmpDic objectForKey:@"images"] setObject:[UIImage imageWithData:tmpImageData] atIndex:wIndex];
+                                            
+                                            // bestshotはローカルキャッシュに保存しておく
+                                            ImageCache *ic = [[ImageCache alloc] init];
+                                            [ic setCache:[NSString stringWithFormat:@"%@%@", c.objectId, date] image:tmpImageData];
                                         }
                                         wIndex++;
                                     }

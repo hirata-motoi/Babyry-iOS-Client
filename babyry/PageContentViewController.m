@@ -43,13 +43,31 @@
     self.titleLabel.text = [_childArray[_pageIndex] objectForKey:@"name"];
 
     // forでね。。。
-    self.dateLabel1.text = [_childArray[_pageIndex] objectForKey:@"date"][0];
-    self.dateLabel2.text = [_childArray[_pageIndex] objectForKey:@"date"][1];
-    self.dateLabel3.text = [_childArray[_pageIndex] objectForKey:@"date"][2];
-    self.dateLabel4.text = [_childArray[_pageIndex] objectForKey:@"date"][3];
-    self.dateLabel5.text = [_childArray[_pageIndex] objectForKey:@"date"][4];
-    self.dateLabel6.text = [_childArray[_pageIndex] objectForKey:@"date"][5];
-    self.dateLabel7.text = [_childArray[_pageIndex] objectForKey:@"date"][6];
+    NSMutableArray *tmpMonth = [[NSMutableArray alloc] init];
+    NSString *year = [[NSString alloc] init];
+    NSString *month = [[NSString alloc] init];
+    for (int i = 0; i < 7; i++) {
+        year = [[_childArray[_pageIndex] objectForKey:@"month"][i] substringToIndex:4];
+        month = [[_childArray[_pageIndex] objectForKey:@"month"][i] substringWithRange:NSMakeRange(4, 2)];
+        [tmpMonth addObject:[NSString stringWithFormat:@"%@/%@", year, month]];
+    }
+    
+    self.monthLabel1.text = [tmpMonth objectAtIndex:0];
+    self.monthLabel2.text = [tmpMonth objectAtIndex:1];
+    self.monthLabel3.text = [tmpMonth objectAtIndex:2];
+    self.monthLabel4.text = [tmpMonth objectAtIndex:3];
+    self.monthLabel5.text = [tmpMonth objectAtIndex:4];
+    self.monthLabel6.text = [tmpMonth objectAtIndex:5];
+    self.monthLabel7.text = [tmpMonth objectAtIndex:6];
+    
+    // forでどうやるんだろ
+    self.dateLabel1.text = [[_childArray[_pageIndex] objectForKey:@"date"][0] substringWithRange:NSMakeRange(6, 2)];
+    self.dateLabel2.text = [[_childArray[_pageIndex] objectForKey:@"date"][1] substringWithRange:NSMakeRange(6, 2)];
+    self.dateLabel3.text = [[_childArray[_pageIndex] objectForKey:@"date"][2] substringWithRange:NSMakeRange(6, 2)];
+    self.dateLabel4.text = [[_childArray[_pageIndex] objectForKey:@"date"][3] substringWithRange:NSMakeRange(6, 2)];
+    self.dateLabel5.text = [[_childArray[_pageIndex] objectForKey:@"date"][4] substringWithRange:NSMakeRange(6, 2)];
+    self.dateLabel6.text = [[_childArray[_pageIndex] objectForKey:@"date"][5] substringWithRange:NSMakeRange(6, 2)];
+    self.dateLabel7.text = [[_childArray[_pageIndex] objectForKey:@"date"][6] substringWithRange:NSMakeRange(6, 2)];
     
     //NSLog(@"%@", _childArray);
     //NSLog(@"index %d", _pageIndex);
