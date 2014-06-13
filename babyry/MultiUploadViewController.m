@@ -98,6 +98,17 @@
     childImage[@"bestFlag"] = @"unchoosed";
     [childImage saveInBackground];
     NSLog(@"saved");
+    
+    // uploadした画像をmulti image viewに反映
+    [_multiUploadedImages performBatchUpdates:^{
+        int currentSize = [_childImageArray count];
+        _childImageArray = [_childImageArray arrayByAddingObject:childImage];
+        NSMutableArray *arrayWithIndexPaths = [NSMutableArray array];
+        for (int i = currentSize; i < currentSize + 1; i++) {
+            [arrayWithIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+        }
+        [_multiUploadedImages insertItemsAtIndexPaths:arrayWithIndexPaths];
+    } completion:nil];
 }
 
 -(void)createCollectionView
