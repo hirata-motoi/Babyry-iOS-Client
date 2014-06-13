@@ -10,8 +10,8 @@
             <objects>
                 <viewController id="vXZ-lx-hvc" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
-                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                        <viewControllerLayoutGuide type="top" id="bHQ-qn-dcM"/>
+                        <viewControllerLayoutGuide type="bottom" id="Rtc-Rn-dFc"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
@@ -44,8 +44,8 @@
             <objects>
                 <viewController storyboardIdentifier="PageContentViewController" id="XA8-SL-ZDs" customClass="PageContentViewController" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="WuB-bO-W6X"/>
-                        <viewControllerLayoutGuide type="bottom" id="0lf-LS-xcf"/>
+                        <viewControllerLayoutGuide type="top" id="SSg-jG-wpa"/>
+                        <viewControllerLayoutGuide type="bottom" id="YqM-5d-HAm"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="U3x-Tn-XbT">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
@@ -165,8 +165,8 @@
             <objects>
                 <viewController storyboardIdentifier="UploadViewController" id="3ig-HE-CNr" customClass="UploadViewController" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="EKl-2Q-q4D"/>
-                        <viewControllerLayoutGuide type="bottom" id="DfE-L2-9Eg"/>
+                        <viewControllerLayoutGuide type="top" id="YYl-hP-iVx"/>
+                        <viewControllerLayoutGuide type="bottom" id="E9s-re-FFG"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="EwT-ci-GoK">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
@@ -213,6 +213,68 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mW8-Cg-6eM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-441" y="-581"/>
+        </scene>
+        <!--Multi Upload View Controller-->
+        <scene sceneID="8a6-Rz-OCP">
+            <objects>
+                <viewController storyboardIdentifier="MultiUploadViewController" id="lcr-La-Ikq" customClass="MultiUploadViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="lGc-Em-oOb"/>
+                        <viewControllerLayoutGuide type="bottom" id="Hub-dA-hAi"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="bY7-CY-YfO">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="MultiUploadView" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kak-73-HvE">
+                                <rect key="frame" x="95" y="62" width="130" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="PWV-4z-wdb">
+                                <rect key="frame" x="0.0" y="98" width="320" height="417"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="0.92079228940217395" green="0.92079228940217395" blue="0.92079228940217395" alpha="1" colorSpace="calibratedRGB"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="oiu-hw-V7g">
+                                    <size key="itemSize" width="100" height="100"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kw8-kr-Ubn">
+                                <rect key="frame" x="70" y="523" width="35" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Back">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="multiUploadViewBackButton:" destination="lcr-La-Ikq" eventType="touchUpInside" id="OTB-Mf-S44"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GgQ-yg-Tw5">
+                                <rect key="frame" x="201" y="523" width="50" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Upload">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="multiUploadButton:" destination="lcr-La-Ikq" eventType="touchUpInside" id="IOz-nO-SUf"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="multiUploadedImages" destination="PWV-4z-wdb" id="L0v-5L-4XD"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="T9U-ns-ZhV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-17" y="-581"/>
         </scene>
         <!--Page View Controller-->
         <scene sceneID="SPM-i3-U0O">

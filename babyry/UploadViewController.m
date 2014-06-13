@@ -91,21 +91,22 @@
     PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
     // ローカルキャッシュに保存
-    ImageCache *ic = [[ImageCache alloc] init];
-    [ic setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
+    // ここではキャッシュに入れない
+    //ImageCache *ic = [[ImageCache alloc] init];
+    //[ic setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
     
     // Parseに既に画像があるかどうかを確認
     PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    NSLog(@"first query : %@", [imageQuery findObjects]);
     [imageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
-    NSLog(@"first second query : %@", [imageQuery findObjects]);
     
     NSArray *imageArray = [imageQuery findObjects];
+    // imageArrayが一つ以上あったら(objectId指定だから一つしか無いはずだけど)上書き
     if ([imageArray count] > 0) {
         NSLog(@"image objectId%@", imageArray[0]);
         imageArray[0][@"imageFile"] = imageFile;
         [imageArray[0] saveInBackground];
+    // 一つもないなら新たに追加
     } else {
         NSLog(@"Insert To Parse");
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];

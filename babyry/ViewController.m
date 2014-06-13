@@ -33,6 +33,7 @@
         // networkから引く nwが駄目なら cacheから
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         _childArrayFoundFromParse = [childQuery findObjects];
+        
         // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
         if ([_childArrayFoundFromParse count] < 1) {
             //NSLog(@"make child");
@@ -362,6 +363,7 @@
             [monthOfChildImageArray insertObject:month atIndex:weekIndex];
             weekIndex++;
         }
+        [childSubDic setObject:c.objectId forKey:@"objectId"];
         [childSubDic setObject:c[@"name"] forKey:@"name"];
         [childSubDic setObject:bestFlagOfChildImageArray forKey:@"bestFlag"];
         [childSubDic setObject:dateOfChildImageArray forKey:@"date"];

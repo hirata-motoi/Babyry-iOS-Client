@@ -14,10 +14,10 @@
 - (IBAction)openPhotoLibrary:(UIButton *)sender;
 - (IBAction)uploadViewBackButton:(UIButton *)sender;
 
-//@property NSUInteger pageIndex;
 @property NSString *childObjectId;
 @property NSString *month;
 @property NSString *date;
 @property UIImage *uploadedImage;
+@property NSString *bestFlag;
 
 @end

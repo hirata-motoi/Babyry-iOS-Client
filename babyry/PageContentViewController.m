@@ -9,6 +9,7 @@
 #import "PageContentViewController.h"
 #import "ViewController.h"
 #import "UploadViewController.h"
+#import "MultiUploadViewController.h"
 
 @interface PageContentViewController ()
 
@@ -75,7 +76,7 @@
 {
     UITouch *touch = [touches anyObject];
     //NSLog( @"%d",touch.view.tag );
-    if (touch.view.tag > 0 && touch.view.tag < 8) {
+    if (touch.view.tag > 1 && touch.view.tag < 8) {
         //NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
         UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
         //uploadViewController.pageIndex = _pageIndex;
@@ -84,8 +85,23 @@
         uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][touch.view.tag -1];
         uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][touch.view.tag -1];
         uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"images"][touch.view.tag -1];
+        uploadViewController.bestFlag = [_childArray[_pageIndex] objectForKey:@"bestFlag"][touch.view.tag -1];
         
-        [self presentViewController:uploadViewController animated:YES completion:NULL];
+        if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage && uploadViewController.bestFlag) {
+            [self presentViewController:uploadViewController animated:YES completion:NULL];
+        } else {
+            // TODO インターネット接続がありません的なメッセージいるかも
+        }
+    } else if (touch.view.tag == 1) {
+        MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
+        multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+        multiUploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][touch.view.tag -1];
+        multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][touch.view.tag -1];
+        if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
+            [self presentViewController:multiUploadViewController animated:YES completion:NULL];
+        } else {
+            // TODO インターネット接続がありません的なメッセージいるかも
+        }
     }
 /*
     switch (touch.view.tag) {
