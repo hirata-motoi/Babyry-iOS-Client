@@ -11,8 +11,8 @@
 #import "PageContentViewController.h"
 
 @interface ViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UIPageViewControllerDataSource>
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *addNewChildButton;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *logoutButton;
+//@property (weak, nonatomic) IBOutlet UIBarButtonItem *addNewChildButton;
+//@property (weak, nonatomic) IBOutlet UIBarButtonItem *logoutButton;
 
 - (IBAction)startWalkthrough:(id)sender;
 
@@ -23,5 +23,7 @@
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 
 @property NSUInteger currentPageIndex;
+
+@property int only_first_load;
 
 @end

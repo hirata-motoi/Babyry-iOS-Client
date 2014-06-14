@@ -100,6 +100,8 @@
     if ([imageArray count] > 0) {
         NSLog(@"image objectId%@", imageArray[0]);
         imageArray[0][@"imageFile"] = imageFile;
+        //ほんとはいらないけど念のため
+        imageArray[0][@"bestFlag"] = @"choosed";
         [imageArray[0] saveInBackground];
     // 一つもないなら新たに追加
     } else {
@@ -109,7 +111,7 @@
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
-        childImage[@"bestFlag"] = @"unchoosed";
+        childImage[@"bestFlag"] = @"choosed";
         [childImage saveInBackground];
     }
     NSLog(@"saved");

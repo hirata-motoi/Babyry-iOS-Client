@@ -45,6 +45,7 @@
     [childImageQuery orderByAscending:@"createdAt"];
     _childImageArray = [childImageQuery findObjects];
     int index = 0;
+    _bestImageIndexAtFirst = 0;
     for (PFObject *object in _childImageArray) {
         if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
             _bestImageIndexAtFirst = index;
@@ -122,7 +123,11 @@
     // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
     childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
     childImage[@"imageOf"] = _childObjectId;
-    childImage[@"bestFlag"] = @"unchoosed";
+    if ([_childImageArray count] == 0) {
+        childImage[@"bestFlag"] = @"choosed";
+    } else {
+        childImage[@"bestFlag"] = @"unchoosed";
+    }
     [childImage saveInBackground];
     NSLog(@"saved");
     

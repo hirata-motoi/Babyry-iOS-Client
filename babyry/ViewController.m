@@ -20,13 +20,26 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     NSLog(@"viewDidLoad");
+    
+    _only_first_load = 1;
+}
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    NSLog(@"viewDidAppear");
+    
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
-        //NSLog(@"No User Logged In");
+        NSLog(@"User Not Logged In");
         [self openLoginView];
     } else {
-        //NSLog(@"Comeback! User logged in");
+        NSLog(@"Comeback! User logged in");
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
         [childQuery whereKey:@"createdBy" equalTo:_currentUser];
@@ -42,26 +55,18 @@
             child[@"name"] = @"栽培マン1号";
             [child save];
         }
+    
+        if (_only_first_load == 1) {
+            // まずはCacheからオフラインでも表示出来るものを先に表示
+            [self getWeekDate];
+            [self getCachedImage];
+            _only_first_load = 0;
+        }
+    
+        // Parseにアクセスして最新の情報を取得
+        [self getWeekDate];
+        [self getParseData];
     }
-    
-    // まずはCacheからオフラインでも表示出来るものを先に表示
-    [self getWeekDate];
-    [self getCachedImage];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear");
-    
-    // Parseにアクセスして最新の情報を取得
-    [self getWeekDate];
-    [self getParseData];
 }
 
 ///////////////////////////////////////////////////////
@@ -466,7 +471,7 @@
     
     // Change the size of page view controller
     //NSLog(@"view controllerのサイズ変更");
-    _pageViewController.view.frame = CGRectMake(0, 44, self.view.frame.size.width, self.view.frame.size.height);
+    _pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
     
     //NSLog(@"view追加");
     [self addChildViewController:_pageViewController];
@@ -475,11 +480,11 @@
     
     // +ボタンがなぜかでないけどスルー
     //NSLog(@"addChild ボタン追加");
-    (void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
+    //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
     
     // logoutButton
     //NSLog(@"logout ボタン追加");
-    (void)[self.logoutButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(logout)];
+    //(void)[self.logoutButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(logout)];
 }
 
 @end
