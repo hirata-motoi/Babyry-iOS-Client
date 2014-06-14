@@ -34,6 +34,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel6;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel7;
 
+@property (weak, nonatomic) IBOutlet UILabel *showAlbumLabel;
 
 @property NSString *weekImage1;
 @property NSString *weekImage2;
@@ -45,5 +46,8 @@
 
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
+
+//くるくる
+@property UIActivityIndicatorView *indicator;
 
 @end

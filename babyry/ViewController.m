@@ -21,6 +21,17 @@
 	// Do any additional setup after loading the view, typically from a nib.
     NSLog(@"viewDidLoad");
     
+    // くるくる
+    _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    float w = _indicator.frame.size.width;
+    float h = _indicator.frame.size.height;
+    float x = self.view.frame.size.width/2 - w/2;
+    float y = self.view.frame.size.height/2 - h/2;
+    _indicator.frame = CGRectMake(x, y, w, h);
+    _indicator.hidesWhenStopped = YES;
+    [_indicator startAnimating];
+    [self.view addSubview:_indicator];
+    
     _only_first_load = 1;
 }
 
@@ -67,6 +78,7 @@
         [self getWeekDate];
         [self getParseData];
     }
+    [_indicator stopAnimating];
 }
 
 ///////////////////////////////////////////////////////

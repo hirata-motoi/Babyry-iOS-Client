@@ -26,4 +26,7 @@
 
 @property int only_first_load;
 
+//くるくる
+@property UIActivityIndicatorView *indicator;
+
 @end

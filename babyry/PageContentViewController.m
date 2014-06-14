@@ -32,6 +32,20 @@
     // Do any additional setup after loading the view.
     //NSLog(@"%@", _childArray[_pageIndex]);
 
+    // くるくる
+    _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    float w = _indicator.frame.size.width;
+    float h = _indicator.frame.size.height;
+    float x = self.view.frame.size.width/2 - w/2;
+    //ちょっと高めの位置にする
+    float y = self.view.frame.size.height/3;
+    _indicator.frame = CGRectMake(x, y, w, h);
+    _indicator.hidesWhenStopped = YES;
+    [self.view addSubview:_indicator];
+    
+    // set show ablum label
+    _showAlbumLabel.layer.cornerRadius = 30.0f;
+
     // forでまわそうぜ。。。
     self.weekUImageView1.image = [_childArray[_pageIndex] objectForKey:@"images"][0];
     self.weekUImageView2.image = [_childArray[_pageIndex] objectForKey:@"images"][1];
@@ -85,6 +99,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
+    [_indicator stopAnimating];
+
     // ViewControllerにcurrentPageIndexを教える
     ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
     vc.currentPageIndex = _pageIndex;
@@ -92,6 +108,7 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [_indicator startAnimating];
     UITouch *touch = [touches anyObject];
     //NSLog( @"%d",touch.view.tag );
     if (touch.view.tag > 1 && touch.view.tag < 8) {
@@ -100,10 +117,12 @@
         //uploadViewController.pageIndex = _pageIndex;
         //uploadViewController.imageIndex = touch.view.tag;
         uploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+        uploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
         uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][touch.view.tag -1];
         uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][touch.view.tag -1];
         uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"images"][touch.view.tag -1];
         uploadViewController.bestFlag = [_childArray[_pageIndex] objectForKey:@"bestFlag"][touch.view.tag -1];
+        uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         
         if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage && uploadViewController.bestFlag) {
             [self presentViewController:uploadViewController animated:YES completion:NULL];
@@ -112,9 +131,11 @@
         }
     } else if (touch.view.tag == 1) {
         MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
+        multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
         multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
         multiUploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][touch.view.tag -1];
         multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][touch.view.tag -1];
+        multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
             [self presentViewController:multiUploadViewController animated:YES completion:NULL];
         } else {

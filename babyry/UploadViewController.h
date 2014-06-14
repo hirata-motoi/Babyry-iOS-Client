@@ -14,10 +14,15 @@
 - (IBAction)openPhotoLibrary:(UIButton *)sender;
 - (IBAction)uploadViewBackButton:(UIButton *)sender;
 
+@property (weak, nonatomic) IBOutlet UILabel *uploadMonthLabel;
+@property (weak, nonatomic) IBOutlet UILabel *uploadDateLabel;
+@property (weak, nonatomic) IBOutlet UILabel *uploadNameLabel;
+
 @property NSString *childObjectId;
 @property NSString *month;
 @property NSString *date;
 @property UIImage *uploadedImage;
 @property NSString *bestFlag;
+@property NSString *name;
 
 @end

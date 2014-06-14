@@ -15,9 +15,11 @@
 - (IBAction)multiUploadButton:(id)sender;
 - (IBAction)testButton:(id)sender;
 
+@property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
 
 @property NSString *childObjectId;
+@property NSString *name;
 @property NSArray *childImageArray;
 @property NSString *month;
 @property NSString *date;

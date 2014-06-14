@@ -31,6 +31,12 @@
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
     
+    // set label
+    NSString *yyyy = [_month substringToIndex:4];
+    NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
+    NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
+    _multiUploadLabel.text = [NSString stringWithFormat:@"%@/%@/%@の%@", yyyy, mm, dd, _name];
+    
     // set cell size
     _cellHeight = 100.0f;
     _cellWidth = 100.0f;

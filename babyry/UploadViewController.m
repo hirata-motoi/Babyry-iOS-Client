@@ -33,6 +33,14 @@
     // set uploadedImage
     _uploadedImageView.image = _uploadedImage;
     
+    // set label
+    NSString *yyyy = [_month substringToIndex:4];
+    NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
+    NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
+    _uploadMonthLabel.text = [NSString stringWithFormat:@"%@/%@", yyyy, mm];
+    _uploadDateLabel.text = [NSString stringWithFormat:@"%@", dd];
+    _uploadNameLabel.text = _name;
+    
     // get pageIndex, imageIndex
     NSLog(@"received childObjectId:%@ month:%@ date:%@ image:%@", _childObjectId, _month, _date, _uploadedImageView.image);
 }
