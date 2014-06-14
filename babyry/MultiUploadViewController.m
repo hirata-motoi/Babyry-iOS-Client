@@ -31,11 +31,26 @@
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
     
+    // set cell size
+    _cellHeight = 100.0f;
+    _cellWidth = 100.0f;
+    
+    // best shot asset
+    _bestShotLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
+    
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [childImageQuery orderByAscending:@"createdAt"];
     _childImageArray = [childImageQuery findObjects];
+    int index = 0;
+    for (PFObject *object in _childImageArray) {
+        if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
+            _bestImageIndexAtFirst = index;
+        }
+        index++;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -66,7 +81,7 @@
         // UIImageControllerの初期化
 		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc]init];
 		[imagePickerController setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-		[imagePickerController setAllowsEditing:YES];
+		[imagePickerController setAllowsEditing:NO];
 		[imagePickerController setDelegate:self];
 		
         [self presentViewController:imagePickerController animated:YES completion: nil];
@@ -75,6 +90,18 @@
 	{
 		NSLog(@"photo library invalid.");
 	}
+}
+
+- (IBAction)testButton:(id)sender {
+    NSLog(@"test pushed");
+    if(_cellHeight == 100.f) {
+        _cellHeight = 300.0f;
+        _cellWidth = 300.0f;
+    } else {
+        _cellHeight = 100.0f;
+        _cellWidth = 100.0f;
+    }
+    [_multiUploadedImages reloadData];
 }
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -127,6 +154,11 @@
     return [_childImageArray count];
 }
 
+// セルの大きさを指定するメソッド
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(_cellWidth, _cellHeight);
+}
+
 // 指定された場所のセルを作るメソッド
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -134,14 +166,68 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MultiUploadViewControllerCell" forIndexPath:indexPath];
     
     NSLog(@"indexPath : %@", [_childImageArray objectAtIndex:indexPath.row]);
+    cell.tag = indexPath.row;
+    if (_bestImageIndexAtFirst == indexPath.row) {
+        _bestShotLabelView.frame = cell.frame;
+        [_multiUploadedImages addSubview:_bestShotLabelView];
+    }
     
     // 画像を貼付け
     NSData *tmpImageData = [[_childImageArray objectAtIndex:indexPath.row][@"imageFile"] getData];
     cell.backgroundColor = [UIColor blueColor];
     cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:tmpImageData]];
     
+    UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    doubleTapGestureRecognizer.numberOfTapsRequired = 2;
+    [cell addGestureRecognizer:doubleTapGestureRecognizer];
+
+    UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    singleTapGestureRecognizer.numberOfTapsRequired = 1;
+    // ダブルタップに失敗した時だけシングルタップとする
+    [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
+    [cell addGestureRecognizer:singleTapGestureRecognizer];
+    
     return cell;
 }
 
+-(void)handleDoubleTap:(id) sender {
+    NSLog(@"double tap %d", [[sender view] tag]);
+    
+    // change label
+    _bestShotLabelView.frame = [sender view].frame;
+    [_multiUploadedImages addSubview:_bestShotLabelView];
+    
+    // update Parse
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+    [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+    [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [childImageQuery orderByAscending:@"createdAt"];
+    [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if(!error) {
+            int index = 0;
+            for (PFObject *object in objects) {
+                if (index == [[sender view] tag]) {
+                    NSLog(@"choosed %@", object.objectId);
+                    if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
+                        object[@"bestFlag"] =  @"choosed";
+                        [object saveInBackground];
+                    }
+                } else {
+                    NSLog(@"unchoosed %@", object.objectId);
+                    if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
+                        object[@"bestFlag"] =  @"unchoosed";
+                        [object saveInBackground];
+                    }
+                }
+                index++;
+            }
+        }
+    }];
+}
+
+-(void)handleSingleTap:(UIGestureRecognizer *) sender {
+    NSLog(@"single tap %d", [[sender view] tag]);
+}
 
 @end

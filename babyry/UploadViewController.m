@@ -61,7 +61,7 @@
         // UIImageControllerの初期化
 		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc]init];
 		[imagePickerController setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-		[imagePickerController setAllowsEditing:YES];
+		[imagePickerController setAllowsEditing:NO];
 		[imagePickerController setDelegate:self];
 		
         [self presentViewController:imagePickerController animated:YES completion: nil];

@@ -13,6 +13,7 @@
 
 - (IBAction)multiUploadViewBackButton:(id)sender;
 - (IBAction)multiUploadButton:(id)sender;
+- (IBAction)testButton:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
 
@@ -20,5 +21,12 @@
 @property NSArray *childImageArray;
 @property NSString *month;
 @property NSString *date;
+
+@property float cellWidth;
+@property float cellHeight;
+
+@property UIImageView *bestShotLabelView;
+
+@property int bestImageIndexAtFirst;
 
 @end
