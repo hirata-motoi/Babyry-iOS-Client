@@ -51,19 +51,28 @@
         [self openLoginView];
     } else {
         NSLog(@"Comeback! User logged in");
+        // falimyIdを取得
+        NSLog(@"familyId is %@", _currentUser[@"familyId"]);
+        if (!_currentUser[@"familyId"]) {
+            NSLog(@"これはありえないけど何らかの処理を入れないと駄目");
+        }
+        
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
-        [childQuery whereKey:@"createdBy" equalTo:_currentUser];
+        [childQuery whereKey:@"familyId" equalTo:_currentUser[@"familyId"]];
+        [childQuery orderByAscending:@"createdAt"];
         // networkから引く nwが駄目なら cacheから
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         _childArrayFoundFromParse = [childQuery findObjects];
         
         // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
+        // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
         if ([_childArrayFoundFromParse count] < 1) {
             //NSLog(@"make child");
             PFObject *child = [PFObject objectWithClassName:@"Child"];
             [child setObject:_currentUser forKey:@"createdBy"];
             child[@"name"] = @"栽培マン1号";
+            child[@"familyId"] = _currentUser[@"familyId"];
             [child save];
         }
     
@@ -225,6 +234,11 @@
 }
 */
 
+- (IBAction)logoutButton:(id)sender {
+    [PFUser logOut];
+    [self viewDidAppear:true];
+}
+
 - (IBAction)startWalkthrough:(id)sender {
     PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
     NSArray *viewControllers = @[startingViewController];
@@ -316,12 +330,6 @@
     PageContentViewController *jumpViewController = [self viewControllerAtIndex:page_count];
     NSArray *viewControllers = @[jumpViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-}
-
--(void)logout
-{
-    [PFUser logOut];
-    [self viewDidAppear:true];
 }
 
 - (void) getWeekDate
@@ -493,10 +501,6 @@
     // +ボタンがなぜかでないけどスルー
     //NSLog(@"addChild ボタン追加");
     //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
-    
-    // logoutButton
-    //NSLog(@"logout ボタン追加");
-    //(void)[self.logoutButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(logout)];
 }
 
 @end

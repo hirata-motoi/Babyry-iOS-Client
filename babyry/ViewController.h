@@ -12,7 +12,7 @@
 
 @interface ViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UIPageViewControllerDataSource>
 //@property (weak, nonatomic) IBOutlet UIBarButtonItem *addNewChildButton;
-//@property (weak, nonatomic) IBOutlet UIBarButtonItem *logoutButton;
+- (IBAction)logoutButton:(id)sender;
 
 - (IBAction)startWalkthrough:(id)sender;
 

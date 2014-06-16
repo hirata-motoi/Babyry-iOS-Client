@@ -7,6 +7,7 @@
 //
 
 #import "AlbumViewController.h"
+#import "ImageTrimming.h"
 
 @interface AlbumViewController ()
 
@@ -45,8 +46,6 @@
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
     
     [self createCollectionView];
-    
-    [self setAlbumCacheData];
     [self setAlbumParseData];
 }
 
@@ -69,11 +68,6 @@
 
 - (IBAction)albumBackButton:(id)sender {
     [self dismissViewControllerAnimated:YES completion:NULL];
-}
-
--(void) setAlbumCacheData
-{
-    NSLog(@"get album data");
 }
 
 -(void) setAlbumParseData
@@ -117,10 +111,11 @@
     ImageCache *ic = [[ImageCache alloc] init];
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@%@%02d", _childObjectId, _yyyy, _mm, [_dd intValue] - indexPath.row];
     NSData *imageCacheData = [ic getCache:imageCachePath];
+    ImageTrimming *it = [[ImageTrimming alloc] init];
     if(imageCacheData) {
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageCacheData]];
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageWithData:imageCacheData]]];
     } else {
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"NoImage"]];
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageNamed:@"NoImage"]]];
     }
     
     UILabel *cellLabel = [[UILabel alloc] init];
