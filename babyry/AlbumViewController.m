@@ -41,6 +41,9 @@
     _cellHeight = 100.0f;
     _cellWidth = 100.0f;
     
+    // album name
+    _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
+    
     [self createCollectionView];
     
     [self setAlbumCacheData];
@@ -105,10 +108,14 @@
 {
     //セルを再利用 or 再生成
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"AlbumViewControllerCell" forIndexPath:indexPath];
+    for (UIView *view in [cell subviews]) {
+        //NSLog(@"remove cell's child view");
+        [view removeFromSuperview];
+    }
     
     // Cacheからはりつけ
     ImageCache *ic = [[ImageCache alloc] init];
-    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@%@%d", _childObjectId, _yyyy, _mm, [_dd intValue] - indexPath.row];
+    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@%@%02d", _childObjectId, _yyyy, _mm, [_dd intValue] - indexPath.row];
     NSData *imageCacheData = [ic getCache:imageCachePath];
     if(imageCacheData) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageCacheData]];
@@ -117,7 +124,7 @@
     }
     
     UILabel *cellLabel = [[UILabel alloc] init];
-    cellLabel.text = [NSString stringWithFormat:@"%d", [_dd intValue] - indexPath.row];
+    cellLabel.text = [NSString stringWithFormat:@"%02d", [_dd intValue] - indexPath.row];
     cellLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:_cellHeight/3];
     cellLabel.textColor = [UIColor whiteColor];
     cellLabel.shadowColor = [UIColor blackColor];
@@ -136,6 +143,70 @@
     [cell addGestureRecognizer:singleTapGestureRecognizer];
 */
     return cell;
+}
+
+- (IBAction)albumViewPreMonthButton:(id)sender {
+    NSLog(@"show previous month");
+    // set next month
+    if (![_mm isEqual:@"01"]) {
+        _mm = [NSString stringWithFormat:@"%02d", [_mm intValue] - 1 ];
+    } else {
+        _mm = @"12";
+        _yyyy = [NSString stringWithFormat:@"%02d", [_yyyy intValue] - 1 ];
+    }
+    _dd = [self getMaxDate:_mm yyyy:_yyyy];
+    
+    _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
+    [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
+    [_albumCollectionView reloadData];
+}
+
+- (IBAction)albumViewNextMonthButton:(id)sender {
+    NSLog(@"show next month");
+    // cant get future month
+    NSLog(@"compare month %@ %@", _month, [NSString stringWithFormat:@"%@%@", _yyyy, _mm]);
+    if ([_month isEqual:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
+        return;
+    }
+    // set next month
+    if (![_mm isEqual:@"12"]) {
+        _mm = [NSString stringWithFormat:@"%02d", [_mm intValue] + 1 ];
+    } else {
+        _mm = @"01";
+        _yyyy = [NSString stringWithFormat:@"%02d", [_yyyy intValue] + 1 ];
+    }
+    _dd = [self getMaxDate:_mm yyyy:_yyyy];
+    
+    _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
+    [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
+    [_albumCollectionView reloadData];
+
+}
+
+-(NSString *)getMaxDate:mm yyyy:(NSString *)yyyy
+{
+    int month = [mm intValue];
+    int year = [yyyy intValue];
+    //今月の場合
+    if ([_month isEqual:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
+        return [_date substringWithRange:NSMakeRange(6, 2)];
+    }
+    //閏年
+    if (year % 4 == 0) {
+        if (year % 100 == 0 && year % 400 != 0) {
+            return @"28";
+        }
+    }
+    // 2月
+    if (month == 2) {
+        return @"29";
+    }
+    //その他
+    if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+        return @"31";
+    } else {
+        return @"30";
+    }
 }
 
 @end

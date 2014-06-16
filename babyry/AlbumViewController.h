@@ -13,6 +13,9 @@
 @interface AlbumViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *albumCollectionView;
 - (IBAction)albumBackButton:(id)sender;
+@property (weak, nonatomic) IBOutlet UILabel *albumViewNameLabel;
+- (IBAction)albumViewPreMonthButton:(id)sender;
+- (IBAction)albumViewNextMonthButton:(id)sender;
 
 @property NSString *childObjectId;
 @property NSString *month;
