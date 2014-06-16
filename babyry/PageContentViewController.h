@@ -35,6 +35,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel7;
 
 @property (weak, nonatomic) IBOutlet UILabel *showAlbumLabel;
+@property (weak, nonatomic) IBOutlet UILabel *showSettingLabel;
 
 @property NSString *weekImage1;
 @property NSString *weekImage2;

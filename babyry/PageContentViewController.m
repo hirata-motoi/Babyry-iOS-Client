@@ -10,6 +10,7 @@
 #import "ViewController.h"
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
+#import "AlbumViewController.h"
 
 @interface PageContentViewController ()
 
@@ -45,6 +46,7 @@
     
     // set show ablum label
     _showAlbumLabel.layer.cornerRadius = 30.0f;
+    _showSettingLabel.layer.cornerRadius = 30.0f;
 
     // forでまわそうぜ。。。
     self.weekUImageView1.image = [_childArray[_pageIndex] objectForKey:@"images"][0];
@@ -110,7 +112,7 @@
 {
     [_indicator startAnimating];
     UITouch *touch = [touches anyObject];
-    //NSLog( @"%d",touch.view.tag );
+    NSLog( @"tag is %d",touch.view.tag );
     if (touch.view.tag > 1 && touch.view.tag < 8) {
         //NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
         UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
@@ -141,6 +143,14 @@
         } else {
             // TODO インターネット接続がありません的なメッセージいるかも
         }
+    } else if (touch.view.tag == 10) {
+        NSLog(@"open album view");
+        AlbumViewController *albumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumViewController"];
+        albumViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+        albumViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
+        albumViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][0];
+        albumViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][0];
+        [self presentViewController:albumViewController animated:YES completion:NULL];
     }
 /*
     switch (touch.view.tag) {

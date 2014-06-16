@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8814A99A1945469B0010F516 /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9991945469B0010F516 /* ImageCache.m */; };
 		8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A99C194ADB330010F516 /* MultiUploadViewController.m */; };
+		8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A6194EC4420010F516 /* AlbumViewController.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
@@ -53,6 +54,8 @@
 		8814A9991945469B0010F516 /* ImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCache.m; sourceTree = "<group>"; };
 		8814A99B194ADB330010F516 /* MultiUploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadViewController.h; sourceTree = "<group>"; };
 		8814A99C194ADB330010F516 /* MultiUploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadViewController.m; sourceTree = "<group>"; };
+		8814A9A5194EC4420010F516 /* AlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumViewController.h; sourceTree = "<group>"; };
+		8814A9A6194EC4420010F516 /* AlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumViewController.m; sourceTree = "<group>"; };
 		8899C1EB1941EAAE00CD7909 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -193,6 +196,8 @@
 				88B18C8C193814CF00ED630C /* ViewController.m */,
 				88B18C8E193814CF00ED630C /* Images.xcassets */,
 				88B18C7D193814CE00ED630C /* Supporting Files */,
+				8814A9A5194EC4420010F516 /* AlbumViewController.h */,
+				8814A9A6194EC4420010F516 /* AlbumViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -323,6 +328,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
