@@ -11,5 +11,6 @@
 @interface ImageTrimming : NSObject
 
 - (UIImage *) makeRectImage:(UIImage *)orgImage;
+-(UIImage *) makeRectTopImage:(UIImage *)orgImage;
 
 @end

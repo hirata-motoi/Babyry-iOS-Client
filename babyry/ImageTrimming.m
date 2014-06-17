@@ -34,4 +34,25 @@
     return trimmedImage;
 }
 
+-(UIImage *) makeRectTopImage:(UIImage *)orgImage
+{
+    // TopImageは width : height = 1 : 3/4 にする
+    int newImageSize;
+    CGRect trimArea;
+    if (orgImage.size.width * 3/4 >= orgImage.size.height) {
+        // 横長
+        newImageSize = orgImage.size.height;
+        trimArea = CGRectMake((orgImage.size.width - newImageSize*4/3)/2, 0, newImageSize, newImageSize);
+    } else {
+        // 縦長
+        newImageSize = orgImage.size.width;
+        trimArea = CGRectMake(0, (orgImage.size.height - newImageSize*4/3)/2, newImageSize, newImageSize);
+    }
+    CGImageRef srcImageRef = [orgImage CGImage];
+    CGImageRef trimmedImageRef = CGImageCreateWithImageInRect(srcImageRef, trimArea);
+    UIImage *trimmedImage = [UIImage imageWithCGImage:trimmedImageRef];
+    
+    return trimmedImage;
+}
+
 @end

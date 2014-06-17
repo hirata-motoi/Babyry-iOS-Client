@@ -11,6 +11,8 @@
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
 #import "AlbumViewController.h"
+#import "ImageTrimming.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface PageContentViewController ()
 
@@ -44,52 +46,7 @@
     _indicator.hidesWhenStopped = YES;
     [self.view addSubview:_indicator];
     
-    // set show ablum label
-    _showAlbumLabel.layer.cornerRadius = 30.0f;
-    _showSettingLabel.layer.cornerRadius = 30.0f;
-
-    // forでまわそうぜ。。。
-    self.weekUImageView1.image = [_childArray[_pageIndex] objectForKey:@"images"][0];
-    self.weekUImageView2.image = [_childArray[_pageIndex] objectForKey:@"images"][1];
-    self.weekUImageView3.image = [_childArray[_pageIndex] objectForKey:@"images"][2];
-    self.weekUImageView4.image = [_childArray[_pageIndex] objectForKey:@"images"][3];
-    self.weekUImageView5.image = [_childArray[_pageIndex] objectForKey:@"images"][4];
-    self.weekUImageView6.image = [_childArray[_pageIndex] objectForKey:@"images"][5];
-    self.weekUImageView7.image = [_childArray[_pageIndex] objectForKey:@"images"][6];
-    self.titleLabel.text = [_childArray[_pageIndex] objectForKey:@"name"];
-
-    // forでね。。。
-    NSMutableArray *tmpMonth = [[NSMutableArray alloc] init];
-    NSString *year = [[NSString alloc] init];
-    NSString *month = [[NSString alloc] init];
-    for (int i = 0; i < 7; i++) {
-        year = [[_childArray[_pageIndex] objectForKey:@"month"][i] substringToIndex:4];
-        month = [[_childArray[_pageIndex] objectForKey:@"month"][i] substringWithRange:NSMakeRange(4, 2)];
-        [tmpMonth addObject:[NSString stringWithFormat:@"%@/%@", year, month]];
-    }
-    
-    self.monthLabel1.text = [tmpMonth objectAtIndex:0];
-    self.monthLabel2.text = [tmpMonth objectAtIndex:1];
-    self.monthLabel3.text = [tmpMonth objectAtIndex:2];
-    self.monthLabel4.text = [tmpMonth objectAtIndex:3];
-    self.monthLabel5.text = [tmpMonth objectAtIndex:4];
-    self.monthLabel6.text = [tmpMonth objectAtIndex:5];
-    self.monthLabel7.text = [tmpMonth objectAtIndex:6];
-    
-    // forでどうやるんだろ
-    self.dateLabel1.text = [[_childArray[_pageIndex] objectForKey:@"date"][0] substringWithRange:NSMakeRange(6, 2)];
-    self.dateLabel2.text = [[_childArray[_pageIndex] objectForKey:@"date"][1] substringWithRange:NSMakeRange(6, 2)];
-    self.dateLabel3.text = [[_childArray[_pageIndex] objectForKey:@"date"][2] substringWithRange:NSMakeRange(6, 2)];
-    self.dateLabel4.text = [[_childArray[_pageIndex] objectForKey:@"date"][3] substringWithRange:NSMakeRange(6, 2)];
-    self.dateLabel5.text = [[_childArray[_pageIndex] objectForKey:@"date"][4] substringWithRange:NSMakeRange(6, 2)];
-    self.dateLabel6.text = [[_childArray[_pageIndex] objectForKey:@"date"][5] substringWithRange:NSMakeRange(6, 2)];
-    self.dateLabel7.text = [[_childArray[_pageIndex] objectForKey:@"date"][6] substringWithRange:NSMakeRange(6, 2)];
-    
-    //NSLog(@"%@", _childArray);
-    //NSLog(@"index %d", _pageIndex);
-
-    // TODO
-    //[self.logoutButton addTarget:self action:@selector(logout:) forControlEvents:UIControlEventTouchDown];
+    [self createCollectionView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -108,22 +65,159 @@
     vc.currentPageIndex = _pageIndex;
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+-(void)createCollectionView
+{
+    // UICollectionViewの土台を作成
+    _pageContentCollectionView.delegate = self;
+    _pageContentCollectionView.dataSource = self;
+    [_pageContentCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"PageContentCollectionView"];
+    
+    [self.view addSubview:_pageContentCollectionView];
+}
+
+// セルの数を指定するメソッド
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    //NSLog(@"とりあえず7個だす。下まで行ったらロードする感じの方が良いかな");
+    return 7;
+}
+
+// セルの大きさを指定するメソッド
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    float size = self.view.frame.size.width;
+    if (indexPath.row == 0) {
+        return CGSizeMake(size, size*3/4);
+    }
+    return CGSizeMake(size/3, size/3);
+}
+
+// 指定された場所のセルを作るメソッド
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    //セルを再利用 or 再生成
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PageContentCollectionView" forIndexPath:indexPath];
+    for (UIView *view in [cell subviews]) {
+        //NSLog(@"remove cell's child view");
+        [view removeFromSuperview];
+    }
+    
+    PFObject *object = [_childArray objectAtIndex:_pageIndex];
+    //NSLog(@"month : %@", [[object objectForKey:@"month"] objectAtIndex:indexPath.row]);
+    
+    // Cacheからはりつけ
+    ImageCache *ic = [[ImageCache alloc] init];
+    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@", [object objectForKey:@"objectId"], [[object objectForKey:@"date"] objectAtIndex:indexPath.row]];
+    NSData *imageCacheData = [ic getCache:imageCachePath];
+    ImageTrimming *it = [[ImageTrimming alloc] init];
+    if(imageCacheData) {
+        if (indexPath.row == 0) {
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectTopImage:[UIImage imageWithData:imageCacheData]]];
+        } else {
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageWithData:imageCacheData]]];
+        }
+    } else {
+        if (indexPath.row == 0) {
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectTopImage:[UIImage imageNamed:@"NoImage"]]];
+        } else {
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageNamed:@"NoImage"]]];
+        }
+    }
+
+    NSString *yyyy = [[[object objectForKey:@"month"] objectAtIndex:indexPath.row] substringToIndex:4];
+    NSString *mm = [[[object objectForKey:@"month"] objectAtIndex:indexPath.row] substringWithRange:NSMakeRange(4, 2)];
+    NSString *dd = [[[object objectForKey:@"date"] objectAtIndex:indexPath.row] substringWithRange:NSMakeRange(6, 2)];
+    float cellWidth = cell.frame.size.width;
+    float cellHeight = cell.frame.size.height;
+
+    // month label
+    UILabel *monthLabel = [[UILabel alloc] init];
+    monthLabel.text = [NSString stringWithFormat:@"%@/%@", yyyy, mm];
+    monthLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/10];
+    monthLabel.textColor = [UIColor whiteColor];
+    monthLabel.shadowColor = [UIColor blackColor];
+    monthLabel.frame = CGRectMake(2, 0, cellWidth, cellHeight/10);
+    [cell addSubview:monthLabel];
+    
+    // date label
+    UILabel *dateLabel = [[UILabel alloc] init];
+    dateLabel.text = [NSString stringWithFormat:@"%@", dd];
+    dateLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/5];
+    dateLabel.textColor = [UIColor whiteColor];
+    dateLabel.shadowColor = [UIColor blackColor];
+    dateLabel.frame = CGRectMake(0, cellHeight/10, cellWidth, cellHeight/5);
+    [cell addSubview:dateLabel];
+    
+    // child name label
+    if (indexPath.row == 0) {
+        UILabel *nameLabel = [[UILabel alloc] init];
+        nameLabel.text = [NSString stringWithFormat:@"%@", [object objectForKey:@"name"]];
+        nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/8];
+        nameLabel.textColor = [UIColor whiteColor];
+        nameLabel.shadowColor = [UIColor blackColor];
+        nameLabel.frame = CGRectMake(0, cellHeight - cellHeight/8, cellWidth, cellHeight/8);
+        [cell addSubview:nameLabel];
+        
+        UILabel *albumLabel = [[UILabel alloc] init];
+        albumLabel.text = @"album";
+        albumLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:20];
+        albumLabel.textColor = [UIColor blackColor];
+        albumLabel.textAlignment = NSTextAlignmentCenter;
+        albumLabel.backgroundColor = [UIColor whiteColor];
+        albumLabel.alpha = 0.5;
+        albumLabel.frame = CGRectMake(cellWidth - 65, cellHeight - 65, 60, 60);
+        albumLabel.layer.cornerRadius = 30;
+        [albumLabel setClipsToBounds:YES];
+        albumLabel.userInteractionEnabled = YES;
+        [cell addSubview:albumLabel];
+        albumLabel.tag = 10;
+        UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+        singleTapGestureRecognizer.numberOfTapsRequired = 1;
+        [albumLabel addGestureRecognizer:singleTapGestureRecognizer];
+    }
+    
+    cell.tag = indexPath.row + 1;
+    // ジェスチャー定義
+    //UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    //doubleTapGestureRecognizer.numberOfTapsRequired = 2;
+    //[cell addGestureRecognizer:doubleTapGestureRecognizer];
+
+    UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    singleTapGestureRecognizer.numberOfTapsRequired = 1;
+    // ダブルタップに失敗した時だけシングルタップとする
+    //[singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
+    [cell addGestureRecognizer:singleTapGestureRecognizer];
+    
+    return cell;
+}
+
+-(void)handleDoubleTap:(id) sender
+{
+    NSLog(@"double tap");
+}
+
+-(void)handleSingleTap:(id) sender
+{
+    NSLog(@"single tap");
+    NSLog(@"single tap %d", [[sender view] tag]);
+    [self touchEvent:[[sender view] tag]];
+}
+
+- (void)touchEvent:(int) tagNumber
 {
     [_indicator startAnimating];
-    UITouch *touch = [touches anyObject];
-    NSLog( @"tag is %d",touch.view.tag );
-    if (touch.view.tag > 1 && touch.view.tag < 8) {
+    //UITouch *touch = [touches anyObject];
+    NSLog( @"tag is %d", tagNumber);
+    if (tagNumber > 1 && tagNumber < 8) {
         //NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
         UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
         //uploadViewController.pageIndex = _pageIndex;
         //uploadViewController.imageIndex = touch.view.tag;
         uploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
         uploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-        uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][touch.view.tag -1];
-        uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][touch.view.tag -1];
-        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"images"][touch.view.tag -1];
-        uploadViewController.bestFlag = [_childArray[_pageIndex] objectForKey:@"bestFlag"][touch.view.tag -1];
+        uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
+        uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
+        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"images"][tagNumber -1];
+        uploadViewController.bestFlag = [_childArray[_pageIndex] objectForKey:@"bestFlag"][tagNumber -1];
         uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         
         if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage && uploadViewController.bestFlag) {
@@ -131,19 +225,19 @@
         } else {
             // TODO インターネット接続がありません的なメッセージいるかも
         }
-    } else if (touch.view.tag == 1) {
+    } else if (tagNumber == 1) {
         MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
         multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
         multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        multiUploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][touch.view.tag -1];
-        multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][touch.view.tag -1];
+        multiUploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
+        multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
         multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
             [self presentViewController:multiUploadViewController animated:YES completion:NULL];
         } else {
             // TODO インターネット接続がありません的なメッセージいるかも
         }
-    } else if (touch.view.tag == 10) {
+    } else if (tagNumber == 10) {
         NSLog(@"open album view");
         AlbumViewController *albumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumViewController"];
         albumViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
@@ -152,21 +246,6 @@
         albumViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][0];
         [self presentViewController:albumViewController animated:YES completion:NULL];
     }
-/*
-    switch (touch.view.tag) {
-        case 1:
-            NSLog(@"1 touched");
-            break;
-        case 2:
-            NSLog(@"2 touched");
-            break;
-        case 3:
-            NSLog(@"3 touched");
-            break;
-        default:
-            break;
-    }
-*/
 }
 
 /*
