@@ -39,14 +39,93 @@
     NSLog(@"%@/%@/%@", _yyyy, _mm, _dd);
     
     // set cell size
-    _cellHeight = 100.0f;
-    _cellWidth = 100.0f;
+    _cellHeight = self.view.frame.size.width/3 - 2;
+    _cellWidth = _cellHeight;
     
     // album name
+    _albumViewNameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:20];
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
+    
+    // buttom buttons
+    float buttonRadius = 30.0f;
+    float diff = (self.view.frame.size.width/4 - 2*buttonRadius)/2;
+    int buttonFontSize = 20;
+    float buttonAlpha = 0.5;
+    
+    // set back button
+    _albumViewBackLabel = [[UILabel alloc] init];
+    _albumViewBackLabel.text = @"Back";
+    _albumViewBackLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:buttonFontSize];
+    _albumViewBackLabel.textColor = [UIColor blackColor];
+    _albumViewBackLabel.textAlignment = NSTextAlignmentCenter;
+    _albumViewBackLabel.backgroundColor = [UIColor orangeColor];
+    _albumViewBackLabel.alpha = buttonAlpha;
+    _albumViewBackLabel.frame = CGRectMake(diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
+    _albumViewBackLabel.layer.cornerRadius = buttonRadius;
+    [_albumViewBackLabel setClipsToBounds:YES];
+    _albumViewBackLabel.userInteractionEnabled = YES;
+    
+    // set tag button
+    _albumViewTagLabel = [[UILabel alloc] init];
+    _albumViewTagLabel.text = @"Tag";
+    _albumViewTagLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:buttonFontSize];
+    _albumViewTagLabel.textColor = [UIColor blackColor];
+    _albumViewTagLabel.textAlignment = NSTextAlignmentCenter;
+    _albumViewTagLabel.backgroundColor = [UIColor orangeColor];
+    _albumViewTagLabel.alpha = buttonAlpha;
+    _albumViewTagLabel.frame = CGRectMake(self.view.frame.size.width*3/4 + diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
+    _albumViewTagLabel.layer.cornerRadius = buttonRadius;
+    [_albumViewTagLabel setClipsToBounds:YES];
+    _albumViewTagLabel.userInteractionEnabled = YES;
+    
+    // set change month button
+    _albumViewPreMonthLabel = [[UILabel alloc] init];
+    _albumViewPreMonthLabel.text = @"<<";
+    _albumViewPreMonthLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:buttonFontSize];
+    _albumViewPreMonthLabel.textColor = [UIColor blackColor];
+    _albumViewPreMonthLabel.textAlignment = NSTextAlignmentCenter;
+    _albumViewPreMonthLabel.backgroundColor = [UIColor orangeColor];
+    _albumViewPreMonthLabel.alpha = buttonAlpha;
+    _albumViewPreMonthLabel.frame = CGRectMake(self.view.frame.size.width/4 + diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
+    _albumViewPreMonthLabel.layer.cornerRadius = buttonRadius;
+    [_albumViewPreMonthLabel setClipsToBounds:YES];
+    _albumViewPreMonthLabel.userInteractionEnabled = YES;
+    
+    _albumViewNextMonthLabel = [[UILabel alloc] init];
+    _albumViewNextMonthLabel.text = @">>";
+    _albumViewNextMonthLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:buttonFontSize];
+    _albumViewNextMonthLabel.textColor = [UIColor blackColor];
+    _albumViewNextMonthLabel.textAlignment = NSTextAlignmentCenter;
+    _albumViewNextMonthLabel.backgroundColor = [UIColor orangeColor];
+    _albumViewNextMonthLabel.alpha = buttonAlpha;
+    _albumViewNextMonthLabel.frame = CGRectMake(self.view.frame.size.width*2/4 + diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
+    _albumViewNextMonthLabel.layer.cornerRadius = buttonRadius;
+    [_albumViewNextMonthLabel setClipsToBounds:YES];
+    _albumViewNextMonthLabel.userInteractionEnabled = YES;
+
+    UITapGestureRecognizer *singleTapGestureRecognizerBack = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(albumViewBack:)];
+    singleTapGestureRecognizerBack.numberOfTapsRequired = 1;
+    [_albumViewBackLabel addGestureRecognizer:singleTapGestureRecognizerBack];
+    
+    UITapGestureRecognizer *singleTapGestureRecognizerTag = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showTagAlbum:)];
+    singleTapGestureRecognizerTag.numberOfTapsRequired = 1;
+    [_albumViewTagLabel addGestureRecognizer:singleTapGestureRecognizerTag];
+    
+    UITapGestureRecognizer *singleTapGestureRecognizerPreMonth = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPreMonth:)];
+    singleTapGestureRecognizerPreMonth.numberOfTapsRequired = 1;
+    [_albumViewPreMonthLabel addGestureRecognizer:singleTapGestureRecognizerPreMonth];
+    
+    UITapGestureRecognizer *singleTapGestureRecognizerNextMonth = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showNextMonth:)];
+    singleTapGestureRecognizerNextMonth.numberOfTapsRequired = 1;
+    [_albumViewNextMonthLabel addGestureRecognizer:singleTapGestureRecognizerNextMonth];
     
     [self createCollectionView];
     [self setAlbumParseData];
+    
+    [self.view addSubview:_albumViewBackLabel];
+    [self.view addSubview:_albumViewTagLabel];
+    [self.view addSubview:_albumViewPreMonthLabel];
+    [self.view addSubview:_albumViewNextMonthLabel];
 }
 
 - (void)didReceiveMemoryWarning
@@ -65,10 +144,6 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-- (IBAction)albumBackButton:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
 
 -(void) setAlbumParseData
 {
@@ -108,14 +183,13 @@
     }
     
     // Cacheからはりつけ
-    ImageCache *ic = [[ImageCache alloc] init];
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@%@%02d", _childObjectId, _yyyy, _mm, [_dd intValue] - indexPath.row];
-    NSData *imageCacheData = [ic getCache:imageCachePath];
-    ImageTrimming *it = [[ImageTrimming alloc] init];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
+    //ImageTrimming *it = [[ImageTrimming alloc] init];
     if(imageCacheData) {
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageWithData:imageCacheData]]];
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
     } else {
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageNamed:@"NoImage"]]];
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageNamed:@"NoImage"]]];
     }
     
     UILabel *cellLabel = [[UILabel alloc] init];
@@ -140,7 +214,18 @@
     return cell;
 }
 
-- (IBAction)albumViewPreMonthButton:(id)sender {
+-(void)albumViewBack:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+-(void) showTagAlbum:(id)sender
+{
+
+}
+
+-(void)showPreMonth:(id)sender
+{
     NSLog(@"show previous month");
     // set next month
     if (![_mm isEqual:@"01"]) {
@@ -152,11 +237,16 @@
     _dd = [self getMaxDate:_mm yyyy:_yyyy];
     
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
+    CGPoint offset;
+    offset.x = 0;
+    offset.y = 0;
+    [_albumCollectionView setContentOffset:offset animated:NO];
     [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
     [_albumCollectionView reloadData];
 }
 
-- (IBAction)albumViewNextMonthButton:(id)sender {
+-(void)showNextMonth:(id)sender
+{
     NSLog(@"show next month");
     // cant get future month
     NSLog(@"compare month %@ %@", _month, [NSString stringWithFormat:@"%@%@", _yyyy, _mm]);
@@ -173,6 +263,10 @@
     _dd = [self getMaxDate:_mm yyyy:_yyyy];
     
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
+    CGPoint offset;
+    offset.x = 0;
+    offset.y = 0;
+    [_albumCollectionView setContentOffset:offset animated:NO];
     [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
     [_albumCollectionView reloadData];
 

@@ -30,7 +30,31 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    float imageViewAspect = _uploadedImageView.frame.size.width/_uploadedImageView.frame.size.height;
+    float imageAspect = _uploadedImage.size.width/_uploadedImage.size.height;
+    //NSLog(@"aspect %f", imageViewAspect);
+    
+    // 横長バージョン
+    // 枠より、画像の方が横長、枠の縦を縮める
+    if (imageAspect >= imageViewAspect){
+        CGRect frame = _uploadedImageView.frame;
+        frame.size.height = frame.size.width/imageAspect;
+        _uploadedImageView.frame = frame;
+    // 縦長バージョン
+    // 枠より、画像の方が縦長、枠の横を縮める
+    } else {
+        CGRect frame = _uploadedImageView.frame;
+        frame.size.width = frame.size.height*imageAspect;
+        _uploadedImageView.frame = frame;
+    }
+    
     // set uploadedImage
+    //NSLog(@"_uploadedImage %f %f", _uploadedImage.size.width, _uploadedImage.size.height);
+    //NSLog(@"_uploadedImageView %f %f", _uploadedImageView.frame.size.width, _uploadedImageView.frame.size.height);
+    CGRect frame = _uploadedImageView.frame;
+    frame.origin.x = (self.view.frame.size.width - _uploadedImageView.frame.size.width)/2;
+    frame.origin.y = (self.view.frame.size.height - _uploadedImageView.frame.size.height)/2;
+    _uploadedImageView.frame = frame;
     _uploadedImageView.image = _uploadedImage;
     
     // set label
@@ -40,6 +64,11 @@
     _uploadMonthLabel.text = [NSString stringWithFormat:@"%@/%@", yyyy, mm];
     _uploadDateLabel.text = [NSString stringWithFormat:@"%@", dd];
     _uploadNameLabel.text = _name;
+    
+    // set button shape
+    _openPhotoLibraryLabel.layer.cornerRadius = _openPhotoLibraryLabel.frame.size.height/2;
+    _uploadViewBackLabel.layer.cornerRadius = _uploadViewBackLabel.frame.size.height/2;
+    _uploadViewCommentLabel.layer.cornerRadius = _uploadViewCommentLabel.frame.size.height/2;
     
     // get pageIndex, imageIndex
     NSLog(@"received childObjectId:%@ month:%@ date:%@ image:%@", _childObjectId, _month, _date, _uploadedImageView.image);
@@ -84,6 +113,9 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
+- (IBAction)uploadViewCommentButton:(UIButton *)sender {
+}
+
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     // オリジナル画像
@@ -102,10 +134,13 @@
     PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [imageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
     
     NSArray *imageArray = [imageQuery findObjects];
     // imageArrayが一つ以上あったら(objectId指定だから一つしか無いはずだけど)上書き
-    if ([imageArray count] > 0) {
+    if ([imageArray count] > 1) {
+        NSLog(@"これはあり得ないエラー");
+    } else if ([imageArray count] == 1) {
         NSLog(@"image objectId%@", imageArray[0]);
         imageArray[0][@"imageFile"] = imageFile;
         //ほんとはいらないけど念のため

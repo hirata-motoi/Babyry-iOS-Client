@@ -12,7 +12,6 @@
 #import "MultiUploadViewController.h"
 #import "AlbumViewController.h"
 #import "ImageTrimming.h"
-#import <QuartzCore/QuartzCore.h>
 
 @interface PageContentViewController ()
 
@@ -57,6 +56,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    //NSLog(@"viewDidAppear %d", _pageIndex);
 
     [_indicator stopAnimating];
 
@@ -64,6 +65,24 @@
     ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
     vc.currentPageIndex = _pageIndex;
 }
+/*
+-(void)viewDidDisappear:(BOOL)animated
+{
+    NSLog(@"viewDidAppear %d", _pageIndex);
+    for (UIView *view in [self.view subviews]) {
+        NSLog(@"remove c view: %@", view);
+        for (UIView *vie in [view subviews]) {
+            NSLog(@"remove cc view : %@", vie);
+            for (UIView *vi in [vie subviews]) {
+                NSLog(@"remove ccc view : %@", vi);
+                [vi removeFromSuperview];
+            }
+            [vie removeFromSuperview];
+        }
+        [view removeFromSuperview];
+    }
+}
+*/
 
 -(void)createCollectionView
 {
@@ -86,7 +105,7 @@
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     float size = self.view.frame.size.width;
     if (indexPath.row == 0) {
-        return CGSizeMake(size, size*3/4);
+        return CGSizeMake(size, self.view.frame.size.height - 50 - size*2/3);
     }
     return CGSizeMake(size/3, size/3);
 }
@@ -105,21 +124,21 @@
     //NSLog(@"month : %@", [[object objectForKey:@"month"] objectAtIndex:indexPath.row]);
     
     // Cacheからはりつけ
-    ImageCache *ic = [[ImageCache alloc] init];
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@", [object objectForKey:@"objectId"], [[object objectForKey:@"date"] objectAtIndex:indexPath.row]];
-    NSData *imageCacheData = [ic getCache:imageCachePath];
-    ImageTrimming *it = [[ImageTrimming alloc] init];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         if (indexPath.row == 0) {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectTopImage:[UIImage imageWithData:imageCacheData]]];
+            //cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
         } else {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageWithData:imageCacheData]]];
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
+            //cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageCacheData]];
         }
     } else {
         if (indexPath.row == 0) {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectTopImage:[UIImage imageNamed:@"NoImage"]]];
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageNamed:@"NoImage"]]];
         } else {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[it makeRectImage:[UIImage imageNamed:@"NoImage"]]];
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageNamed:@"NoImage"]]];
         }
     }
 
@@ -152,6 +171,7 @@
         UILabel *nameLabel = [[UILabel alloc] init];
         nameLabel.text = [NSString stringWithFormat:@"%@", [object objectForKey:@"name"]];
         nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/8];
+        nameLabel.textAlignment = NSTextAlignmentLeft;
         nameLabel.textColor = [UIColor whiteColor];
         nameLabel.shadowColor = [UIColor blackColor];
         nameLabel.frame = CGRectMake(0, cellHeight - cellHeight/8, cellWidth, cellHeight/8);
@@ -164,12 +184,12 @@
         albumLabel.textAlignment = NSTextAlignmentCenter;
         albumLabel.backgroundColor = [UIColor whiteColor];
         albumLabel.alpha = 0.5;
-        albumLabel.frame = CGRectMake(cellWidth - 65, cellHeight - 65, 60, 60);
+        albumLabel.frame = CGRectMake(cell.frame.size.width - 65, cell.frame.size.height -65, 60, 60);
         albumLabel.layer.cornerRadius = 30;
         [albumLabel setClipsToBounds:YES];
         albumLabel.userInteractionEnabled = YES;
         [cell addSubview:albumLabel];
-        albumLabel.tag = 10;
+        albumLabel.tag = 1111111;
         UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
         singleTapGestureRecognizer.numberOfTapsRequired = 1;
         [albumLabel addGestureRecognizer:singleTapGestureRecognizer];
@@ -237,7 +257,7 @@
         } else {
             // TODO インターネット接続がありません的なメッセージいるかも
         }
-    } else if (tagNumber == 10) {
+    } else if (tagNumber == 1111111) {
         NSLog(@"open album view");
         AlbumViewController *albumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumViewController"];
         albumViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];

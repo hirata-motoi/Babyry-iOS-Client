@@ -7,6 +7,7 @@
 //
 
 #import "MultiUploadViewController.h"
+#import "ImageTrimming.h"
 
 @interface MultiUploadViewController ()
 
@@ -186,7 +187,7 @@
     // 画像を貼付け
     NSData *tmpImageData = [[_childImageArray objectAtIndex:indexPath.row][@"imageFile"] getData];
     cell.backgroundColor = [UIColor blueColor];
-    cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:tmpImageData]];
+    cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
     
     UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     doubleTapGestureRecognizer.numberOfTapsRequired = 2;

@@ -61,31 +61,40 @@
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
         [childQuery whereKey:@"familyId" equalTo:_currentUser[@"familyId"]];
         [childQuery orderByAscending:@"createdAt"];
+        
         // networkから引く nwが駄目なら cacheから
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
-        _childArrayFoundFromParse = [childQuery findObjects];
-        
-        // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
-        // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
-        if ([_childArrayFoundFromParse count] < 1) {
-            //NSLog(@"make child");
-            PFObject *child = [PFObject objectWithClassName:@"Child"];
-            [child setObject:_currentUser forKey:@"createdBy"];
-            child[@"name"] = @"栽培マン1号";
-            child[@"familyId"] = _currentUser[@"familyId"];
-            [child save];
-        }
-    
+        // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
+            _childArrayFoundFromParse = [childQuery findObjects];
+        
+            // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
+            // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
+            if ([_childArrayFoundFromParse count] < 1) {
+                //NSLog(@"make child");
+                PFObject *child = [PFObject objectWithClassName:@"Child"];
+                [child setObject:_currentUser forKey:@"createdBy"];
+                child[@"name"] = @"栽培マン1号";
+                child[@"familyId"] = _currentUser[@"familyId"];
+                [child save];
+            }
             // まずはCacheからオフラインでも表示出来るものを先に表示
             [self getWeekDate];
             [self getCachedImage];
+            [self getParseData];
             _only_first_load = 0;
+        } else {
+            // 二発目以降はbackgroundで引かないとUIが固まる
+            [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if(!error) {
+                    _childArrayFoundFromParse = objects;
+                    // Parseにアクセスして最新の情報を取得
+                    NSLog(@"update picks");
+                    [self getWeekDate];
+                    [self getParseData];
+                }
+            }];
         }
-    
-        // Parseにアクセスして最新の情報を取得
-        [self getWeekDate];
-        [self getParseData];
     }
     [_indicator stopAnimating];
 }
@@ -339,7 +348,7 @@
     [formatter setDateFormat:@"yyyyMMdd"];
     NSDate *date = [NSDate date];
     //NSString *dateStr = [formatter stringFromDate:date];
-    // TopPage用に一週間の日付を取得しておく
+    // TopPage用に日付を取得しておく
     _weekDateArray = [[NSArray alloc] init];
     _weekDateArray = @[];
     NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -359,8 +368,6 @@
 {
     NSLog(@"setCachedImage");
     // オフラインでもトップは見れるようにキャッシュから画像取得
-    ImageCache *ic = [[ImageCache alloc]init];
-    
     // こども毎にキャッシュ画像格納
     int childIndex = 0;
     _childArray = [[NSMutableArray alloc] init];
@@ -377,7 +384,7 @@
         for (NSString *date in _weekDateArray) {
             [dateOfChildImageArray insertObject:date atIndex:weekIndex];
             imageCachePath = [NSString stringWithFormat:@"%@%@", c.objectId, date];
-            imageCacheData = [ic getCache:imageCachePath];
+            imageCacheData = [ImageCache getCache:imageCachePath];
             if(imageCacheData) {
                 [childImageArray insertObject:[UIImage imageWithData:imageCacheData] atIndex:weekIndex];
             } else {
@@ -451,26 +458,29 @@
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {
                                             //NSLog(@"much! %@ %@ %d", object[@"date"], date, wIndex);
                                             [[tmpDic objectForKey:@"bestFlag"] setObject:object[@"bestFlag"] atIndex:wIndex];
-                                            //NSLog(@"ここでParseに接続、表のUIが重くならないようならok。もしなるようならbackgroundに処理移す");
-                                            NSData *tmpImageData = [object[@"imageFile"] getData];
-                                            [[tmpDic objectForKey:@"images"] setObject:[UIImage imageWithData:tmpImageData] atIndex:wIndex];
-                                            
-                                            // bestshotはローカルキャッシュに保存しておく
-                                            ImageCache *ic = [[ImageCache alloc] init];
-                                            [ic setCache:[NSString stringWithFormat:@"%@%@", c.objectId, date] image:tmpImageData];
+                                            //NSLog(@"ここでParseに接続。全部backgroundにする");
+                                            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                                                if(!error){
+                                                    [[tmpDic objectForKey:@"images"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
+                                                    // bestshotはローカルキャッシュに保存しておく
+                                                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", c.objectId, date] image:data];
+                                                    
+                                                    // 画像update毎回やるから負荷たかいかな
+                                                    // TODO : contentviewのviewに直接アクセスして画像をはめ込むようにするべき
+                                                    [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
+                                                    //PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
+                                                    //NSArray *viewControllers = @[startingViewController];
+                                                    //[_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+                                                }
+                                            }];
                                         }
                                         wIndex++;
                                     }
-                                    [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
                                 }
                                 cIndex++;
                             }
                         }
                     }
-                    //NSLog(@"aaaaaaaaaaaaaaaaa %d", _currentPageIndex);
-                    PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
-                    NSArray *viewControllers = @[startingViewController];
-                    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
                 }
             }];
         }

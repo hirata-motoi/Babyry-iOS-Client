@@ -13,6 +13,11 @@
 @property (weak, nonatomic) IBOutlet UIImageView *uploadedImageView;
 - (IBAction)openPhotoLibrary:(UIButton *)sender;
 - (IBAction)uploadViewBackButton:(UIButton *)sender;
+- (IBAction)uploadViewCommentButton:(UIButton *)sender;
+
+@property (weak, nonatomic) IBOutlet UIButton *openPhotoLibraryLabel;
+@property (weak, nonatomic) IBOutlet UIButton *uploadViewBackLabel;
+@property (weak, nonatomic) IBOutlet UIButton *uploadViewCommentLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *uploadMonthLabel;
 @property (weak, nonatomic) IBOutlet UILabel *uploadDateLabel;

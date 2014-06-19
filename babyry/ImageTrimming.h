@@ -10,7 +10,7 @@
 
 @interface ImageTrimming : NSObject
 
-- (UIImage *) makeRectImage:(UIImage *)orgImage;
--(UIImage *) makeRectTopImage:(UIImage *)orgImage;
++ (UIImage *) makeRectImage:(UIImage *)orgImage;
++ (UIImage *) makeRectTopImage:(UIImage *)orgImage ratio:(float)ratio;
 
 @end
