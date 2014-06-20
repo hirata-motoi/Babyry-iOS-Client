@@ -33,6 +33,7 @@
     [self.view addSubview:_indicator];
     
     _only_first_load = 1;
+    _is_return_from_upload = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -91,7 +92,13 @@
                     // Parseにアクセスして最新の情報を取得
                     NSLog(@"update picks");
                     [self getWeekDate];
-                    [self getParseData];
+                    [self getCachedImage];
+                    // uploadから復帰する時はParseからとらない
+                    // parseの更新が遅延している可能性があるため
+                    if (_is_return_from_upload == 0) {
+                        [self getParseData];
+                        _is_return_from_upload = 0;
+                    }
                 }
             }];
         }
@@ -468,9 +475,9 @@
                                                     // 画像update毎回やるから負荷たかいかな
                                                     // TODO : contentviewのviewに直接アクセスして画像をはめ込むようにするべき
                                                     [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
-                                                    //PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
-                                                    //NSArray *viewControllers = @[startingViewController];
-                                                    //[_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+                                                    PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
+                                                    NSArray *viewControllers = @[startingViewController];
+                                                    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
                                                 }
                                             }];
                                         }

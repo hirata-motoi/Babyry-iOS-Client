@@ -9,6 +9,7 @@
 #import "UploadViewController.h"
 #import "PageContentViewController.h"
 #import "ImageCache.h"
+#import "ViewController.h"
 
 @interface UploadViewController ()
 
@@ -72,6 +73,10 @@
     
     // get pageIndex, imageIndex
     NSLog(@"received childObjectId:%@ month:%@ date:%@ image:%@", _childObjectId, _month, _date, _uploadedImageView.image);
+    
+    // uplaod画面から戻るときにはParseから取得はしない、そのためのフラグ
+    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
+    vc.is_return_from_upload = 1;
 }
 
 - (void)didReceiveMemoryWarning
@@ -157,6 +162,10 @@
         childImage[@"bestFlag"] = @"choosed";
         [childImage saveInBackground];
     }
+    
+    // Cache set
+    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
+    
     NSLog(@"saved");
 }
 

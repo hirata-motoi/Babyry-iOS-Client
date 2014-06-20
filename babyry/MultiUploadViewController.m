@@ -8,6 +8,8 @@
 
 #import "MultiUploadViewController.h"
 #import "ImageTrimming.h"
+#import "ViewController.h"
+#import "ImageCache.h"
 
 @interface MultiUploadViewController ()
 
@@ -59,6 +61,10 @@
         }
         index++;
     }
+    
+    // uplaod画面から戻るときにはParseから取得はしない、そのためのフラグ
+    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
+    vc.is_return_from_upload = 1;
 }
 
 - (void)didReceiveMemoryWarning
@@ -148,6 +154,9 @@
         }
         [_multiUploadedImages insertItemsAtIndexPaths:arrayWithIndexPaths];
     } completion:nil];
+    
+    // Cache set
+    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
 }
 
 -(void)createCollectionView
