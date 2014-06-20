@@ -152,7 +152,6 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="uploadViewBackButton:" destination="3ig-HE-CNr" eventType="touchUpInside" id="GEV-E8-oas"/>
                                     <action selector="uploadViewCommentButton:" destination="3ig-HE-CNr" eventType="touchUpInside" id="oGR-Lo-uNw"/>
                                 </connections>
                             </button>
@@ -210,10 +209,53 @@
                                 <nil key="highlightedColor"/>
                                 <color key="shadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </label>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.90000000000000002" contentMode="scaleToFill" id="f4R-7x-9C9">
+                                <rect key="frame" x="5" y="55" width="310" height="460"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="身長 100cm" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uox-5x-Ca9">
+                                        <rect key="frame" x="20" y="20" width="110" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="体重 20kg" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eFH-xf-hkr">
+                                        <rect key="frame" x="192" y="20" width="110" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" dataMode="prototypes" style="plain" separatorStyle="singleLineEtched" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Hyl-fv-huR">
+                                        <rect key="frame" x="8" y="49" width="294" height="363"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" red="1" green="0.39151289970000003" blue="0.22769848279999999" alpha="1" colorSpace="calibratedRGB"/>
+                                    </tableView>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="ufx-xj-ZMf">
+                                        <rect key="frame" x="9" y="418" width="237" height="33"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    </textView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="GM4-yg-lnW">
+                                        <rect key="frame" x="254" y="420" width="48" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <state key="normal" title="送信">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                     </view>
                     <connections>
+                        <outlet property="commentSendButton" destination="GM4-yg-lnW" id="2wb-9b-J0I"/>
+                        <outlet property="commentTableView" destination="Hyl-fv-huR" id="V6Y-5e-UIt"/>
+                        <outlet property="commentTextField" destination="ufx-xj-ZMf" id="ChO-bm-pke"/>
+                        <outlet property="commentView" destination="f4R-7x-9C9" id="W2K-yf-aV5"/>
                         <outlet property="openPhotoLibraryLabel" destination="cDj-gP-aIH" id="Xbn-fG-Maw"/>
                         <outlet property="uploadDateLabel" destination="U9y-un-VjL" id="hqj-4C-ZWd"/>
                         <outlet property="uploadMonthLabel" destination="vyA-XL-smD" id="S5D-QC-Zjq"/>
