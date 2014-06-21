@@ -10,7 +10,7 @@
 
 @implementation ImageCache
 
-- (void) setCache:name image:(NSData *) image
++ (void) setCache:name image:(NSData *) image
 {
     // Cache Dir
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -35,10 +35,10 @@
     if (!success) {
         NSLog(@"failed to save image. reason is %@ - %@", error, error.userInfo);
     }
-    NSLog(@"saved at %@", savedPath);
+    //NSLog(@"saved at %@", savedPath);
 }
 
-- (NSData *) getCache:date
++ (NSData *) getCache:date
 {
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirPath = [array objectAtIndex:0];

@@ -10,7 +10,7 @@
 
 @interface ImageCache : NSObject
 
-- (void) setCache:name image:(NSData *) image;
-- (NSData *) getCache:date;
++ (void) setCache:name image:(NSData *) image;
++ (NSData *) getCache:date;
 
 @end

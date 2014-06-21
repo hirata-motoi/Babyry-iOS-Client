@@ -9,14 +9,24 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 
-@interface UploadViewController : UIViewController<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface UploadViewController : UIViewController<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *uploadedImageView;
 - (IBAction)openPhotoLibrary:(UIButton *)sender;
 - (IBAction)uploadViewBackButton:(UIButton *)sender;
+- (IBAction)uploadViewCommentButton:(UIButton *)sender;
+
+@property (weak, nonatomic) IBOutlet UIButton *openPhotoLibraryLabel;
+@property (weak, nonatomic) IBOutlet UIButton *uploadViewBackLabel;
+@property (weak, nonatomic) IBOutlet UIButton *uploadViewCommentLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *uploadMonthLabel;
 @property (weak, nonatomic) IBOutlet UILabel *uploadDateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *uploadNameLabel;
+
+@property (weak, nonatomic) IBOutlet UIScrollView *commentView;
+@property (weak, nonatomic) IBOutlet UITableView *commentTableView;
+@property (weak, nonatomic) IBOutlet UITextView *commentTextField;
+@property (weak, nonatomic) IBOutlet UIButton *commentSendButton;
 
 @property NSString *childObjectId;
 @property NSString *month;
@@ -24,5 +34,11 @@
 @property UIImage *uploadedImage;
 @property NSString *bestFlag;
 @property NSString *name;
+
+@property NSMutableArray *cellHeightArray;
+
+@property BOOL keyboradObserving;
+
+@property CGFloat overlap;
 
 @end

@@ -15,7 +15,6 @@
 //@property (weak, nonatomic) IBOutlet UIBarButtonItem *logoutButton;
 @property (weak, nonatomic) IBOutlet UIButton *openEtcButton;
 
-
 - (IBAction)startWalkthrough:(id)sender;
 
 @property (strong, nonatomic) NSArray *weekDateArray;
@@ -27,6 +26,7 @@
 @property NSUInteger currentPageIndex;
 
 @property int only_first_load;
+@property int is_return_from_upload;
 
 //くるくる
 @property UIActivityIndicatorView *indicator;

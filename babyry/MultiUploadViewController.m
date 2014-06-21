@@ -7,6 +7,9 @@
 //
 
 #import "MultiUploadViewController.h"
+#import "ImageTrimming.h"
+#import "ViewController.h"
+#import "ImageCache.h"
 
 @interface MultiUploadViewController ()
 
@@ -58,6 +61,10 @@
         }
         index++;
     }
+    
+    // uplaod画面から戻るときにはParseから取得はしない、そのためのフラグ
+    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
+    vc.is_return_from_upload = 1;
 }
 
 - (void)didReceiveMemoryWarning
@@ -147,6 +154,9 @@
         }
         [_multiUploadedImages insertItemsAtIndexPaths:arrayWithIndexPaths];
     } completion:nil];
+    
+    // Cache set
+    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
 }
 
 -(void)createCollectionView
@@ -186,7 +196,7 @@
     // 画像を貼付け
     NSData *tmpImageData = [[_childImageArray objectAtIndex:indexPath.row][@"imageFile"] getData];
     cell.backgroundColor = [UIColor blueColor];
-    cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:tmpImageData]];
+    cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
     
     UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     doubleTapGestureRecognizer.numberOfTapsRequired = 2;
