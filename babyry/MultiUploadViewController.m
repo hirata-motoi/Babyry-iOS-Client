@@ -61,10 +61,6 @@
         }
         index++;
     }
-    
-    // uplaod画面から戻るときにはParseから取得はしない、そのためのフラグ
-    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-    vc.is_return_from_upload = 1;
 }
 
 - (void)didReceiveMemoryWarning

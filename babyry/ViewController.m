@@ -46,7 +46,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear");
+    NSLog(@"viewDidAppear _only_first_load : %d _is_return_from_upload : %d", _only_first_load, _is_return_from_upload);
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
@@ -58,7 +58,7 @@
         NSLog(@"%@", _currentUser);
         NSLog(@"familyId is %@", _currentUser[@"familyId"]);
         if (!_currentUser[@"familyId"]) {
-            NSLog(@"これはありえないけど何らかの処理を入れないと駄目");
+            NSLog(@"No FamilyId! これはありえないけど何らかの処理を入れないと駄目");
         }
         
         // Set if user has no child
@@ -93,7 +93,7 @@
                 if(!error) {
                     _childArrayFoundFromParse = objects;
                     // Parseにアクセスして最新の情報を取得
-                    NSLog(@"update picks");
+                    NSLog(@"update pictures");
                     [self getWeekDate];
                     [self getCachedImage];
                     // uploadから復帰する時はParseからとらない
@@ -443,7 +443,7 @@
 
 -(void) getParseData
 {
-    NSLog(@"setCachedImage");
+    NSLog(@"getParseData");
     // Parseから最新データととる
     
     // 一週間表示用のmonth配列を作成
@@ -522,32 +522,38 @@
 
 -(void) setPage
 {
-    //NSLog(@"reflectChildArray");
-    //NSLog(@"storyboardのPageViewControllerのidとひも付け");
-    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-    _pageViewController.dataSource = self;
+    if (_only_first_load == 1) {
+        //NSLog(@"reflectChildArray");
+        //NSLog(@"storyboardのPageViewControllerのidとひも付け");
+        _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
+        _pageViewController.dataSource = self;
     
-    //NSLog(@"0ページ目を表示");
-    PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
-    NSArray *viewControllers = @[startingViewController];
-    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+        //NSLog(@"0ページ目を表示");
+        PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
+        NSArray *viewControllers = @[startingViewController];
+        [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
-    // Change the size of page view controller
-    //NSLog(@"view controllerのサイズ変更");
-    _pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
+        // Change the size of page view controller
+        //NSLog(@"view controllerのサイズ変更");
+        _pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
     
-    //NSLog(@"view追加");
-    [self addChildViewController:_pageViewController];
-    [self.view addSubview:_pageViewController.view];
-    [_pageViewController didMoveToParentViewController:self];
+        //NSLog(@"view追加");
+        [self addChildViewController:_pageViewController];
+        [self.view addSubview:_pageViewController.view];
+        [_pageViewController didMoveToParentViewController:self];
     
-    // +ボタンがなぜかでないけどスルー
-    //NSLog(@"addChild ボタン追加");
-    //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
+        // +ボタンがなぜかでないけどスルー
+        //NSLog(@"addChild ボタン追加");
+        //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
     
-    // logoutButton
-    NSLog(@"etc open ボタン追加");
-    [self.openEtcButton addTarget:self action:@selector(openEtc) forControlEvents:UIControlEventTouchUpInside];
+        // logoutButton
+        NSLog(@"etc open ボタン追加");
+        [self.openEtcButton addTarget:self action:@selector(openEtc) forControlEvents:UIControlEventTouchUpInside];
+    } else {
+        PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
+        NSArray *viewControllers = @[startingViewController];
+        [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    }
 }
 
 @end

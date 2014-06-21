@@ -77,10 +77,6 @@
     // get pageIndex, imageIndex
     NSLog(@"received childObjectId:%@ month:%@ date:%@ image:%@", _childObjectId, _month, _date, _uploadedImageView.image);
     
-    // uplaod画面から戻るときにはParseから取得はしない、そのためのフラグ
-    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-    vc.is_return_from_upload = 1;
-    
     // UICollectionViewの土台を作成
     _commentTableView.delegate = self;
     _commentTableView.dataSource = self;
