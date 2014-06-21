@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 #import "ImageCache.h"
+#import "Sequence.h"
+#import "EtcViewController.h"
 
 @interface ViewController ()
 
@@ -149,6 +151,17 @@
 
 // Sent to the delegate when a PFUser is signed up.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
+    
+    // user_idを発行して保存
+    Sequence * seq = [[Sequence alloc]init];
+    NSString * userIdStr = [seq issueSequenceId:@"user_id"];
+    NSNumber * userIdNum = [NSNumber numberWithInt:[userIdStr integerValue]];
+    NSLog(@"sequence id succeeded  id:%@", userIdNum);
+    
+    
+    user[@"userId"] = userIdNum;
+    [user saveInBackground];
+    
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
 }
  
@@ -324,6 +337,12 @@
     [self viewDidAppear:true];
 }
 
+-(void)openEtc
+{
+    EtcViewController * etcViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"etcViewController"];
+    [self presentViewController:etcViewController animated:true completion:nil];
+}
+
 - (void) getWeekDate
 {
     NSLog(@"setWeekDate");
@@ -495,8 +514,8 @@
     //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
     
     // logoutButton
-    //NSLog(@"logout ボタン追加");
-    //(void)[self.logoutButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(logout)];
+    NSLog(@"etc open ボタン追加");
+    [self.openEtcButton addTarget:self action:@selector(openEtc) forControlEvents:UIControlEventTouchUpInside];
 }
 
 @end
