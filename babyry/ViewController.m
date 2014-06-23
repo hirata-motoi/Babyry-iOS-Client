@@ -430,6 +430,11 @@
         }
         [childSubDic setObject:c.objectId forKey:@"objectId"];
         [childSubDic setObject:c[@"name"] forKey:@"name"];
+        if (c[@"birthday"]) {
+            [childSubDic setObject:c[@"birthday"] forKey:@"birthday"];
+        } else {
+            [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
+        }
         [childSubDic setObject:bestFlagOfChildImageArray forKey:@"bestFlag"];
         [childSubDic setObject:dateOfChildImageArray forKey:@"date"];
         [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
@@ -480,6 +485,7 @@
                             //                    |- month (Array)
                             //                    |- date (Array)
                             //                    |- child.objectId (String)
+                            //                    |- birthday (Date)
                             //NSLog(@"%@ %@ %@", object[@"date"], object[@"bestFlag"], object.objectId);
                             int cIndex = 0;
                             NSMutableDictionary *tmpDic = [[NSMutableDictionary alloc] init];

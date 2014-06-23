@@ -12,6 +12,7 @@
 #import "MultiUploadViewController.h"
 #import "AlbumViewController.h"
 #import "ImageTrimming.h"
+#import "SettingViewController.h"
 
 @interface PageContentViewController ()
 
@@ -190,9 +191,26 @@
         albumLabel.userInteractionEnabled = YES;
         [cell addSubview:albumLabel];
         albumLabel.tag = 1111111;
-        UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-        singleTapGestureRecognizer.numberOfTapsRequired = 1;
-        [albumLabel addGestureRecognizer:singleTapGestureRecognizer];
+        UITapGestureRecognizer *singleTapGestureRecognizer1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+        singleTapGestureRecognizer1.numberOfTapsRequired = 1;
+        [albumLabel addGestureRecognizer:singleTapGestureRecognizer1];
+        
+        UILabel *settingLabel = [[UILabel alloc] init];
+        settingLabel.text = @"setting";
+        settingLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:20];
+        settingLabel.textColor = [UIColor blackColor];
+        settingLabel.textAlignment = NSTextAlignmentCenter;
+        settingLabel.backgroundColor = [UIColor whiteColor];
+        settingLabel.alpha = 0.5;
+        settingLabel.frame = CGRectMake(cell.frame.size.width - 65, cell.frame.size.height -65 -65, 60, 60);
+        settingLabel.layer.cornerRadius = 30;
+        [settingLabel setClipsToBounds:YES];
+        settingLabel.userInteractionEnabled = YES;
+        [cell addSubview:settingLabel];
+        settingLabel.tag = 2222222;
+        UITapGestureRecognizer *singleTapGestureRecognizer2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+        singleTapGestureRecognizer2.numberOfTapsRequired = 1;
+        [settingLabel addGestureRecognizer:singleTapGestureRecognizer2];
     }
     
     cell.tag = indexPath.row + 1;
@@ -273,6 +291,13 @@
         albumViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][0];
         albumViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][0];
         [self presentViewController:albumViewController animated:YES completion:NULL];
+    } else if (tagNumber == 2222222) {
+        NSLog(@"open setting view");
+        SettingViewController *settingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingViewController"];
+        settingViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+        settingViewController.childName = [_childArray[_pageIndex] objectForKey:@"name"];
+        settingViewController.childBirthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
+        [self presentViewController:settingViewController animated:YES completion:NULL];
     }
 }
 
