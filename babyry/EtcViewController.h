@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 
 @interface EtcViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UIButton *issueId;
 @property (weak, nonatomic) IBOutlet UIButton *closeEtcModalButton;
 @property (weak, nonatomic) IBOutlet UIButton *logoutButton;
 @property (weak, nonatomic) IBOutlet UIButton *familyApplyOpenButton;

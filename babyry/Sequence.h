@@ -10,6 +10,6 @@
 
 @interface Sequence : NSObject
 
--(NSString *)issueSequenceId:(NSString *)type;
+-(NSNumber *)issueSequenceId:(NSString *)type;
 
 @end

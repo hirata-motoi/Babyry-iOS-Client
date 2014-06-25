@@ -386,6 +386,13 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="dve-8U-5fG">
+                                <rect key="frame" x="127" y="249" width="67" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="sequence">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -393,6 +400,7 @@
                     <connections>
                         <outlet property="closeEtcModalButton" destination="8p1-Vc-O2t" id="6Zx-ao-Sav"/>
                         <outlet property="familyApplyOpenButton" destination="TcV-0Z-z54" id="0mp-fU-zDN"/>
+                        <outlet property="issueId" destination="dve-8U-5fG" id="fmk-Wk-c7Z"/>
                         <outlet property="logoutButton" destination="M3u-xg-IK1" id="xkQ-b2-SC5"/>
                     </connections>
                 </viewController>

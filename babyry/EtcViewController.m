@@ -32,6 +32,7 @@
     [self.closeEtcModalButton addTarget:self action:@selector(closeEtcModal) forControlEvents:UIControlEventTouchUpInside];
     [self.logoutButton addTarget:self action:@selector(logout) forControlEvents:UIControlEventTouchUpInside];
     [self.familyApplyOpenButton addTarget:self action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+    [self.issueId addTarget:self action:@selector(issue) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)didReceiveMemoryWarning
@@ -55,6 +56,20 @@
 {
     FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
     [self presentViewController:familyApplyViewController animated:true completion:nil];
+}
+
+- (void)issue
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"SeqUserId"];
+    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (!object) {
+            NSLog(@"The getFirstObject request failed.");
+        } else {
+            NSLog(@"Successfully retrieved the object. %@", object);
+            [object incrementKey:@"id"];
+            [object saveInBackground];
+        }
+    }];
 }
 
 @end

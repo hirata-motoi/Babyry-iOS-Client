@@ -10,11 +10,12 @@
 
 @implementation Sequence
 
--(NSString *)issueSequenceId:(NSString *)type {
+-(NSNumber *)issueSequenceId:(NSString *)type {
     NSLog(@"issueSequenceId start");
     // リクエストを送信
     // 送信したいURLを作成し、Requestを作成します。
-    NSURL *url = [NSURL URLWithString:@"http://babyryserver5002/sequence/issue"];
+    //NSURL *url = [NSURL URLWithString:@"https://dev5002.babyry.jp/sequence/issue"];
+    NSURL *url = [NSURL URLWithString:@"http://localhost:5004/sequence/issue"];
     
     NSMutableDictionary * params = [[NSMutableDictionary alloc]init];
     [params setObject:type forKey:@"type"];
@@ -24,6 +25,7 @@
     NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:url
                                                             cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                         timeoutInterval:20];
+    NSLog(@"create http request");
     // POST の HTTP Request を作成
     [req setHTTPMethod:@"POST"];
     [req setValue:@"application/x-www-form-urlencoded"                 forHTTPHeaderField:@"Content-Type"];
@@ -36,14 +38,16 @@
     NSError *err;
     NSError *error;
     
+    NSLog(@"request start");
     //HTTPリクエスト送信
     NSData *response = [NSURLConnection sendSynchronousRequest:req
                                              returningResponse:&resp error:&err];
+    NSLog(@"response %@", response
+          );
     NSMutableDictionary *result = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
     
     NSLog(@"sequence id : %@", result);
-    
-    return [result objectForKey:@"id"];
+    return [NSNumber numberWithInt:[[result objectForKey:@"id"] intValue]];
 }
 
 - (NSString *)buildParameters:(NSMutableDictionary *)params {

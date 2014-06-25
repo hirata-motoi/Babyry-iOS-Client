@@ -109,30 +109,65 @@
 - (void)apply
 {
     NSLog(@"apply start");
-    NSString *familyId = searchedUserObject[@"familyId"];
-    NSLog(@"%@", searchedUserObject[@"familyId"]);
-    if (familyId != NULL) {
-        NSLog(@"not null");
-        Sequence *sequence = [[Sequence alloc]init];
-        NSString *familyIdString = [sequence issueSequenceId:@"family_id"];
         
-        NSLog(@"familyId : %@", familyIdString);
-        
-        NSNumber *familyIdNumber = [NSNumber numberWithInt:[familyIdString intValue]];
-        searchedUserObject[@"familyId"] = familyIdNumber;
-        
-        // ほんとは1transaction内で完結させたい
-        
-        // あかん！！userテーブルは自分のレコードしか更新できない
-        // なので、別途family_mapみたいなテーブルを作る必要がある
-        [searchedUserObject saveInBackground];
-        PFUser *currentUser = [PFUser currentUser];
-        currentUser[@"familyId"] = familyIdNumber;
-        [currentUser saveInBackground];
-        
-    } else {
-        NSLog(@"null");
-    }
+    // 相手が既にfamilyになっているかを確認
+    PFQuery *query = [PFQuery queryWithClassName:@"FamilyMap"];
+    [query whereKey:@"userId" equalTo:searchedUserObject[@"userId"]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error){
+            NSLog(@"Successfully searched FamilyMap %@", objects);
+            if (objects.count < 1) {
+                // familyになっていないので申請を送ってOK
+                [self sendApply];
+            } else {
+                NSLog(@"found");
+                // 既にfamilyになっているので申請をおくっちゃダメ
+                [self showErrorMessage:@"このユーザに申請を送ることはできません"];
+            }
+        } else {
+            // 何らかのエラーが出たので、「エラーですぞ！」とユーザに教えてあげる
+            NSLog(@"error occured %@", error);
+            [self showErrorMessage:@"エラーが発生しました"];
+        }
+    }];
+}
+
+- (void)sendApply
+{
+    Sequence *sequence = [[Sequence alloc]init];
+    NSNumber *familyId = [sequence issueSequenceId:@"family_id"];
+    
+    NSLog(@"familyId : %@", familyId);
+    
+    searchedUserObject[@"familyId"] = familyId;
+    
+    // 自分用のレコードと相手用のレコード2つ作る
+    PFObject *selfObject = [PFObject objectWithClassName:@"FamilyMap"];
+    PFObject *partnerObject = [PFObject objectWithClassName:@"FamilyMap"];
+    
+    selfObject[@"userId"] = [PFUser currentUser][@"userId"];
+    selfObject[@"partnerId"] = searchedUserObject[@"userId"];
+    selfObject[@"familyId"] = familyId;
+    selfObject[@"admitted"] = @"true";
+    
+    partnerObject[@"userId"] = searchedUserObject[@"userId"];
+    partnerObject[@"partnerId"] = [PFUser currentUser][@"userId"];
+    partnerObject[@"familyId"] = familyId;
+    partnerObject[@"admitted"] = @"false"; // 相手のレコードは未承認状態
+    
+    // 自分の情報保存が終わったら相手のも保存
+    [selfObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (! error) {
+            [partnerObject saveInBackground];
+        } else {
+            // 招待をおくるのに失敗した！！
+        }
+     }];
+}
+
+- (void)showErrorMessage:(NSString*)message
+{
+    // 受け取ったmessageを表示する
 }
 
 @end

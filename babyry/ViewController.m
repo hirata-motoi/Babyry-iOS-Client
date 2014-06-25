@@ -180,8 +180,7 @@
     
     // user_idを発行して保存
     Sequence * seq = [[Sequence alloc]init];
-    NSString * userIdStr = [seq issueSequenceId:@"user_id"];
-    NSNumber * userIdNum = [NSNumber numberWithInt:[userIdStr integerValue]];
+    NSNumber * userIdNum = [seq issueSequenceId:@"user_id"];
     NSLog(@"sequence id succeeded  id:%@", userIdNum);
     
     
