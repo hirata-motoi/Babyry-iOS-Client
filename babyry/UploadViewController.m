@@ -77,10 +77,6 @@
     // get pageIndex, imageIndex
     NSLog(@"received childObjectId:%@ month:%@ date:%@ image:%@", _childObjectId, _month, _date, _uploadedImageView.image);
     
-    // uplaod画面から戻るときにはParseから取得はしない、そのためのフラグ
-    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-    vc.is_return_from_upload = 1;
-    
     // UICollectionViewの土台を作成
     _commentTableView.delegate = self;
     _commentTableView.dataSource = self;
@@ -91,6 +87,14 @@
     _commentTextField.delegate = self;
     _commentTextField.layer.borderColor = [[UIColor blackColor] CGColor];
     _commentTextField.layer.borderWidth = 1;
+    
+    _defaultCommentViewRect = _commentView.frame;
+    
+    [_commentSendButton addTarget:self action:@selector(sendComment:) forControlEvents:UIControlEventTouchDown];
+    
+    // getcomment
+    //_commentArray = [[NSArray alloc] init];
+    [self getCommentFromParse];
 }
 
 - (void)didReceiveMemoryWarning
@@ -233,8 +237,8 @@
 // section目のセクションにいくつ行があるかを返す
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    //NSLog(@"numberOfRowsInSection");
-    return 10;
+    //NSLog(@"numberOfRowsInSection %d", [_commentArray count]);
+    return [_commentArray count];
 }
 
 // indexPathの位置にあるセルを返す
@@ -246,20 +250,22 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
     }
     cell.textLabel.numberOfLines = 0;
-    cell.textLabel.text = [NSString stringWithFormat:@"あああああああああああ\nああああああああああああああああああああああああああああああああ\nああああああああああああああああああああ\nああああああああああああああああああああああああああああああああ%d", indexPath.row]; // 何番目のセルかを表示させました
+    cell.textLabel.text = [NSString stringWithFormat:@"%@のコメント\n%@", [_commentArray objectAtIndex:indexPath.row][@"commentBy"], [_commentArray objectAtIndex:indexPath.row][@"comment"]];
 
     return cell;
 }
 
+// セルの高さをtextの高さに合わせる
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //NSLog(@"cellForRowAtIndexPath");
+    //NSLog(@"heightForRowAtIndexPath");
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
     }
     cell.textLabel.numberOfLines = 0;
-    cell.textLabel.text = [NSString stringWithFormat:@"あああああああああああ\nああああああああああああああああああああああああああああああああ\nああああああああああああああああああああ\nああああああああああああああああああああああああああああああああ%d", indexPath.row]; // 何番目のセルかを表示させました
+    // 調整のために改行いくつか入れる
+    cell.textLabel.text = [NSString stringWithFormat:@"\n%@\n\n", [_commentArray objectAtIndex:indexPath.row][@"comment"]];
 
     // get cell height
     CGSize bounds = CGSizeMake(tableView.frame.size.width, tableView.frame.size.height);
@@ -271,7 +277,7 @@
 
 - (void)keyboardWillShow:(NSNotification*)notification
 {
-    NSLog(@"keyboardWillShow");
+    //NSLog(@"keyboardWillShow");
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -282,8 +288,9 @@
     keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     keyboardFrame = [_commentView.superview convertRect:keyboardFrame fromView:nil];
     textViewFrame = _commentView.frame;
-    _overlap = MAX(0.0f, CGRectGetMaxY(textViewFrame) - CGRectGetMinY(keyboardFrame));
-    NSLog(@"overlap %f", _overlap);
+    float overlap;
+    overlap = MAX(0.0f, CGRectGetMaxY(textViewFrame) - CGRectGetMinY(keyboardFrame));
+    //NSLog(@"overlap %f", overlap);
     
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -292,15 +299,15 @@
     animationCurve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] integerValue];
     animations = ^(void) {
         CGRect viewFrame = _commentView.frame;
-        viewFrame.size.height -= _overlap;
+        viewFrame.size.height -= overlap;
         _commentView.frame = viewFrame;
     
         CGRect fieldFrame = _commentTextField.frame;
-        fieldFrame.origin.y -= _overlap;
+        fieldFrame.origin.y -= overlap;
         _commentTextField.frame = fieldFrame;
 
         CGRect buttonFrame = _commentSendButton.frame;
-        buttonFrame.origin.y -= _overlap;
+        buttonFrame.origin.y -= overlap;
         _commentSendButton.frame = buttonFrame;
     };
     [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:animations completion:nil];
@@ -309,10 +316,16 @@
 
 - (void)keybaordWillHide:(NSNotification*)notification
 {
-    NSLog(@"keyboardWillHide");
+    //NSLog(@"keyboardWillHide");
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
+
+    CGRect textViewFrame;
+    textViewFrame = _commentView.frame;
+    float overlap;
+    overlap = MAX(0.0f, CGRectGetMaxY(_defaultCommentViewRect) - CGRectGetMaxY(textViewFrame));
+    NSLog(@"overlap %f", overlap);
 
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -321,15 +334,15 @@
     animationCurve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] integerValue];
     animations = ^(void) {
         CGRect viewFrame = _commentView.frame;
-        viewFrame.size.height += _overlap;
+        viewFrame.size.height += overlap;
         _commentView.frame = viewFrame;
     
         CGRect fieldFrame = _commentTextField.frame;
-        fieldFrame.origin.y += _overlap;
+        fieldFrame.origin.y += overlap;
         _commentTextField.frame = fieldFrame;
 
         CGRect buttonFrame = _commentSendButton.frame;
-        buttonFrame.origin.y += _overlap;
+        buttonFrame.origin.y += overlap;
         _commentSendButton.frame = buttonFrame;
     };
     [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:animations completion:nil];
@@ -340,16 +353,61 @@
     [self.view endEditing:YES];
 }
 
-/*
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
+-(void)sendComment:(id)selector
 {
-    // キーボードを隠す
-    [self.view endEditing:YES];
- 
-    return YES;
-}
-*/
+    NSLog(@"Send Comment");
+    NSLog(@"%@", _commentTextField.text);
+    
+    // Insert To Parse
+    PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"DailyComment%@", _month]];
+    dailyComment[@"comment"] = _commentTextField.text;
+    // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
+    dailyComment[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+    dailyComment[@"childId"] = _childObjectId;
+    dailyComment[@"commentBy"] = [PFUser currentUser].objectId;
+    [dailyComment saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
+        if(success) {
+            [self getCommentFromParse];
+/*            // TODP : Parseにとりにいかなくてもクライアント側で表示したい（なんかうまく行ってない）
+            [_commentTableView beginUpdates];
+            NSLog(@"beginUpdated");
+            //NSMutableArray *items = [[NSMutableArray alloc] init];
+            //[items addObject:@"ADD CEL"];
+            NSIndexPath * path = [NSIndexPath indexPathForRow:[_commentArray count] inSection:0];
+            NSLog(@"path set");
+            _commentArray = [_commentArray arrayByAddingObject:@"ADD CELL"];
+            NSLog(@"commentArray set");
+            [_commentTableView insertRowsAtIndexPaths:[NSArray arrayWithObject:path] withRowAnimation:UITableViewRowAnimationBottom];
+            NSLog(@"comment table view set");
 
-- (IBAction)commentSendButton:(id)sender {
+
+            [_commentTableView endUpdates];
+            NSLog(@"end update");
+            [_commentTableView reloadData];
+            NSLog(@"reload data");
+            //NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
+            //[_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];*/
+        }
+    }];
+    _commentTextField.text = @"";
+    [self.view endEditing:YES];
 }
+
+-(void)getCommentFromParse
+{
+    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"DailyComment%@", _month]];
+    [commentQuery whereKey:@"childId" equalTo:_childObjectId];
+    [commentQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [commentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if(!error) {
+            _commentArray = objects;
+            if ([_commentArray count] > 0) {
+                [_commentTableView reloadData];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
+                [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            }
+        }
+    }];
+}
+
 @end

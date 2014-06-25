@@ -39,6 +39,8 @@
 
 @property BOOL keyboradObserving;
 
-@property CGFloat overlap;
+@property CGRect defaultCommentViewRect;
+
+@property NSArray *commentArray;
 
 @end
