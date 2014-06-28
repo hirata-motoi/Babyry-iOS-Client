@@ -51,7 +51,7 @@
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
-    [childImageQuery orderByAscending:@"createdAt"];
+    //[childImageQuery orderByAscending:@"createdAt"];
     _childImageArray = [childImageQuery findObjects];
     int index = 0;
     _bestImageIndexAtFirst = 0;
@@ -150,9 +150,6 @@
         }
         [_multiUploadedImages insertItemsAtIndexPaths:arrayWithIndexPaths];
     } completion:nil];
-    
-    // Cache set
-    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
 }
 
 -(void)createCollectionView
@@ -241,6 +238,10 @@
             }
         }
     }];
+    
+    // set image cache
+    NSData *tmpImageData = [[_childImageArray objectAtIndex:[[sender view] tag]][@"imageFile"] getData];
+    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:tmpImageData];
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
