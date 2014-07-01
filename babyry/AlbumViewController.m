@@ -139,6 +139,9 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    // get Parse data
+    [self getImageFromParse];
 }
 
 /*
@@ -192,7 +195,6 @@
     // Cacheからはりつけ
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@%@%02d", _childObjectId, _yyyy, _mm, [_dd intValue] - indexPath.row];
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
-    //ImageTrimming *it = [[ImageTrimming alloc] init];
     if(imageCacheData) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
     } else {
@@ -226,10 +228,10 @@
 {
     NSLog(@"single tap");
     NSLog(@"single tap %d", [[sender view] tag]);
-    [self openMonthPageView];
+    [self openMonthPageView:[[sender view] tag]];
 }
 
--(void) openMonthPageView
+-(void) openMonthPageView:(int)index
 {
     NSLog(@"openMonthPageView");
     //_pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
@@ -237,7 +239,7 @@
     _pageViewController.dataSource = self;
     
     //NSLog(@"0ページ目を表示");
-    UploadViewController *startingViewController = [self viewControllerAtIndex:0];
+    UploadViewController *startingViewController = [self viewControllerAtIndex:index];
     NSArray *viewControllers = @[startingViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
@@ -280,11 +282,15 @@
     [_albumCollectionView setContentOffset:offset animated:NO];
     [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
     [_albumCollectionView reloadData];
+    
+    // get cache in background
+    [self getImageFromParse];
 }
 
 -(void)showNextMonth:(id)sender
 {
     NSLog(@"show next month");
+    
     // cant get future month
     NSLog(@"compare month %@ %@", _month, [NSString stringWithFormat:@"%@%@", _yyyy, _mm]);
     if ([_month isEqual:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
@@ -300,9 +306,9 @@
     
     // 今月の場合にはmaxの代わりに今日の日付入れる
     if ([_month isEqualToString:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
-        _dd = [self getMaxDate:_mm yyyy:_yyyy];
-    } else {
         _dd = [_date substringWithRange:NSMakeRange(6, 2)];
+    } else {
+        _dd = [self getMaxDate:_mm yyyy:_yyyy];
     }
     
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
@@ -312,7 +318,9 @@
     [_albumCollectionView setContentOffset:offset animated:NO];
     [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
     [_albumCollectionView reloadData];
-
+    
+    // get cache in background
+    [self getImageFromParse];
 }
 
 -(NSString *)getMaxDate:mm yyyy:(NSString *)yyyy
@@ -399,7 +407,16 @@
     NSLog(@"open uploadviewcontroller date:%d", targetDate);
     uploadViewController.date = [NSString stringWithFormat:@"%0d", targetDate];
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", _yyyy, _mm];
-    uploadViewController.uploadedImage = [UIImage imageNamed:@"NoImage"];
+    
+    // Cacheからはりつけ
+    NSString *imageCachePath = [NSString stringWithFormat:@"%@%08d", _childObjectId, targetDate];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
+    if(imageCacheData) {
+        uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];
+    } else {
+        uploadViewController.uploadedImage = [UIImage imageNamed:@"NoImage"];
+    }
+    
     uploadViewController.bestFlag = @"choosed";
     uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
@@ -418,5 +435,32 @@
     return 0;
 }
 */
+
+-(void) getImageFromParse
+{
+    PFQuery *childMonthImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@%@", _yyyy, _mm]];
+    childMonthImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+    [childMonthImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+    // choosed(bestShot)を探す
+    [childMonthImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
+    [childMonthImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if(!error) {
+            int __block index = 0;
+            for (PFObject *object in objects) {
+                NSString *date = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
+                NSString *cacheImageName = [NSString stringWithFormat:@"%@%@", _childObjectId, date];
+                [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                    if(!error) {
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@", cacheImageName] image:data];
+                        index++;
+                        if (index == [objects count]) {
+                            [_albumCollectionView reloadData];
+                        }
+                    }
+                }];
+            }
+        }
+    }];
+}
 
 @end
