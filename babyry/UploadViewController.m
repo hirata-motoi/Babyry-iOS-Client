@@ -167,7 +167,12 @@
 }
 
 - (IBAction)uploadViewBackButton:(UIButton *)sender {
-    [self dismissViewControllerAnimated:YES completion:NULL];
+
+    if(self.parentViewController) {
+        [self.view removeFromSuperview];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:NULL];
+    }
 }
 
 - (IBAction)uploadViewCommentButton:(UIButton *)sender {

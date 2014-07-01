@@ -10,7 +10,7 @@
 #import <Parse/Parse.h>
 #import "ImageCache.h"
 
-@interface AlbumViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
+@interface AlbumViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIPageViewControllerDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *albumCollectionView;
 @property (weak, nonatomic) IBOutlet UILabel *albumViewNameLabel;
 
@@ -33,5 +33,7 @@
 @property UILabel *albumViewNextMonthLabel;
 @property UILabel *albumViewBackLabel;
 @property UILabel *albumViewTagLabel;
+
+@property (strong, nonatomic) UIPageViewController *pageViewController;
 
 @end

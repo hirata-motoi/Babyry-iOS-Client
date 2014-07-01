@@ -13,7 +13,7 @@
 @interface ViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UIPageViewControllerDataSource>
 @property (weak, nonatomic) IBOutlet UIButton *openEtcButton;
 
-- (IBAction)startWalkthrough:(id)sender;
+//- (IBAction)startWalkthrough:(id)sender;
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;

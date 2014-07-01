@@ -8,6 +8,7 @@
 
 #import "AlbumViewController.h"
 #import "ImageTrimming.h"
+#import "UploadViewController.h"
 
 @interface AlbumViewController ()
 
@@ -33,6 +34,7 @@
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
     
     // set album yyyy mm dd
+    NSLog(@"set album yyyy mm dd");
     _yyyy = [_month substringToIndex:4];
     _mm = [_month substringWithRange:NSMakeRange(4, 2)];
     _dd = [_date substringWithRange:NSMakeRange(6, 2)];
@@ -198,20 +200,50 @@
     cellLabel.textColor = [UIColor whiteColor];
     cellLabel.shadowColor = [UIColor blackColor];
     cellLabel.frame = CGRectMake(2, 0, _cellWidth, _cellHeight/3);
+    cell.tag = indexPath.row;
     [cell addSubview:cellLabel];
     
 /*
     UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     doubleTapGestureRecognizer.numberOfTapsRequired = 2;
     [cell addGestureRecognizer:doubleTapGestureRecognizer];
-
+*/
     UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     singleTapGestureRecognizer.numberOfTapsRequired = 1;
     // ダブルタップに失敗した時だけシングルタップとする
-    [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
+    //[singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
     [cell addGestureRecognizer:singleTapGestureRecognizer];
-*/
+ 
     return cell;
+}
+
+-(void)handleSingleTap:(id) sender
+{
+    NSLog(@"single tap");
+    NSLog(@"single tap %d", [[sender view] tag]);
+    [self openMonthPageView];
+}
+
+-(void) openMonthPageView
+{
+    NSLog(@"openMonthPageView");
+    //_pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
+    _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+    _pageViewController.dataSource = self;
+    
+    //NSLog(@"0ページ目を表示");
+    UploadViewController *startingViewController = [self viewControllerAtIndex:0];
+    NSArray *viewControllers = @[startingViewController];
+    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    
+    // Change the size of page view controller
+    //NSLog(@"view controllerのサイズ変更");
+    //_pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
+    
+    //NSLog(@"view追加");
+    [self addChildViewController:_pageViewController];
+    [self.view addSubview:_pageViewController.view];
+    [_pageViewController didMoveToParentViewController:self];
 }
 
 -(void)albumViewBack:(id)sender
@@ -260,7 +292,13 @@
         _mm = @"01";
         _yyyy = [NSString stringWithFormat:@"%02d", [_yyyy intValue] + 1 ];
     }
-    _dd = [self getMaxDate:_mm yyyy:_yyyy];
+    
+    // 今月の場合にはmaxの代わりに今日の日付入れる
+    if ([_month isEqualToString:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
+        _dd = [self getMaxDate:_mm yyyy:_yyyy];
+    } else {
+        _dd = [_date substringWithRange:NSMakeRange(6, 2)];
+    }
     
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
     CGPoint offset;
@@ -278,6 +316,7 @@
     int year = [yyyy intValue];
     //今月の場合
     if ([_month isEqual:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
+        NSLog(@"getMaxDate return this month");
         return [_date substringWithRange:NSMakeRange(6, 2)];
     }
     //閏年
@@ -297,5 +336,91 @@
         return @"30";
     }
 }
+
+
+// 以下、pageviewcontroller用のメソッド
+// provides the view controller after the current view controller. In other words, we tell the app what to display for the next screen.
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
+{
+    // _dateは今月のmaxなdate
+    // dateはuploadviewに表示されているdate
+    // 差分 index = _date - date
+    int date = [((UploadViewController *) viewController).date intValue];
+    NSLog(@"viewControllerBeforeViewController : %d", date);
+    NSUInteger index = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - date;
+    
+    if ((index == 0) || (index == NSNotFound)) {
+        return nil;
+    }
+    
+    index--;
+    NSLog(@"index-- :%d", index);
+    return [self viewControllerAtIndex:index];
+}
+
+// provides the view controller before the current view controller. In other words, we tell the app what to display when user switches back to the previous screen.
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
+{
+    int date = [((UploadViewController *) viewController).date intValue];
+    NSLog(@"viewControllerAfterViewController : %d", date);
+    NSUInteger index = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - date;
+    
+    if (index >= [_dd intValue] - 1 || index == NSNotFound) {
+        return nil;
+    }
+    
+    index++;
+    NSLog(@"index++ :%d", index);
+    return [self viewControllerAtIndex:index];
+}
+
+- (UploadViewController *)viewControllerAtIndex:(NSUInteger)index
+{
+    // index = _date - date なので
+    // date = _date - indexで変更する
+    NSLog(@"index:%dのviewController", index);
+    // 設定されたページが0か、indexがpageTitlesよりも多かったらnil返す
+    //if (([_childArray count] == 0) || (index >= [_childArray count])) {
+        //NSLog(@"設定されたページが0か、indexがpageTitlesよりも多かったらnil返す");
+    //    return nil;
+    //}
+    
+    // 新しいpageContentViewController返す
+    // StoryBoardとひも付け
+    //NSLog(@"StoryBoardとひも付け in viewControllerAtIndex");
+    //UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
+
+    //uploadViewController.pageIndex = index;
+    //uploadViewController.childArray = _childArray;
+    
+
+    UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
+    uploadViewController.childObjectId = _childObjectId;
+    uploadViewController.name = _name;
+    NSLog(@"calc targetDate index:%d _date:%@", index, _date);
+    int targetDate = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - index;
+    
+    NSLog(@"open uploadviewcontroller date:%d", targetDate);
+    uploadViewController.date = [NSString stringWithFormat:@"%0d", targetDate];
+    uploadViewController.month = [NSString stringWithFormat:@"%@%@", _yyyy, _mm];
+    uploadViewController.uploadedImage = [UIImage imageNamed:@"NoImage"];
+    uploadViewController.bestFlag = @"choosed";
+    uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    
+    return uploadViewController;
+}
+
+// 全体で何ページあるか返す Delegate Method コメント外すとPageControlがあらわれる
+/*
+- (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
+{
+    return [self.pageTitles count];
+}
+
+- (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
+{
+    return 0;
+}
+*/
 
 @end

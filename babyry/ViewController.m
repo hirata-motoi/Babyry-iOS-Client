@@ -263,16 +263,20 @@
 }
 */
 
+/*
 - (IBAction)logoutButton:(id)sender {
     [PFUser logOut];
     [self viewDidAppear:true];
 }
+*/
 
+/*
 - (IBAction)startWalkthrough:(id)sender {
     PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
     NSArray *viewControllers = @[startingViewController];
     [self.pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionReverse animated:NO completion:nil];
 }
+*/
 
 // LoginViewを開く、各カスタムパラメータも設定
 - (void)openLoginView
