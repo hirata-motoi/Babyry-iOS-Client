@@ -168,8 +168,11 @@
 
 - (IBAction)uploadViewBackButton:(UIButton *)sender {
 
+    // album viewから戻るときはaddSubviewしているから自分と親(pageview)をけす
+    // topから個別画面にいったときに戻るなら、dismissviewcontroler実行
     if(self.parentViewController) {
         [self.view removeFromSuperview];
+        [self.parentViewController.view removeFromSuperview];
     } else {
         [self dismissViewControllerAnimated:YES completion:NULL];
     }

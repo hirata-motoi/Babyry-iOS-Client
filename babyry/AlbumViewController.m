@@ -136,6 +136,11 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+}
+
 /*
 #pragma mark - Navigation
 
@@ -385,15 +390,6 @@
     //    return nil;
     //}
     
-    // 新しいpageContentViewController返す
-    // StoryBoardとひも付け
-    //NSLog(@"StoryBoardとひも付け in viewControllerAtIndex");
-    //UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
-
-    //uploadViewController.pageIndex = index;
-    //uploadViewController.childArray = _childArray;
-    
-
     UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
     uploadViewController.childObjectId = _childObjectId;
     uploadViewController.name = _name;
