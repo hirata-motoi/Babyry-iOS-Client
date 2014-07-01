@@ -85,6 +85,15 @@
 }
 
 - (IBAction)multiUploadButton:(id)sender {
+    NSLog(@"multiUploadButton");
+    
+    /*
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    [library addAssetsGroupAlbumWithName:@"ALL" resultBlock:^(ALAssetsGroup *group) {
+    
+    } failureBlock: nil];
+    */
+     
     // インタフェース使用可能なら
 	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
 	{
