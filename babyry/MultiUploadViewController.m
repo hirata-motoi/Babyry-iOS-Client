@@ -30,6 +30,27 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    // Get Album list
+    _albumListArray = [[NSMutableArray alloc] init];
+    _albumImageDic = [[NSMutableDictionary alloc] init];
+    NSMutableArray *albumImageArray = [[NSMutableArray alloc] init];
+    //NSMutableArray *assetsArray = [[NSMutableArray alloc] init];
+    _library = [[ALAssetsLibrary alloc] init];
+    [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+        if (group) {
+            [_albumListArray addObject:group];
+            ALAssetsGroupEnumerationResultsBlock assetsEnumerationBlock = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                if (result) {
+                    [albumImageArray addObject:result];
+                }
+            };
+            [group enumerateAssetsUsingBlock:assetsEnumerationBlock];
+            [_albumImageDic setObject:albumImageArray forKey:[group valueForProperty:ALAssetsGroupPropertyName]];
+        }
+    } failureBlock:nil];
+    
+    // Draw collectionView
     [self createCollectionView];
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
@@ -87,12 +108,17 @@
 - (IBAction)multiUploadButton:(id)sender {
     NSLog(@"multiUploadButton");
     
-    /*
-    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-    [library addAssetsGroupAlbumWithName:@"ALL" resultBlock:^(ALAssetsGroup *group) {
+    UITableView *albumTableView = [[UITableView alloc] init];
+    albumTableView.delegate = self;
+    albumTableView.dataSource = self;
+    albumTableView.backgroundColor = [UIColor whiteColor];
+    CGRect frame = self.view.frame;
+    frame.origin.y += 50;
+    frame.size.height -= 50*2;
+    albumTableView.frame = frame;
+    [self.view addSubview:albumTableView];
     
-    } failureBlock: nil];
-    */
+    /*
      
     // インタフェース使用可能なら
 	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
@@ -108,7 +134,7 @@
 	else
 	{
 		NSLog(@"photo library invalid.");
-	}
+	}*/
 }
 
 - (IBAction)testButton:(id)sender {
@@ -255,6 +281,47 @@
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
     NSLog(@"single tap %d", [[sender view] tag]);
+}
+
+// アルバム一覧のtableviewようのメソッド
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSLog(@"album array count %d", [_albumListArray count]);
+    return [_albumListArray count];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 70.0f;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    int index = [indexPath indexAtPosition:[indexPath length] - 1];
+    NSLog(@"table cell index : %d", index);
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AlbumListTableViewCell"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"AlbumListTableViewCell"];
+    }
+    cell.backgroundColor = [UIColor whiteColor];
+    cell.textLabel.text = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%d枚", [[_albumImageDic objectForKey:cell.textLabel.text] count]];
+    
+    UIImage *tmpImage = [UIImage imageWithCGImage:[[[_albumImageDic objectForKey:cell.textLabel.text] objectAtIndex:0] thumbnail]];
+    cell.imageView.image = tmpImage;
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    int index = [indexPath indexAtPosition:[indexPath length] - 1];
+    NSLog(@"selected : %d", index);
 }
 
 @end

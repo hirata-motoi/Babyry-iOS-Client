@@ -23,6 +23,9 @@
 	// Do any additional setup after loading the view, typically from a nib.
     NSLog(@"viewDidLoad");
     
+    // よくバグルからここに書いておく
+    //[PFUser logOut];
+    
     // くるくる
     _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     float w = _indicator.frame.size.width;

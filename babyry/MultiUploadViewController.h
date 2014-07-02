@@ -10,7 +10,7 @@
 #import <Parse/Parse.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-@interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 
 - (IBAction)multiUploadViewBackButton:(id)sender;
 - (IBAction)multiUploadButton:(id)sender;
@@ -31,5 +31,9 @@
 @property UIImageView *bestShotLabelView;
 
 @property int bestImageIndexAtFirst;
+
+@property ALAssetsLibrary *library;
+@property NSMutableArray *albumListArray;
+@property NSMutableDictionary *albumImageDic;
 
 @end
