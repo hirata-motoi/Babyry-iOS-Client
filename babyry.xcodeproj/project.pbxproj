@@ -42,6 +42,9 @@
 		88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FB7193B2D52009474DC /* PageContentViewController.m */; };
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
+		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
+		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
+		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +111,12 @@
 		88B89FBC193EDC04009474DC /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
 		88B89FBD193EDC04009474DC /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
+		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
+		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
+		F261A883196513F60072BBD2 /* IdIssue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdIssue.m; sourceTree = "<group>"; };
+		F261A886196523110072BBD2 /* NSObject+Retry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Retry.h"; sourceTree = "<group>"; };
+		F261A887196523110072BBD2 /* NSObject+Retry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Retry.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +163,10 @@
 				84ABD706194DBE8500BC3CDA /* Sequence.m */,
 				8814A9A8194F56620010F516 /* ImageTrimming.h */,
 				8814A9A9194F56620010F516 /* ImageTrimming.m */,
+				F261A882196513F60072BBD2 /* IdIssue.h */,
+				F261A883196513F60072BBD2 /* IdIssue.m */,
+				F261A886196523110072BBD2 /* NSObject+Retry.h */,
+				F261A887196523110072BBD2 /* NSObject+Retry.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -227,6 +240,8 @@
 				8814A9A6194EC4420010F516 /* AlbumViewController.m */,
 				8814A9AB195812E60010F516 /* SettingViewController.h */,
 				8814A9AC195812E60010F516 /* SettingViewController.m */,
+				F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */,
+				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -361,13 +376,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				84ABD70A194DCB3100BC3CDA /* EtcViewController.m in Sources */,
+				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
+				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
+				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,

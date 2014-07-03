@@ -8,6 +8,9 @@
 
 #import "EtcViewController.h"
 #import "FamilyApplyViewController.h"
+#import "FamilyApplyListViewController.h"
+
+#import "IdIssue.h"
 
 @interface EtcViewController ()
 
@@ -33,6 +36,8 @@
     [self.logoutButton addTarget:self action:@selector(logout) forControlEvents:UIControlEventTouchUpInside];
     [self.familyApplyOpenButton addTarget:self action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
     [self.issueId addTarget:self action:@selector(issue) forControlEvents:UIControlEventTouchUpInside];
+    [self.familyApplyListButton addTarget:self action:@selector(showFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
+    [self.issueIdButton addTarget:self action:@selector(issueIdTrial) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)didReceiveMemoryWarning
@@ -70,6 +75,20 @@
             [object saveInBackground];
         }
     }];
+}
+
+- (void)showFamilyApplyList
+{
+    FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
+    NSLog(@"%@", familyApplyListViewController);
+    [self presentViewController:familyApplyListViewController animated:true completion:nil];
+}
+
+- (void)issueIdTrial
+{
+    IdIssue *idIssue = [[IdIssue alloc]init];
+    NSString *familyId = [idIssue issue:@"family"];
+    NSLog(@"trial familyId : %@", familyId);
 }
 
 @end

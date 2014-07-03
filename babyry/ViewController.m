@@ -10,6 +10,7 @@
 #import "ImageCache.h"
 #import "Sequence.h"
 #import "EtcViewController.h"
+#import "IdIssue.h"
 
 @interface ViewController ()
 
@@ -82,7 +83,7 @@
                 PFObject *child = [PFObject objectWithClassName:@"Child"];
                 [child setObject:_currentUser forKey:@"createdBy"];
                 child[@"name"] = @"栽培マン1号";
-                child[@"familyId"] = _currentUser[@"familyId"];
+                child[@"familyId2"] = _currentUser[@"familyId"];
                 [child save];
             }
             // まずはCacheからオフラインでも表示出来るものを先に表示
@@ -186,9 +187,9 @@
     NSNumber * userIdNum = [seq issueSequenceId:@"user_id"];
     NSLog(@"sequence id succeeded  id:%@", userIdNum);
     
-    
-    user[@"userId"] = userIdNum;
-    [user saveInBackground];
+
+    user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+    [user save];
     
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
 }
@@ -544,7 +545,7 @@
         PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
         NSArray *viewControllers = @[startingViewController];
         [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-    
+
         // Change the size of page view controller
         //NSLog(@"view controllerのサイズ変更");
         _pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);

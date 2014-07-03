@@ -7,7 +7,7 @@
 //
 
 #import "FamilyApplyViewController.h"
-#import "Sequence.h"
+#import "IdIssue.h"
 
 @interface FamilyApplyViewController ()
 
@@ -48,19 +48,19 @@
 
 - (void)showSelfUserId
 {
-    self.selfUserId.text = @"12345678";
+    self.selfUserId.text = [PFUser currentUser][@"userId"];
 }
 
 - (void)executeSearch
 {
     NSString * inputtedUserId = [self.searchForm.text mutableCopy];
     // search用APIを叩いてユーザを検索
-    NSNumber * userIdNumber = [NSNumber numberWithInt:[inputtedUserId intValue]];
+    //NSNumber * userIdNumber = [NSNumber numberWithInt:[inputtedUserId intValue]];
 
     // デフォルトのテーブルは_が必要！？
     PFQuery * query = [PFQuery queryWithClassName:@"_User"];
     
-    [query whereKey:@"userId" equalTo:userIdNumber];
+    [query whereKey:@"userId" equalTo:inputtedUserId];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error){
             NSLog(@"Successfully searched %@", objects);
@@ -79,6 +79,7 @@
 
 - (void)showSearchNoResult
 {
+//    self.searchedResultCell.textLabel.text = @"no result";
     UILabel * labelNoResult = [[UILabel alloc]initWithFrame:CGRectMake(40, 250, 200, 40)];
     labelNoResult.text = @"no result";
     [self.view addSubview:labelNoResult];
@@ -100,27 +101,31 @@
     
     // ボタンを押したときのイベント
     [button addTarget:self action:@selector(apply) forControlEvents:UIControlEventTouchUpInside];
-    
+
     [self.view addSubview:button];
     [self.view addSubview:label];
 }
 
-// family申請を出す 現時点では申請した時点で承認までしちゃってる
+// family申請を出す
 - (void)apply
 {
     NSLog(@"apply start");
         
     // 相手が既にfamilyになっているかを確認
-    PFQuery *query = [PFQuery queryWithClassName:@"FamilyMap"];
+    PFQuery *query = [PFQuery queryWithClassName:@"_User"];
     [query whereKey:@"userId" equalTo:searchedUserObject[@"userId"]];
+    NSLog(@"query : %@", query);
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error){
-            NSLog(@"Successfully searched FamilyMap %@", objects);
+            NSLog(@"Successfully searched FamilyApply %@", objects);
+            NSLog(@"objects.count : %d", objects.count);
             if (objects.count < 1) {
+                NSLog(@"ユーザがいないよ");
+            } else if ([objects objectAtIndex:0][@"familyId"] == NULL) {
                 // familyになっていないので申請を送ってOK
                 [self sendApply];
             } else {
-                NSLog(@"found");
+                NSLog(@"すでにfamilyIdをもってるので申請できない");
                 // 既にfamilyになっているので申請をおくっちゃダメ
                 [self showErrorMessage:@"このユーザに申請を送ることはできません"];
             }
@@ -132,37 +137,35 @@
     }];
 }
 
+- (NSString*) createFamilyId
+{
+    IdIssue *idIssue = [[IdIssue alloc]init];
+    return [idIssue issue:@"family"];
+}
+
 - (void)sendApply
 {
-    Sequence *sequence = [[Sequence alloc]init];
-    NSNumber *familyId = [sequence issueSequenceId:@"family_id"];
+    NSString *familyId = [self createFamilyId];
     
     NSLog(@"familyId : %@", familyId);
     
     searchedUserObject[@"familyId"] = familyId;
     
-    // 自分用のレコードと相手用のレコード2つ作る
-    PFObject *selfObject = [PFObject objectWithClassName:@"FamilyMap"];
-    PFObject *partnerObject = [PFObject objectWithClassName:@"FamilyMap"];
+    PFObject *currentUser = [PFUser currentUser];
+    // userテーブルの自分のレコードを更新
+    currentUser[@"familyId"] = familyId;
+    [currentUser save];
+    // OKだったらfamilyApplyへinesrt
+    PFObject *familyApply = [PFObject objectWithClassName:@"FamilyApply"];
+    familyApply[@"userId"] = currentUser[@"userId"];
+    familyApply[@"inviteeUserId"] = searchedUserObject[@"userId"];
+    familyApply[@"status"] = @"applying"; // 申請中
+    familyApply[@"familyId"] = familyId;
+    NSLog(@"familyApply : %@", familyApply);
+    [familyApply save];
+    // そのうちpush通知送る
     
-    selfObject[@"userId"] = [PFUser currentUser][@"userId"];
-    selfObject[@"partnerId"] = searchedUserObject[@"userId"];
-    selfObject[@"familyId"] = familyId;
-    selfObject[@"admitted"] = @"true";
-    
-    partnerObject[@"userId"] = searchedUserObject[@"userId"];
-    partnerObject[@"partnerId"] = [PFUser currentUser][@"userId"];
-    partnerObject[@"familyId"] = familyId;
-    partnerObject[@"admitted"] = @"false"; // 相手のレコードは未承認状態
-    
-    // 自分の情報保存が終わったら相手のも保存
-    [selfObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-        if (! error) {
-            [partnerObject saveInBackground];
-        } else {
-            // 招待をおくるのに失敗した！！
-        }
-     }];
+    [self closeFamilyApply];
 }
 
 - (void)showErrorMessage:(NSString*)message
