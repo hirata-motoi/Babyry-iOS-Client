@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface UploadViewController : UIViewController<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *uploadedImageView;
