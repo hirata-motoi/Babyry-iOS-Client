@@ -12,5 +12,6 @@
 
 + (void) setCache:name image:(NSData *) image;
 + (NSData *) getCache:date;
++ (UIImage *) makeThumbNail:(UIImage *)orgImage;
 
 @end

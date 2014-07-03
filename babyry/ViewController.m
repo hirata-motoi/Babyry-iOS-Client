@@ -98,7 +98,7 @@
                     // Parseにアクセスして最新の情報を取得
                     NSLog(@"update pictures");
                     [self getWeekDate];
-                    [self getCachedImage];
+                    //[self getCachedImage];
                     // uploadから復帰する時はParseからとらない
                     // parseの更新が遅延している可能性があるため
                     if (_is_return_from_upload == 0) {
@@ -422,7 +422,7 @@
         NSMutableArray *bestFlagOfChildImageArray = [[NSMutableArray alloc] init];
         for (NSString *date in _weekDateArray) {
             [dateOfChildImageArray insertObject:date atIndex:weekIndex];
-            imageCachePath = [NSString stringWithFormat:@"%@%@", c.objectId, date];
+            imageCachePath = [NSString stringWithFormat:@"%@%@thumb", c.objectId, date];
             imageCacheData = [ImageCache getCache:imageCachePath];
             if(imageCacheData) {
                 [childImageArray insertObject:[UIImage imageWithData:imageCacheData] atIndex:weekIndex];
@@ -444,7 +444,8 @@
         [childSubDic setObject:bestFlagOfChildImageArray forKey:@"bestFlag"];
         [childSubDic setObject:dateOfChildImageArray forKey:@"date"];
         [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
-        [childSubDic setObject:childImageArray forKey:@"images"];
+        [childSubDic setObject:childImageArray forKey:@"thumbImages"];
+        [childSubDic setObject:childImageArray forKey:@"orgImages"];
         [_childArray insertObject:childSubDic atIndex:childIndex];
         childIndex++;
     }
@@ -487,7 +488,8 @@
                             // (階層が深くなってきて気持ち悪いけどbackgroundだから良いかなと。。。)
                             // childArray - index -- name (String)
                             //                    |- bestFlag (Array)
-                            //                    |- images (UIImage in Array)
+                            //                    |- thumbImages (UIImage in Array) これはサムネイル
+                            //                    |- orgImages (UIImage in Array) これは本画像
                             //                    |- month (Array)
                             //                    |- date (Array)
                             //                    |- child.objectId (String)
@@ -506,16 +508,21 @@
                                             //NSLog(@"ここでParseに接続。全部backgroundにする");
                                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                                                 if(!error){
-                                                    [[tmpDic objectForKey:@"images"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
+                                                    // サムネイル画像作成
+                                                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                                                    
+                                                    // childArrayに突っ込む
+                                                    [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
+                                                    [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
+                                                    
                                                     // bestshotはローカルキャッシュに保存しておく
-                                                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", c.objectId, date] image:data];
+                                                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+                                                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
                                                     
                                                     // 画像update毎回やるから負荷たかいかな
                                                     // TODO : contentviewのviewに直接アクセスして画像をはめ込むようにするべき
+                                                    // 新しく作ったtmpDicでcontentviewを更新
                                                     [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
-                                                    PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
-                                                    NSArray *viewControllers = @[startingViewController];
-                                                    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
                                                 }
                                             }];
                                         }

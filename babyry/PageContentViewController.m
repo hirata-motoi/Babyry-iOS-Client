@@ -58,6 +58,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    [_pageContentCollectionView reloadData];
     //NSLog(@"viewDidAppear %d", _pageIndex);
 
     [_indicator stopAnimating];
@@ -125,12 +126,12 @@
     //NSLog(@"month : %@", [[object objectForKey:@"month"] objectAtIndex:indexPath.row]);
     
     // Cacheからはりつけ
-    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@", [object objectForKey:@"objectId"], [[object objectForKey:@"date"] objectAtIndex:indexPath.row]];
+    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", [object objectForKey:@"objectId"], [[object objectForKey:@"date"] objectAtIndex:indexPath.row]];
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         if (indexPath.row == 0) {
-            //cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
+            //cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
         } else {
             cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
             //cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageCacheData]];
@@ -258,7 +259,7 @@
         uploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
         uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
         uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
-        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"images"][tagNumber -1];
+        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"orgImages"][tagNumber -1];
         uploadViewController.bestFlag = [_childArray[_pageIndex] objectForKey:@"bestFlag"][tagNumber -1];
         uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         

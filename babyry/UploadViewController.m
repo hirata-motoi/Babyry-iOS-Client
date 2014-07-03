@@ -168,6 +168,7 @@
 
 - (IBAction)uploadViewBackButton:(UIButton *)sender {
 
+    // このロジックはすごい微妙！！！！
     // album viewから戻るときはaddSubviewしているから自分と親(pageview)をけす
     // (TODO : 本当はPageViewControllerかどうかを判定する必要ある)
     // topから個別画面にいったときに戻るなら、dismissviewcontroler実行
@@ -190,16 +191,29 @@
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    // オリジナル画像
+    // 拡張子取得
+    NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+    NSString *fileExtension = [[assetURL path] pathExtension];
+    
+    // オリジナルイメージ取得
     NSLog(@"imagePickerController");
 	UIImage *originalImage = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
     // ImageViewにセット
     [self.uploadedImageView setImage:originalImage];
     
+    
     NSLog(@"Make PFFile");
-    // TODO jpegのみになってる
-    NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
+    NSData *imageData = [[NSData alloc] init];
+    // PNGは透過しないとだめなのでやる
+    // その他はJPG
+    // TODO 画像圧縮率
+    if ([fileExtension isEqualToString:@"PNG"]) {
+        imageData = UIImagePNGRepresentation(originalImage);
+    } else {
+        imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
+    }
     PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
     // Parseに既に画像があるかどうかを確認
@@ -230,8 +244,25 @@
         [childImage saveInBackground];
     }
     
-    // Cache set
-    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:imageData];
+    // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
+    UIImage *thumbImage = [ImageCache makeThumbNail:originalImage];
+    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+    
+    // topのviewに設定する
+    // このやり方でいいのかは不明
+    ViewController *pvc = (ViewController *)[self presentingViewController];
+    if (pvc) {
+        int childIndex = pvc.currentPageIndex;
+        for (int i = 0; i < [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] count]; i++){
+            if ([[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i] isEqualToString:_date]) {
+                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i]);
+                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] objectAtIndex:i]);
+                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
+                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] objectAtIndex:i]);
+                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:originalImage];
+            }
+        }
+    }
     
     NSLog(@"saved");
 }

@@ -10,6 +10,7 @@
 #import "ImageTrimming.h"
 #import "ViewController.h"
 #import "ImageCache.h"
+#import "MultiUploadPickerViewController.h"
 
 @interface MultiUploadViewController ()
 
@@ -34,12 +35,12 @@
     // Get Album list
     _albumListArray = [[NSMutableArray alloc] init];
     _albumImageDic = [[NSMutableDictionary alloc] init];
-    NSMutableArray *albumImageArray = [[NSMutableArray alloc] init];
     //NSMutableArray *assetsArray = [[NSMutableArray alloc] init];
     _library = [[ALAssetsLibrary alloc] init];
     [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         if (group) {
             [_albumListArray addObject:group];
+            NSMutableArray *albumImageArray = [[NSMutableArray alloc] init];
             ALAssetsGroupEnumerationResultsBlock assetsEnumerationBlock = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
                 if (result) {
                     [albumImageArray addObject:result];
@@ -82,12 +83,24 @@
         }
         index++;
     }
+    
+    //_uploadPregressBar = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+    _uploadProgressView.hidden = YES;
+    _uploadPregressBar.progress = 0.0f;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    // super
+    [super viewWillAppear:animated];
+    
+    [_albumTableView removeFromSuperview];
 }
 
 /*
@@ -108,15 +121,15 @@
 - (IBAction)multiUploadButton:(id)sender {
     NSLog(@"multiUploadButton");
     
-    UITableView *albumTableView = [[UITableView alloc] init];
-    albumTableView.delegate = self;
-    albumTableView.dataSource = self;
-    albumTableView.backgroundColor = [UIColor whiteColor];
+    _albumTableView = [[UITableView alloc] init];
+    _albumTableView.delegate = self;
+    _albumTableView.dataSource = self;
+    _albumTableView.backgroundColor = [UIColor whiteColor];
     CGRect frame = self.view.frame;
     frame.origin.y += 50;
     frame.size.height -= 50*2;
-    albumTableView.frame = frame;
-    [self.view addSubview:albumTableView];
+    _albumTableView.frame = frame;
+    [self.view addSubview:_albumTableView];
     
     /*
      
@@ -149,6 +162,7 @@
     [_multiUploadedImages reloadData];
 }
 
+/*
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     // オリジナル画像
@@ -185,7 +199,7 @@
         }
         [_multiUploadedImages insertItemsAtIndexPaths:arrayWithIndexPaths];
     } completion:nil];
-}
+}*/
 
 -(void)createCollectionView
 {
@@ -297,6 +311,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    // TODO : ハードコード！！！
     return 70.0f;
 }
 
@@ -304,6 +319,7 @@
 {
     int index = [indexPath indexAtPosition:[indexPath length] - 1];
     NSLog(@"table cell index : %d", index);
+    NSLog(@"album name %@", [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName]);
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AlbumListTableViewCell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"AlbumListTableViewCell"];
@@ -312,7 +328,7 @@
     cell.textLabel.text = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%d枚", [[_albumImageDic objectForKey:cell.textLabel.text] count]];
     
-    UIImage *tmpImage = [UIImage imageWithCGImage:[[[_albumImageDic objectForKey:cell.textLabel.text] objectAtIndex:0] thumbnail]];
+    UIImage *tmpImage = [UIImage imageWithCGImage:[[[_albumImageDic objectForKey:cell.textLabel.text] lastObject] thumbnail]];
     cell.imageView.image = tmpImage;
     
     return cell;
@@ -321,7 +337,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     int index = [indexPath indexAtPosition:[indexPath length] - 1];
-    NSLog(@"selected : %d", index);
+    NSString *albumName = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
+    NSLog(@"selected, index : %d, album name : %@", index, albumName);
+    
+    MultiUploadPickerViewController *multiUploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadPickerViewController"];
+    multiUploadPickerViewController.alAssetsArr = [_albumImageDic objectForKey:albumName];
+    multiUploadPickerViewController.month = _month;
+    multiUploadPickerViewController.childObjectId = _childObjectId;
+    multiUploadPickerViewController.date = _date;
+    [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
 
 @end

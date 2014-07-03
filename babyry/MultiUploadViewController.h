@@ -19,6 +19,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
 
+@property (strong, nonatomic) IBOutlet UIView *uploadProgressView;
+@property (strong, nonatomic) IBOutlet UIProgressView *uploadPregressBar;
+
 @property NSString *childObjectId;
 @property NSString *name;
 @property NSArray *childImageArray;
@@ -35,5 +38,7 @@
 @property ALAssetsLibrary *library;
 @property NSMutableArray *albumListArray;
 @property NSMutableDictionary *albumImageDic;
+
+@property UITableView *albumTableView;
 
 @end
