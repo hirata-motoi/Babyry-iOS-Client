@@ -77,16 +77,23 @@
         // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
             _childArrayFoundFromParse = [childQuery findObjects];
+            NSLog(@"aaaaaaaaaaaa %@", _childArrayFoundFromParse);
         
             // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
             // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
             if ([_childArrayFoundFromParse count] < 1) {
-                //NSLog(@"make child");
+                NSLog(@"make child");
                 PFObject *child = [PFObject objectWithClassName:@"Child"];
                 [child setObject:_currentUser forKey:@"createdBy"];
                 child[@"name"] = @"栽培マン1号";
-                child[@"familyId2"] = _currentUser[@"familyId"];
+                child[@"familyId"] = _currentUser[@"familyId"];
                 [child save];
+                
+                // レプリ遅延防止のためここでチェックする
+                while ([_childArrayFoundFromParse count] < 1) {
+                    NSLog(@"waiting for replication dealy....");
+                    _childArrayFoundFromParse = [childQuery findObjects];
+                }
             }
             // まずはCacheからオフラインでも表示出来るものを先に表示
             [self getWeekDate];
