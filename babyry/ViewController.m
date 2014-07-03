@@ -8,9 +8,9 @@
 
 #import "ViewController.h"
 #import "ImageCache.h"
-#import "Sequence.h"
 #import "EtcViewController.h"
 #import "IdIssue.h"
+#import "FamilyApplyViewController.h"
 
 @interface ViewController ()
 
@@ -63,6 +63,8 @@
         NSLog(@"familyId is %@", _currentUser[@"familyId"]);
         if (!_currentUser[@"familyId"]) {
             NSLog(@"No FamilyId! これはありえないけど何らかの処理を入れないと駄目");
+            [self openEtc];
+            return;
         }
         
         // Set if user has no child
@@ -183,12 +185,8 @@
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
     
     // user_idを発行して保存
-    Sequence * seq = [[Sequence alloc]init];
-    NSNumber * userIdNum = [seq issueSequenceId:@"user_id"];
-    NSLog(@"sequence id succeeded  id:%@", userIdNum);
-    
-
     user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+    NSLog(@"user : %@", user);
     [user save];
     
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
@@ -543,27 +541,27 @@
 -(void) setPage
 {
     if (_only_first_load == 1) {
-        //NSLog(@"reflectChildArray");
-        //NSLog(@"storyboardのPageViewControllerのidとひも付け");
+        NSLog(@"reflectChildArray");
+        NSLog(@"storyboardのPageViewControllerのidとひも付け");
         _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
         _pageViewController.dataSource = self;
     
-        //NSLog(@"0ページ目を表示");
+        NSLog(@"0ページ目を表示");
         PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
         NSArray *viewControllers = @[startingViewController];
         [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 
         // Change the size of page view controller
-        //NSLog(@"view controllerのサイズ変更");
+        NSLog(@"view controllerのサイズ変更");
         _pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
     
-        //NSLog(@"view追加");
+        NSLog(@"view追加");
         [self addChildViewController:_pageViewController];
         [self.view addSubview:_pageViewController.view];
         [_pageViewController didMoveToParentViewController:self];
     
         // +ボタンがなぜかでないけどスルー
-        //NSLog(@"addChild ボタン追加");
+        NSLog(@"addChild ボタン追加");
         //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
     
         // logoutButton
