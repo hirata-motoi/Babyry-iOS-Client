@@ -10,10 +10,12 @@
 #import <Parse/Parse.h>
 
 @interface FamilyApplyViewController : UIViewController
-@property (weak, nonatomic) IBOutlet UIButton *closeFamilyApplyModal;
+@property (weak, nonatomic) IBOutlet UIScrollView *searchResultContainer;
+@property (weak, nonatomic) IBOutlet UIView *searchContainerView;
+@property (weak, nonatomic) IBOutlet UIView *selfUserIdContainer;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *closeFamilyApplyButton;
 @property (weak, nonatomic) IBOutlet UILabel *selfUserId;
-@property (weak, nonatomic) IBOutlet UITextField *searchForm;
-@property (weak, nonatomic) IBOutlet UIButton *searchButton;
 @property (nonatomic) PFObject *searchedUserObject;
+@property (nonatomic) UITextField *searchForm;
 
 @end

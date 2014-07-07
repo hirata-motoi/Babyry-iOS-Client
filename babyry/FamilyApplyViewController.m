@@ -15,6 +15,7 @@
 
 @implementation FamilyApplyViewController
 @synthesize searchedUserObject;
+@synthesize searchForm;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -29,10 +30,17 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    
-    [self.closeFamilyApplyModal addTarget:self action:@selector(closeFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+    NSLog(@"viewDidLoad start");
+    self.searchContainerView.backgroundColor = [UIColor colorWithRed:0.85 green:0.85 blue:0.85 alpha:1.0];
+    NSLog(@"selUserIdContainer start");
+    self.selfUserIdContainer.backgroundColor = [UIColor whiteColor];
+    NSLog(@"closeFamilyApplyButton start");
+    [self.closeFamilyApplyButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(closeFamilyApply)];
+    NSLog(@"showSelfUserId start");
     [self showSelfUserId];
-    [self.searchButton addTarget:self action:@selector(executeSearch) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIImage *btnImage = [UIImage imageNamed:@"ecalbt008_005.png"];
+    [self setupSearchForm];
 }
 
 - (void)didReceiveMemoryWarning
@@ -53,16 +61,14 @@
 
 - (void)executeSearch
 {
-    NSString * inputtedUserId = [self.searchForm.text mutableCopy];
+    NSString * inputtedUserId = [searchForm.text mutableCopy];
     // search用APIを叩いてユーザを検索
-    //NSNumber * userIdNumber = [NSNumber numberWithInt:[inputtedUserId intValue]];
-
-    // デフォルトのテーブルは_が必要！？
     PFQuery * query = [PFQuery queryWithClassName:@"_User"];
     
     [query whereKey:@"userId" equalTo:inputtedUserId];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error){
+            [self deleteSearchResult];
             NSLog(@"Successfully searched %@", objects);
             if (objects.count < 1) {
                 NSLog(@"no result");
@@ -79,31 +85,49 @@
 
 - (void)showSearchNoResult
 {
-//    self.searchedResultCell.textLabel.text = @"no result";
-    UILabel * labelNoResult = [[UILabel alloc]initWithFrame:CGRectMake(40, 250, 200, 40)];
-    labelNoResult.text = @"no result";
-    [self.view addSubview:labelNoResult];
+    UIView *result = [[UIView alloc]initWithFrame:CGRectMake(0, 10, 250, 60)];
+    UILabel * labelNoResult = [[UILabel alloc]initWithFrame:CGRectMake(10, 10, 230, 40)];
+    labelNoResult.text = @"ユーザがみつかりません";
+    labelNoResult.textAlignment = UITextAlignmentCenter;
+    [result addSubview:labelNoResult];
+    [self.searchResultContainer addSubview:result];
 }
 
 - (void)showSearchResult:(PFObject *)searchedUser
 {
-    // 結果を表示 user_nameと申請ボタンを表示する
-    UILabel * label = [[UILabel alloc]initWithFrame:CGRectMake(10, 250, 200, 40)];
-    label.text = searchedUser[@"username"];
+    UIView *result = [[UIView alloc]initWithFrame:CGRectMake(0, 10, 250, 60)];
     
-    UIButton * button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    button.frame = CGRectMake(230, 250, 50, 40);
-    [button setTitle:@"申請" forState:UIControlStateNormal];
+    // 結果を表示 user_nameと申請ボタンを表示する
+    // image
+    UIImage *userImage = [UIImage imageNamed:@"NoImage"];
+    UIImageView *userImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 60, 60)];
+    userImageView.image = userImage;
+    
+    // username
+    UILabel * label = [[UILabel alloc]initWithFrame:CGRectMake(70, 10, 140, 60)];
+    label.text = searchedUser[@"username"];
+
     
     // 対象ユーザのPFObjectを保持
     NSLog(@"%@", searchedUser);
     searchedUserObject = searchedUser;
-    
-    // ボタンを押したときのイベント
-    [button addTarget:self action:@selector(apply) forControlEvents:UIControlEventTouchUpInside];
 
-    [self.view addSubview:button];
-    [self.view addSubview:label];
+    [result addSubview:userImageView];
+    [result addSubview:label];
+    
+    // button
+    // 自分あるいは相手がfamilyIdを既に持ってたら申請はできない
+    if (searchedUser[@"familyId"] == nil && [PFUser currentUser][@"familyid"] == nil) {
+        // button
+        UIButton * button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        button.frame = CGRectMake(220, 25, 30, 25);
+        [button setTitle:@"申請" forState:UIControlStateNormal];
+        // ボタンを押したときのイベント
+        [button addTarget:self action:@selector(apply) forControlEvents:UIControlEventTouchUpInside];
+        [result addSubview:button];
+    }
+    
+    [self.searchResultContainer addSubview:result];
 }
 
 // family申請を出す
@@ -171,6 +195,36 @@
 - (void)showErrorMessage:(NSString*)message
 {
     // 受け取ったmessageを表示する
+}
+
+- (void)setupSearchForm
+{
+    UIImage *formImage = [UIImage imageNamed:@"FormRounded.png"];
+    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 10, 250, 30)];
+    imageView.image = formImage;
+    [self.searchContainerView addSubview:imageView];
+
+    UIButton *searchSubmitButton = [[UIButton alloc]init];
+    searchSubmitButton.frame = CGRectMake(225, 10, 35, 30);
+    UIImage *searchSubmitImage = [UIImage imageNamed:@"SearchButton.png"];
+    [searchSubmitButton setImage:searchSubmitImage forState:UIControlStateNormal];
+    [searchSubmitButton addTarget:self action:@selector(executeSearch) forControlEvents:UIControlEventTouchUpInside];
+    [self.searchContainerView addSubview:searchSubmitButton];
+    
+    // 透明のform
+    searchForm = [[UITextField alloc]initWithFrame:CGRectMake(12, 10, 215, 30)];
+    searchForm.clearButtonMode = UITextFieldViewModeAlways;
+    searchForm.placeholder = @"ユーザ検索";
+    searchForm.opaque = NO;
+    searchForm.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
+    [self.searchContainerView addSubview:searchForm];
+}
+
+- (void)deleteSearchResult
+{
+    for (UIView *view in [self.searchResultContainer subviews]) {
+        [view removeFromSuperview];
+    }
 }
 
 @end
