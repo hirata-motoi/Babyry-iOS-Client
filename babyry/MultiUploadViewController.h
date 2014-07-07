@@ -24,7 +24,8 @@
 
 @property NSString *childObjectId;
 @property NSString *name;
-@property NSArray *childImageArray;
+@property NSMutableArray *childImageArray;
+@property NSMutableArray *childCachedImageArray;
 @property NSString *month;
 @property NSString *date;
 
@@ -33,12 +34,14 @@
 
 @property UIImageView *bestShotLabelView;
 
-@property int bestImageIndexAtFirst;
+@property int bestImageIndex;
 
 @property ALAssetsLibrary *library;
 @property NSMutableArray *albumListArray;
 @property NSMutableDictionary *albumImageDic;
 
 @property UITableView *albumTableView;
+
+@property int indexForCache;
 
 @end

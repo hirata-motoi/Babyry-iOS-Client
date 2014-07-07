@@ -8,6 +8,7 @@
 
 #import "MultiUploadPickerViewController.h"
 #import <Parse/Parse.h>
+#import "ImageCache.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -192,12 +193,26 @@
 - (IBAction)sendImageButton:(id)sender {
     NSLog(@"send image!");
 
-    _maxPicNum = [_checkedImageArray count];
-    _completePicNum = 0;
+    // キャッシュ作る
+    int i = _currentCachedImageNum;
+    for (NSIndexPath *indexPath in _checkedImageArray) {
+        ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
+        UIImage *originalImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+        UIImage *thumbImage = [ImageCache makeThumbNail:originalImage];
+        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0f);
+        [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i] image:thumbImageData];
+        i++;
+    }
     
-    _multiUploadViewController = (MultiUploadViewController *)[self presentingViewController];
-    [_multiUploadViewController.uploadPregressBar setProgress:0.0f animated:YES];
-    _multiUploadViewController.uploadProgressView.hidden = NO;
+    // imageFileをフォアグランドで用意しておく
+    _uploadImageDataArray = [[NSMutableArray alloc] init];
+    for (NSIndexPath *indexPath in _checkedImageArray) {
+        ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
+        UIImage *originalImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+        NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
+        PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
+        [_uploadImageDataArray addObject:imageFile];
+    }
     
     [self saveToParseInBackground];
     [self dismissViewControllerAnimated:YES completion:NULL];
@@ -206,6 +221,24 @@
 // 再起的にbackgroundでuploadする
 -(void)saveToParseInBackground
 {
+    if ([_uploadImageDataArray count] != 0){
+        PFFile *imageFile = [_uploadImageDataArray objectAtIndex:0];
+        [_uploadImageDataArray removeObjectAtIndex:0];
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        childImage[@"imageFile"] = imageFile;
+        childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+        childImage[@"imageOf"] = _childObjectId;
+        childImage[@"bestFlag"] = @"unchoosed";
+        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (succeeded) {
+                NSLog(@"saved image");
+                [self saveToParseInBackground];
+            } else {
+                NSLog(@"error to upload");
+            }
+        }];
+    }
+    /*
     if ([_checkedImageArray count] != 0) {
         NSIndexPath *indexPath = [_checkedImageArray objectAtIndex:0];
         [_checkedImageArray removeObjectAtIndex:0];
@@ -220,14 +253,9 @@
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"unchoosed";
         [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            _completePicNum++;
-            NSLog(@"saved %d", _completePicNum);
-            [_multiUploadViewController.uploadPregressBar setProgress:_completePicNum/_maxPicNum animated:YES];
             [self saveToParseInBackground];
         }];
-    } else {
-        [_multiUploadViewController.uploadPregressBar setProgress:1.0f animated:YES];
-    }
+    }*/
 }
 
 - (IBAction)backButton:(id)sender {

@@ -95,6 +95,23 @@
     // getcomment
     //_commentArray = [[NSArray alloc] init];
     [self getCommentFromParse];
+    
+    // Parseからちゃんとしたサイズの画像を取得
+    PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+    [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+    [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
+    [originalImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if ([objects count] > 0) {
+            PFObject * object = [objects objectAtIndex:0];
+            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                if(!error){
+                    _uploadedImageView.image = [UIImage imageWithData:data];
+                }
+            }];
+        }
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -249,7 +266,7 @@
     [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
     
     // topのviewに設定する
-    // このやり方でいいのかは不明
+    // このやり方でいいのかは不明 (MultiUploadViewControllerと同じ処理、ここなおすならそっちも直す)
     ViewController *pvc = (ViewController *)[self presentingViewController];
     if (pvc) {
         int childIndex = pvc.currentPageIndex;

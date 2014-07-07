@@ -20,14 +20,12 @@
 @property NSArray *alAssetsArr;
 @property NSMutableArray *checkedImageFragArray;
 @property NSMutableArray *checkedImageArray;
+@property NSMutableArray *uploadImageDataArray;
 
 @property NSString *month;
 @property NSString *childObjectId;
 @property NSString *date;
 
-// navigate bar用
-@property int maxPicNum;
-@property int completePicNum;
-@property MultiUploadViewController *multiUploadViewController;
+@property int currentCachedImageNum;
 
 @end
