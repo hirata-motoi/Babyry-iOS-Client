@@ -131,15 +131,18 @@
     NSLog(@"inviterUser : %@", inviterUser);
     NSString *familyId = inviterUser[@"familyId"];
 
+    // そのうちこの辺りの処理はすべてRole classに隠蔽したい
+    NSString *role = ([inviterUser[@"role"] isEqualToString:@"uploader"]) ? @"chooser" : @"uploader";
+
     PFUser *selfUser = [PFUser currentUser];
     selfUser[@"familyId"] = familyId;
+    selfUser[@"role"] = role;
     NSLog(@"save user");
     [selfUser save];
     
     // FamilyApplyから消す
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
     [query whereKey:@"inviteeUserId" equalTo:selfUser[@"userId"]];
-    [query whereKey:@"familyId" equalTo:familyId];
     NSArray *familyApplyRows = [query findObjects];
     NSLog(@"delete familyApply : %@", familyApplyRows);
     for (int i = 0; i < familyApplyRows.count; i++) {
