@@ -32,7 +32,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    // Get Album list
+    NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
+    
+    // フォトアルバムからリスト取得しておく
+    NSLog(@"get from photo album.");
     _albumListArray = [[NSMutableArray alloc] init];
     _albumImageDic = [[NSMutableDictionary alloc] init];
     //NSMutableArray *assetsArray = [[NSMutableArray alloc] init];
@@ -54,7 +57,7 @@
     // Draw collectionView
     [self createCollectionView];
     
-    NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
+    [self showCacheImages];
     
     // set label
     NSString *yyyy = [_month substringToIndex:4];
@@ -69,30 +72,27 @@
     // best shot asset
     _bestShotLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
     
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-    childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
-    //[childImageQuery orderByAscending:@"createdAt"];
-    _childImageArray = [childImageQuery findObjects];
-    int index = 0;
-    _bestImageIndexAtFirst = 0;
-    for (PFObject *object in _childImageArray) {
-        if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
-            _bestImageIndexAtFirst = index;
-        }
-        index++;
-    }
-    
-    //_uploadPregressBar = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
     _uploadProgressView.hidden = YES;
     _uploadPregressBar.progress = 0.0f;
+    
+    _bestImageIndex = -1;
+    
+    // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload
+    [self updateImagesFromParse];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    NSLog(@"viewDidAppear");
+    [self showCacheImages];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -114,6 +114,21 @@
 }
 */
 
+- (void) showCacheImages
+{
+    int i = 0;
+    _childCachedImageArray = [[NSMutableArray alloc] init];
+    while ([ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]]) {
+        //NSLog(@"found cached image %d", i);
+        [_childCachedImageArray addObject:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
+        i++;
+    }
+    
+    _childImageArray = _childCachedImageArray;
+    
+    [_multiUploadedImages reloadData];
+}
+
 - (IBAction)multiUploadViewBackButton:(id)sender {
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
@@ -130,24 +145,6 @@
     frame.size.height -= 50*2;
     _albumTableView.frame = frame;
     [self.view addSubview:_albumTableView];
-    
-    /*
-     
-    // インタフェース使用可能なら
-	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
-	{
-        // UIImageControllerの初期化
-		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc]init];
-		[imagePickerController setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-		[imagePickerController setAllowsEditing:NO];
-		[imagePickerController setDelegate:self];
-		
-        [self presentViewController:imagePickerController animated:YES completion: nil];
-	}
-	else
-	{
-		NSLog(@"photo library invalid.");
-	}*/
 }
 
 - (IBAction)testButton:(id)sender {
@@ -162,45 +159,6 @@
     [_multiUploadedImages reloadData];
 }
 
-/*
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
-    // オリジナル画像
-    NSLog(@"imagePickerController");
-	UIImage *originalImage = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
-    [self dismissViewControllerAnimated:YES completion:nil];
-    
-    NSLog(@"Make PFFile");
-    // TODO jpegのみになってる
-    NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
-    PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
-    
-    NSLog(@"Insert To Parse");
-    PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-    childImage[@"imageFile"] = imageFile;
-    // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
-    childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
-    childImage[@"imageOf"] = _childObjectId;
-    if ([_childImageArray count] == 0) {
-        childImage[@"bestFlag"] = @"choosed";
-    } else {
-        childImage[@"bestFlag"] = @"unchoosed";
-    }
-    [childImage saveInBackground];
-    NSLog(@"saved");
-    
-    // uploadした画像をmulti image viewに反映
-    [_multiUploadedImages performBatchUpdates:^{
-        int currentSize = [_childImageArray count];
-        _childImageArray = [_childImageArray arrayByAddingObject:childImage];
-        NSMutableArray *arrayWithIndexPaths = [NSMutableArray array];
-        for (int i = currentSize; i < currentSize + 1; i++) {
-            [arrayWithIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-        }
-        [_multiUploadedImages insertItemsAtIndexPaths:arrayWithIndexPaths];
-    } completion:nil];
-}*/
-
 -(void)createCollectionView
 {
     // UICollectionViewの土台を作成
@@ -209,6 +167,12 @@
     [_multiUploadedImages registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"MultiUploadViewControllerCell"];
     
     [self.view addSubview:_multiUploadedImages];
+}
+
+///////////////////////////////////////////////////////////////////////
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
 }
 
 // セルの数を指定するメソッド
@@ -225,18 +189,27 @@
 // 指定された場所のセルを作るメソッド
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    //NSLog(@"cellForItemAtIndexPath");
     //セルを再利用 or 再生成
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MultiUploadViewControllerCell" forIndexPath:indexPath];
+    for (UIView *view in [cell subviews]) {
+        //NSLog(@"remove cell's child view");
+        [view removeFromSuperview];
+    }
+    for (UIGestureRecognizer *gesture in [cell gestureRecognizers]) {
+        [cell removeGestureRecognizer:gesture];
+    }
     
-    NSLog(@"indexPath : %@", [_childImageArray objectAtIndex:indexPath.row]);
+    //NSLog(@"indexPath : %@", [_childImageArray objectAtIndex:indexPath.row]);
     cell.tag = indexPath.row;
-    if (_bestImageIndexAtFirst == indexPath.row) {
+    if (_bestImageIndex > -1 && _bestImageIndex == indexPath.row) {
         _bestShotLabelView.frame = cell.frame;
         [_multiUploadedImages addSubview:_bestShotLabelView];
     }
     
-    // 画像を貼付け
-    NSData *tmpImageData = [[_childImageArray objectAtIndex:indexPath.row][@"imageFile"] getData];
+    // ローカルに保存されていたサムネイル画像を貼付け
+    //NSData *tmpImageData = [[_childImageArray objectAtIndex:indexPath.row][@"imageFile"] getData];
+    NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
     cell.backgroundColor = [UIColor blueColor];
     cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
     
@@ -253,13 +226,111 @@
     return cell;
 }
 
+/* ヘッターつけたかったらここにつける
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    NSLog(@"referenceSizeForHeaderInSection!!!!!!!!!!!!!!!!!!!!!!");
+    return CGSizeMake(self.view.frame.size.width, 30);
+    
+    return CGSizeZero;
+}
+
+// ヘッダー作る
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"viewForSupplementaryElementOfKind!!!!!!!!!!!!!!!!!");
+    //UICollectionReusableView *headerView = [[UICollectionReusableView alloc] init];
+    
+    UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"MultiUploadCellHeader" forIndexPath:indexPath];
+    for (UIView *view in [headerView subviews]) {
+        //NSLog(@"remove cell's child view");
+        [view removeFromSuperview];
+    }
+    headerView.backgroundColor = [UIColor grayColor];
+    UILabel *headerLabel = [[UILabel alloc] init];
+    headerLabel.frame = headerView.frame;
+    CGRect frame = headerLabel.frame;
+    frame.origin.x = 0;
+    frame.origin.y = 0;
+    headerLabel.frame = frame;
+    headerLabel.textAlignment = NSTextAlignmentCenter;
+    headerLabel.textColor = [UIColor whiteColor];
+    if (indexPath.section == 0) {
+        headerLabel.text = @"Now Uploading...";
+    } else if (indexPath.section == 1){
+        headerLabel.text = @"Today's Images";
+    }
+    [headerView addSubview:headerLabel];
+    return headerView;
+}
+*/
+/////////////////////////////////////////////////////////////////
+
+-(void)updateImagesFromParse
+{
+    NSLog(@"updateImagesFromParse");
+    _uploadProgressView.hidden = NO;
+    
+    // Parseから画像をとる
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+    [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+    [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [childImageQuery orderByAscending:@"createdAt"];
+    [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if(!error) {
+            // 注意 : ここは深いコピーをしないとだめ
+            _childImageArray = [[NSMutableArray alloc] initWithArray:objects];
+            //再起的にgetDataしてキャッシュを保存する
+            _indexForCache = 0;
+            [self setCacheOfParseImage:(NSMutableArray *)objects];
+        }
+    }];
+}
+
+-(void)setCacheOfParseImage:(NSMutableArray *)objects
+{
+    //NSLog(@"bbbbbbbbbbbb %p %p", _childImageArray, objects);
+    if ([objects count] > 0) {
+        //NSLog(@"aaaaaaa %d", [objects count]);
+        PFObject *object = [objects objectAtIndex:0];
+        NSLog(@"index and flag %d %@", _indexForCache, object[@"bestFlag"]);
+        if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
+            _bestImageIndex = _indexForCache;
+        }
+        [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+            if(!error){
+                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+                _indexForCache++;
+                [objects removeObjectAtIndex:0];
+                _uploadPregressBar.progress = (float)_indexForCache/ (float)[_childCachedImageArray count];
+                [self setCacheOfParseImage:objects];
+            }
+        }];
+    } else {
+        //古いキャッシュは消す
+        if ([_childCachedImageArray count] > [_childImageArray count]) {
+            NSLog(@"remove old cache");
+            for (int i = [_childImageArray count]; i < [_childCachedImageArray count]; i++){
+                [ImageCache removeCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
+            }
+        }
+        _uploadPregressBar.progress = 1.0f;
+        [_multiUploadedImages reloadData];
+        _uploadProgressView.hidden = YES;
+        //NSLog(@"_multiUploadedImages reloaded. number of images %d", [_childImageArray count]);
+    }
+}
+
 -(void)handleDoubleTap:(id) sender {
     NSLog(@"double tap %d", [[sender view] tag]);
+    
+    _bestImageIndex = [[sender view] tag];
     
     // change label
     _bestShotLabelView.frame = [sender view].frame;
     [_multiUploadedImages addSubview:_bestShotLabelView];
-    
     // update Parse
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -285,18 +356,39 @@
                 }
                 index++;
             }
+        } else {
+            NSLog(@"error at double tap %@", error);
         }
     }];
     
     // set image cache
-    NSData *tmpImageData = [[_childImageArray objectAtIndex:[[sender view] tag]][@"imageFile"] getData];
-    [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] image:tmpImageData];
+    NSData *thumbData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, [[sender view] tag]]];
+    UIImage *thumbImage = [UIImage imageWithData:thumbData];
+    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+    
+    // topのviewに設定する
+    // このやり方でいいのかは不明 (UploadViewControllerと同じ処理、ここなおすならそっちも直す)
+    ViewController *pvc = (ViewController *)[self presentingViewController];
+    if (pvc) {
+        int childIndex = pvc.currentPageIndex;
+        for (int i = 0; i < [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] count]; i++){
+            if ([[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i] isEqualToString:_date]) {
+                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i]);
+                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] objectAtIndex:i]);
+                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
+                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] objectAtIndex:i]);
+                // サムネイル(キャッシュ)をとりあえず入れる
+                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:[UIImage imageWithData:thumbData]];
+            }
+        }
+    }
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
     NSLog(@"single tap %d", [[sender view] tag]);
 }
 
+/////////////////////////////////////////////////////////////////
 // アルバム一覧のtableviewようのメソッド
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -345,7 +437,9 @@
     multiUploadPickerViewController.month = _month;
     multiUploadPickerViewController.childObjectId = _childObjectId;
     multiUploadPickerViewController.date = _date;
+    multiUploadPickerViewController.currentCachedImageNum = [_childImageArray count];
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
+/////////////////////////////////////////////////////////////////
 
 @end

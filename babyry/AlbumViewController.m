@@ -193,7 +193,7 @@
     }
     
     // Cacheからはりつけ
-    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@%@%02d", _childObjectId, _yyyy, _mm, [_dd intValue] - indexPath.row];
+    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@%@%02dthumb", _childObjectId, _yyyy, _mm, [_dd intValue] - indexPath.row];
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
@@ -409,7 +409,7 @@
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", _yyyy, _mm];
     
     // Cacheからはりつけ
-    NSString *imageCachePath = [NSString stringWithFormat:@"%@%08d", _childObjectId, targetDate];
+    NSString *imageCachePath = [NSString stringWithFormat:@"%@%08dthumb", _childObjectId, targetDate];
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];
@@ -448,10 +448,14 @@
             int __block index = 0;
             for (PFObject *object in objects) {
                 NSString *date = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
-                NSString *cacheImageName = [NSString stringWithFormat:@"%@%@", _childObjectId, date];
+                NSString *cacheImageName = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, date];
                 [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                     if(!error) {
-                        [ImageCache setCache:[NSString stringWithFormat:@"%@", cacheImageName] image:data];
+                        // サムネイル作るためにUIImage作成
+                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+
+                        // サムネイル用UIImageを再度dataに変換
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@", cacheImageName] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
                         index++;
                         if (index == [objects count]) {
                             [_albumCollectionView reloadData];

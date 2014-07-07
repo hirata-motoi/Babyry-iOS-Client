@@ -38,12 +38,12 @@
     //NSLog(@"saved at %@", savedPath);
 }
 
-+ (NSData *) getCache:date
++ (NSData *) getCache:name
 {
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirPath = [array objectAtIndex:0];
     NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
-    NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:date];
+    NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:name];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if([fileManager fileExistsAtPath:imageCacheFilePath]) {
@@ -53,10 +53,27 @@
     }
 }
 
++ (void) removeCache:name
+{
+    NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirPath = [array objectAtIndex:0];
+    NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
+    NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:name];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:imageCacheFilePath]) {
+        NSError *error;
+        BOOL result = [fileManager removeItemAtPath:imageCacheFilePath error:&error];
+        if (!result) {
+            NSLog(@"failed to remove cache.");
+        }
+    }
+}
+
 // このクラスでいいのか？という疑問は置いておいて
 + (UIImage *) makeThumbNail:(UIImage *)orgImage
 {
-    float width = 10.0f;
+    float width = 100.0f;
     float height = width * orgImage.size.height/orgImage.size.width;
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
     [orgImage drawInRect:CGRectMake(0, 0, width, height)];
@@ -65,6 +82,5 @@
     
     return thumbImage;
 }
-
 
 @end

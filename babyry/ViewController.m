@@ -59,7 +59,7 @@
     } else {
         NSLog(@"Comeback! User logged in user_id:%@", _currentUser.objectId);
         // falimyIdを取得
-        NSLog(@"%@", _currentUser);
+        //NSLog(@"%@", _currentUser);
         NSLog(@"familyId is %@", _currentUser[@"familyId"]);
         if (!_currentUser[@"familyId"]) {
             NSLog(@"No FamilyId! これはありえないけど何らかの処理を入れないと駄目");
@@ -77,7 +77,6 @@
         // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
             _childArrayFoundFromParse = [childQuery findObjects];
-            NSLog(@"aaaaaaaaaaaa %@", _childArrayFoundFromParse);
         
             // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
             // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
@@ -111,10 +110,11 @@
                     //[self getCachedImage];
                     // uploadから復帰する時はParseからとらない
                     // parseの更新が遅延している可能性があるため
+                    NSLog(@"_is_retrun_from_upload %d", _is_return_from_upload);
                     if (_is_return_from_upload == 0) {
                         [self getParseData];
-                        _is_return_from_upload = 0;
                     }
+                    _is_return_from_upload = 0;
                 }
             }];
         }
