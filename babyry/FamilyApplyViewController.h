@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 
 @interface FamilyApplyViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UISegmentedControl *roleControl;
 @property (weak, nonatomic) IBOutlet UIScrollView *searchResultContainer;
 @property (weak, nonatomic) IBOutlet UIView *searchContainerView;
 @property (weak, nonatomic) IBOutlet UIView *selfUserIdContainer;

@@ -175,16 +175,19 @@
     
     searchedUserObject[@"familyId"] = familyId;
     
+    NSString *role = [self getSelectedRole];
+    NSLog(@"role : %@", role);
+    
     PFObject *currentUser = [PFUser currentUser];
     // userテーブルの自分のレコードを更新
     currentUser[@"familyId"] = familyId;
+    currentUser[@"role"] = role;
     [currentUser save];
     // OKだったらfamilyApplyへinesrt
     PFObject *familyApply = [PFObject objectWithClassName:@"FamilyApply"];
     familyApply[@"userId"] = currentUser[@"userId"];
     familyApply[@"inviteeUserId"] = searchedUserObject[@"userId"];
     familyApply[@"status"] = @"applying"; // 申請中
-    familyApply[@"familyId"] = familyId;
     NSLog(@"familyApply : %@", familyApply);
     [familyApply save];
     // そのうちpush通知送る
@@ -225,6 +228,24 @@
     for (UIView *view in [self.searchResultContainer subviews]) {
         [view removeFromSuperview];
     }
+}
+
+- (NSString *)getSelectedRole
+{
+    NSString *role;
+    switch(self.roleControl.selectedSegmentIndex) {
+        case 0:
+            // uploader
+            role = @"uploader";
+            break;
+        case 1:
+            role = @"chooser";
+            break;
+        default:
+            role = @"uploader";
+            break;
+    }
+    return role;
 }
 
 @end
