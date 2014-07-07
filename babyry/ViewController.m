@@ -67,6 +67,14 @@
             return;
         }
         
+        // roleを取得
+        NSLog(@"role is %@", _currentUser[@"role"]);
+        if (!_currentUser[@"role"]) {
+            NSLog(@"No role! これはありえないけど何らかの処理を入れないと駄目");
+            [self openEtc];
+            return;
+        }
+        
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
         [childQuery whereKey:@"familyId" equalTo:_currentUser[@"familyId"]];

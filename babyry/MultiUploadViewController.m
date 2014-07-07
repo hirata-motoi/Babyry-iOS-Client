@@ -79,6 +79,14 @@
     
     // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload
     [self updateImagesFromParse];
+    
+    // role で出し分けるものたち
+    if ([[PFUser currentUser][@"role"] isEqualToString:@"uploader"]) {
+        _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
+    } else if ([[PFUser currentUser][@"role"] isEqualToString:@"chooser"]) {
+        _multiUploadButtonLabel.hidden = YES;
+        _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -136,15 +144,17 @@
 - (IBAction)multiUploadButton:(id)sender {
     NSLog(@"multiUploadButton");
     
-    _albumTableView = [[UITableView alloc] init];
-    _albumTableView.delegate = self;
-    _albumTableView.dataSource = self;
-    _albumTableView.backgroundColor = [UIColor whiteColor];
-    CGRect frame = self.view.frame;
-    frame.origin.y += 50;
-    frame.size.height -= 50*2;
-    _albumTableView.frame = frame;
-    [self.view addSubview:_albumTableView];
+    if ([[PFUser currentUser][@"role"] isEqualToString:@"uploader"]) {
+        _albumTableView = [[UITableView alloc] init];
+        _albumTableView.delegate = self;
+        _albumTableView.dataSource = self;
+        _albumTableView.backgroundColor = [UIColor whiteColor];
+        CGRect frame = self.view.frame;
+        frame.origin.y += 50;
+        frame.size.height -= 50*2;
+        _albumTableView.frame = frame;
+        [self.view addSubview:_albumTableView];
+    }
 }
 
 - (IBAction)testButton:(id)sender {
@@ -326,59 +336,63 @@
 -(void)handleDoubleTap:(id) sender {
     NSLog(@"double tap %d", [[sender view] tag]);
     
-    _bestImageIndex = [[sender view] tag];
-    
-    // change label
-    _bestShotLabelView.frame = [sender view].frame;
-    [_multiUploadedImages addSubview:_bestShotLabelView];
-    // update Parse
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-    childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
-    [childImageQuery orderByAscending:@"createdAt"];
-    [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if(!error) {
-            int index = 0;
-            for (PFObject *object in objects) {
-                if (index == [[sender view] tag]) {
-                    NSLog(@"choosed %@", object.objectId);
-                    if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
-                        object[@"bestFlag"] =  @"choosed";
-                        [object saveInBackground];
+    // role bbbのみダブルタップ可能
+    if ([[PFUser currentUser][@"role"] isEqualToString:@"chooser"]) {
+        
+        _bestImageIndex = [[sender view] tag];
+        
+        // change label
+        _bestShotLabelView.frame = [sender view].frame;
+        [_multiUploadedImages addSubview:_bestShotLabelView];
+        // update Parse
+        PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+        [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+        [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+        [childImageQuery orderByAscending:@"createdAt"];
+        [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if(!error) {
+                int index = 0;
+                for (PFObject *object in objects) {
+                    if (index == [[sender view] tag]) {
+                        NSLog(@"choosed %@", object.objectId);
+                        if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
+                            object[@"bestFlag"] =  @"choosed";
+                            [object saveInBackground];
+                        }
+                    } else {
+                        NSLog(@"unchoosed %@", object.objectId);
+                        if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
+                            object[@"bestFlag"] =  @"unchoosed";
+                            [object saveInBackground];
+                        }
                     }
-                } else {
-                    NSLog(@"unchoosed %@", object.objectId);
-                    if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
-                        object[@"bestFlag"] =  @"unchoosed";
-                        [object saveInBackground];
-                    }
+                    index++;
                 }
-                index++;
+            } else {
+                NSLog(@"error at double tap %@", error);
             }
-        } else {
-            NSLog(@"error at double tap %@", error);
-        }
-    }];
-    
-    // set image cache
-    NSData *thumbData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, [[sender view] tag]]];
-    UIImage *thumbImage = [UIImage imageWithData:thumbData];
-    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
-    
-    // topのviewに設定する
-    // このやり方でいいのかは不明 (UploadViewControllerと同じ処理、ここなおすならそっちも直す)
-    ViewController *pvc = (ViewController *)[self presentingViewController];
-    if (pvc) {
-        int childIndex = pvc.currentPageIndex;
-        for (int i = 0; i < [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] count]; i++){
-            if ([[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i] isEqualToString:_date]) {
-                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i]);
-                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] objectAtIndex:i]);
-                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
-                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] objectAtIndex:i]);
-                // サムネイル(キャッシュ)をとりあえず入れる
-                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:[UIImage imageWithData:thumbData]];
+        }];
+        
+        // set image cache
+        NSData *thumbData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, [[sender view] tag]]];
+        UIImage *thumbImage = [UIImage imageWithData:thumbData];
+        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+        
+        // topのviewに設定する
+        // このやり方でいいのかは不明 (UploadViewControllerと同じ処理、ここなおすならそっちも直す)
+        ViewController *pvc = (ViewController *)[self presentingViewController];
+        if (pvc) {
+            int childIndex = pvc.currentPageIndex;
+            for (int i = 0; i < [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] count]; i++){
+                if ([[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i] isEqualToString:_date]) {
+                    //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i]);
+                    //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] objectAtIndex:i]);
+                    [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
+                    //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] objectAtIndex:i]);
+                    // サムネイル(キャッシュ)をとりあえず入れる
+                    [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:[UIImage imageWithData:thumbData]];
+                }
             }
         }
     }

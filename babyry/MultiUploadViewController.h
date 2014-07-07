@@ -15,12 +15,14 @@
 - (IBAction)multiUploadViewBackButton:(id)sender;
 - (IBAction)multiUploadButton:(id)sender;
 - (IBAction)testButton:(id)sender;
+@property (strong, nonatomic) IBOutlet UIButton *multiUploadButtonLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
 
 @property (strong, nonatomic) IBOutlet UIView *uploadProgressView;
 @property (strong, nonatomic) IBOutlet UIProgressView *uploadPregressBar;
+@property (strong, nonatomic) IBOutlet UILabel *explainLabel;
 
 @property NSString *childObjectId;
 @property NSString *name;
