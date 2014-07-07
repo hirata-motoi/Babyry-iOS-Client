@@ -143,7 +143,11 @@
 // Sent to the delegate when a PFUser is logged in.
 // ログイン後の処理
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
-    //NSLog(@"didLogInUser");
+    // facebook, twitterでの登録時にはuserIdが発行されないのでココで発行する
+    if (user[@"userId"] == nil) {
+        user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+        [user save];
+    }
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
