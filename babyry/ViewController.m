@@ -11,6 +11,8 @@
 #import "EtcViewController.h"
 #import "IdIssue.h"
 #import "FamilyApplyViewController.h"
+#import "MaintenanceViewController.h"
+#import "Config.h"
 
 @interface ViewController ()
 
@@ -51,6 +53,13 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     NSLog(@"viewDidAppear _only_first_load : %d _is_return_from_upload : %d", _only_first_load, _is_return_from_upload);
+    
+    // メンテナンス状態かどうか確認
+    if([[Config getValue:@"maintenance"] isEqualToString:@"ON"]) {
+        MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
+        [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+        return;
+    }
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in

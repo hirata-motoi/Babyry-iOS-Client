@@ -15,6 +15,8 @@
 		8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A6194EC4420010F516 /* AlbumViewController.m */; };
 		8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A9194F56620010F516 /* ImageTrimming.m */; };
 		8814A9AD195812E60010F516 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9AC195812E60010F516 /* SettingViewController.m */; };
+		882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A22196B796E00E07D60 /* MaintenanceViewController.m */; };
+		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
@@ -76,6 +78,10 @@
 		8814A9A9194F56620010F516 /* ImageTrimming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageTrimming.m; sourceTree = "<group>"; };
 		8814A9AB195812E60010F516 /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		8814A9AC195812E60010F516 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
+		882A6A21196B796E00E07D60 /* MaintenanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaintenanceViewController.h; sourceTree = "<group>"; };
+		882A6A22196B796E00E07D60 /* MaintenanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaintenanceViewController.m; sourceTree = "<group>"; };
+		882A6A24196B7D4A00E07D60 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		882A6A25196B7D4A00E07D60 /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Config.m; sourceTree = "<group>"; };
 		8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadPickerViewController.h; sourceTree = "<group>"; };
 		8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadPickerViewController.m; sourceTree = "<group>"; };
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -171,6 +177,8 @@
 				F261A883196513F60072BBD2 /* IdIssue.m */,
 				F261A886196523110072BBD2 /* NSObject+Retry.h */,
 				F261A887196523110072BBD2 /* NSObject+Retry.m */,
+				882A6A24196B7D4A00E07D60 /* Config.h */,
+				882A6A25196B7D4A00E07D60 /* Config.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -249,6 +257,8 @@
 				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
 				8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */,
 				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
+				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
+				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -384,6 +394,7 @@
 			files = (
 				84ABD70A194DCB3100BC3CDA /* EtcViewController.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
+				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
@@ -396,6 +407,7 @@
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
+				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */,
