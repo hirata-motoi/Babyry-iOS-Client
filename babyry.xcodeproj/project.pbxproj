@@ -21,6 +21,7 @@
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
+		88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -89,6 +90,8 @@
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		8899C1EB1941EAAE00CD7909 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
+		88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroFirstViewController.h; sourceTree = "<group>"; };
+		88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroFirstViewController.m; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -262,6 +265,8 @@
 				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
 				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
 				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
+				88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */,
+				88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -409,6 +414,7 @@
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
+				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,

@@ -13,6 +13,7 @@
 #import "FamilyApplyViewController.h"
 #import "MaintenanceViewController.h"
 #import "Config.h"
+#import "IntroFirstViewController.h"
 
 @interface ViewController ()
 
@@ -71,8 +72,9 @@
         //NSLog(@"%@", _currentUser);
         NSLog(@"familyId is %@", _currentUser[@"familyId"]);
         if (!_currentUser[@"familyId"]) {
-            NSLog(@"No FamilyId! これはありえないけど何らかの処理を入れないと駄目");
-            [self openEtc];
+            NSLog(@"ログインしているけどファミリ- IDがない = 最初のログイン");
+            IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
+            [self presentViewController:introFirstViewController animated:YES completion:NULL];
             return;
         }
         
@@ -191,9 +193,11 @@
     // loop through all of the submitted data
     for (id key in info) {
         NSString *field = [info objectForKey:key];
-        if (!field || field.length == 0) { // check completion
-            informationComplete = NO;
-            break;
+        if (![key isEqualToString:@"email"]) {
+            if (!field || field.length == 0) { // check completion
+                informationComplete = NO;
+                break;
+            }
         }
     }
      
@@ -368,6 +372,7 @@
     // Create the sign up view controller
     PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
     [signUpViewController setDelegate:self]; // Set ourselves as the delegate
+    signUpViewController.signUpView.emailField.hidden = YES;
          
     // Assign our sign up controller to be displayed from the login controller
     [logInViewController setSignUpController:signUpViewController];
