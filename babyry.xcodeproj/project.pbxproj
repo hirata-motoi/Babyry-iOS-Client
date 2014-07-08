@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD706194DBE8500BC3CDA /* Sequence.m */; };
-		84ABD70A194DCB3100BC3CDA /* EtcViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD709194DCB3100BC3CDA /* EtcViewController.m */; };
 		84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */; };
 		8814A99A1945469B0010F516 /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9991945469B0010F516 /* ImageCache.m */; };
 		8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A99C194ADB330010F516 /* MultiUploadViewController.m */; };
@@ -44,6 +43,7 @@
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
+		F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -62,8 +62,6 @@
 /* Begin PBXFileReference section */
 		84ABD705194DBE8500BC3CDA /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
 		84ABD706194DBE8500BC3CDA /* Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sequence.m; sourceTree = "<group>"; };
-		84ABD708194DCB3100BC3CDA /* EtcViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EtcViewController.h; sourceTree = "<group>"; };
-		84ABD709194DCB3100BC3CDA /* EtcViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EtcViewController.m; sourceTree = "<group>"; };
 		84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyViewController.h; sourceTree = "<group>"; };
 		84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyViewController.m; sourceTree = "<group>"; };
 		8814A9881944572A0010F516 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -118,6 +116,8 @@
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
 		F20F7642196BC43A00FD2529 /* FamilyRole.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyRole.m; sourceTree = "<group>"; };
+		F20F764A196BF86B00FD2529 /* GlobalSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalSettingViewController.h; sourceTree = "<group>"; };
+		F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlobalSettingViewController.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -242,8 +242,6 @@
 				88B18C8C193814CF00ED630C /* ViewController.m */,
 				88B18C8E193814CF00ED630C /* Images.xcassets */,
 				88B18C7D193814CE00ED630C /* Supporting Files */,
-				84ABD708194DCB3100BC3CDA /* EtcViewController.h */,
-				84ABD709194DCB3100BC3CDA /* EtcViewController.m */,
 				84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */,
 				84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */,
 				8814A9A5194EC4420010F516 /* AlbumViewController.h */,
@@ -254,6 +252,8 @@
 				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
 				8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */,
 				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
+				F20F764A196BF86B00FD2529 /* GlobalSettingViewController.h */,
+				F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -387,7 +387,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84ABD70A194DCB3100BC3CDA /* EtcViewController.m in Sources */,
+				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,

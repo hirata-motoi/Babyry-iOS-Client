@@ -11,11 +11,10 @@
 
 @interface FamilyRole : NSObject
 
++ (PFObject *)getFamilyRole;
 + (NSString *)selfRole;
 + (void)updateCache;
-- (void)createFamilyRole: (NSMutableDictionary *)data;
-- (NSString *)getSelfFamilyRole;
-- (NSString *)getFamilyRoleWithFamilyId: (NSString *)familyId withUserId: (NSString *)userId;
-- (void)fetchFamilyRoleWithBlock:(PFArrayResultBlock)block withFamilyId: (NSString *)familyId;
++ (void)createFamilyRole: (NSMutableDictionary *)data;
+//+ (void)fetchFamilyRoleWithBlock:(PFArrayResultBlock)block withFamilyId: (NSString *)familyId;
 
 @end

@@ -149,7 +149,6 @@
         chooser = inviterUser[@"userId"];
     }
     
-    FamilyRole *familyRole = [[FamilyRole alloc]init];
     PFUser *selfUser = [PFUser currentUser];
     selfUser[@"familyId"] = familyId;
     NSLog(@"save user");
@@ -159,7 +158,7 @@
     NSArray *objects = [[NSArray alloc]initWithObjects:familyId, uploader, chooser , nil];
     NSArray *keys    = [[NSArray alloc]initWithObjects:@"familyId", @"uploader", @"chooser", nil];
     NSMutableDictionary *familyRoleData = [[NSMutableDictionary alloc]initWithObjects:objects forKeys:keys];
-    [familyRole createFamilyRole:familyRoleData];
+    [FamilyRole createFamilyRole:familyRoleData];
     [FamilyRole updateCache]; // 非同期でキャッシュを更新しておく
     
     // FamilyApplyから消す TODO FamilyApply classへの委譲

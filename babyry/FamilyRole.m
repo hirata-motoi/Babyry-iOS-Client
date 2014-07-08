@@ -10,12 +10,18 @@
 
 @implementation FamilyRole
 
-+ (NSString *)selfRole
++ (PFObject *)getFamilyRole
 {
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
     query.cachePolicy = kPFCachePolicyCacheElseNetwork;
     [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
     PFObject *object = [query getFirstObject];
+    return object;
+}
+
++ (NSString *)selfRole
+{
+    PFObject *object = [self getFamilyRole];
     return ([object[@"uploader"] isEqualToString:[PFUser currentUser][@"userId"]]) ? @"uploader" : @"chooser";
 }
 
@@ -28,7 +34,7 @@
     // nothing to return because this method is only for updating cache
 }
 
-- (void)createFamilyRole:(NSMutableDictionary *)data
++ (void)createFamilyRole:(NSMutableDictionary *)data
 {
     PFObject *object = [PFObject objectWithClassName:@"FamilyRole"];
     object[@"familyId"] = data[@"familyId"];
@@ -38,31 +44,12 @@
 }
 
 
-- (NSString *)getSelfFamilyRole
-{
-    NSString *userId   = [PFUser currentUser][@"userId"];
-    NSString *familyId = [PFUser currentUser][@"familyId"];
-    
-    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
-    [query whereKey:@"familyId" equalTo:familyId];
-    PFObject *object = [query getFirstObject];
-    return ([object[@"uploader"] isEqualToString:userId]) ? @"uploader" : @"chooser";
-}
-
-- (NSString *)getFamilyRoleWithFamilyId:(NSString *)familyId withUserId:(NSString *)userId
-{
-    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
-    [query whereKey:@"familyId" equalTo:familyId];
-    PFObject *object = [query getFirstObject];
-    return ([object[@"uploader"] isEqualToString:userId]) ? @"uploader" : @"chooser";
-}
-
-// 非同期でFamiyRoleをfetchして何か処理をする
-- (void)fetchFamilyRoleWithBlock:(PFArrayResultBlock)block withFamilyId:(NSString *)familyId
-{
-    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
-    [query whereKey:@"familyId" equalTo:familyId];
-    [query findObjectsInBackgroundWithBlock:block];
-}
+// 非同期でFamiyRoleをfetchして何か処理をする テストしてないのでちゃんと動くか不明
+//+ (void)fetchFamilyRoleWithBlock:(PFArrayResultBlock)block withFamilyId:(NSString *)familyId
+//{
+//    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
+//    [query whereKey:@"familyId" equalTo:familyId];
+//    [query findObjectsInBackgroundWithBlock:block];
+//}
 
 @end
