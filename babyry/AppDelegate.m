@@ -13,6 +13,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //3.5inchと4inchを読み分けする
+    CGRect rect = [UIScreen mainScreen].bounds;
+    if (rect.size.height == 480) {
+        UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"3_5_inch" bundle:nil];
+        UIViewController* rootViewController = [storyboard instantiateInitialViewController];
+        
+        self.window.rootViewController = rootViewController;
+    }
+    
     // Parse Authentification
     [Parse setApplicationId:@"6Nq3pgivIO1av3NQ4rB0q6gka24Rn7amUqBsc0CP" clientKey:@"mmNJ6HM6PO8zk3MGmUhaa7NfjlDPUpNWtWHtAPVl"];
 

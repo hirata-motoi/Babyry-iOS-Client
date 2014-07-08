@@ -17,6 +17,7 @@
 		8814A9AD195812E60010F516 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9AC195812E60010F516 /* SettingViewController.m */; };
 		882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A22196B796E00E07D60 /* MaintenanceViewController.m */; };
 		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
+		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
@@ -82,6 +83,7 @@
 		882A6A22196B796E00E07D60 /* MaintenanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaintenanceViewController.m; sourceTree = "<group>"; };
 		882A6A24196B7D4A00E07D60 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		882A6A25196B7D4A00E07D60 /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Config.m; sourceTree = "<group>"; };
+		882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = 3_5_inch.storyboard; sourceTree = "<group>"; };
 		8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadPickerViewController.h; sourceTree = "<group>"; };
 		8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadPickerViewController.m; sourceTree = "<group>"; };
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -239,6 +241,7 @@
 				88B89FBC193EDC04009474DC /* UploadViewController.h */,
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
+				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
 				88B89FB6193B2D52009474DC /* PageContentViewController.h */,
 				88B89FB7193B2D52009474DC /* PageContentViewController.m */,
 				88B18C8B193814CF00ED630C /* ViewController.h */,
@@ -378,6 +381,7 @@
 			files = (
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
+				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
