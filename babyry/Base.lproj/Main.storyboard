@@ -753,79 +753,60 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
             </objects>
             <point key="canvasLocation" x="-722" y="-1941"/>
         </scene>
-        <!--Etc View Controller-->
-        <scene sceneID="L0D-yi-O2Y">
+        <!--Maintenance View Controller-->
+        <scene sceneID="q8y-lH-Uex">
             <objects>
-                <viewController storyboardIdentifier="etcViewController" id="9cA-Ld-D40" customClass="EtcViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="N0J-OA-dCQ">
+                <viewController storyboardIdentifier="MaintenanceViewController" id="qo0-hg-Ryd" customClass="MaintenanceViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ahU-Ij-0US">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="8p1-Vc-O2t">
-                                <rect key="frame" x="277" y="28" width="37" height="30"/>
+                            <view contentMode="scaleToFill" id="Igy-Uu-Nt8">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Babyry" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="evE-El-sml">
+                                        <rect key="frame" x="91" y="11" width="138" height="41"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" name="STHeitiTC-Medium" family="Heiti TC" pointSize="30"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.50468709160000003" blue="0.1113311951" alpha="1" colorSpace="calibratedRGB"/>
+                            </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="yJ6-eI-Utc">
+                                <rect key="frame" x="20" y="82" width="280" height="81"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="close">
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="1k7-6f-qMN">
+                                <rect key="frame" x="20" y="187" width="280" height="262"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Ire-wB-3Li">
+                                <rect key="frame" x="112" y="493" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="リロード">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="M3u-xg-IK1">
-                                <rect key="frame" x="138" y="426" width="44" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="logout">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="TcV-0Z-z54">
-                                <rect key="frame" x="115" y="66" width="83" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="family apply">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="83R-jG-gCO">
-                                <rect key="frame" x="103" y="98" width="106" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="family apply list">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="mK2-cY-4cc">
-                                <rect key="frame" x="124" y="367" width="74" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="role switch">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="rl6-Mh-NE0">
-                                <rect key="frame" x="7" y="0.0" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <items>
-                                    <barButtonItem systemItem="done" id="r3z-AR-57c"/>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Y8r-gv-wfG"/>
-                                </items>
-                            </toolbar>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="p8e-zc-gDo">
-                                <rect key="frame" x="138" y="210" width="47" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="setting">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
+                                <connections>
+                                    <action selector="maintenanceReloadButton:" destination="qo0-hg-Ryd" eventType="touchUpInside" id="JlG-3r-6XA"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="KK0-LK-6X8"/>
                     <connections>
-                        <outlet property="closeEtcModalButton" destination="8p1-Vc-O2t" id="6Zx-ao-Sav"/>
-                        <outlet property="familyApplyListButton" destination="83R-jG-gCO" id="FXJ-jo-qBq"/>
-                        <outlet property="familyApplyOpenButton" destination="TcV-0Z-z54" id="0mp-fU-zDN"/>
-                        <outlet property="globalSettingViewButton" destination="p8e-zc-gDo" id="V7r-nH-NOy"/>
-                        <outlet property="logoutButton" destination="M3u-xg-IK1" id="xkQ-b2-SC5"/>
+                        <outlet property="maintenanceImageView" destination="1k7-6f-qMN" id="VZK-5A-pnw"/>
+                        <outlet property="maintenanceViewTextView" destination="yJ6-eI-Utc" id="5Qh-ni-VWg"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Cqh-FZ-6Ua" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6UL-mc-rhB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-302" y="-1938"/>
+            <point key="canvasLocation" x="-1218" y="-1938"/>
         </scene>
         <!--Family Apply View Controller-->
         <scene sceneID="nZ3-9m-3gG">

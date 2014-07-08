@@ -36,7 +36,6 @@
     
     float imageViewAspect = _uploadedImageView.frame.size.width/_uploadedImageView.frame.size.height;
     float imageAspect = _uploadedImage.size.width/_uploadedImage.size.height;
-    //NSLog(@"aspect %f", imageViewAspect);
     
     // 横長バージョン
     // 枠より、画像の方が横長、枠の縦を縮める
@@ -53,8 +52,6 @@
     }
     
     // set uploadedImage
-    //NSLog(@"_uploadedImage %f %f", _uploadedImage.size.width, _uploadedImage.size.height);
-    //NSLog(@"_uploadedImageView %f %f", _uploadedImageView.frame.size.width, _uploadedImageView.frame.size.height);
     CGRect frame = _uploadedImageView.frame;
     frame.origin.x = (self.view.frame.size.width - _uploadedImageView.frame.size.width)/2;
     frame.origin.y = (self.view.frame.size.height - _uploadedImageView.frame.size.height)/2;

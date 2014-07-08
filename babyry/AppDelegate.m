@@ -13,6 +13,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //3.5inchと4inchを読み分けする
+    CGRect rect = [UIScreen mainScreen].bounds;
+    if (rect.size.height == 480) {
+        UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"3_5_inch" bundle:nil];
+        UIViewController* rootViewController = [storyboard instantiateInitialViewController];
+        
+        self.window.rootViewController = rootViewController;
+    }
+    
     // Parse Authentification
     [Parse setApplicationId:@"6Nq3pgivIO1av3NQ4rB0q6gka24Rn7amUqBsc0CP" clientKey:@"mmNJ6HM6PO8zk3MGmUhaa7NfjlDPUpNWtWHtAPVl"];
 
@@ -27,9 +36,36 @@
     pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
     pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
     pageControl.backgroundColor = [UIColor whiteColor];
+    
+    // Register for push notifications
+    [application unregisterForRemoteNotifications];
+    [application registerForRemoteNotificationTypes:
+     UIRemoteNotificationTypeBadge |
+     UIRemoteNotificationTypeAlert |
+     UIRemoteNotificationTypeSound |
+     UIRemoteNotificationTypeNewsstandContentAvailability];
+    
+    //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     // Override point for customization after application launch.
     return YES;
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
+    // Store the deviceToken in the current installation and save it to Parse.
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:newDeviceToken];
+    [currentInstallation saveInBackground];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [PFPush handlePush:userInfo];
+    
+    /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
+    NSInteger badgeNumber = [application applicationIconBadgeNumber];
+    [application setApplicationIconBadgeNumber:++badgeNumber];
+    NSLog(@"receive remote notification %d", badgeNumber);
+    */
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

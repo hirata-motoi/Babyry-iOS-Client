@@ -14,6 +14,9 @@
 		8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A6194EC4420010F516 /* AlbumViewController.m */; };
 		8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A9194F56620010F516 /* ImageTrimming.m */; };
 		8814A9AD195812E60010F516 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9AC195812E60010F516 /* SettingViewController.m */; };
+		882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A22196B796E00E07D60 /* MaintenanceViewController.m */; };
+		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
+		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
@@ -75,6 +78,11 @@
 		8814A9A9194F56620010F516 /* ImageTrimming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageTrimming.m; sourceTree = "<group>"; };
 		8814A9AB195812E60010F516 /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		8814A9AC195812E60010F516 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
+		882A6A21196B796E00E07D60 /* MaintenanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaintenanceViewController.h; sourceTree = "<group>"; };
+		882A6A22196B796E00E07D60 /* MaintenanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaintenanceViewController.m; sourceTree = "<group>"; };
+		882A6A24196B7D4A00E07D60 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		882A6A25196B7D4A00E07D60 /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Config.m; sourceTree = "<group>"; };
+		882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = 3_5_inch.storyboard; sourceTree = "<group>"; };
 		8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadPickerViewController.h; sourceTree = "<group>"; };
 		8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadPickerViewController.m; sourceTree = "<group>"; };
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -176,6 +184,8 @@
 				F261A887196523110072BBD2 /* NSObject+Retry.m */,
 				F20F7641196BC43A00FD2529 /* FamilyRole.h */,
 				F20F7642196BC43A00FD2529 /* FamilyRole.m */,
+				882A6A24196B7D4A00E07D60 /* Config.h */,
+				882A6A25196B7D4A00E07D60 /* Config.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -236,6 +246,7 @@
 				88B89FBC193EDC04009474DC /* UploadViewController.h */,
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
+				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
 				88B89FB6193B2D52009474DC /* PageContentViewController.h */,
 				88B89FB7193B2D52009474DC /* PageContentViewController.m */,
 				88B18C8B193814CF00ED630C /* ViewController.h */,
@@ -254,6 +265,8 @@
 				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
 				F20F764A196BF86B00FD2529 /* GlobalSettingViewController.h */,
 				F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */,
+				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
+				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -336,6 +349,11 @@
 				TargetAttributes = {
 					88B18C72193814CE00ED630C = {
 						DevelopmentTeam = 3H7UC4S7U9;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					88B18C93193814CF00ED630C = {
 						TestTargetID = 88B18C72193814CE00ED630C;
@@ -368,6 +386,7 @@
 			files = (
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
+				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -389,6 +408,7 @@
 			files = (
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
+				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
@@ -401,6 +421,7 @@
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
+				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
 				F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
@@ -529,8 +550,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: jp.co.meaning.babyry";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: jp.co.meaning.babyry";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -538,9 +559,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "D7B42AC4-AAFE-4C26-A915-D2E8E931516E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -550,8 +571,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: jp.co.meaning.babyry";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: jp.co.meaning.babyry";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -559,9 +580,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "D7B42AC4-AAFE-4C26-A915-D2E8E931516E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
