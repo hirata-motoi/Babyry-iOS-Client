@@ -341,6 +341,11 @@
 				TargetAttributes = {
 					88B18C72193814CE00ED630C = {
 						DevelopmentTeam = 3H7UC4S7U9;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					88B18C93193814CF00ED630C = {
 						TestTargetID = 88B18C72193814CE00ED630C;
@@ -535,8 +540,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: jp.co.meaning.babyry";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: jp.co.meaning.babyry";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -546,7 +551,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "D7B42AC4-AAFE-4C26-A915-D2E8E931516E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -556,8 +561,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: jp.co.meaning.babyry";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: jp.co.meaning.babyry";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -567,7 +572,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "D7B42AC4-AAFE-4C26-A915-D2E8E931516E";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

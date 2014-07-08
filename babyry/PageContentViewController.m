@@ -67,24 +67,6 @@
     ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
     vc.currentPageIndex = _pageIndex;
 }
-/*
--(void)viewDidDisappear:(BOOL)animated
-{
-    NSLog(@"viewDidAppear %d", _pageIndex);
-    for (UIView *view in [self.view subviews]) {
-        NSLog(@"remove c view: %@", view);
-        for (UIView *vie in [view subviews]) {
-            NSLog(@"remove cc view : %@", vie);
-            for (UIView *vi in [vie subviews]) {
-                NSLog(@"remove ccc view : %@", vi);
-                [vi removeFromSuperview];
-            }
-            [vie removeFromSuperview];
-        }
-        [view removeFromSuperview];
-    }
-}
-*/
 
 -(void)createCollectionView
 {

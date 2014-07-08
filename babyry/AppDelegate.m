@@ -27,9 +27,36 @@
     pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
     pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
     pageControl.backgroundColor = [UIColor whiteColor];
+    
+    // Register for push notifications
+    [application unregisterForRemoteNotifications];
+    [application registerForRemoteNotificationTypes:
+     UIRemoteNotificationTypeBadge |
+     UIRemoteNotificationTypeAlert |
+     UIRemoteNotificationTypeSound |
+     UIRemoteNotificationTypeNewsstandContentAvailability];
+    
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     // Override point for customization after application launch.
     return YES;
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
+    // Store the deviceToken in the current installation and save it to Parse.
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:newDeviceToken];
+    [currentInstallation saveInBackground];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [PFPush handlePush:userInfo];
+    
+    /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
+    NSInteger badgeNumber = [application applicationIconBadgeNumber];
+    [application setApplicationIconBadgeNumber:++badgeNumber];
+    NSLog(@"receive remote notification %d", badgeNumber);
+    */
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
