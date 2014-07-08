@@ -45,7 +45,7 @@
      UIRemoteNotificationTypeSound |
      UIRemoteNotificationTypeNewsstandContentAvailability];
     
-    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     // Override point for customization after application launch.
     return YES;
