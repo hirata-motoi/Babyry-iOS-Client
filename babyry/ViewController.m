@@ -8,9 +8,10 @@
 
 #import "ViewController.h"
 #import "ImageCache.h"
-#import "EtcViewController.h"
+#import "GlobalSettingViewController.h"
 #import "IdIssue.h"
 #import "FamilyApplyViewController.h"
+#import "FamilyRole.h"
 #import "MaintenanceViewController.h"
 #import "Config.h"
 #import "IntroFirstViewController.h"
@@ -78,13 +79,8 @@
             return;
         }
         
-        // roleを取得
-        NSLog(@"role is %@", _currentUser[@"role"]);
-        if (!_currentUser[@"role"]) {
-            NSLog(@"No role! これはありえないけど何らかの処理を入れないと駄目");
-            [self openEtc];
-            return;
-        }
+        // roleを更新
+        [FamilyRole updateCache];
         
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
@@ -406,10 +402,15 @@
     [self viewDidAppear:true];
 }
 
--(void)openEtc
+
+- (void)openGlobalSettingView
 {
-    EtcViewController * etcViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"etcViewController"];
-    [self presentViewController:etcViewController animated:true completion:nil];
+    NSLog(@"openGlobalSettingView start");
+    GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
+    
+    NSLog(@"openGlobalSettingView start 2");
+    [self presentViewController:globalSettingViewController animated:true completion:nil];
+    NSLog(@"openGlobalSettingView start 3");
 }
 
 - (void) getWeekDate
@@ -597,9 +598,9 @@
         NSLog(@"addChild ボタン追加");
         //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
     
-        // logoutButton
-        NSLog(@"etc open ボタン追加");
-        [self.openEtcButton addTarget:self action:@selector(openEtc) forControlEvents:UIControlEventTouchUpInside];
+        UIImage *settingImage = [UIImage imageNamed:@"CogWheel"];
+        [self.openGlobalSettingViewButton setImage:settingImage forState:UIControlStateNormal];
+        [self.openGlobalSettingViewButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
     } else {
         PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
         NSArray *viewControllers = @[startingViewController];

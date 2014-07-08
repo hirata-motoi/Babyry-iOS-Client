@@ -11,7 +11,8 @@
 #import "PageContentViewController.h"
 
 @interface ViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UIPageViewControllerDataSource>
-@property (weak, nonatomic) IBOutlet UIButton *openEtcButton;
+@property (weak, nonatomic) IBOutlet UIButton *openGlobalSettingViewButton;
+
 
 //- (IBAction)startWalkthrough:(id)sender;
 

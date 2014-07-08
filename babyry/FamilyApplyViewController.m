@@ -39,7 +39,7 @@
     NSLog(@"showSelfUserId start");
     [self showSelfUserId];
     
-    UIImage *btnImage = [UIImage imageNamed:@"ecalbt008_005.png"];
+//    UIImage *btnImage = [UIImage imageNamed:@"ecalbt008_005.png"];
     [self setupSearchForm];
 }
 
@@ -170,25 +170,20 @@
 - (void)sendApply
 {
     NSString *familyId = [self createFamilyId];
-    
-    NSLog(@"familyId : %@", familyId);
-    
     searchedUserObject[@"familyId"] = familyId;
-    
-    NSString *role = [self getSelectedRole];
-    NSLog(@"role : %@", role);
     
     PFObject *currentUser = [PFUser currentUser];
     // userテーブルの自分のレコードを更新
     currentUser[@"familyId"] = familyId;
-    currentUser[@"role"] = role;
     [currentUser save];
+    
     // OKだったらfamilyApplyへinesrt
     PFObject *familyApply = [PFObject objectWithClassName:@"FamilyApply"];
     familyApply[@"userId"] = currentUser[@"userId"];
     familyApply[@"inviteeUserId"] = searchedUserObject[@"userId"];
     familyApply[@"status"] = @"applying"; // 申請中
-    NSLog(@"familyApply : %@", familyApply);
+    familyApply[@"role"] = [self getSelectedRole];
+
     [familyApply save];
     // そのうちpush通知送る
     
