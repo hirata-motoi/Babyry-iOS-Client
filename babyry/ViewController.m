@@ -11,6 +11,7 @@
 #import "EtcViewController.h"
 #import "IdIssue.h"
 #import "FamilyApplyViewController.h"
+#import "FamilyRole.h"
 
 @interface ViewController ()
 
@@ -67,13 +68,8 @@
             return;
         }
         
-        // roleを取得
-        NSLog(@"role is %@", _currentUser[@"role"]);
-        if (!_currentUser[@"role"]) {
-            NSLog(@"No role! これはありえないけど何らかの処理を入れないと駄目");
-            [self openEtc];
-            return;
-        }
+        // roleを更新
+        [FamilyRole updateCache];
         
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];

@@ -7,6 +7,7 @@
 //
 
 #import "FamilyApplyListViewController.h"
+#import "FamilyRole.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -15,6 +16,7 @@
 @implementation FamilyApplyListViewController
 
 @synthesize inviterUsers;
+@synthesize familyApplys;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -56,11 +58,13 @@
         NSLog(@"招待したユーザが存在しない");
     } else {
         NSLog(@"found invite user");
-        NSString *inviterUserId = objects[0][@"userId"];
         NSMutableArray * inviterUserIds = [[NSMutableArray alloc] init];
         for (int i = 0; i < objects.count; i++) {
             NSString *inviterUserId = objects[i][@"userId"];
             [inviterUserIds addObject:inviterUserId];
+            
+            // 後からfamilyApplyのレコードを参照できるように保持しておく
+            [familyApplys setObject:objects[i] forKey:inviterUserId];
         }
         
         [self setupInviterUsers:inviterUserIds];
@@ -95,14 +99,19 @@
                                       reuseIdentifier:CellIdentifier];
     }
     
-    cell.textLabel.text = self.inviterUsers[indexPath.row][@"username"];
+    // username
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(10, 10, 160, 40)];
+    label.text = self.inviterUsers[indexPath.row][@"username"];
+    [cell.contentView addSubview:label];
     
+    // 承認ボタン
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     btn.frame = CGRectMake(250, 10, 50, 30);
     [btn setTitle:@"承認" forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(admit:event:) forControlEvents:UIControlEventTouchDown];
     [cell.contentView addSubview:btn];
     
+    // 保留ボタン
     UIButton *rejectBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     rejectBtn.frame = CGRectMake(190, 10, 50, 30);
     [rejectBtn setTitle:@"保留" forState:UIControlStateNormal];
@@ -119,28 +128,41 @@
 
 - (void)admit: (UIButton *)sender event:(UIEvent *)event
 {
-    NSLog(@"admit");
     UITouch *touch = [[event allTouches] anyObject];
     CGPoint point = [touch locationInView:_familyApplyList];
     NSIndexPath *indexPath = [_familyApplyList indexPathForRowAtPoint:point];
-    
-    NSLog(@"update start");
     
     // 自分の行のfamilyIdを更新
     PFObject *inviterUser = [inviterUsers objectAtIndex:indexPath.row];
     NSLog(@"inviterUser : %@", inviterUser);
     NSString *familyId = inviterUser[@"familyId"];
 
-    // そのうちこの辺りの処理はすべてRole classに隠蔽したい
-    NSString *role = ([inviterUser[@"role"] isEqualToString:@"uploader"]) ? @"chooser" : @"uploader";
-
+    // そのうちこの辺りの処理はすべてFamilyRole classに隠蔽したい
+    NSString *inviterRole = [familyApplys objectForKey:inviterUser[@"userId"]][@"role"];
+    NSString *uploader;
+    NSString *chooser;
+    if ([inviterRole isEqualToString:@"uploader"]) {
+        uploader = inviterUser[@"userId"];
+        chooser  = [PFUser currentUser][@"userId"];
+    } else {
+        uploader  = [PFUser currentUser][@"userId"];
+        chooser = inviterUser[@"userId"];
+    }
+    
+    FamilyRole *familyRole = [[FamilyRole alloc]init];
     PFUser *selfUser = [PFUser currentUser];
     selfUser[@"familyId"] = familyId;
-    selfUser[@"role"] = role;
     NSLog(@"save user");
     [selfUser save];
     
-    // FamilyApplyから消す
+    // FamilyRoleにinsert
+    NSArray *objects = [[NSArray alloc]initWithObjects:familyId, uploader, chooser , nil];
+    NSArray *keys    = [[NSArray alloc]initWithObjects:@"familyId", @"uploader", @"chooser", nil];
+    NSMutableDictionary *familyRoleData = [[NSMutableDictionary alloc]initWithObjects:objects forKeys:keys];
+    [familyRole createFamilyRole:familyRoleData];
+    [FamilyRole updateCache]; // 非同期でキャッシュを更新しておく
+    
+    // FamilyApplyから消す TODO FamilyApply classへの委譲
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
     [query whereKey:@"inviteeUserId" equalTo:selfUser[@"userId"]];
     NSArray *familyApplyRows = [query findObjects];

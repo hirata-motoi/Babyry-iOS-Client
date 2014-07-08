@@ -11,6 +11,7 @@
 #import "ViewController.h"
 #import "ImageCache.h"
 #import "MultiUploadPickerViewController.h"
+#import "FamilyRole.h"
 
 @interface MultiUploadViewController ()
 
@@ -79,11 +80,12 @@
     
     // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload
     [self updateImagesFromParse];
+
     
     // role で出し分けるものたち
-    if ([[PFUser currentUser][@"role"] isEqualToString:@"uploader"]) {
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
-    } else if ([[PFUser currentUser][@"role"] isEqualToString:@"chooser"]) {
+    } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         _multiUploadButtonLabel.hidden = YES;
         _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
     }
@@ -144,7 +146,7 @@
 - (IBAction)multiUploadButton:(id)sender {
     NSLog(@"multiUploadButton");
     
-    if ([[PFUser currentUser][@"role"] isEqualToString:@"uploader"]) {
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _albumTableView = [[UITableView alloc] init];
         _albumTableView.delegate = self;
         _albumTableView.dataSource = self;
@@ -337,7 +339,7 @@
     NSLog(@"double tap %d", [[sender view] tag]);
     
     // role bbbのみダブルタップ可能
-    if ([[PFUser currentUser][@"role"] isEqualToString:@"chooser"]) {
+    if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         
         _bestImageIndex = [[sender view] tag];
         
