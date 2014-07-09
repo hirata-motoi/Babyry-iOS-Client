@@ -57,12 +57,19 @@
     NSLog(@"viewDidAppear _only_first_load : %d _is_return_from_upload : %d", _only_first_load, _is_return_from_upload);
     
     // メンテナンス状態かどうか確認
-    if([[Config getValue:@"maintenance"] isEqualToString:@"ON"]) {
-        MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
-        [self presentViewController:maintenanceViewController animated:YES completion:NULL];
-        return;
-    }
-
+    // バックグラウンドで行わないと一瞬固まる
+    PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
+    maintenanceQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    [maintenanceQuery whereKey:@"key" equalTo:@"maintenance"];
+    [maintenanceQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if([objects count] == 1) {
+            if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
+                MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
+                [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+            }
+        }
+    }];
+    
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
         NSLog(@"User Not Logged In");

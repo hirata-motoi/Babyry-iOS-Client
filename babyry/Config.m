@@ -7,6 +7,7 @@
 //
 
 #import "Config.h"
+#import "MaintenanceViewController.h"
 
 @implementation Config
 
