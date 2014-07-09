@@ -7,10 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Parse/Parse.h>
 
-@interface IntroFirstViewController : UIViewController
-@property (strong, nonatomic) IBOutlet UITextView *introFirstViewTopLabel;
-@property (strong, nonatomic) IBOutlet UILabel *inviteByLineLabel;
-@property (strong, nonatomic) IBOutlet UILabel *inviteByMailLabel;
+@interface IntroFirstViewController : UIViewController <UIPageViewControllerDataSource>
+@property (strong, nonatomic) IBOutlet UILabel *inviteLabel;
+@property (strong, nonatomic) IBOutlet UILabel *invitedLabel;
+
+@property (strong, nonatomic) UIPageViewController *pageViewController;
+//@property (strong, nonatomic) UIViewController *introViewController;
+
+@property int introPageIndex;
+
+@property NSTimer *tm;
 
 @end

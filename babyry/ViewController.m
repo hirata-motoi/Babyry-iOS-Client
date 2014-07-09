@@ -185,15 +185,13 @@
 // 以下のメソッドはLogin系と同じ
 - (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
     BOOL informationComplete = YES;
-     
+    
     // loop through all of the submitted data
     for (id key in info) {
         NSString *field = [info objectForKey:key];
-        if (![key isEqualToString:@"email"]) {
-            if (!field || field.length == 0) { // check completion
-                informationComplete = NO;
-                break;
-            }
+        if (!field || field.length == 0) { // check completion
+            informationComplete = NO;
+            break;
         }
     }
      
@@ -314,7 +312,7 @@
     // Create the log in view controller
     PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
     [logInViewController setDelegate:self]; // Set ourselves as the delegate
-    [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"friends_about_me", nil]];
+    [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"public_profile", nil]];
     [logInViewController setFields:
         PFLogInFieldsTwitter |
         PFLogInFieldsFacebook |
@@ -368,7 +366,6 @@
     // Create the sign up view controller
     PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
     [signUpViewController setDelegate:self]; // Set ourselves as the delegate
-    signUpViewController.signUpView.emailField.hidden = YES;
          
     // Assign our sign up controller to be displayed from the login controller
     [logInViewController setSignUpController:signUpViewController];

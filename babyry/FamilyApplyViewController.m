@@ -213,6 +213,7 @@
     searchForm = [[UITextField alloc]initWithFrame:CGRectMake(12, 10, 215, 30)];
     searchForm.clearButtonMode = UITextFieldViewModeAlways;
     searchForm.placeholder = @"ユーザ検索";
+    searchForm.keyboardType = UIKeyboardTypeASCIICapable;
     searchForm.opaque = NO;
     searchForm.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
     [self.searchContainerView addSubview:searchForm];
