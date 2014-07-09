@@ -62,12 +62,28 @@
         [self presentViewController:maintenanceViewController animated:YES completion:NULL];
         return;
     }
-    
+
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
         NSLog(@"User Not Logged In");
         [self openLoginView];
     } else {
+        /*/////////////////////////////いちいちメール確認必要だからコメント//////////////////////////////////////
+        // emailが確認されているか
+        // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
+        NSLog(@"currentUserStatus %@", _currentUser);
+        if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
+            NSLog(@"Parseにフォアグランドでとりにいく");
+            [_currentUser refresh];
+            NSLog(@"refleshed currentUser %@", _currentUser);
+            if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
+                NSLog(@"mailがまだ確認されていません");
+                [self setNotVerifiedPage];
+                return;
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////////*/
+        
         NSLog(@"Comeback! User logged in user_id:%@", _currentUser.objectId);
         // falimyIdを取得
         //NSLog(@"%@", _currentUser);
@@ -603,6 +619,35 @@
         NSArray *viewControllers = @[startingViewController];
         [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     }
+}
+
+-(void)setNotVerifiedPage
+{
+    UIViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
+    
+    // リロードラベル
+    UILabel *reloadLabel = [[UILabel alloc] init];
+    reloadLabel.userInteractionEnabled = YES;
+    reloadLabel.textAlignment = NSTextAlignmentCenter;
+    reloadLabel.text = @"リロード";
+    reloadLabel.textColor = [UIColor orangeColor];
+    reloadLabel.layer.cornerRadius = 50;
+    reloadLabel.layer.borderColor = [UIColor orangeColor].CGColor;
+    reloadLabel.layer.borderWidth = 2.0f;
+    CGRect frame = CGRectMake((self.view.frame.size.width - 100)/2, self.view.frame.size.height*2/3, 100, 100);
+    reloadLabel.frame = frame;
+    [emailVerifiedViewController.view addSubview:reloadLabel];
+    
+    UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(reloadEmailVerifiedView:)];
+    stgr.numberOfTapsRequired = 1;
+    [reloadLabel addGestureRecognizer:stgr];
+    
+    [self presentViewController:emailVerifiedViewController animated:YES completion:NULL];
+}
+
+-(void)reloadEmailVerifiedView:(id)selector
+{
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end
