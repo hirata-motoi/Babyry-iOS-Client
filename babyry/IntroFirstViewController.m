@@ -31,6 +31,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _applyCheckingFlag = 0;
+    
     _introPageIndex = 0;
     // PageViewController追加
     _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
@@ -257,22 +259,22 @@
 
 - (void) checkFamilyApply:(NSTimer*)timer
 {
-    NSLog(@"checkFamilyApply %@", [PFUser currentUser][@"userId"]);
-    PFQuery *familyApplyQuery1 = [PFQuery queryWithClassName:@"FamilyApply"];
-    [familyApplyQuery1 whereKey:@"userId" equalTo:[PFUser currentUser][@"userId"]];
-    [familyApplyQuery1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if([objects count] > 0){
-            NSLog(@"extist in familyAppy as userId");
-        }
-    }];
-    PFQuery *familyApplyQuery2 = [PFQuery queryWithClassName:@"FamilyApply"];
-    [familyApplyQuery2 whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
-    [familyApplyQuery2 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+    // 排他処理
+    if (_applyCheckingFlag == 1) {
+        return;
+    } else {
+        _applyCheckingFlag = 1;
+    }
+    
+    PFQuery *familyApplyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
+    [familyApplyQuery whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
+    [familyApplyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if([objects count] > 0){
             NSLog(@"extist in familyAppy as inviteeUserId");
             FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
             NSLog(@"%@", familyApplyListViewController);
             [self presentViewController:familyApplyListViewController animated:true completion:nil];
+            _applyCheckingFlag = 0;
         }
     }];
 }

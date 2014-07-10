@@ -20,4 +20,6 @@
 
 @property NSTimer *tm;
 
+@property int applyCheckingFlag;
+
 @end

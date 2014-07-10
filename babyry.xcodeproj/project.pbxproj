@@ -23,6 +23,8 @@
 		88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */; };
 		88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FEC196CE9C500F4B40C /* MJPopupBackgroundView.m */; };
 		88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FEE196CE9C500F4B40C /* UIViewController+MJPopupViewController.m */; };
+		88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */; };
+		88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -97,6 +99,10 @@
 		88AA2FEC196CE9C500F4B40C /* MJPopupBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MJPopupBackgroundView.m; sourceTree = "<group>"; };
 		88AA2FED196CE9C500F4B40C /* UIViewController+MJPopupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+MJPopupViewController.h"; sourceTree = "<group>"; };
 		88AA2FEE196CE9C500F4B40C /* UIViewController+MJPopupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MJPopupViewController.m"; sourceTree = "<group>"; };
+		88AA2FF2196E3C9200F4B40C /* IntroMyNicknameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroMyNicknameViewController.h; sourceTree = "<group>"; };
+		88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroMyNicknameViewController.m; sourceTree = "<group>"; };
+		88AA2FF5196E667400F4B40C /* IntroChildNameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroChildNameViewController.h; sourceTree = "<group>"; };
+		88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroChildNameViewController.m; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -298,6 +304,10 @@
 				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
 				88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */,
 				88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */,
+				88AA2FF2196E3C9200F4B40C /* IntroMyNicknameViewController.h */,
+				88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */,
+				88AA2FF5196E667400F4B40C /* IntroChildNameViewController.h */,
+				88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -442,10 +452,12 @@
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
+				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
+				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,

@@ -75,7 +75,7 @@
         NSLog(@"User Not Logged In");
         [self openLoginView];
     } else {
-        /*/////////////////////////////いちいちメール確認必要だからコメント//////////////////////////////////////
+        /*/////////////////////////////いちいちメール確認必要だから開発中はコメント//////////////////////////////////////
         // emailが確認されているか
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
         NSLog(@"currentUserStatus %@", _currentUser);
@@ -102,6 +102,19 @@
             return;
         }
         
+        // nickname確認 なければ入れてもらう
+        // まずはキャッシュから確認
+        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+            [_currentUser refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
+                if(object) {
+                    if (![object objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+                        [self setMyNickNamePage];
+                        return;
+                    }
+                }
+            }];
+        }
+        
         // roleを更新
         [FamilyRole updateCache];
         
@@ -119,18 +132,8 @@
             // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
             // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
             if ([_childArrayFoundFromParse count] < 1) {
-                NSLog(@"make child");
-                PFObject *child = [PFObject objectWithClassName:@"Child"];
-                [child setObject:_currentUser forKey:@"createdBy"];
-                child[@"name"] = @"栽培マン1号";
-                child[@"familyId"] = _currentUser[@"familyId"];
-                [child save];
-                
-                // レプリ遅延防止のためここでチェックする
-                while ([_childArrayFoundFromParse count] < 1) {
-                    NSLog(@"waiting for replication dealy....");
-                    _childArrayFoundFromParse = [childQuery findObjects];
-                }
+                [self setChildNames];
+                return;
             }
             // まずはCacheからオフラインでも表示出来るものを先に表示
             [self getWeekDate];
@@ -655,6 +658,18 @@
 -(void)reloadEmailVerifiedView:(id)selector
 {
     [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+-(void)setMyNickNamePage
+{
+    UIViewController *introMyNicknameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroMyNicknameViewController"];
+    [self presentViewController:introMyNicknameViewController animated:YES completion:NULL];
+}
+
+-(void)setChildNames
+{
+    UIViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
+    [self presentViewController:introChildNameViewController animated:YES completion:NULL];
 }
 
 @end
