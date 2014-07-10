@@ -83,6 +83,7 @@
 
     
     // role で出し分けるものたち
+    NSLog(@"%@ %@", [PFUser currentUser][@"familyId"], [PFUser currentUser][@"role"]);
     if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
     } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
@@ -313,7 +314,7 @@
         [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
             if(!error){
                 UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+                [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                 _indexForCache++;
                 [objects removeObjectAtIndex:0];
                 _uploadPregressBar.progress = (float)_indexForCache/ (float)[_childCachedImageArray count];
@@ -379,7 +380,7 @@
         // set image cache
         NSData *thumbData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, [[sender view] tag]]];
         UIImage *thumbImage = [UIImage imageWithData:thumbData];
-        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
         
         // topのviewに設定する
         // このやり方でいいのかは不明 (UploadViewControllerと同じ処理、ここなおすならそっちも直す)

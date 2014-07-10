@@ -12,5 +12,6 @@
 
 + (UIImage *) makeRectImage:(UIImage *)orgImage;
 + (UIImage *) makeRectTopImage:(UIImage *)orgImage ratio:(float)ratio;
++ (UIImage *) resizeImageForUpload:(UIImage *)orgImage;
 
 @end

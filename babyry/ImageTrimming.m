@@ -59,4 +59,26 @@
     return trimmedImage;
 }
 
++ (UIImage *) resizeImageForUpload:(UIImage *)orgImage
+{
+    float imageWidth = orgImage.size.width;
+    float imageHeight = orgImage.size.height;
+    
+    // 長い方の辺を1000にする
+    float longSide = 1000;
+    if (imageWidth < longSide && imageHeight < longSide){
+        // 両辺とも1500以下なのでそのまま返す
+        return orgImage;
+    } else {
+        float scale = (imageWidth > imageHeight ? longSide/imageWidth : longSide/imageHeight);
+        CGSize resizedSize = CGSizeMake(imageWidth * scale, imageHeight * scale);
+        UIGraphicsBeginImageContext(resizedSize);
+        [orgImage drawInRect:CGRectMake(0, 0, resizedSize.width, resizedSize.height)];
+        UIImage* resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        return resizedImage;
+    }
+}
+
 @end

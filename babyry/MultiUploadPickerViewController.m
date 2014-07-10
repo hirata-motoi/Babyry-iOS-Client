@@ -9,6 +9,7 @@
 #import "MultiUploadPickerViewController.h"
 #import <Parse/Parse.h>
 #import "ImageCache.h"
+#import "ImageTrimming.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -199,7 +200,7 @@
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
         UIImage *originalImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
         UIImage *thumbImage = [ImageCache makeThumbNail:originalImage];
-        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 1.0f);
+        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 0.7f);
         [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i] image:thumbImageData];
         i++;
     }
@@ -208,8 +209,20 @@
     _uploadImageDataArray = [[NSMutableArray alloc] init];
     for (NSIndexPath *indexPath in _checkedImageArray) {
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
+        NSURL *assetURL = [[asset valueForProperty:ALAssetPropertyURLs] objectForKey:[[asset defaultRepresentation] UTI]];
+        NSString *fileExtension = [[assetURL path] pathExtension];
+
         UIImage *originalImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
-        NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
+        UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
+        NSLog(@"image width %f", resizedImage.size.width);
+        NSLog(@"image height %f", resizedImage.size.height);
+        
+        NSData *imageData = [[NSData alloc] init];
+        if ([fileExtension isEqualToString:@"PNG"]) {
+            imageData = UIImagePNGRepresentation(resizedImage);
+        } else {
+            imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
+        }
         PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
         [_uploadImageDataArray addObject:imageFile];
     }
@@ -238,24 +251,6 @@
             }
         }];
     }
-    /*
-    if ([_checkedImageArray count] != 0) {
-        NSIndexPath *indexPath = [_checkedImageArray objectAtIndex:0];
-        [_checkedImageArray removeObjectAtIndex:0];
-        ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
-        NSLog(@"aaaaaaaaaaaaasset %@", asset);
-        UIImage *originalImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
-        NSData *imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
-        PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-        childImage[@"imageFile"] = imageFile;
-        childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
-        childImage[@"imageOf"] = _childObjectId;
-        childImage[@"bestFlag"] = @"unchoosed";
-        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            [self saveToParseInBackground];
-        }];
-    }*/
 }
 
 - (IBAction)backButton:(id)sender {

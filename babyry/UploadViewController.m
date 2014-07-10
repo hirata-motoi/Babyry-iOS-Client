@@ -10,6 +10,7 @@
 #import "PageContentViewController.h"
 #import "ImageCache.h"
 #import "ViewController.h"
+#import "ImageTrimming.h"
 
 @interface UploadViewController ()
 
@@ -210,13 +211,14 @@
     NSString *fileExtension = [[assetURL path] pathExtension];
     
     // オリジナルイメージ取得
-    NSLog(@"imagePickerController");
 	UIImage *originalImage = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+
+    // リサイズ
+    UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
     
     [self dismissViewControllerAnimated:YES completion:nil];
     // ImageViewにセット
-    [self.uploadedImageView setImage:originalImage];
-    
+    [self.uploadedImageView setImage:resizedImage];
     
     NSLog(@"Make PFFile");
     NSData *imageData = [[NSData alloc] init];
@@ -224,10 +226,12 @@
     // その他はJPG
     // TODO 画像圧縮率
     if ([fileExtension isEqualToString:@"PNG"]) {
-        imageData = UIImagePNGRepresentation(originalImage);
+        imageData = UIImagePNGRepresentation(resizedImage);
     } else {
-        imageData = UIImageJPEGRepresentation(originalImage, 0.8f);
+        imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
     }
+    NSLog(@"resize %f %f", originalImage.size.width, resizedImage.size.width);
+
     PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
     // Parseに既に画像があるかどうかを確認
@@ -241,7 +245,7 @@
     if ([imageArray count] > 1) {
         NSLog(@"これはあり得ないエラー");
     } else if ([imageArray count] == 1) {
-        NSLog(@"image objectId%@", imageArray[0]);
+        //NSLog(@"image objectId%@", imageArray[0]);
         imageArray[0][@"imageFile"] = imageFile;
         //ほんとはいらないけど念のため
         imageArray[0][@"bestFlag"] = @"choosed";
@@ -259,8 +263,8 @@
     }
     
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
-    UIImage *thumbImage = [ImageCache makeThumbNail:originalImage];
-    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+    UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
+    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
     
     // topのviewに設定する
     // このやり方でいいのかは不明 (MultiUploadViewControllerと同じ処理、ここなおすならそっちも直す)
@@ -273,7 +277,7 @@
                 //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] objectAtIndex:i]);
                 [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
                 //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] objectAtIndex:i]);
-                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:originalImage];
+                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:resizedImage];
             }
         }
     }

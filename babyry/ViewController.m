@@ -28,7 +28,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     NSLog(@"viewDidLoad");
     
-    // よくバグルからここに書いておく
+    // よく使うからここに書いておく
     //[PFUser logOut];
     
     // くるくる
@@ -159,6 +159,16 @@
                 }
             }];
         }
+        
+        // チュートリアルの途中か判定
+        /*
+        if (![_currentUser objectForKey:@"tutorialStep"] || ![[_currentUser objectForKey:@"tutorialStep"] isEqualToString:@"complete"]) {
+            [_currentUser refresh];
+            if (![_currentUser objectForKey:@"tutorialStep"] || ![[_currentUser objectForKey:@"tutorialStep"] isEqualToString:@"Step1"]) {
+                NSLog(@"%@ is under tutorialStep %@", _currentUser[@"userId"], _currentUser[@"tutorialStep"]);
+            }
+        }
+        */
     }
     [_indicator stopAnimating];
 }
@@ -572,7 +582,7 @@
                                                     [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
                                                     
                                                     // bestshotはローカルキャッシュに保存しておく
-                                                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 1.0f)];
+                                                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                                                     [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
                                                     
                                                     // 画像update毎回やるから負荷たかいかな

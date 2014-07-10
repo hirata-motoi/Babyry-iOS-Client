@@ -25,6 +25,7 @@
 		88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FEE196CE9C500F4B40C /* UIViewController+MJPopupViewController.m */; };
 		88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */; };
 		88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */; };
+		88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -103,6 +104,8 @@
 		88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroMyNicknameViewController.m; sourceTree = "<group>"; };
 		88AA2FF5196E667400F4B40C /* IntroChildNameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroChildNameViewController.h; sourceTree = "<group>"; };
 		88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroChildNameViewController.m; sourceTree = "<group>"; };
+		88AA2FF9196E93F600F4B40C /* ICTutorialOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICTutorialOverlay.h; sourceTree = "<group>"; };
+		88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICTutorialOverlay.m; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -208,6 +211,7 @@
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				88AA2FF8196E91A700F4B40C /* ICTutorialOverlay */,
 				88AA2FF1196CE9DC00F4B40C /* MJPopupViewController */,
 			);
 			name = Plugins;
@@ -222,6 +226,15 @@
 				88AA2FEE196CE9C500F4B40C /* UIViewController+MJPopupViewController.m */,
 			);
 			name = MJPopupViewController;
+			sourceTree = "<group>";
+		};
+		88AA2FF8196E91A700F4B40C /* ICTutorialOverlay */ = {
+			isa = PBXGroup;
+			children = (
+				88AA2FF9196E93F600F4B40C /* ICTutorialOverlay.h */,
+				88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */,
+			);
+			name = ICTutorialOverlay;
 			sourceTree = "<group>";
 		};
 		88B18C6A193814CE00ED630C = {
@@ -457,6 +470,7 @@
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
+				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
