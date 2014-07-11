@@ -330,7 +330,8 @@
             }
         }
         _uploadPregressBar.progress = 1.0f;
-        [_multiUploadedImages reloadData];
+        NSLog(@"reloadData!");
+        [self showCacheImages];
         _uploadProgressView.hidden = YES;
         //NSLog(@"_multiUploadedImages reloaded. number of images %d", [_childImageArray count]);
     }

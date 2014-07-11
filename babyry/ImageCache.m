@@ -70,6 +70,22 @@
     }
 }
 
++ (NSDate *) returnTimestamp:name
+{
+    NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirPath = [array objectAtIndex:0];
+    NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
+    NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:name];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:imageCacheFilePath]) {
+        NSMutableDictionary *fileAttribute = [NSMutableDictionary dictionaryWithDictionary:[[NSFileManager defaultManager] attributesOfItemAtPath:imageCacheFilePath error:nil]];
+        return [fileAttribute objectForKey:@"NSFileModificationDate"];
+    } else {
+        return [NSDate dateWithTimeIntervalSinceNow:-5*24*60*60];
+    }
+}
+
 // このクラスでいいのか？という疑問は置いておいて
 + (UIImage *) makeThumbNail:(UIImage *)orgImage
 {

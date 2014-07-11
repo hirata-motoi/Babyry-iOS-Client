@@ -34,7 +34,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     //NSLog(@"%@", _childArray[_pageIndex]);
-
+    
     // くるくる
     _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     float w = _indicator.frame.size.width;
@@ -277,9 +277,6 @@
     //UITouch *touch = [touches anyObject];
     NSLog( @"tag is %d", tagNumber);
     if (tagNumber > 1 && tagNumber < 8) {
-        // upload画面空戻る時はparseから取得しない(遅延の関係上) そのためのフラグ
-        ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-        vc.is_return_from_upload = 1;
     
         //NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
         UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
@@ -300,9 +297,6 @@
         }
     } else if (tagNumber == 1) {
         //[_overlay hide];
-        // upload画面空戻る時はparseから取得しない(遅延の関係上) そのためのフラグ
-        ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-        vc.is_return_from_upload = 1;
         
         MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
         multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];

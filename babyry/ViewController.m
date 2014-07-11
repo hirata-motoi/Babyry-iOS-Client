@@ -15,6 +15,7 @@
 #import "MaintenanceViewController.h"
 #import "Config.h"
 #import "IntroFirstViewController.h"
+#import "PageContentViewController.h"
 
 @interface ViewController ()
 
@@ -43,7 +44,6 @@
     [self.view addSubview:_indicator];
     
     _only_first_load = 1;
-    _is_return_from_upload = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -54,7 +54,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear _only_first_load : %d _is_return_from_upload : %d", _only_first_load, _is_return_from_upload);
     
     // メンテナンス状態かどうか確認
     // バックグラウンドで行わないと一瞬固まる
@@ -148,14 +147,8 @@
                     // Parseにアクセスして最新の情報を取得
                     NSLog(@"update pictures");
                     [self getWeekDate];
-                    //[self getCachedImage];
-                    // uploadから復帰する時はParseからとらない
-                    // parseの更新が遅延している可能性があるため
-                    NSLog(@"_is_retrun_from_upload %d", _is_return_from_upload);
-                    if (_is_return_from_upload == 0) {
-                        [self getParseData];
-                    }
-                    _is_return_from_upload = 0;
+                    NSLog(@"update from Parse");
+                    [self getParseData];
                 }
             }];
         }
@@ -574,21 +567,32 @@
                                             //NSLog(@"ここでParseに接続。全部backgroundにする");
                                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                                                 if(!error){
-                                                    // サムネイル画像作成
-                                                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                                                    // キャッシュのタイムスタンプよりParseのタイムスタンプが新しいときだけ更新 (レプリ遅延防止のため)
+                                                    // タイムゾーン考えて実装したけど意味なかった模様(もしかしたら後から使えるかもしれんので、とりあえずコメントで残しておく)
+                                                    //NSDate *sourceDate = [NSDate dateWithTimeIntervalSinceNow:3600*24*60];
+                                                    //NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+                                                    //float timeZoneOffset = [destinationTimeZone secondsFromGMTForDate:sourceDate];
+                                                    //NSDate *localDate = [object.updatedAt dateByAddingTimeInterval:timeZoneOffset];
+                                                    //NSLog(@"Parse updatedAt %@", localDate);
                                                     
-                                                    // childArrayに突っ込む
-                                                    [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
-                                                    [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
+                                                    // Parse - Cache
+                                                    // 正のときだけデータ更新
+                                                    if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date]]] > 0) {
+                                                        // サムネイル画像作成
+                                                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
                                                     
-                                                    // bestshotはローカルキャッシュに保存しておく
-                                                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                                                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
+                                                        // childArrayに突っ込む
+                                                        [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
+                                                        [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
                                                     
-                                                    // 画像update毎回やるから負荷たかいかな
-                                                    // TODO : contentviewのviewに直接アクセスして画像をはめ込むようにするべき
-                                                    // 新しく作ったtmpDicでcontentviewを更新
-                                                    [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
+                                                        // bestshotはローカルキャッシュに保存しておく
+                                                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                                                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
+                                                    
+                                                        [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
+                                                
+                                                        [self setPage];
+                                                    }
                                                 }
                                             }];
                                         }
