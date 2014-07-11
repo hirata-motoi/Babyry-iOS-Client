@@ -321,13 +321,6 @@
 */
 
 /*
-- (IBAction)logoutButton:(id)sender {
-    [PFUser logOut];
-    [self viewDidAppear:true];
-}
-*/
-
-/*
 - (IBAction)startWalkthrough:(id)sender {
     PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
     NSArray *viewControllers = @[startingViewController];
@@ -421,13 +414,6 @@
     NSArray *viewControllers = @[jumpViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
-
--(void)logout
-{
-    [PFUser logOut];
-    [self viewDidAppear:true];
-}
-
 
 - (void)openGlobalSettingView
 {

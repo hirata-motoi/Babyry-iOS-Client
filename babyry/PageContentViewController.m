@@ -338,10 +338,4 @@
 }
 */
 
-//- (IBAction)logout:(id)sender {
-//    [PFUser logOut];
-//    ViewController *controller = [[ViewController init] alloc];
-//    [controller openLoginView];
-//}
-
 @end
