@@ -32,5 +32,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *openTagViewButton;
 
 @property UIView *commentView;
+@property UIView *tagEditView;
 
 @end

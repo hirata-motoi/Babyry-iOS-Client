@@ -12,6 +12,7 @@
 #import "PageContentViewController.h"
 #import "UploadViewController.h"
 #import "ImageCache.h"
+#import "TagEditViewController.h"
 
 @interface ImageOperationViewController ()
 
@@ -73,6 +74,7 @@
     _commentView.hidden = YES; // 最初は隠しておく
     
     [self.view addSubview:commentViewController.view];
+    [self setupTagEditView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -110,9 +112,23 @@
     _commentView.hidden = FALSE;
 }
 
+- (void)setupTagEditView
+{
+    TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
+    tagEditViewController.imageInfo = self.uploadedViewController.imageInfo;
+    NSLog(@"ImageOperationViewController : %@", self.uploadedViewController.imageInfo);
+    NSLog(@"ImageOperationViewController : %@", tagEditViewController.imageInfo);
+    
+    _tagEditView = tagEditViewController.view;
+    _tagEditView.hidden = YES;
+    _tagEditView.frame = CGRectMake(10, 0, 320, 500);
+    [self addChildViewController:tagEditViewController];
+    [self.view addSubview:_tagEditView];
+}
+
 - (void)openTagView
 {
-    // TODO implement
+    _tagEditView.hidden = NO;
 }
 
 - (void)hideOperationView:(id)sender

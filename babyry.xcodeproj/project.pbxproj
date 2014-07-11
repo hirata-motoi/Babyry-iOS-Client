@@ -49,6 +49,8 @@
 		F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */; };
 		F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106705196E29B400187119 /* ImageOperationViewController.m */; };
 		F2106709196E33EE00187119 /* CommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106708196E33EE00187119 /* CommentViewController.m */; };
+		F210670C196E734D00187119 /* TagEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670B196E734D00187119 /* TagEditViewController.m */; };
+		F210670F196E805A00187119 /* TagView.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670E196E805A00187119 /* TagView.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -132,6 +134,10 @@
 		F2106705196E29B400187119 /* ImageOperationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageOperationViewController.m; sourceTree = "<group>"; };
 		F2106707196E33EE00187119 /* CommentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentViewController.h; sourceTree = "<group>"; };
 		F2106708196E33EE00187119 /* CommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentViewController.m; sourceTree = "<group>"; };
+		F210670A196E734D00187119 /* TagEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagEditViewController.h; sourceTree = "<group>"; };
+		F210670B196E734D00187119 /* TagEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagEditViewController.m; sourceTree = "<group>"; };
+		F210670D196E805A00187119 /* TagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagView.h; sourceTree = "<group>"; };
+		F210670E196E805A00187119 /* TagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagView.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -252,6 +258,10 @@
 				88B89FBC193EDC04009474DC /* UploadViewController.h */,
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
+				F210670A196E734D00187119 /* TagEditViewController.h */,
+				F210670B196E734D00187119 /* TagEditViewController.m */,
+				F210670D196E805A00187119 /* TagView.h */,
+				F210670E196E805A00187119 /* TagView.m */,
 				F2106707196E33EE00187119 /* CommentViewController.h */,
 				F2106708196E33EE00187119 /* CommentViewController.m */,
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
@@ -419,9 +429,11 @@
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
+				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
+				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,

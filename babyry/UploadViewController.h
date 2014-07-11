@@ -53,4 +53,5 @@
 @property UITextField *commentTextField;
 @property UIButton *commentSubmitButton;
 @property UILabel *commentViewCloseButton;
+@property PFObject *imageInfo;
 @end

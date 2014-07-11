@@ -11,6 +11,7 @@
 #import "ImageCache.h"
 #import "ViewController.h"
 #import "ImageOperationViewController.h"
+#import "TagEditViewController.h"
 
 @interface UploadViewController ()
 
@@ -58,24 +59,23 @@
     _uploadedImageView.image = _uploadedImage;
     
     // Parseからちゃんとしたサイズの画像を取得
-//    PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-//    originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-//    [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-//    [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
-//    [originalImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
-//    [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//        if ([objects count] > 0) {
-//            PFObject * object = [objects objectAtIndex:0];
-//            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-//                if(!error){
-//                    _uploadedImageView.image = [UIImage imageWithData:data];
-//                }
-//            }];
-//        }
-//    }];
-
-    [self setupOperationView];
-
+    PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+    [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+    [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
+    [originalImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if ([objects count] > 0) {
+            PFObject * object = [objects objectAtIndex:0];
+            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                if(!error){
+                    _uploadedImageView.image = [UIImage imageWithData:data];
+                }
+            }];
+            _imageInfo = object;
+            [self setupOperationView];
+        }
+    }];
 }
 
 - (void)openOperationView:(id)sender
@@ -121,6 +121,7 @@
     operationView.name          = _name;
     operationView.date          = _date;
     operationView.month         = _month;
+    operationView.uploadedViewController  = self;
     
     [self addChildViewController:operationView];
     [operationView didMoveToParentViewController:self];
