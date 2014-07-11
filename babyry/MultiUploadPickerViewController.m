@@ -198,7 +198,8 @@
     int i = _currentCachedImageNum;
     for (NSIndexPath *indexPath in _checkedImageArray) {
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
-        UIImage *originalImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+        ALAssetRepresentation *representation = [asset defaultRepresentation];
+        UIImage *originalImage = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:[representation scale] orientation:(UIImageOrientation)[representation orientation]];
         UIImage *thumbImage = [ImageCache makeThumbNail:originalImage];
         NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 0.7f);
         [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i] image:thumbImageData];
@@ -209,13 +210,13 @@
     _uploadImageDataArray = [[NSMutableArray alloc] init];
     for (NSIndexPath *indexPath in _checkedImageArray) {
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
+        ALAssetRepresentation *representation = [asset defaultRepresentation];
+        NSLog(@"asset %@ %d", asset, [representation orientation]);
         NSURL *assetURL = [[asset valueForProperty:ALAssetPropertyURLs] objectForKey:[[asset defaultRepresentation] UTI]];
         NSString *fileExtension = [[assetURL path] pathExtension];
-
-        UIImage *originalImage = [UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+        
+        UIImage *originalImage = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:[representation scale] orientation:(UIImageOrientation)[representation orientation]];
         UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
-        NSLog(@"image width %f", resizedImage.size.width);
-        NSLog(@"image height %f", resizedImage.size.height);
         
         NSData *imageData = [[NSData alloc] init];
         if ([fileExtension isEqualToString:@"PNG"]) {
