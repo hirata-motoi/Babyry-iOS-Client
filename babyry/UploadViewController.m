@@ -35,28 +35,9 @@
     // disable commentTableView
     _commentView.hidden = YES;
     
-    float imageViewAspect = _uploadedImageView.frame.size.width/_uploadedImageView.frame.size.height;
-    float imageAspect = _uploadedImage.size.width/_uploadedImage.size.height;
+    _defaultImageViewFrame = _uploadedImageView.frame;
     
-    // 横長バージョン
-    // 枠より、画像の方が横長、枠の縦を縮める
-    if (imageAspect >= imageViewAspect){
-        CGRect frame = _uploadedImageView.frame;
-        frame.size.height = frame.size.width/imageAspect;
-        _uploadedImageView.frame = frame;
-    // 縦長バージョン
-    // 枠より、画像の方が縦長、枠の横を縮める
-    } else {
-        CGRect frame = _uploadedImageView.frame;
-        frame.size.width = frame.size.height*imageAspect;
-        _uploadedImageView.frame = frame;
-    }
-    
-    // set uploadedImage
-    CGRect frame = _uploadedImageView.frame;
-    frame.origin.x = (self.view.frame.size.width - _uploadedImageView.frame.size.width)/2;
-    frame.origin.y = (self.view.frame.size.height - _uploadedImageView.frame.size.height)/2;
-    _uploadedImageView.frame = frame;
+    _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
     
     // set label
@@ -218,7 +199,8 @@
     
     [self dismissViewControllerAnimated:YES completion:nil];
     // ImageViewにセット
-    [self.uploadedImageView setImage:resizedImage];
+    _uploadedImageView.frame = [self getUploadedImageFrame:resizedImage];
+    [_uploadedImageView setImage:resizedImage];
     
     NSLog(@"Make PFFile");
     NSData *imageData = [[NSData alloc] init];
@@ -466,6 +448,29 @@
             }
         }
     }];
+}
+
+-(CGRect) getUploadedImageFrame:(UIImage *) image
+{
+    float imageViewAspect = _defaultImageViewFrame.size.width/_defaultImageViewFrame.size.height;
+    float imageAspect = image.size.width/image.size.height;
+    
+    // 横長バージョン
+    // 枠より、画像の方が横長、枠の縦を縮める
+    CGRect frame = _defaultImageViewFrame;
+    if (imageAspect >= imageViewAspect){
+        frame.size.height = frame.size.width/imageAspect;
+    // 縦長バージョン
+    // 枠より、画像の方が縦長、枠の横を縮める
+    } else {
+        frame.size.width = frame.size.height*imageAspect;
+    }
+
+    frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
+    frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
+
+    NSLog(@"frame %@", NSStringFromCGRect(frame));
+    return frame;
 }
 
 @end

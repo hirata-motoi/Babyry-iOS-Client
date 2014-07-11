@@ -29,6 +29,8 @@
 @property (weak, nonatomic) IBOutlet UITextView *commentTextField;
 @property (weak, nonatomic) IBOutlet UIButton *commentSendButton;
 
+@property CGRect defaultImageViewFrame;
+
 @property NSString *childObjectId;
 @property NSString *month;
 @property NSString *date;
