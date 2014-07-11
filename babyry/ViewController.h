@@ -25,7 +25,6 @@
 @property NSUInteger currentPageIndex;
 
 @property int only_first_load;
-@property int is_return_from_upload;
 
 //くるくる
 @property UIActivityIndicatorView *indicator;

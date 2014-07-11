@@ -34,7 +34,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     //NSLog(@"%@", _childArray[_pageIndex]);
-
+    
     // くるくる
     _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     float w = _indicator.frame.size.width;
@@ -194,6 +194,25 @@
         UITapGestureRecognizer *singleTapGestureRecognizer2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
         singleTapGestureRecognizer2.numberOfTapsRequired = 1;
         [settingLabel addGestureRecognizer:singleTapGestureRecognizer2];
+        
+        
+        // 穴あけ
+        /*
+        ICTutorialOverlay *overlay = [[ICTutorialOverlay alloc] init];
+        overlay.hideWhenTapped = NO;
+        overlay.animated = YES;
+        [overlay addHoleWithView:albumLabel padding:0.0f offset:CGSizeMake(0, 50) form:ICTutorialOverlayHoleFormCircle transparentEvent:YES];
+        
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(100, 170, 220, 150)];
+        label.backgroundColor = [UIColor clearColor];
+        label.textColor = [UIColor whiteColor];
+        label.numberOfLines = 0;
+        label.text = @"You can place any views on the overlay";
+        [overlay addSubview:label];
+        
+        [overlay show];
+        */
     }
     
     cell.tag = indexPath.row + 1;
@@ -207,6 +226,35 @@
     // ダブルタップに失敗した時だけシングルタップとする
     //[singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
     [cell addGestureRecognizer:singleTapGestureRecognizer];
+    
+    // チュートリアル用
+    /*
+    if (![PFUser currentUser][@"tutorialStep"] || ![[PFUser currentUser][@"tutorialStep"] isEqualToString:@"complete"]) {
+        if (indexPath.row == 0) {
+            // disable all subviews touchevent
+            for (UIView *view in cell.subviews) {
+                for (UIGestureRecognizer *recognizer in view.gestureRecognizers) {
+                    NSLog(@"subviews recognizer in cell %@", view);
+                    [view removeGestureRecognizer:recognizer];
+                }
+            }
+            
+            _overlay = [[ICTutorialOverlay alloc] init];
+            _overlay.hideWhenTapped = NO;
+            _overlay.animated = YES;
+            [_overlay addHoleWithView:cell padding:-20.0f offset:CGSizeMake(0, 50) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
+
+            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50, 170, 220, 150)];
+            label.backgroundColor = [UIColor clearColor];
+            label.textColor = [UIColor whiteColor];
+            label.numberOfLines = 0;
+            label.text = @"ここをタップして今日の画像を設定しましょう";
+            [_overlay addSubview:label];
+        
+            [_overlay show];
+        }
+    }
+    */
     
     return cell;
 }
@@ -229,9 +277,6 @@
     //UITouch *touch = [touches anyObject];
     NSLog( @"tag is %d", tagNumber);
     if (tagNumber > 1 && tagNumber < 8) {
-        // upload画面空戻る時はparseから取得しない(遅延の関係上) そのためのフラグ
-        ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-        vc.is_return_from_upload = 1;
     
         //NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
         UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
@@ -251,9 +296,7 @@
             // TODO インターネット接続がありません的なメッセージいるかも
         }
     } else if (tagNumber == 1) {
-        // upload画面空戻る時はparseから取得しない(遅延の関係上) そのためのフラグ
-        ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-        vc.is_return_from_upload = 1;
+        //[_overlay hide];
         
         MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
         multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
@@ -294,11 +337,5 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-//- (IBAction)logout:(id)sender {
-//    [PFUser logOut];
-//    ViewController *controller = [[ViewController init] alloc];
-//    [controller openLoginView];
-//}
 
 @end

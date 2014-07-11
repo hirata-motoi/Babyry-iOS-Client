@@ -10,6 +10,7 @@
 #import "FamilyApplyViewController.h"
 #import "FamilyApplyListViewController.h"
 #import "FamilyRole.h"
+#import "ImageCache.h"
 
 @interface GlobalSettingViewController ()
 
@@ -67,6 +68,7 @@
 
 - (void)logout
 {
+    [ImageCache removeAllCache];
     [PFUser logOut];
 }
 

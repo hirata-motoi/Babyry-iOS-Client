@@ -70,6 +70,59 @@
     }
 }
 
++ (NSDate *) returnTimestamp:name
+{
+    NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirPath = [array objectAtIndex:0];
+    NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
+    NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:name];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:imageCacheFilePath]) {
+        NSMutableDictionary *fileAttribute = [NSMutableDictionary dictionaryWithDictionary:[[NSFileManager defaultManager] attributesOfItemAtPath:imageCacheFilePath error:nil]];
+        return [fileAttribute objectForKey:@"NSFileModificationDate"];
+    } else {
+        return [NSDate dateWithTimeIntervalSinceNow:-5*24*60*60];
+    }
+}
+
+// dirName :
+//      ImageCache
+//      Parse/PFFileCache
+//      ParseKeyValueCache
++(NSArray *) listCachedImage:(NSString *)dirName
+{
+    NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirPath = [array objectAtIndex:0];
+    NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:dirName];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+
+    return [fileManager contentsOfDirectoryAtPath:imageCacheDirPath error:&error];
+}
+
+// Image以外のキャッシュもあるけどね。。。
++(void) removeAllCache
+{
+    for (NSString *cacheDir in @[@"ImageCache", @"Parse/PFFileCache", @"ParseKeyValueCache"]) {
+        NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cacheDirPath = [array objectAtIndex:0];
+        NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:cacheDir];
+        for (NSString *fileName in [self listCachedImage:cacheDir]) {
+            NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:fileName];
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            if([fileManager fileExistsAtPath:imageCacheFilePath]) {
+                NSError *error;
+                BOOL result = [fileManager removeItemAtPath:imageCacheFilePath error:&error];
+                if (!result) {
+                    NSLog(@"failed to remove cache. %@", imageCacheFilePath);
+                }
+            }
+        }
+    }
+}
+
 // このクラスでいいのか？という疑問は置いておいて
 + (UIImage *) makeThumbNail:(UIImage *)orgImage
 {

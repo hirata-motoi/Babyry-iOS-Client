@@ -14,5 +14,8 @@
 + (NSData *) getCache:date;
 + (UIImage *) makeThumbNail:(UIImage *)orgImage;
 + (void) removeCache:name;
++ (NSDate *) returnTimestamp:name;
++(NSArray *) listCachedImage:(NSString *)dirName;
++(void) removeAllCache;
 
 @end

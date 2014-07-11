@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ICTutorialOverlay.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -16,5 +17,7 @@
 
 //くるくる
 @property UIActivityIndicatorView *indicator;
+
+@property ICTutorialOverlay *overlay;
 
 @end

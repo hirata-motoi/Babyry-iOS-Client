@@ -14,6 +14,8 @@
 #import "FamilyRole.h"
 #import "MaintenanceViewController.h"
 #import "Config.h"
+#import "IntroFirstViewController.h"
+#import "PageContentViewController.h"
 
 @interface ViewController ()
 
@@ -27,7 +29,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     NSLog(@"viewDidLoad");
     
-    // よくバグルからここに書いておく
+    // よく使うからここに書いておく
     //[PFUser logOut];
     
     // くるくる
@@ -42,7 +44,6 @@
     [self.view addSubview:_indicator];
     
     _only_first_load = 1;
-    _is_return_from_upload = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -53,28 +54,64 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear _only_first_load : %d _is_return_from_upload : %d", _only_first_load, _is_return_from_upload);
     
     // メンテナンス状態かどうか確認
-    if([[Config getValue:@"maintenance"] isEqualToString:@"ON"]) {
-        MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
-        [self presentViewController:maintenanceViewController animated:YES completion:NULL];
-        return;
-    }
+    // バックグラウンドで行わないと一瞬固まる
+    PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
+    maintenanceQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+    [maintenanceQuery whereKey:@"key" equalTo:@"maintenance"];
+    [maintenanceQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if([objects count] == 1) {
+            if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
+                MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
+                [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+            }
+        }
+    }];
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
         NSLog(@"User Not Logged In");
         [self openLoginView];
     } else {
+        /*/////////////////////////////いちいちメール確認必要だから開発中はコメント//////////////////////////////////////
+        // emailが確認されているか
+        // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
+        NSLog(@"currentUserStatus %@", _currentUser);
+        if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
+            NSLog(@"Parseにフォアグランドでとりにいく");
+            [_currentUser refresh];
+            NSLog(@"refleshed currentUser %@", _currentUser);
+            if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
+                NSLog(@"mailがまだ確認されていません");
+                [self setNotVerifiedPage];
+                return;
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////////*/
+        
         NSLog(@"Comeback! User logged in user_id:%@", _currentUser.objectId);
         // falimyIdを取得
         //NSLog(@"%@", _currentUser);
         NSLog(@"familyId is %@", _currentUser[@"familyId"]);
         if (!_currentUser[@"familyId"]) {
-            NSLog(@"No FamilyId! これはありえないけど何らかの処理を入れないと駄目");
-            [self openGlobalSettingView];
+            NSLog(@"ログインしているけどファミリ- IDがない = 最初のログイン");
+            IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
+            [self presentViewController:introFirstViewController animated:YES completion:NULL];
             return;
+        }
+        
+        // nickname確認 なければ入れてもらう
+        // まずはキャッシュから確認
+        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+            [_currentUser refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
+                if(object) {
+                    if (![object objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+                        [self setMyNickNamePage];
+                        return;
+                    }
+                }
+            }];
         }
         
         // roleを更新
@@ -94,18 +131,8 @@
             // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
             // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
             if ([_childArrayFoundFromParse count] < 1) {
-                NSLog(@"make child");
-                PFObject *child = [PFObject objectWithClassName:@"Child"];
-                [child setObject:_currentUser forKey:@"createdBy"];
-                child[@"name"] = @"栽培マン1号";
-                child[@"familyId"] = _currentUser[@"familyId"];
-                [child save];
-                
-                // レプリ遅延防止のためここでチェックする
-                while ([_childArrayFoundFromParse count] < 1) {
-                    NSLog(@"waiting for replication dealy....");
-                    _childArrayFoundFromParse = [childQuery findObjects];
-                }
+                [self setChildNames];
+                return;
             }
             // まずはCacheからオフラインでも表示出来るものを先に表示
             [self getWeekDate];
@@ -120,17 +147,21 @@
                     // Parseにアクセスして最新の情報を取得
                     NSLog(@"update pictures");
                     [self getWeekDate];
-                    //[self getCachedImage];
-                    // uploadから復帰する時はParseからとらない
-                    // parseの更新が遅延している可能性があるため
-                    NSLog(@"_is_retrun_from_upload %d", _is_return_from_upload);
-                    if (_is_return_from_upload == 0) {
-                        [self getParseData];
-                    }
-                    _is_return_from_upload = 0;
+                    NSLog(@"update from Parse");
+                    [self getParseData];
                 }
             }];
         }
+        
+        // チュートリアルの途中か判定
+        /*
+        if (![_currentUser objectForKey:@"tutorialStep"] || ![[_currentUser objectForKey:@"tutorialStep"] isEqualToString:@"complete"]) {
+            [_currentUser refresh];
+            if (![_currentUser objectForKey:@"tutorialStep"] || ![[_currentUser objectForKey:@"tutorialStep"] isEqualToString:@"Step1"]) {
+                NSLog(@"%@ is under tutorialStep %@", _currentUser[@"userId"], _currentUser[@"tutorialStep"]);
+            }
+        }
+        */
     }
     [_indicator stopAnimating];
 }
@@ -183,7 +214,7 @@
 // 以下のメソッドはLogin系と同じ
 - (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
     BOOL informationComplete = YES;
-     
+    
     // loop through all of the submitted data
     for (id key in info) {
         NSString *field = [info objectForKey:key];
@@ -290,13 +321,6 @@
 */
 
 /*
-- (IBAction)logoutButton:(id)sender {
-    [PFUser logOut];
-    [self viewDidAppear:true];
-}
-*/
-
-/*
 - (IBAction)startWalkthrough:(id)sender {
     PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
     NSArray *viewControllers = @[startingViewController];
@@ -310,7 +334,7 @@
     // Create the log in view controller
     PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
     [logInViewController setDelegate:self]; // Set ourselves as the delegate
-    [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"friends_about_me", nil]];
+    [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"public_profile", nil]];
     [logInViewController setFields:
         PFLogInFieldsTwitter |
         PFLogInFieldsFacebook |
@@ -390,13 +414,6 @@
     NSArray *viewControllers = @[jumpViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
-
--(void)logout
-{
-    [PFUser logOut];
-    [self viewDidAppear:true];
-}
-
 
 - (void)openGlobalSettingView
 {
@@ -536,21 +553,32 @@
                                             //NSLog(@"ここでParseに接続。全部backgroundにする");
                                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                                                 if(!error){
-                                                    // サムネイル画像作成
-                                                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                                                    // キャッシュのタイムスタンプよりParseのタイムスタンプが新しいときだけ更新 (レプリ遅延防止のため)
+                                                    // タイムゾーン考えて実装したけど意味なかった模様(もしかしたら後から使えるかもしれんので、とりあえずコメントで残しておく)
+                                                    //NSDate *sourceDate = [NSDate dateWithTimeIntervalSinceNow:3600*24*60];
+                                                    //NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+                                                    //float timeZoneOffset = [destinationTimeZone secondsFromGMTForDate:sourceDate];
+                                                    //NSDate *localDate = [object.updatedAt dateByAddingTimeInterval:timeZoneOffset];
+                                                    //NSLog(@"Parse updatedAt %@", localDate);
                                                     
-                                                    // childArrayに突っ込む
-                                                    [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
-                                                    [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
+                                                    // Parse - Cache
+                                                    // 正のときだけデータ更新
+                                                    if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date]]] > 0) {
+                                                        // サムネイル画像作成
+                                                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
                                                     
-                                                    // bestshotはローカルキャッシュに保存しておく
-                                                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 1.0f)];
-                                                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
+                                                        // childArrayに突っ込む
+                                                        [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
+                                                        [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
                                                     
-                                                    // 画像update毎回やるから負荷たかいかな
-                                                    // TODO : contentviewのviewに直接アクセスして画像をはめ込むようにするべき
-                                                    // 新しく作ったtmpDicでcontentviewを更新
-                                                    [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
+                                                        // bestshotはローカルキャッシュに保存しておく
+                                                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                                                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
+                                                    
+                                                        [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
+                                                
+                                                        [self setPage];
+                                                    }
                                                 }
                                             }];
                                         }
@@ -601,6 +629,47 @@
         NSArray *viewControllers = @[startingViewController];
         [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     }
+}
+
+-(void)setNotVerifiedPage
+{
+    UIViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
+    
+    // リロードラベル
+    UILabel *reloadLabel = [[UILabel alloc] init];
+    reloadLabel.userInteractionEnabled = YES;
+    reloadLabel.textAlignment = NSTextAlignmentCenter;
+    reloadLabel.text = @"リロード";
+    reloadLabel.textColor = [UIColor orangeColor];
+    reloadLabel.layer.cornerRadius = 50;
+    reloadLabel.layer.borderColor = [UIColor orangeColor].CGColor;
+    reloadLabel.layer.borderWidth = 2.0f;
+    CGRect frame = CGRectMake((self.view.frame.size.width - 100)/2, self.view.frame.size.height*2/3, 100, 100);
+    reloadLabel.frame = frame;
+    [emailVerifiedViewController.view addSubview:reloadLabel];
+    
+    UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(reloadEmailVerifiedView:)];
+    stgr.numberOfTapsRequired = 1;
+    [reloadLabel addGestureRecognizer:stgr];
+    
+    [self presentViewController:emailVerifiedViewController animated:YES completion:NULL];
+}
+
+-(void)reloadEmailVerifiedView:(id)selector
+{
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+-(void)setMyNickNamePage
+{
+    UIViewController *introMyNicknameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroMyNicknameViewController"];
+    [self presentViewController:introMyNicknameViewController animated:YES completion:NULL];
+}
+
+-(void)setChildNames
+{
+    UIViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
+    [self presentViewController:introChildNameViewController animated:YES completion:NULL];
 }
 
 @end
