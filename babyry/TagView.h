@@ -11,7 +11,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "TagEditViewController.h"
 
-@interface TagView : UIView
+@interface TagView : UIImageView
 
 + (TagView *)createTag:(PFObject *)tagInfo attached:(BOOL)attached;
 @property NSNumber *tagId;

@@ -29,6 +29,7 @@
     TagView *tagView = [[TagView alloc]initWithFrame:rect];
     tagView.attached = attached;
     [tagView setNotificationCenter];
+    tagView.userInteractionEnabled = YES;
     
     NSLog(@"created tag : %@", tagView);
     
@@ -36,17 +37,33 @@
     tagView.tagId = tagInfo[@"tagId"];
 
     // 形
-    tagView.layer.cornerRadius = 20;
-    tagView.clipsToBounds = YES;
+//    tagView.layer.cornerRadius = 20;
+//    tagView.clipsToBounds = YES;
 
     // 色
-    tagView.opaque = NO;
-    NSString *colorString = tagInfo[@"color"];
-    UIColor *color = [self getColor:colorString];
-    if (tagView.attached) {
-        color = [color colorWithAlphaComponent:0.5];
+//    tagView.opaque = NO;
+//    NSString *colorString = tagInfo[@"color"];
+//    UIColor *color = [self getColor:colorString];
+//    if (tagView.attached) {
+//        color = [color colorWithAlphaComponent:0.5];
+//    }
+//    tagView.backgroundColor = color;
+    
+    
+    NSString *imageName;
+    if ([tagInfo[@"color"] isEqualToString:@"red"]) {
+        imageName = @"badgeRed";
+    } else if ([tagInfo[@"color"] isEqualToString:@"blue"]) {
+        imageName = @"badgeBlue";
     }
-    tagView.backgroundColor = color;
+    
+    UIImage *image = [UIImage imageNamed:imageName];
+    tagView.image = image;
+    if (tagView.attached) {
+        tagView.alpha = 1.0;
+    } else {
+        tagView.alpha = 0.3;
+    }
 
     return tagView;
 }
@@ -59,7 +76,6 @@
     int x      = 10 + ([tagId intValue] - 1) * (40 + 10);
     
     CGRect rect = CGRectMake(x, y, width, height);
-    NSLog(@"%@", NSStringFromCGRect(rect));
     return rect;
 }
 
@@ -75,7 +91,6 @@
     }
     
     [self toggleTagLocalStatus];
-
     
     [self notifyTagUpdate];
 }
@@ -83,17 +98,13 @@
 // tagのlocalな状態(attached, tagの色)を変える
 - (void)toggleTagLocalStatus
 {
-    // グレーアウトをtoggleする
-    UIColor *color = self.backgroundColor;
-    
     if (!self.attached) {
-        color = [color colorWithAlphaComponent:1];
+        self.alpha = 0.3;
         self.attached = YES;
     } else {
-        color = [color colorWithAlphaComponent:0.5];
+        self.alpha = 1;
         self.attached = NO;
     }
-    self.backgroundColor = color;
 }
 
 + (UIColor *)getColor:(NSString *)colorString
