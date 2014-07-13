@@ -55,8 +55,8 @@
                 }
             }];
             _imageInfo = object;
-            [self setupOperationView];
         }
+        [self setupOperationView];
     }];
 }
 
