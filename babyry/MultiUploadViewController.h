@@ -47,4 +47,6 @@
 
 @property int indexForCache;
 
+@property int is_first_load;
+
 @end

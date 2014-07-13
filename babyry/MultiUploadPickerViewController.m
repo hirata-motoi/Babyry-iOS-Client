@@ -195,6 +195,7 @@
     NSLog(@"send image!");
 
     // キャッシュ作る
+    /*
     int i = _currentCachedImageNum;
     for (NSIndexPath *indexPath in _checkedImageArray) {
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
@@ -204,7 +205,7 @@
         NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 0.7f);
         [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i] image:thumbImageData];
         i++;
-    }
+    }*/
     
     // imageFileをフォアグランドで用意しておく
     _uploadImageDataArray = [[NSMutableArray alloc] init];
@@ -226,6 +227,19 @@
         }
         PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
         [_uploadImageDataArray addObject:imageFile];
+        
+
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        
+        // 適当な小さいtxtファイルであげておく (あとから大きな画像は非同期で送る)
+        NSData *tmpData = [@"a" dataUsingEncoding:NSUTF8StringEncoding];
+        
+        childImage[@"imageFile"] = [PFFile fileWithName:@"NowUploading.txt" data:tmpData];
+        childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+        childImage[@"imageOf"] = _childObjectId;
+        childImage[@"bestFlag"] = @"unchoosed";
+        childImage[@"isTmpData"] = @"TRUE";
+        [childImage save];
     }
     
     [self saveToParseInBackground];
@@ -235,20 +249,46 @@
 // 再起的にbackgroundでuploadする
 -(void)saveToParseInBackground
 {
+    // _uploadImageDataArray に上げる画像が入っている
+    // これが count 0になるまで再起実行
     if ([_uploadImageDataArray count] != 0){
-        PFFile *imageFile = [_uploadImageDataArray objectAtIndex:0];
-        [_uploadImageDataArray removeObjectAtIndex:0];
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-        childImage[@"imageFile"] = imageFile;
-        childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
-        childImage[@"imageOf"] = _childObjectId;
-        childImage[@"bestFlag"] = @"unchoosed";
-        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            if (succeeded) {
-                NSLog(@"saved image");
-                [self saveToParseInBackground];
+        // isTmpDataがついているレコードを探す
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+        [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
+        [tmpImageQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+            // objectが見つかれば上書き
+            if (object) {
+                object[@"isTmpData"] = @"FALSE";
+                object[@"imageFile"] = [_uploadImageDataArray objectAtIndex:0];
+                object[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+                object[@"bestFlag"] = @"unchoosed";
+                [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                    [_uploadImageDataArray removeObjectAtIndex:0];
+                    [self saveToParseInBackground];
+                }];
             } else {
-                NSLog(@"error to upload");
+                // objectが見つからなければ新たに作成
+                PFFile *imageFile = [_uploadImageDataArray objectAtIndex:0];
+                PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+                childImage[@"imageFile"] = imageFile;
+                childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+                childImage[@"imageOf"] = _childObjectId;
+                childImage[@"bestFlag"] = @"unchoosed";
+                [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                    [_uploadImageDataArray removeObjectAtIndex:0];
+                    [self saveToParseInBackground];
+                }];
+            }
+        }];
+    } else {
+        // もしisTmpData = TRUEが残っていればそれは消す
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+        [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
+        [tmpImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            for (PFObject *object in objects) {
+                [object deleteInBackground];
             }
         }];
     }

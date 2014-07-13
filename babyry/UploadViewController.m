@@ -112,7 +112,7 @@
     // 画像をタップするとoperationViewControllerが表示される
     UITapGestureRecognizer *openOperationViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openOperationView:)];
     openOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
-_uploadedImageView.userInteractionEnabled = YES;
+    _uploadedImageView.userInteractionEnabled = YES;
     [_uploadedImageView addGestureRecognizer:openOperationViewTapGestureRecognizer];
     
     // ImageOperationViewControllerからUploadedViewControllerオブジェクトにアクセスするため
