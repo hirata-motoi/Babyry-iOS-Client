@@ -126,6 +126,12 @@
         imageView.alpha = 1;
     }
     
+    // AlbumViewControllerが保持するtagObjectはalphaなし
+    //
+    if ([_holdedBy isEqualToString:@"AlbumViewController"]) {
+        imageView.alpha = 1;
+    }
+    
     // gesture recognizer
     UITapGestureRecognizer *tagTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(narrowDownByTag:)];
     tagTapGestureRecognizer.numberOfTapsRequired = 1;
@@ -168,7 +174,7 @@
         tagAlbumViewController.year = _year;
         [self.parentViewController addChildViewController:tagAlbumViewController];
         [self.parentViewController.view addSubview:tagAlbumViewController.view];
-        [self clearSelectedTag];
+        [self clearTagAlpha];
         self.view.hidden = YES;
     } else {
         // 画面更新のnotificationを登録
@@ -178,10 +184,10 @@
     }
 }
 
-- (void)clearSelectedTag
+- (void)clearTagAlpha
 {
     for (UIImageView *tag in _tags) {
-        tag.alpha = 0.3;
+        tag.alpha = 1;
     }
 }
 

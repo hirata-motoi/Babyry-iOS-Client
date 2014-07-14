@@ -36,7 +36,7 @@
     // set cell size
     _cellHeight = self.view.frame.size.width/3 - 2;
     _cellWidth = _cellHeight;
-    _childImages = [[NSMutableDictionary alloc]init];
+    _childImages = [[NSMutableArray alloc]init];
     
     // 各ボタンのイベント設定などはしておく
     
@@ -49,6 +49,9 @@
     // tagSelectButtonの画像
     UIImage *tagSelectImage = [UIImage imageNamed:@"badgeBlue"];
     [self.tagSelectButton setImage:tagSelectImage forState:UIControlStateNormal];
+    
+    // year change
+    [self setPaging];
     
     // operationView
     [self setupOperationView];
@@ -66,7 +69,6 @@
 
 -(void)createCollectionView
 {
-    NSLog(@"createCollectionView");
     // UICollectionViewの土台を作成
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
@@ -78,7 +80,8 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSMutableArray *images = [[_childImages objectForKey:[[NSNumber numberWithInt:section] stringValue]] objectForKey:@"images"];
+    NSArray *sortedChildImages = [self sortChildImageByYearMonth];
+    NSMutableArray *images = [[sortedChildImages objectAtIndex:section] objectForKey:@"images"];
     return images.count;
 }
 
@@ -97,11 +100,10 @@
     //セルを再利用 or 再生成
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"viewControllerCell" forIndexPath:indexPath];
     for (UIView *view in [cell subviews]) {
-        //NSLog(@"remove cell's child view");
         [view removeFromSuperview];
     }
-    
-    NSArray *imageObjects = [[_childImages objectForKey:[[NSNumber numberWithInteger:indexPath.section] stringValue]] objectForKey:@"images"];
+    NSArray *sortedChildImages = [self sortChildImageByYearMonth];
+    NSArray *imageObjects = [[sortedChildImages objectAtIndex:indexPath.section] objectForKey:@"images"];
     PFObject *imageObject = [imageObjects objectAtIndex:indexPath.row];
     
     NSString *yyyymmdd = [imageObject[@"date"] substringWithRange:NSMakeRange(1, 8)]; // D20140710 のような文字列から日付部分だけ切り出す
@@ -128,6 +130,8 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     
+    NSArray *sortedChildImages = [self sortChildImageByYearMonth];
+    
     CGRect rect = CGRectMake(0, 0, self.view.frame.size.width, 30);
     
     UICollectionReusableView *headerView = [_collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader" forIndexPath:indexPath];
@@ -139,7 +143,8 @@
     CGRect labelRect = rect;
     labelRect.origin.x = 20;
     UILabel *headerLabel = [[UILabel alloc]initWithFrame:labelRect];
-    headerLabel.text = [[_childImages objectForKey:[[NSNumber numberWithInteger:indexPath.section] stringValue]] objectForKey:@"yearMonth"];
+    NSDictionary *section = [sortedChildImages objectAtIndex:indexPath.section];
+    headerLabel.text = [NSString stringWithFormat:@"%@/%@", [section objectForKey:@"year"], [section objectForKey:@"month"]];
     [headerImageView addSubview:headerLabel];
     
     [headerView addSubview:headerImageView];
@@ -149,7 +154,7 @@
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return [[_childImages allKeys] count];
+    return [_childImages count];
 }
 
 //-(void)handleSingleTap:(id) sender
@@ -363,37 +368,6 @@
  return 0;
  }
  */
-//
-//-(void) getImageFromParse
-//{
-//    PFQuery *childMonthImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@%@", _yyyy, _mm]];
-//    childMonthImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-//    [childMonthImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-//    // choosed(bestShot)を探す
-//    [childMonthImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
-//    [childMonthImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//        if(!error) {
-//            int __block index = 0;
-//            for (PFObject *object in objects) {
-//                NSString *date = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
-//                NSString *cacheImageName = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, date];
-//                [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-//                    if(!error) {
-//                        // サムネイル作るためにUIImage作成
-//                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-//                        
-//                        // サムネイル用UIImageを再度dataに変換
-//                        [ImageCache setCache:[NSString stringWithFormat:@"%@", cacheImageName] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-//                        index++;
-//                        if (index == [objects count]) {
-//                            [_albumCollectionView reloadData];
-//                        }
-//                    }
-//                }];
-//            }
-//        }
-//    }];
-//}
 
 
 - (NSArray *)getMonthList: (NSString *)targetYearString
@@ -428,7 +402,6 @@
 
 - (void) setImageDataSource:(NSString *)year monthList:(NSArray *)monthList tagId:(NSNumber *)tagId
 {
-    NSLog(@"setImageDataSource tagId : %@  childObjectId : %@", tagId, _childObjectId);
     // monthListは降順で渡される
     for (int i = 0; i < monthList.count; i++) {
         NSString *month = [monthList objectAtIndex:i];
@@ -442,8 +415,9 @@
             if ( !error && objects.count > 0) {
                 NSMutableDictionary *result = [[NSMutableDictionary alloc]init];
                 [result setObject:objects forKey:@"images"];
-                [result setObject:[NSString stringWithFormat:@"%@/%d", year, [month intValue]] forKey:@"yearMonth"];
-                [_childImages setObject:result forKey:[[NSNumber numberWithInt:i]stringValue]];
+                [result setObject:year forKey:@"year"];
+                [result setObject:month forKey:@"month"];
+                [_childImages addObject:result];
                  
                 int __block index = 0;
                 for (PFObject *object in objects) {
@@ -520,6 +494,74 @@
     
     NSArray *monthList = [self getMonthList:_year];
     [self setImageDataSource:_year monthList:monthList tagId:_tagId];
+}
+
+- (void)setPaging
+{
+    _albumViewPreYearLabel = [self createButton:@"pre"];
+    _albumViewNextYearLabel = [self createButton:@"next"];
+    [self.view addSubview:_albumViewPreYearLabel];
+    [self.view addSubview:_albumViewNextYearLabel];
+}
+
+
+// TODO button用classを作ってあげたい
+- (UILabel *)createButton: (NSString *)type
+{
+    // buttom buttons
+    float buttonRadius = 30.0f;
+    float diff = (self.view.frame.size.width/4 - 2*buttonRadius)/2;
+    int buttonFontSize = 20;
+    float buttonAlpha = 0.5;
+    
+    UILabel *label = [[UILabel alloc] init];
+    label.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:buttonFontSize];
+    label.textColor = [UIColor blackColor];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.backgroundColor = [UIColor orangeColor];
+    label.alpha = buttonAlpha;
+    label.layer.cornerRadius = buttonRadius;
+    [label setClipsToBounds:YES];
+    label.userInteractionEnabled = YES;
+    
+    if ([type isEqualToString:@"pre"]) {
+        label.text = @"<<";
+        label.frame = CGRectMake(self.view.frame.size.width/4 + diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
+
+        UITapGestureRecognizer *preGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPreYearAlbum:)];
+        preGestureRecognizer.numberOfTapsRequired = 1;
+        [label addGestureRecognizer:preGestureRecognizer];
+    } else if ([type isEqualToString:@"next"]) {
+            label.text = @">>";
+        label.frame = CGRectMake(self.view.frame.size.width*2/4 + diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
+        
+        UITapGestureRecognizer *nextGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showNextYearAlbum:)];
+        nextGestureRecognizer.numberOfTapsRequired = 1;
+        [label addGestureRecognizer:nextGestureRecognizer];
+    }
+    return label;
+}
+
+- (void)showPreYearAlbum:(id)sender
+{
+    _year = [[NSNumber numberWithInt:[_year intValue] - 1] stringValue];
+    [self setupCollectionView:@"reload"];
+}
+
+- (void)showNextYearAlbum:(id)sender
+{
+    _year = [[NSNumber numberWithInt:[_year intValue] + 1] stringValue];
+    [self setupCollectionView:@"reload"];
+}
+
+- (NSArray *)sortChildImageByYearMonth
+{
+    NSArray *sortedChildImages = [_childImages sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        int yearMonthObj1 = [[NSString stringWithFormat:@"%@%@", [obj1 objectForKey:@"year"], [obj1 objectForKey:@"month"]] intValue];
+        int yearMonthObj2 = [[NSString stringWithFormat:@"%@%@", [obj2 objectForKey:@"year"], [obj2 objectForKey:@"month"]] intValue];
+        return (BOOL)(yearMonthObj2 > yearMonthObj1);
+    }];
+    return sortedChildImages;
 }
 
 /*
