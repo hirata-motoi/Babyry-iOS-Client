@@ -193,19 +193,13 @@
 
 - (IBAction)sendImageButton:(id)sender {
     NSLog(@"send image!");
-
-    // キャッシュ作る
-    /*
-    int i = _currentCachedImageNum;
-    for (NSIndexPath *indexPath in _checkedImageArray) {
-        ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
-        ALAssetRepresentation *representation = [asset defaultRepresentation];
-        UIImage *originalImage = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:[representation scale] orientation:(UIImageOrientation)[representation orientation]];
-        UIImage *thumbImage = [ImageCache makeThumbNail:originalImage];
-        NSData *thumbImageData = UIImageJPEGRepresentation(thumbImage, 0.7f);
-        [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i] image:thumbImageData];
-        i++;
-    }*/
+    
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.labelText = @"データ準備中";
+    //_hud.margin = 0;
+    //_hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+    
+    int __block saveCount = 0;
     
     // imageFileをフォアグランドで用意しておく
     _uploadImageDataArray = [[NSMutableArray alloc] init];
@@ -239,11 +233,16 @@
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"unchoosed";
         childImage[@"isTmpData"] = @"TRUE";
-        [childImage save];
+        [childImage saveInBackgroundWithBlock:^(BOOL succeed, NSError *error){
+            saveCount++;
+            NSLog(@"saved %d", saveCount);
+            if ([_checkedImageArray count] == saveCount) {
+                [_hud hide:YES];
+                [self saveToParseInBackground];
+                [self dismissViewControllerAnimated:YES completion:NULL];
+            }
+        }];
     }
-    
-    [self saveToParseInBackground];
-    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 // 再起的にbackgroundでuploadする

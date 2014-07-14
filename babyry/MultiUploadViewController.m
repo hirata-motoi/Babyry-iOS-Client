@@ -34,6 +34,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _needTimer = YES;
     _is_first_load = 1;
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
@@ -81,8 +82,8 @@
     
     _bestImageIndex = -1;
     
-    // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload
-    [self updateImagesFromParse];
+    // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload (viewDidAppearに移動)
+    //[self updateImagesFromParse];
 
     
     // role で出し分けるものたち
@@ -105,12 +106,18 @@
 {
     [super viewDidAppear:animated];
     
-    NSLog(@"viewDidAppear");
-    [self showCacheImages];
-    if (!_is_first_load == 1) {
-        [self updateImagesFromParse];
-        _is_first_load = 1;
-    }
+    NSLog(@"viewDidAppear %d", _is_first_load);
+    //[self updateImagesFromParse];
+    
+    _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
+                                                target:self
+                                              selector:@selector(doTimer:)
+                                              userInfo:nil
+                                               repeats:YES
+    ];
+    _needTimer = YES;
+    [_myTimer fire];
+    NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -119,6 +126,16 @@
     [super viewWillAppear:animated];
     
     [_albumTableView removeFromSuperview];
+}
+
+- (void) doTimer:(NSTimer *)timer
+{
+    //NSLog(@"timer fire");
+    if (_needTimer) {
+        [self updateImagesFromParse];
+    } else {
+        [_myTimer invalidate];
+    }
 }
 
 /*
@@ -152,7 +169,7 @@
 }
 
 - (IBAction)multiUploadButton:(id)sender {
-    NSLog(@"multiUploadButton");
+    //NSLog(@"multiUploadButton");
     
     if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _albumTableView = [[UITableView alloc] init];
@@ -168,7 +185,7 @@
 }
 
 - (IBAction)testButton:(id)sender {
-    NSLog(@"test pushed");
+    //NSLog(@"test pushed");
     if(_cellHeight == 100.f) {
         _cellHeight = 300.0f;
         _cellWidth = 300.0f;
@@ -297,7 +314,7 @@
 
 -(void)updateImagesFromParse
 {
-    NSLog(@"updateImagesFromParse");
+    //NSLog(@"updateImagesFromParse");
     _uploadProgressView.hidden = NO;
     
     // Parseから画像をとる
@@ -312,6 +329,7 @@
             _childImageArray = [[NSMutableArray alloc] initWithArray:objects];
             //再起的にgetDataしてキャッシュを保存する
             _indexForCache = 0;
+            _tmpCacheCount = 0;
             [self setCacheOfParseImage:(NSMutableArray *)objects];
         }
     }];
@@ -328,9 +346,10 @@
             if(!error){
                 if (data) {
                     if ([data length] < 2) {
-                        // こんなに小さい画像はない。なので初期アップロード時に入れたかりのtxtファイル
+                        // こんなに小さい画像はない。なので初期アップロード時に入れた仮のtxtファイル
                         // 小さい画像(67byte)をcacheにセット
                         [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
+                        _tmpCacheCount++;
                     } else {
                         UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
                         [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
@@ -345,6 +364,7 @@
             }
         }];
     } else {
+        //NSLog(@"setCacheOfParseImage2 %d", _tmpCacheCount);
         //古いキャッシュは消す
         if ([_childCachedImageArray count] > [_childImageArray count]) {
             NSLog(@"remove old cache");
@@ -355,7 +375,16 @@
         _uploadPregressBar.progress = 1.0f;
         NSLog(@"reloadData!");
         [self showCacheImages];
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
+        [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+        
         _uploadProgressView.hidden = YES;
+        
+        //NSLog(@"_tmpCacheCount %d", _tmpCacheCount);
+        if (_tmpCacheCount == 0){
+            _needTimer = NO;
+        }
     }
 }
 

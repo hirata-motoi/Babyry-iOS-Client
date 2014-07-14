@@ -157,17 +157,6 @@
         } else {
             NSLog(@"update child names");
             
-            // くるくる
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-            float w = indicator.frame.size.width;
-            float h = indicator.frame.size.height;
-            float x = self.view.frame.size.width/2 - w/2;
-            float y = self.view.frame.size.height/2 - h/2;
-            indicator.frame = CGRectMake(x, y, w, h);
-            indicator.hidesWhenStopped = YES;
-            [indicator startAnimating];
-            [self.view addSubview:indicator];
-            
             // 念のためrefresh
             PFObject *user = [PFUser currentUser];
             [user refresh];
@@ -178,7 +167,6 @@
                 child[@"familyId"] = user[@"familyId"];
                 [child save];
             }
-            [indicator stopAnimating];
             [self dismissViewControllerAnimated:YES completion:NULL];
         }
     } else {

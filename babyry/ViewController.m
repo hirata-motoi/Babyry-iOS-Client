@@ -32,16 +32,10 @@
     // よく使うからここに書いておく
     //[PFUser logOut];
     
-    // くるくる
-    _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    float w = _indicator.frame.size.width;
-    float h = _indicator.frame.size.height;
-    float x = self.view.frame.size.width/2 - w/2;
-    float y = self.view.frame.size.height/2 - h/2;
-    _indicator.frame = CGRectMake(x, y, w, h);
-    _indicator.hidesWhenStopped = YES;
-    [_indicator startAnimating];
-    [self.view addSubview:_indicator];
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.labelText = @"データ準備中";
+    //_hud.margin = 0;
+    //_hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
     
     _only_first_load = 1;
 }
@@ -139,6 +133,8 @@
             [self getCachedImage];
             [self getParseData];
             _only_first_load = 0;
+            
+            [_hud hide:YES];
         } else {
             // 二発目以降はbackgroundで引かないとUIが固まる
             [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -163,7 +159,6 @@
         }
         */
     }
-    [_indicator stopAnimating];
 }
 
 ///////////////////////////////////////////////////////

@@ -15,9 +15,6 @@
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
 
-//くるくる
-@property UIActivityIndicatorView *indicator;
-
 @property ICTutorialOverlay *overlay;
 
 @end
