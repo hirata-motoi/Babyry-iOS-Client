@@ -34,9 +34,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _needTimer = YES;
-    _is_first_load = 1;
-    
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
     
     // フォトアルバムからリスト取得しておく
@@ -94,6 +91,11 @@
         _multiUploadButtonLabel.hidden = YES;
         _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
     }
+    
+    if ([_childImageArray count] > 0) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
+        [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -106,7 +108,6 @@
 {
     [super viewDidAppear:animated];
     
-    NSLog(@"viewDidAppear %d", _is_first_load);
     //[self updateImagesFromParse];
     
     _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
@@ -115,6 +116,7 @@
                                               userInfo:nil
                                                repeats:YES
     ];
+    _isTimperExecuting = NO;
     _needTimer = YES;
     [_myTimer fire];
     NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
@@ -125,16 +127,23 @@
     // super
     [super viewWillAppear:animated];
     
+    [_myTimer invalidate];
+    
     [_albumTableView removeFromSuperview];
 }
 
 - (void) doTimer:(NSTimer *)timer
 {
-    //NSLog(@"timer fire");
-    if (_needTimer) {
-        [self updateImagesFromParse];
-    } else {
-        [_myTimer invalidate];
+    NSLog(@"DoTimer!!! %hhd", _isTimperExecuting);
+    if (!_isTimperExecuting) {
+        NSLog(@"DoingTimer!!! %hhd", _isTimperExecuting);
+        _isTimperExecuting = YES;
+        //NSLog(@"timer fire");
+        if (_needTimer) {
+            [self updateImagesFromParse];
+        } else {
+            [_myTimer invalidate];
+        }
     }
 }
 
@@ -360,7 +369,7 @@
                     [self setCacheOfParseImage:objects];
                 }
             } else {
-                NSLog(@"error %@", error);
+                //NSLog(@"error %@", error);
             }
         }];
     } else {
@@ -376,15 +385,19 @@
         NSLog(@"reloadData!");
         [self showCacheImages];
         
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
-        [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+        if ([_childImageArray count] > 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
+            [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+        }
         
         _uploadProgressView.hidden = YES;
         
-        //NSLog(@"_tmpCacheCount %d", _tmpCacheCount);
+        NSLog(@"_tmpCacheCount %d", _tmpCacheCount);
         if (_tmpCacheCount == 0){
             _needTimer = NO;
         }
+        
+        _isTimperExecuting = NO;
     }
 }
 

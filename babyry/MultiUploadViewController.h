@@ -47,10 +47,9 @@
 
 @property int indexForCache;
 
-@property int is_first_load;
-
 @property NSTimer *myTimer;
 @property BOOL needTimer;
 @property int tmpCacheCount;
+@property BOOL isTimperExecuting;
 
 @end
