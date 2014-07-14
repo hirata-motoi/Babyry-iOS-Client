@@ -11,11 +11,10 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "ICTutorialOverlay.h"
 
-@interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource, UIPageViewControllerDataSource>
 
 - (IBAction)multiUploadViewBackButton:(id)sender;
 - (IBAction)multiUploadButton:(id)sender;
-- (IBAction)testButton:(id)sender;
 @property (strong, nonatomic) IBOutlet UIButton *multiUploadButtonLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
@@ -29,6 +28,7 @@
 @property NSString *name;
 @property NSMutableArray *childImageArray;
 @property NSMutableArray *childCachedImageArray;
+@property NSMutableArray *childDetailImageArray;
 @property NSString *month;
 @property NSString *date;
 
@@ -51,5 +51,9 @@
 @property BOOL needTimer;
 @property int tmpCacheCount;
 @property BOOL isTimperExecuting;
+
+@property UIPageViewController *pageViewController;
+
+@property int detailedImageIndex;
 
 @end
