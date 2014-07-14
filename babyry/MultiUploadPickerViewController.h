@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "MultiUploadViewController.h"
+#import "MBProgressHUD.h"
 
 @interface MultiUploadPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (strong, nonatomic) IBOutlet UICollectionView *albumImageCollectionView;
@@ -27,5 +28,7 @@
 @property NSString *date;
 
 @property int currentCachedImageNum;
+
+@property MBProgressHUD *hud;
 
 @end

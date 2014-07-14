@@ -35,17 +35,6 @@
     // Do any additional setup after loading the view.
     //NSLog(@"%@", _childArray[_pageIndex]);
     
-    // くるくる
-    _indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    float w = _indicator.frame.size.width;
-    float h = _indicator.frame.size.height;
-    float x = self.view.frame.size.width/2 - w/2;
-    //ちょっと高めの位置にする
-    float y = self.view.frame.size.height/3;
-    _indicator.frame = CGRectMake(x, y, w, h);
-    _indicator.hidesWhenStopped = YES;
-    [self.view addSubview:_indicator];
-    
     [self createCollectionView];
 }
 
@@ -60,8 +49,6 @@
     
     [_pageContentCollectionView reloadData];
     //NSLog(@"viewDidAppear %d", _pageIndex);
-
-    [_indicator stopAnimating];
 
     // ViewControllerにcurrentPageIndexを教える
     ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
@@ -273,7 +260,6 @@
 
 - (void)touchEvent:(int) tagNumber
 {
-    [_indicator startAnimating];
     //UITouch *touch = [touches anyObject];
     NSLog( @"tag is %d", tagNumber);
     if (tagNumber > 1 && tagNumber < 8) {

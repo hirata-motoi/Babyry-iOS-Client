@@ -47,4 +47,9 @@
 
 @property int indexForCache;
 
+@property NSTimer *myTimer;
+@property BOOL needTimer;
+@property int tmpCacheCount;
+@property BOOL isTimperExecuting;
+
 @end

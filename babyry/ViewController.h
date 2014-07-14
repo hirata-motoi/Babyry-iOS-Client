@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import "PageContentViewController.h"
+#import "MBProgressHUD.h"
 
 @interface ViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UIPageViewControllerDataSource>
 @property (weak, nonatomic) IBOutlet UIButton *openGlobalSettingViewButton;
@@ -26,7 +27,6 @@
 
 @property int only_first_load;
 
-//くるくる
-@property UIActivityIndicatorView *indicator;
+@property MBProgressHUD *hud;
 
 @end

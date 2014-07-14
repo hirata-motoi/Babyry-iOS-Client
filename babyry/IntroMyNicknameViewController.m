@@ -138,23 +138,10 @@
         } else {
             NSLog(@"Set MyNickname %@", _introMyNicknameField.text);
             
-            // くるくる
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-            float w = indicator.frame.size.width;
-            float h = indicator.frame.size.height;
-            float x = self.view.frame.size.width/2 - w/2;
-            float y = self.view.frame.size.height/2 - h/2;
-            indicator.frame = CGRectMake(x, y, w, h);
-            indicator.hidesWhenStopped = YES;
-            [indicator startAnimating];
-            [self.view addSubview:indicator];
-            
             PFObject *user = [PFUser currentUser];
             user[@"nickName"] = _introMyNicknameField.text;
             [user save];
-            
-            [indicator stopAnimating];
-            
+
             [self dismissViewControllerAnimated:YES completion:NULL];
         }
     } else {

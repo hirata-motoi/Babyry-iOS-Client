@@ -12,6 +12,7 @@
 #import "ImageCache.h"
 #import "MultiUploadPickerViewController.h"
 #import "FamilyRole.h"
+#import "MBProgressHUD.h"
 
 @interface MultiUploadViewController ()
 
@@ -78,8 +79,8 @@
     
     _bestImageIndex = -1;
     
-    // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload
-    [self updateImagesFromParse];
+    // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload (viewDidAppearに移動)
+    //[self updateImagesFromParse];
 
     
     // role で出し分けるものたち
@@ -89,6 +90,11 @@
     } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         _multiUploadButtonLabel.hidden = YES;
         _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
+    }
+    
+    if ([_childImageArray count] > 0) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
+        [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
 }
 
@@ -102,8 +108,18 @@
 {
     [super viewDidAppear:animated];
     
-    NSLog(@"viewDidAppear");
-    [self showCacheImages];
+    //[self updateImagesFromParse];
+    
+    _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
+                                                target:self
+                                              selector:@selector(doTimer:)
+                                              userInfo:nil
+                                               repeats:YES
+    ];
+    _isTimperExecuting = NO;
+    _needTimer = YES;
+    [_myTimer fire];
+    NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -111,7 +127,24 @@
     // super
     [super viewWillAppear:animated];
     
+    [_myTimer invalidate];
+    
     [_albumTableView removeFromSuperview];
+}
+
+- (void) doTimer:(NSTimer *)timer
+{
+    NSLog(@"DoTimer!!! %hhd", _isTimperExecuting);
+    if (!_isTimperExecuting) {
+        NSLog(@"DoingTimer!!! %hhd", _isTimperExecuting);
+        _isTimperExecuting = YES;
+        //NSLog(@"timer fire");
+        if (_needTimer) {
+            [self updateImagesFromParse];
+        } else {
+            [_myTimer invalidate];
+        }
+    }
 }
 
 /*
@@ -145,7 +178,7 @@
 }
 
 - (IBAction)multiUploadButton:(id)sender {
-    NSLog(@"multiUploadButton");
+    //NSLog(@"multiUploadButton");
     
     if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _albumTableView = [[UITableView alloc] init];
@@ -161,7 +194,7 @@
 }
 
 - (IBAction)testButton:(id)sender {
-    NSLog(@"test pushed");
+    //NSLog(@"test pushed");
     if(_cellHeight == 100.f) {
         _cellHeight = 300.0f;
         _cellWidth = 300.0f;
@@ -221,21 +254,30 @@
     }
     
     // ローカルに保存されていたサムネイル画像を貼付け
-    //NSData *tmpImageData = [[_childImageArray objectAtIndex:indexPath.row][@"imageFile"] getData];
     NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
-    cell.backgroundColor = [UIColor blueColor];
-    cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
+    // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
+    if ([tmpImageData length] > 100) {
+        cell.backgroundColor = [UIColor blueColor];
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
     
-    UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-    doubleTapGestureRecognizer.numberOfTapsRequired = 2;
-    [cell addGestureRecognizer:doubleTapGestureRecognizer];
+        UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+        doubleTapGestureRecognizer.numberOfTapsRequired = 2;
+        [cell addGestureRecognizer:doubleTapGestureRecognizer];
 
-    UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    singleTapGestureRecognizer.numberOfTapsRequired = 1;
-    // ダブルタップに失敗した時だけシングルタップとする
-    [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
-    [cell addGestureRecognizer:singleTapGestureRecognizer];
-    
+        UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+        singleTapGestureRecognizer.numberOfTapsRequired = 1;
+        // ダブルタップに失敗した時だけシングルタップとする
+        [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
+        [cell addGestureRecognizer:singleTapGestureRecognizer];
+    } else {
+        // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
+        cell.backgroundColor = [UIColor blackColor];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
+        hud.labelText = @"Uploading...";
+        hud.margin = 0;
+        hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+    }
+
     return cell;
 }
 
@@ -281,7 +323,7 @@
 
 -(void)updateImagesFromParse
 {
-    NSLog(@"updateImagesFromParse");
+    //NSLog(@"updateImagesFromParse");
     _uploadProgressView.hidden = NO;
     
     // Parseから画像をとる
@@ -296,6 +338,7 @@
             _childImageArray = [[NSMutableArray alloc] initWithArray:objects];
             //再起的にgetDataしてキャッシュを保存する
             _indexForCache = 0;
+            _tmpCacheCount = 0;
             [self setCacheOfParseImage:(NSMutableArray *)objects];
         }
     }];
@@ -303,25 +346,34 @@
 
 -(void)setCacheOfParseImage:(NSMutableArray *)objects
 {
-    //NSLog(@"bbbbbbbbbbbb %p %p", _childImageArray, objects);
     if ([objects count] > 0) {
-        //NSLog(@"aaaaaaa %d", [objects count]);
         PFObject *object = [objects objectAtIndex:0];
-        NSLog(@"index and flag %d %@", _indexForCache, object[@"bestFlag"]);
         if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
             _bestImageIndex = _indexForCache;
         }
         [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
             if(!error){
-                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                _indexForCache++;
-                [objects removeObjectAtIndex:0];
-                _uploadPregressBar.progress = (float)_indexForCache/ (float)[_childCachedImageArray count];
-                [self setCacheOfParseImage:objects];
+                if (data) {
+                    if ([data length] < 2) {
+                        // こんなに小さい画像はない。なので初期アップロード時に入れた仮のtxtファイル
+                        // 小さい画像(67byte)をcacheにセット
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
+                        _tmpCacheCount++;
+                    } else {
+                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                    }
+                    _indexForCache++;
+                    [objects removeObjectAtIndex:0];
+                    _uploadPregressBar.progress = (float)_indexForCache/ (float)[_childCachedImageArray count];
+                    [self setCacheOfParseImage:objects];
+                }
+            } else {
+                //NSLog(@"error %@", error);
             }
         }];
     } else {
+        //NSLog(@"setCacheOfParseImage2 %d", _tmpCacheCount);
         //古いキャッシュは消す
         if ([_childCachedImageArray count] > [_childImageArray count]) {
             NSLog(@"remove old cache");
@@ -332,8 +384,20 @@
         _uploadPregressBar.progress = 1.0f;
         NSLog(@"reloadData!");
         [self showCacheImages];
+        
+        if ([_childImageArray count] > 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
+            [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+        }
+        
         _uploadProgressView.hidden = YES;
-        //NSLog(@"_multiUploadedImages reloaded. number of images %d", [_childImageArray count]);
+        
+        NSLog(@"_tmpCacheCount %d", _tmpCacheCount);
+        if (_tmpCacheCount == 0){
+            _needTimer = NO;
+        }
+        
+        _isTimperExecuting = NO;
     }
 }
 

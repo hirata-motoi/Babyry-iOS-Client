@@ -26,6 +26,7 @@
 		88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */; };
 		88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */; };
 		88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */; };
+		88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -112,6 +113,8 @@
 		88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroChildNameViewController.m; sourceTree = "<group>"; };
 		88AA2FF9196E93F600F4B40C /* ICTutorialOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICTutorialOverlay.h; sourceTree = "<group>"; };
 		88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICTutorialOverlay.m; sourceTree = "<group>"; };
+		88AA2FFD196FE06A00F4B40C /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -175,12 +178,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */,
 				88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */,
 				88B1909D1938D23700ED630C /* Social.framework in Frameworks */,
 				88B18CBA1938163100ED630C /* QuartzCore.framework in Frameworks */,
 				88B18CB81938162A00ED630C /* Security.framework in Frameworks */,
 				88B18CB61938162100ED630C /* libz.1.1.3.dylib in Frameworks */,
-				88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */,
 				88B18CB41938160E00ED630C /* MobileCoreServices.framework in Frameworks */,
 				8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */,
 				88B18CB21938160500ED630C /* SystemConfiguration.framework in Frameworks */,
@@ -229,6 +232,7 @@
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				88AA2FFC196FE04600F4B40C /* MBProgressHUD */,
 				88AA2FF8196E91A700F4B40C /* ICTutorialOverlay */,
 				88AA2FF1196CE9DC00F4B40C /* MJPopupViewController */,
 			);
@@ -253,6 +257,15 @@
 				88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */,
 			);
 			name = ICTutorialOverlay;
+			sourceTree = "<group>";
+		};
+		88AA2FFC196FE04600F4B40C /* MBProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				88AA2FFD196FE06A00F4B40C /* MBProgressHUD.h */,
+				88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */,
+			);
+			name = MBProgressHUD;
 			sourceTree = "<group>";
 		};
 		88B18C6A193814CE00ED630C = {
@@ -514,6 +527,7 @@
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
+				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
