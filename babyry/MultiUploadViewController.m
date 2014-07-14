@@ -193,6 +193,7 @@
     }
 }
 
+/*
 - (IBAction)testButton:(id)sender {
     //NSLog(@"test pushed");
     if(_cellHeight == 100.f) {
@@ -204,6 +205,7 @@
     }
     [_multiUploadedImages reloadData];
 }
+*/
 
 -(void)createCollectionView
 {
@@ -336,6 +338,8 @@
         if(!error) {
             // 注意 : ここは深いコピーをしないとだめ
             _childImageArray = [[NSMutableArray alloc] initWithArray:objects];
+            // 詳細画像表示用
+            _childDetailImageArray = [[NSMutableArray alloc] initWithArray:objects];
             //再起的にgetDataしてキャッシュを保存する
             _indexForCache = 0;
             _tmpCacheCount = 0;
@@ -410,8 +414,16 @@
         _bestImageIndex = [[sender view] tag];
         
         // change label
-        _bestShotLabelView.frame = [sender view].frame;
-        [_multiUploadedImages addSubview:_bestShotLabelView];
+        if ([sender view].frame.size.width < self.view.frame.size.width/2) {
+            _bestShotLabelView.frame = [sender view].frame;
+            [_multiUploadedImages addSubview:_bestShotLabelView];
+        } else {
+            CGRect frame = [sender view].frame;
+            frame.origin = CGPointMake(0, 0);
+            frame.size.height = frame.size.width;
+            _bestShotLabelView.frame = frame;
+            [[sender view] addSubview:_bestShotLabelView];
+        }
         // update Parse
         PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
         childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -468,6 +480,9 @@
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
     NSLog(@"single tap %d", [[sender view] tag]);
+    
+    _detailedImageIndex = [[sender view] tag];
+    [self openUploadedDetailImage];
 }
 
 /////////////////////////////////////////////////////////////////
@@ -523,5 +538,174 @@
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
 /////////////////////////////////////////////////////////////////
+
+// 大きい写真を見るPageView用
+-(void) openUploadedDetailImage
+{
+    // PageViewController追加
+    _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+    _pageViewController.dataSource = self;
+    
+    CGRect frame = _pageViewController.view.frame;
+    _pageViewController.view.frame = frame;
+    
+    UIViewController *startingViewController = [self viewControllerAtIndex:_detailedImageIndex];
+    NSArray *viewControllers = @[startingViewController];
+    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    
+    [self addChildViewController:_pageViewController];
+    [self.view addSubview:_pageViewController.view];
+    [_pageViewController didMoveToParentViewController:self];
+}
+
+// provides the view controller after the current view controller. In other words, we tell the app what to display for the next screen.
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
+{
+    NSInteger index = viewController.view.tag;
+    NSLog(@"viewControllerBeforeViewController %d", index);
+    if ((index == 0) || (index == NSNotFound)) {
+        return nil;
+    }
+    
+    index--;
+    NSLog(@"index-- :%d", index);
+    return [self viewControllerAtIndex:index];
+}
+
+// provides the view controller before the current view controller. In other words, we tell the app what to display when user switches back to the previous screen.
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
+{
+    NSInteger index = viewController.view.tag;
+    NSLog(@"viewControllerAfterViewController %d", index);
+    
+    if (index >= [_childImageArray count] - 1 || index == NSNotFound) {
+        return nil;
+    }
+    
+    index++;
+    NSLog(@"index++ :%d", index);
+    return [self viewControllerAtIndex:index];
+}
+
+- (UIViewController *)viewControllerAtIndex:(NSUInteger)index
+{
+    NSLog(@"viewControllerAtIndex");
+
+    UIViewController *detailImageViewController = [[UIViewController alloc] init];
+    CGRect frame = self.view.frame;
+    detailImageViewController.view.frame = frame;
+    detailImageViewController.view.backgroundColor = [UIColor blackColor];
+    
+    
+    UIImageView *detailImageView = [[UIImageView alloc] init];
+    // ローカルに保存されていたサムネイル画像を貼付け
+    NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, index]];
+    // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
+    if ([tmpImageData length] > 100) {
+        NSLog(@"uploaded images");
+        detailImageView.backgroundColor = [UIColor blueColor];
+        UIImage *tmpImage = [UIImage imageWithData:tmpImageData];
+        detailImageView.image = tmpImage;
+        
+        float imageViewAspect = self.view.frame.size.width/self.view.frame.size.height;
+        float imageAspect = tmpImage.size.width/tmpImage.size.height;
+        
+        // 横長バージョン
+        // 枠より、画像の方が横長、枠の縦を縮める
+        CGRect frame = self.view.frame;
+        if (imageAspect >= imageViewAspect){
+            frame.size.height = frame.size.width/imageAspect;
+            // 縦長バージョン
+            // 枠より、画像の方が縦長、枠の横を縮める
+        } else {
+            frame.size.width = frame.size.height*imageAspect;
+        }
+        
+        frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
+        frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
+        
+        NSLog(@"frame %@", NSStringFromCGRect(frame));
+        detailImageView.frame = frame;
+        NSLog(@"cache image set done");
+        
+        PFObject *object = [_childDetailImageArray objectAtIndex:index];
+        NSLog(@"get PFObject %@", object);
+        [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+            if (data) {
+                NSLog(@"set detailData");
+                detailImageView.image = [UIImage imageWithData:data];
+            } else {
+                NSLog(@"error %@", error);
+            }
+        }];
+        
+        detailImageView.userInteractionEnabled = YES;
+        detailImageView.tag = index;
+        UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+        doubleTapGestureRecognizer.numberOfTapsRequired = 2;
+        [detailImageView addGestureRecognizer:doubleTapGestureRecognizer];
+     
+    } else {
+        // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
+        NSLog(@"uploading images");
+        detailImageView.backgroundColor = [UIColor blackColor];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:detailImageView animated:YES];
+        hud.labelText = @"Uploading...";
+        hud.margin = 0;
+        hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+    }
+    [detailImageViewController.view addSubview:detailImageView];
+    
+    detailImageViewController.view.tag = index;
+    
+    // bestShotラベル貼る
+    if (_bestImageIndex == index) {
+        CGRect frame = detailImageView.frame;
+        frame.size.height = frame.size.width;
+        frame.origin = CGPointMake(0, 0);
+        _bestShotLabelView.frame = frame;
+        [detailImageView addSubview:_bestShotLabelView];
+    }
+    
+    // 戻るボタン設置
+    UILabel *backLabel = [[UILabel alloc] init];
+    backLabel.text = @"終了";
+    backLabel.userInteractionEnabled = YES;
+    backLabel.layer.cornerRadius = 10;
+    backLabel.textColor = [UIColor whiteColor];
+    backLabel.layer.borderColor = [UIColor whiteColor].CGColor;
+    backLabel.layer.borderWidth = 2;
+    backLabel.textAlignment = NSTextAlignmentCenter;
+    UITapGestureRecognizer *backGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backFromDetailImage:)];
+    backGesture.numberOfTapsRequired = 1;
+    [backLabel addGestureRecognizer:backGesture];
+    
+    CGRect labelFrame = CGRectMake(self.view.frame.size.width - 60, 20, 50, 30);
+    backLabel.frame = labelFrame;
+    [detailImageViewController.view addSubview:backLabel];
+
+    return detailImageViewController;
+}
+
+// 全体で何ページあるか返す Delegate Method コメント外すとPageControlがあらわれる
+/*
+- (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
+{
+    return [_childImageArray count];
+}
+
+- (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
+{
+    return _detailedImageIndex;
+}
+*/
+
+-(void)backFromDetailImage:(id) sender
+{
+    [_pageViewController.view removeFromSuperview];
+    [_pageViewController removeFromParentViewController];
+    
+    [self viewDidAppear:(BOOL)YES];
+}
 
 @end

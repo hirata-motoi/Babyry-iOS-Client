@@ -316,7 +316,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="PWV-4z-wdb">
-                                <rect key="frame" x="5" y="99" width="310" height="393"/>
+                                <rect key="frame" x="5" y="99" width="310" height="410"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="4" minimumInteritemSpacing="1" id="lFX-4W-ya9">
@@ -328,7 +328,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 <cells/>
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="kw8-kr-Ubn">
-                                <rect key="frame" x="5" y="523" width="100" height="45"/>
+                                <rect key="frame" x="2" y="72" width="55" height="45"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.92079228940000002" green="0.92079228940000002" blue="0.92079228940000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="戻る">
@@ -340,7 +340,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="GgQ-yg-Tw5">
-                                <rect key="frame" x="110" y="523" width="100" height="45"/>
+                                <rect key="frame" x="110" y="551" width="100" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.92079228940000002" green="0.92079228940000002" blue="0.92079228940000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="写真を選択">
@@ -349,18 +349,6 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 </state>
                                 <connections>
                                     <action selector="multiUploadButton:" destination="lcr-La-Ikq" eventType="touchUpInside" id="IOz-nO-SUf"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="aLz-8F-H8r">
-                                <rect key="frame" x="215" y="523" width="100" height="45"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.92079228940000002" green="0.92079228940000002" blue="0.92079228940000002" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="拡大/縮小">
-                                    <color key="titleColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="testButton:" destination="lcr-La-Ikq" eventType="touchUpInside" id="BuZ-3K-yoA"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" id="SQW-E3-2Wc">
@@ -385,7 +373,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" id="QPz-4y-SA5">
-                                <rect key="frame" x="5" y="495" width="310" height="26"/>
+                                <rect key="frame" x="5" y="517" width="310" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" id="SEC-Vg-G8v">

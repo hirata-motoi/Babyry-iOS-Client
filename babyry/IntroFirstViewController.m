@@ -51,16 +51,6 @@
     [self.view addSubview:_pageViewController.view];
     [_pageViewController didMoveToParentViewController:self];
     
-    // Change the size of page view controller
-    //NSLog(@"view controllerのサイズ変更");
-    //_pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
-    
-    //NSLog(@"view追加");
-    [self addChildViewController:_pageViewController];
-    [self.view addSubview:_pageViewController.view];
-    [_pageViewController didMoveToParentViewController:self];
-    
-    
     // Add Listener
     _inviteLabel.tag = 1;
     UITapGestureRecognizer *singleTapGestureRecognizer1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
