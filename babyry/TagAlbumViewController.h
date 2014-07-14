@@ -1,5 +1,5 @@
 //
-//  TagSelectedAlbumViewController.h
+//  TagAlbumViewController.h
 //  babyry
 //
 //  Created by 平田基 on 2014/07/11.
@@ -7,7 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Parse/Parse.h>
 
-@interface TagSelectedAlbumViewController : UIViewController
+@interface TagAlbumViewController : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate>
+@property (weak, nonatomic) IBOutlet UIButton *tagSelectButton;
+@property (weak, nonatomic) IBOutlet UIButton *closeButton;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+@property int cellHeight;
+@property int cellWidth;
+@property NSMutableDictionary *childImages;
+@property NSNumber *tagId;
+@property NSString *childObjectId;
+@property NSString *year;
+@property UIView *operationView;
 
 @end

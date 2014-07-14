@@ -9,6 +9,7 @@
 #import "AlbumViewController.h"
 #import "ImageTrimming.h"
 #import "UploadViewController.h"
+#import "TagAlbumOperationViewController.h"
 
 @interface AlbumViewController ()
 
@@ -109,7 +110,7 @@
     singleTapGestureRecognizerBack.numberOfTapsRequired = 1;
     [_albumViewBackLabel addGestureRecognizer:singleTapGestureRecognizerBack];
     
-    UITapGestureRecognizer *singleTapGestureRecognizerTag = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showTagAlbum:)];
+    UITapGestureRecognizer *singleTapGestureRecognizerTag = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openTagAlbumOperationView:)];
     singleTapGestureRecognizerTag.numberOfTapsRequired = 1;
     [_albumViewTagLabel addGestureRecognizer:singleTapGestureRecognizerTag];
     
@@ -128,6 +129,8 @@
     [self.view addSubview:_albumViewTagLabel];
     [self.view addSubview:_albumViewPreMonthLabel];
     [self.view addSubview:_albumViewNextMonthLabel];
+    
+    [self setupTagAlbumOperationView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -258,9 +261,24 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
--(void) showTagAlbum:(id)sender
+-(void)setupTagAlbumOperationView
 {
+    // tagAlbumのviewcontrollerをinstans化
+    TagAlbumOperationViewController *tagAlbumOperationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumOperationViewController"];
+    tagAlbumOperationViewController.holdedBy = @"AlbumViewController";
+    tagAlbumOperationViewController.childObjectId = _childObjectId;
+    tagAlbumOperationViewController.year = _yyyy;
+    tagAlbumOperationViewController.frameOption = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithInt:160], [NSNumber numberWithInt:400], [NSNumber numberWithInt:150], [NSNumber numberWithInt:100]] forKeys:@[@"x", @"y", @"width", @"height"]];
+    tagAlbumOperationViewController.view.hidden = YES;
+    [self addChildViewController:tagAlbumOperationViewController];
+    [self.view addSubview:tagAlbumOperationViewController.view];
+    
+    _tagAlbumOperationView = tagAlbumOperationViewController.view;
+}
 
+-(void)openTagAlbumOperationView:(id)sender
+{
+    _tagAlbumOperationView.hidden = NO;
 }
 
 -(void)showPreMonth:(id)sender

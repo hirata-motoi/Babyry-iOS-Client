@@ -35,5 +35,6 @@
 @property UILabel *albumViewTagLabel;
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
+@property UIView *tagAlbumOperationView;
 
 @end

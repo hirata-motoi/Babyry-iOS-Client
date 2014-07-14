@@ -57,6 +57,8 @@
 		F2106709196E33EE00187119 /* CommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106708196E33EE00187119 /* CommentViewController.m */; };
 		F210670C196E734D00187119 /* TagEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670B196E734D00187119 /* TagEditViewController.m */; };
 		F210670F196E805A00187119 /* TagView.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670E196E805A00187119 /* TagView.m */; };
+		F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106711196FD7F600187119 /* TagAlbumViewController.m */; };
+		F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -156,6 +158,10 @@
 		F210670B196E734D00187119 /* TagEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagEditViewController.m; sourceTree = "<group>"; };
 		F210670D196E805A00187119 /* TagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagView.h; sourceTree = "<group>"; };
 		F210670E196E805A00187119 /* TagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagView.m; sourceTree = "<group>"; };
+		F2106710196FD7F600187119 /* TagAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumViewController.h; sourceTree = "<group>"; };
+		F2106711196FD7F600187119 /* TagAlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumViewController.m; sourceTree = "<group>"; };
+		F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumOperationViewController.h; sourceTree = "<group>"; };
+		F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumOperationViewController.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -312,6 +318,10 @@
 				F2106707196E33EE00187119 /* CommentViewController.h */,
 				F2106708196E33EE00187119 /* CommentViewController.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
+				F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */,
+				F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */,
+				F2106710196FD7F600187119 /* TagAlbumViewController.h */,
+				F2106711196FD7F600187119 /* TagAlbumViewController.m */,
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
 				F2106704196E29B400187119 /* ImageOperationViewController.h */,
 				F2106705196E29B400187119 /* ImageOperationViewController.m */,
@@ -491,8 +501,10 @@
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
+				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
+				F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
