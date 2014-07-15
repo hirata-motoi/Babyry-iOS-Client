@@ -15,10 +15,12 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property int cellHeight;
 @property int cellWidth;
-@property NSMutableDictionary *childImages;
+@property NSMutableArray *childImages;
 @property NSNumber *tagId;
 @property NSString *childObjectId;
 @property NSString *year;
 @property UIView *operationView;
+@property UILabel *albumViewPreYearLabel;
+@property UILabel *albumViewNextYearLabel;
 
 @end
