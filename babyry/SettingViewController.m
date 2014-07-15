@@ -8,6 +8,7 @@
 
 #import "SettingViewController.h"
 #import <Parse/Parse.h>
+#import "DateUtils.h"
 
 @interface SettingViewController ()
 
@@ -28,6 +29,10 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _settingAgeLabel.text = @"";
+    _settingPicturesLabel.text = @"";
+    _settingDatePicker.date = _childBirthday;
 }
 
 - (void)didReceiveMemoryWarning
@@ -46,10 +51,7 @@
     [_settingScrollView addGestureRecognizer:singleTapGestureRecognizer];
     
     // default settings
-    _settingMyImageView.image = [UIImage imageNamed:@"NoImage"];
-    _settingMyNicknameField.text = [[PFUser currentUser] objectForKey:@"nickName"];
     _settingChildNameField.text = _childName;
-    NSLog(@"test : %@", _childBirthday);
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"yyyy/MM/dd";
     NSDateFormatter *dfYear = [[NSDateFormatter alloc] init];
@@ -61,14 +63,24 @@
     } else {
         _settingChildBirthdayLabel.text = [df stringFromDate:_childBirthday];
     }
+    
+    _editChildBirthdayLabel.layer.cornerRadius = _editChildBirthdayLabel.frame.size.width/2;
+    _datePickerSaveLabel.layer.cornerRadius = _datePickerSaveLabel.frame.size.width/2;
+    _datePickerSaveLabel.layer.borderWidth = 2;
+    _datePickerSaveLabel.layer.borderColor = [UIColor orangeColor].CGColor;
+    
     UITapGestureRecognizer *singleTapGestureRecognizer2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openDatePicker:)];
     singleTapGestureRecognizer2.numberOfTapsRequired = 1;
-    [_settingChildBirthdayLabel addGestureRecognizer:singleTapGestureRecognizer2];
+    [_editChildBirthdayLabel addGestureRecognizer:singleTapGestureRecognizer2];
 
     _settingDatePicker.hidden = YES;
     _settingDatePicker.backgroundColor = [UIColor whiteColor];
     _datePickerSaveLabel.hidden = YES;
     _first_open_picker = 1;
+    
+    NSDate *today = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
+    float age = [today timeIntervalSinceDate:[DateUtils setSystemTimezoneAndZero:_settingDatePicker.date]]/60/60/24;
+    _settingAgeLabel.text = [NSString stringWithFormat:@"%d日目", (int)(age + 1)];
 }
 
 /*
@@ -88,11 +100,6 @@
 
 - (IBAction)settingViewSaveButton:(id)sender {
     NSLog(@"save in background");
-    PFUser *currentUser = [PFUser currentUser];
-    if (![currentUser[@"nickName"] isEqualToString:_settingMyNicknameField.text]) {
-        currentUser[@"nickName"] = _settingMyNicknameField.text;
-        [currentUser saveInBackground];
-    }
     
     PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
     [childQuery whereKey:@"objectId" equalTo:_childObjectId];
@@ -102,12 +109,15 @@
                 object[@"name"] = _settingChildNameField.text;
                 [object saveInBackground];
             }
-            if(![object[@"birthday"] isEqualToDate:_settingDatePicker.date]) {
-                object[@"birthday"] = _settingDatePicker.date;
+            if(![object[@"birthday"] isEqualToDate:[DateUtils setSystemTimezoneAndZero:_settingDatePicker.date]]) {
+                object[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_settingDatePicker.date];
                 [object saveInBackground];
             }
         }
     }];
+    
+    _pViewController.returnValueOfChildName = _settingChildNameField.text;
+    
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
@@ -119,28 +129,10 @@
 -(void)openDatePicker:(id)selector
 {
     NSLog(@"openDatePicker");
+
     _settingDatePicker.datePickerMode = UIDatePickerModeDate;
-    CGRect frame = _settingDatePicker.frame;
-    frame.origin.y = self.view.frame.size.height;
-    _settingDatePicker.frame = frame;
     _settingDatePicker.hidden = NO;
     _datePickerSaveLabel.hidden = NO;
-    if (_first_open_picker == 1) {
-        if (_no_birthday != 1) {
-            _settingDatePicker.date = _childBirthday;
-            _first_open_picker = 0;
-        }
-    }
-    
-    // TODO アニメーションにしたい　したからにゅっと出る感じで
-    NSTimeInterval duration;
-    UIViewAnimationCurve animationCurve;
-    void (^animations)(void);
-    frame.origin.y = frame.origin.y - _settingDatePicker.frame.size.height - 50;
-    animations = ^(void) {
-        _settingDatePicker.frame = frame;
-    };
-    [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:animations completion:nil];
 }
 
 - (IBAction)datePickerSaveButton:(id)sender {
