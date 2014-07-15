@@ -88,7 +88,6 @@
     if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
     } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
-        _multiUploadButtonLabel.hidden = YES;
         _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
     }
     
@@ -108,8 +107,6 @@
 {
     [super viewDidAppear:animated];
     
-    //[self updateImagesFromParse];
-    
     _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
                                                 target:self
                                               selector:@selector(doTimer:)
@@ -128,8 +125,6 @@
     [super viewWillAppear:animated];
     
     [_myTimer invalidate];
-    
-    [_albumTableView removeFromSuperview];
 }
 
 - (void) doTimer:(NSTimer *)timer
@@ -168,44 +163,30 @@
         i++;
     }
     
+    // uploaderはアップロード用の画像も最後にはめる
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        [_childCachedImageArray addObject:[NSString stringWithFormat:@"ForUploadImage"]];
+    }
+    
     _childImageArray = _childCachedImageArray;
     
     [_multiUploadedImages reloadData];
 }
 
 - (IBAction)multiUploadViewBackButton:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
-
-- (IBAction)multiUploadButton:(id)sender {
-    //NSLog(@"multiUploadButton");
+    BOOL isTableView = NO;
+    for (UIView *view in self.view.subviews) {
+        if([view isEqual:_albumTableView]){
+            isTableView = YES;
+        }
+    }
     
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
-        _albumTableView = [[UITableView alloc] init];
-        _albumTableView.delegate = self;
-        _albumTableView.dataSource = self;
-        _albumTableView.backgroundColor = [UIColor whiteColor];
-        CGRect frame = self.view.frame;
-        frame.origin.y += 50;
-        frame.size.height -= 50*2;
-        _albumTableView.frame = frame;
-        [self.view addSubview:_albumTableView];
-    }
-}
-
-/*
-- (IBAction)testButton:(id)sender {
-    //NSLog(@"test pushed");
-    if(_cellHeight == 100.f) {
-        _cellHeight = 300.0f;
-        _cellWidth = 300.0f;
+    if (isTableView) {
+        [_albumTableView removeFromSuperview];
     } else {
-        _cellHeight = 100.0f;
-        _cellWidth = 100.0f;
+        [self dismissViewControllerAnimated:YES completion:NULL];
     }
-    [_multiUploadedImages reloadData];
 }
-*/
 
 -(void)createCollectionView
 {
@@ -247,39 +228,44 @@
     for (UIGestureRecognizer *gesture in [cell gestureRecognizers]) {
         [cell removeGestureRecognizer:gesture];
     }
-    
     //NSLog(@"indexPath : %@", [_childImageArray objectAtIndex:indexPath.row]);
     cell.tag = indexPath.row;
     if (_bestImageIndex > -1 && _bestImageIndex == indexPath.row) {
         _bestShotLabelView.frame = cell.frame;
         [_multiUploadedImages addSubview:_bestShotLabelView];
     }
-    
-    // ローカルに保存されていたサムネイル画像を貼付け
-    NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
-    // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
-    if ([tmpImageData length] > 100) {
-        cell.backgroundColor = [UIColor blueColor];
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
-    
-        UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-        doubleTapGestureRecognizer.numberOfTapsRequired = 2;
-        [cell addGestureRecognizer:doubleTapGestureRecognizer];
-
-        UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-        singleTapGestureRecognizer.numberOfTapsRequired = 1;
-        // ダブルタップに失敗した時だけシングルタップとする
-        [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
-        [cell addGestureRecognizer:singleTapGestureRecognizer];
+    if ([[_childCachedImageArray objectAtIndex:cell.tag] isEqualToString:@"ForUploadImage"]) {
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UploadImageLabel"]];
+        UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
+        uploadGesture.numberOfTapsRequired = 1;
+        [cell addGestureRecognizer:uploadGesture];
     } else {
-        // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
-        cell.backgroundColor = [UIColor blackColor];
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
-        hud.labelText = @"Uploading...";
-        hud.margin = 0;
-        hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
-    }
+        // ローカルに保存されていたサムネイル画像を貼付け
+        NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
+        // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
+        if ([tmpImageData length] > 100) {
+            cell.backgroundColor = [UIColor blackColor];
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
+    
+            UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+            doubleTapGestureRecognizer.numberOfTapsRequired = 2;
+            [cell addGestureRecognizer:doubleTapGestureRecognizer];
 
+            UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+            singleTapGestureRecognizer.numberOfTapsRequired = 1;
+            // ダブルタップに失敗した時だけシングルタップとする
+            [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
+            [cell addGestureRecognizer:singleTapGestureRecognizer];
+        } else {
+            // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
+            cell.backgroundColor = [UIColor blackColor];
+            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
+            hud.labelText = @"Uploading...";
+            hud.margin = 0;
+            hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+        }
+    }
+    
     return cell;
 }
 
@@ -343,7 +329,8 @@
             //再起的にgetDataしてキャッシュを保存する
             _indexForCache = 0;
             _tmpCacheCount = 0;
-            [self setCacheOfParseImage:(NSMutableArray *)objects];
+
+            [self setCacheOfParseImage:[[NSMutableArray alloc] initWithArray:objects]];
         }
     }];
 }
@@ -369,11 +356,11 @@
                     }
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
-                    _uploadPregressBar.progress = (float)_indexForCache/ (float)[_childCachedImageArray count];
+                    _uploadPregressBar.progress = (float)_indexForCache/ (float)([_childCachedImageArray count] + 1);
                     [self setCacheOfParseImage:objects];
                 }
             } else {
-                //NSLog(@"error %@", error);
+                NSLog(@"error %@", error);
             }
         }];
     } else {
@@ -402,6 +389,20 @@
         }
         
         _isTimperExecuting = NO;
+    }
+}
+
+-(void)handleUploadGesture:(id) sender {
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        _albumTableView = [[UITableView alloc] init];
+        _albumTableView.delegate = self;
+        _albumTableView.dataSource = self;
+        _albumTableView.backgroundColor = [UIColor whiteColor];
+        CGRect frame = self.view.frame;
+        frame.origin.y += 50;
+        frame.size.height -= 50;
+        _albumTableView.frame = frame;
+        [self.view addSubview:_albumTableView];
     }
 }
 
@@ -578,8 +579,16 @@
     NSInteger index = viewController.view.tag;
     NSLog(@"viewControllerAfterViewController %d", index);
     
-    if (index >= [_childImageArray count] - 1 || index == NSNotFound) {
-        return nil;
+    // Uploaderの場合には_childImageArrayの最後にアップロード用のラベルがついているからそこも除外する(-2)
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        if (index >= [_childImageArray count] - 2 || index == NSNotFound) {
+            return nil;
+        }
+    // 通常は -1
+    } else {
+        if (index >= [_childImageArray count] - 1 || index == NSNotFound) {
+            return nil;
+        }
     }
     
     index++;
@@ -592,41 +601,43 @@
     NSLog(@"viewControllerAtIndex");
 
     UIViewController *detailImageViewController = [[UIViewController alloc] init];
-    CGRect frame = self.view.frame;
-    detailImageViewController.view.frame = frame;
+    CGRect tmpFrame = self.view.frame;
+    detailImageViewController.view.frame = tmpFrame;
     detailImageViewController.view.backgroundColor = [UIColor blackColor];
     
     
     UIImageView *detailImageView = [[UIImageView alloc] init];
     // ローカルに保存されていたサムネイル画像を貼付け
     NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, index]];
-    // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
+
+    detailImageView.backgroundColor = [UIColor blackColor];
+    UIImage *tmpImage = [UIImage imageWithData:tmpImageData];
+    detailImageView.image = tmpImage;
+        
+    float imageViewAspect = self.view.frame.size.width/self.view.frame.size.height;
+    float imageAspect = tmpImage.size.width/tmpImage.size.height;
+        
+    // 横長バージョン
+    // 枠より、画像の方が横長、枠の縦を縮める
+    CGRect frame = self.view.frame;
+    if (imageAspect >= imageViewAspect){
+        frame.size.height = frame.size.width/imageAspect;
+        // 縦長バージョン
+        // 枠より、画像の方が縦長、枠の横を縮める
+    } else {
+        frame.size.width = frame.size.height*imageAspect;
+    }
+        
+    frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
+    frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
+        
+    NSLog(@"frame %@", NSStringFromCGRect(frame));
+    detailImageView.frame = frame;
+    NSLog(@"cache image set done");
+
+    // 画像が小さくなければ本画像
     if ([tmpImageData length] > 100) {
         NSLog(@"uploaded images");
-        detailImageView.backgroundColor = [UIColor blueColor];
-        UIImage *tmpImage = [UIImage imageWithData:tmpImageData];
-        detailImageView.image = tmpImage;
-        
-        float imageViewAspect = self.view.frame.size.width/self.view.frame.size.height;
-        float imageAspect = tmpImage.size.width/tmpImage.size.height;
-        
-        // 横長バージョン
-        // 枠より、画像の方が横長、枠の縦を縮める
-        CGRect frame = self.view.frame;
-        if (imageAspect >= imageViewAspect){
-            frame.size.height = frame.size.width/imageAspect;
-            // 縦長バージョン
-            // 枠より、画像の方が縦長、枠の横を縮める
-        } else {
-            frame.size.width = frame.size.height*imageAspect;
-        }
-        
-        frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
-        frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
-        
-        NSLog(@"frame %@", NSStringFromCGRect(frame));
-        detailImageView.frame = frame;
-        NSLog(@"cache image set done");
         
         PFObject *object = [_childDetailImageArray objectAtIndex:index];
         NSLog(@"get PFObject %@", object);
@@ -646,10 +657,11 @@
         [detailImageView addGestureRecognizer:doubleTapGestureRecognizer];
      
     } else {
-        // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
+        // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
         NSLog(@"uploading images");
         detailImageView.backgroundColor = [UIColor blackColor];
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:detailImageView animated:YES];
+        hud.frame = detailImageView.frame;
         hud.labelText = @"Uploading...";
         hud.margin = 0;
         hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];

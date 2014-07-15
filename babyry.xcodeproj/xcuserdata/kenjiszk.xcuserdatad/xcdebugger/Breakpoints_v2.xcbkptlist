@@ -116,11 +116,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "babyry/MultiUploadViewController.m"
-            timestampString = "427018318.048604"
+            timestampString = "427080664.737268"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "337"
-            endingLineNumber = "337"
+            startingLineNumber = "323"
+            endingLineNumber = "323"
             landmarkName = "-updateImagesFromParse"
             landmarkType = "5">
          </BreakpointContent>
@@ -138,6 +138,22 @@
             startingLineNumber = "74"
             endingLineNumber = "74"
             landmarkName = "+resizeImageForUpload:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "babyry/MultiUploadPickerViewController.m"
+            timestampString = "427035826.730342"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
