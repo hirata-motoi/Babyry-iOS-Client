@@ -18,6 +18,10 @@
 - (IBAction)sendImageButton:(id)sender;
 - (IBAction)backButton:(id)sender;
 
+@property (strong, nonatomic) IBOutlet UIButton *backLabel;
+@property (strong, nonatomic) IBOutlet UIButton *sendImageLabel;
+
+
 @property NSArray *alAssetsArr;
 @property NSMutableArray *checkedImageFragArray;
 @property NSMutableArray *checkedImageArray;

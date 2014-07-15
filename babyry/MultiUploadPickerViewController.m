@@ -42,14 +42,24 @@
     // set scroll to buttom;
     NSInteger item = [self collectionView:_albumImageCollectionView numberOfItemsInSection:0] - 1;
     NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:item inSection:0];
-    [_albumImageCollectionView scrollToItemAtIndexPath:lastIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
-    
+    if (item > 0) {
+        [_albumImageCollectionView scrollToItemAtIndexPath:lastIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
+    }
+        
     // initialize checkedImageFragArray
     _checkedImageFragArray = [[NSMutableArray alloc] init];
     for (int i = 0; i < [_alAssetsArr count]; i++){
         [_checkedImageFragArray addObject:@"NO"];
     }
     _checkedImageArray = [[NSMutableArray alloc] init];
+    
+    _backLabel.layer.cornerRadius = 10;
+    _backLabel.layer.borderColor = [UIColor whiteColor].CGColor;
+    _backLabel.layer.borderWidth = 2;
+    
+    _sendImageLabel.layer.cornerRadius = 10;
+    _sendImageLabel.layer.borderColor = [UIColor whiteColor].CGColor;
+    _sendImageLabel.layer.borderWidth = 2;
 }
 
 - (void)didReceiveMemoryWarning
@@ -194,6 +204,10 @@
 - (IBAction)sendImageButton:(id)sender {
     NSLog(@"send image!");
     
+    if ([_checkedImageArray count] == 0) {
+        return;
+    }
+    
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ準備中";
     //_hud.margin = 0;
@@ -240,6 +254,10 @@
                 [_hud hide:YES];
                 [self saveToParseInBackground];
                 [self dismissViewControllerAnimated:YES completion:NULL];
+                
+                int last = [[self presentingViewController].view.subviews count] - 1;
+                UIView *view = [[self presentingViewController].view.subviews objectAtIndexedSubscript:last];
+                [view removeFromSuperview];
             }
         }];
     }

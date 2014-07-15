@@ -14,8 +14,6 @@
 @interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource, UIPageViewControllerDataSource>
 
 - (IBAction)multiUploadViewBackButton:(id)sender;
-- (IBAction)multiUploadButton:(id)sender;
-@property (strong, nonatomic) IBOutlet UIButton *multiUploadButtonLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
