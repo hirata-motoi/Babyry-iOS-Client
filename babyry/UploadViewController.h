@@ -56,4 +56,5 @@
 @property UIButton *commentSubmitButton;
 @property UILabel *commentViewCloseButton;
 @property PFObject *imageInfo;
+@property NSInteger tagAlbumPageIndex;
 @end

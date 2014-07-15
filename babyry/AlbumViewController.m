@@ -229,8 +229,6 @@
 
 -(void)handleSingleTap:(id) sender
 {
-    NSLog(@"single tap");
-    NSLog(@"single tap %d", [[sender view] tag]);
     [self openMonthPageView:[[sender view] tag]];
 }
 
@@ -407,14 +405,7 @@
 
 - (UploadViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    // index = _date - date なので
-    // date = _date - indexで変更する
     NSLog(@"index:%dのviewController", index);
-    // 設定されたページが0か、indexがpageTitlesよりも多かったらnil返す
-    //if (([_childArray count] == 0) || (index >= [_childArray count])) {
-        //NSLog(@"設定されたページが0か、indexがpageTitlesよりも多かったらnil返す");
-    //    return nil;
-    //}
     
     UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
     uploadViewController.childObjectId = _childObjectId;

@@ -9,13 +9,17 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import <QuartzCore/QuartzCore.h>
+#import "TagView.h"
 
-@interface TagEditViewController : UIViewController<UIGestureRecognizerDelegate>
+@interface TagEditViewController : UIViewController<UIGestureRecognizerDelegate,TagViewDelegate>
 
 @property PFObject *imageInfo;
 @property NSMutableArray *tags;
 @property (weak, nonatomic) IBOutlet UIView *tagDisplayView;
 @property (strong, nonatomic) IBOutlet UIView *backgroundView;
 @property BOOL tagTouchDisabled;
+@property NSMutableDictionary *tagUpateQueue;
+
+- (void)updateTag:(TagView *)tagView;
 
 @end

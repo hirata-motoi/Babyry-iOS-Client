@@ -9,6 +9,7 @@
 #import "TagView.h"
 
 @implementation TagView
+@synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -28,27 +29,10 @@
     CGRect rect = [self getFrame:tagInfo[@"tagId"]];
     TagView *tagView = [[TagView alloc]initWithFrame:rect];
     tagView.attached = attached;
-    [tagView setNotificationCenter];
     tagView.userInteractionEnabled = YES;
-    
-    NSLog(@"created tag : %@", tagView);
     
     // id
     tagView.tagId = tagInfo[@"tagId"];
-
-    // 形
-//    tagView.layer.cornerRadius = 20;
-//    tagView.clipsToBounds = YES;
-
-    // 色
-//    tagView.opaque = NO;
-//    NSString *colorString = tagInfo[@"color"];
-//    UIColor *color = [self getColor:colorString];
-//    if (tagView.attached) {
-//        color = [color colorWithAlphaComponent:0.5];
-//    }
-//    tagView.backgroundColor = color;
-    
     
     NSString *imageName;
     if ([tagInfo[@"color"] isEqualToString:@"red"]) {
@@ -85,11 +69,6 @@
 // 仕方ないのでgesture recognizerでイベントを登録する
 - (void)toggleTag:(id)sender
 {
-    
-    if (self.tagEditViewController.tagTouchDisabled) {
-        return;
-    }
-    
     [self toggleTagLocalStatus];
     
     [self notifyTagUpdate];
@@ -99,10 +78,10 @@
 - (void)toggleTagLocalStatus
 {
     if (!self.attached) {
-        self.alpha = 0.3;
+        self.alpha = 1;
         self.attached = YES;
     } else {
-        self.alpha = 1;
+        self.alpha = 0.3;
         self.attached = NO;
     }
 }
@@ -120,20 +99,13 @@
 
 - (void)notifyTagUpdate
 {
-    //tagUpdateを通知
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"updateTag" object:self userInfo:nil];
+    [_delegate updateTag:self];
 }
 
-- (void)setNotificationCenter
+// attached : 更新しようとして失敗したattach状態。trueの場合は、attachをミスったということなのでdetachする
+- (void)revertTag:(BOOL)attached
 {
-    NSString *notificationName = [NSString stringWithFormat:@"updateTagFailed:%@", [self.tagId stringValue]];
-    // NotificationCenter
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(revertTag:) name:notificationName object:nil];
-}
-
-- (void)revertTag:(NSNotification *)notification
-{
-    [self toggleTagLocalStatus];
+    self.attached = !self.attached;
 }
 
 /*

@@ -32,6 +32,7 @@
     // tagのマスター情報を取得
     
     self.tags = [[NSMutableArray alloc]init];
+    self.tagUpateQueue = [[NSMutableDictionary alloc]init];
     [self setupTags];
     // _imageInfoからtag情報を抽出
     // tagマスター情報とtag情報を与えてtagオブジェクトを生成
@@ -46,7 +47,7 @@
     self.tagTouchDisabled = NO; // 初期化
     
     // NotificationCenter
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTag:) name:@"updateTag" object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTag:) name:@"updateTag" object:nil];
     
     self.tagDisplayView.layer.cornerRadius = 30;
 }
@@ -82,6 +83,7 @@
     for (PFObject *tagInfo in tagMasterObjects) {
         BOOL attached = ([tagsMap objectForKey:tagInfo[@"tagId"]]) ? true : false;
         TagView *tag = [TagView createTag:tagInfo attached:attached];
+        tag.delegate = self;
         [self.tags addObject:tag];
     }
 }
@@ -115,7 +117,6 @@
 
 - (void)blockGesture:(id)sender
 {
-    NSLog(@"blockGesture");
     // do nothing
 }
 
@@ -130,11 +131,9 @@
     return true;
 }
 
-- (void)updateTag:(NSNotification *)notification
+- (void)updateTag:(TagView *)tagView
 {
-    TagView *tagView = (TagView *)[notification object];
     NSNumber *tagId = tagView.tagId;
-    
     
     NSMutableArray *attachedTagsList = _imageInfo[@"tags"];
     if (!attachedTagsList) {
@@ -144,29 +143,25 @@
     
     if (tagView.attached) {
         // 今attachされた
-        NSLog(@"attached");
         [attachedTagsList addObject:tagId];
     } else {
         // 今detachされた
-        NSLog(@"detached");
         [attachedTagsList removeObject:tagId];
     }
-    
-    NSLog(@"attachedTagsList : %@", attachedTagsList);
     
     // 一応重複を排除
     attachedTagsList = [NSMutableArray arrayWithArray: [[[NSSet alloc] initWithArray:[NSArray arrayWithArray:attachedTagsList]]allObjects]];
 
     // 一回ChildImageオブジェクトを最新にしてから更新処理
-    NSLog(@"_imageInfo : %@", _imageInfo);
     [_imageInfo fetchInBackgroundWithBlock:^(PFObject *object, NSError *error){
         _imageInfo[@"tags"] = attachedTagsList;
         [_imageInfo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (!succeeded) {
-                NSLog(@"failed");
                 // 失敗したことを通知
-                NSString *notificationName = [NSString stringWithFormat:@"tagUpdateFailed:%@", [tagView.tagId stringValue]];
-                [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self userInfo:nil];
+                // やりたくないけど親から特定の子に対して通知を送るので子のmethodを直接呼び出す
+                // notifyやdelegateではうまくいかないなー
+                [tagView revertTag:tagView.attached];
+                
                 // 戻す
                 _imageInfo[@"tags"] = originalTagList;
             }

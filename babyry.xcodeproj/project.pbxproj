@@ -60,6 +60,8 @@
 		F210670F196E805A00187119 /* TagView.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670E196E805A00187119 /* TagView.m */; };
 		F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106711196FD7F600187119 /* TagAlbumViewController.m */; };
 		F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */; };
+		F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC8197402090092C712 /* TagAlbumPageViewController.m */; };
+		F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -165,6 +167,10 @@
 		F2106711196FD7F600187119 /* TagAlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumViewController.m; sourceTree = "<group>"; };
 		F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumOperationViewController.h; sourceTree = "<group>"; };
 		F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumOperationViewController.m; sourceTree = "<group>"; };
+		F215DDC7197402090092C712 /* TagAlbumPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumPageViewController.h; sourceTree = "<group>"; };
+		F215DDC8197402090092C712 /* TagAlbumPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumPageViewController.m; sourceTree = "<group>"; };
+		F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumCollectionViewCell.h; sourceTree = "<group>"; };
+		F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumCollectionViewCell.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -331,10 +337,14 @@
 				F2106707196E33EE00187119 /* CommentViewController.h */,
 				F2106708196E33EE00187119 /* CommentViewController.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
+				F215DDC7197402090092C712 /* TagAlbumPageViewController.h */,
+				F215DDC8197402090092C712 /* TagAlbumPageViewController.m */,
 				F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */,
 				F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */,
 				F2106710196FD7F600187119 /* TagAlbumViewController.h */,
 				F2106711196FD7F600187119 /* TagAlbumViewController.m */,
+				F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */,
+				F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */,
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
 				F2106704196E29B400187119 /* ImageOperationViewController.h */,
 				F2106705196E29B400187119 /* ImageOperationViewController.m */,
@@ -503,6 +513,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */,
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
@@ -526,6 +537,7 @@
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
+				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,

@@ -611,6 +611,14 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
             </objects>
             <point key="canvasLocation" x="-832" y="773"/>
         </scene>
+        <!--Tag Album Page View Controller-->
+        <scene sceneID="n8n-TS-XGn">
+            <objects>
+                <pageViewController storyboardIdentifier="TagAlbumPageViewController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="LJc-Te-SJn" customClass="TagAlbumPageViewController" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DcD-Cf-NPo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-832" y="1473"/>
+        </scene>
         <!--Tag Album Operation View Controller-->
         <scene sceneID="0L4-IW-e2P">
             <objects>

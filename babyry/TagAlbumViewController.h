@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+#import "TagAlbumPageViewController.h"
 
 @interface TagAlbumViewController : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *tagSelectButton;
@@ -22,5 +23,6 @@
 @property UIView *operationView;
 @property UILabel *albumViewPreYearLabel;
 @property UILabel *albumViewNextYearLabel;
+@property TagAlbumPageViewController *pageViewController;
 
 @end
