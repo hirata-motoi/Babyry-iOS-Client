@@ -11,6 +11,7 @@
 #import "ImageCache.h"
 #import "ImageTrimming.h"
 #import "TagAlbumOperationViewController.h"
+#import "TagAlbumCollectionViewCell.h"
 
 @interface TagAlbumViewController ()
 
@@ -72,7 +73,7 @@
     // UICollectionViewの土台を作成
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
-    [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"viewControllerCell"];
+    [_collectionView registerClass:[TagAlbumCollectionViewCell class] forCellWithReuseIdentifier:@"viewControllerCell"];
     [_collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader"];
     [self.view addSubview:_collectionView];
 }
@@ -91,14 +92,10 @@
 }
 
 // 指定された場所のセルを作るメソッド
--(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+-(TagAlbumCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    // 各sectionごとにNSMutableDictionaryでセルのデータを保持しておく。
-    // [[data objectForKey:indexPath.section] objectAtIndex:indexPath.row] みたいにやってデータをとればよさそう
-
-    
     //セルを再利用 or 再生成
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"viewControllerCell" forIndexPath:indexPath];
+    TagAlbumCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"viewControllerCell" forIndexPath:indexPath];
     for (UIView *view in [cell subviews]) {
         [view removeFromSuperview];
     }
@@ -119,6 +116,10 @@
     UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     singleTapGestureRecognizer.numberOfTapsRequired = 1;
     [cell addGestureRecognizer:singleTapGestureRecognizer];
+    
+    // tap時に使うためpropertyをセット
+    cell.currentSection = indexPath.section;
+    cell.currentRow = indexPath.row;
     
     return cell;
 }
@@ -157,218 +158,28 @@
     return [_childImages count];
 }
 
-//-(void)handleSingleTap:(id) sender
-//{
-//    NSLog(@"single tap");
-//    NSLog(@"single tap %d", [[sender view] tag]);
-//    [self openMonthPageView:[[sender view] tag]];
-//}
+-(void)handleSingleTap:(id) sender
+{
+    //[self openMonthPageView:[[sender view] tag]];
+    TagAlbumCollectionViewCell *cell = (TagAlbumCollectionViewCell *)[sender view];
+    [self openTagAlbumPageView:cell.currentSection withRow:cell.currentRow];
+}
 
-//-(void) openMonthPageView:(int)index
-//{
-//    NSLog(@"openMonthPageView");
-//    //_pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-//    _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
-//    _pageViewController.dataSource = self;
-//    
-//    //NSLog(@"0ページ目を表示");
-//    UploadViewController *startingViewController = [self viewControllerAtIndex:index];
-//    NSArray *viewControllers = @[startingViewController];
-//    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-//    
-//    // Change the size of page view controller
-//    //NSLog(@"view controllerのサイズ変更");
-//    //_pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
-//    
-//    //NSLog(@"view追加");
+-(void) openTagAlbumPageView:(int)section withRow:(int)row
+{
+    NSLog(@"openChildImagePageView");
+    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumPageViewController"];
+    _pageViewController.childImages = [self sortChildImageByYearMonth];
+    _pageViewController.currentSection = section;
+    _pageViewController.currentRow = row;
+    _pageViewController.childObjectId = _childObjectId;
+    //_pageViewController.name = _name;  // nameをどっかでとってくる
+    
 //    [self addChildViewController:_pageViewController];
 //    [self.view addSubview:_pageViewController.view];
+    [self presentViewController:_pageViewController animated:YES completion:nil];
 //    [_pageViewController didMoveToParentViewController:self];
-//}
-
-//-(void)albumViewBack:(id)sender
-//{
-//    [self dismissViewControllerAnimated:YES completion:NULL];
-//}
-//
-//-(void) showTagAlbum:(id)sender
-//{
-//    
-//}
-//
-//-(void)showPreMonth:(id)sender
-//{
-//    NSLog(@"show previous month");
-//    // set next month
-//    if (![_mm isEqual:@"01"]) {
-//        _mm = [NSString stringWithFormat:@"%02d", [_mm intValue] - 1 ];
-//    } else {
-//        _mm = @"12";
-//        _yyyy = [NSString stringWithFormat:@"%02d", [_yyyy intValue] - 1 ];
-//    }
-//    _dd = [self getMaxDate:_mm yyyy:_yyyy];
-//    
-//    _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
-//    CGPoint offset;
-//    offset.x = 0;
-//    offset.y = 0;
-//    [_albumCollectionView setContentOffset:offset animated:NO];
-//    [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"viewControllerCell"];
-//    [_albumCollectionView reloadData];
-//    
-//    // get cache in background
-//    [self getImageFromParse];
-//}
-
-//-(void)showNextMonth:(id)sender
-//{
-//    NSLog(@"show next month");
-//    
-//    // cant get future month
-//    NSLog(@"compare month %@ %@", _month, [NSString stringWithFormat:@"%@%@", _yyyy, _mm]);
-//    if ([_month isEqual:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
-//        return;
-//    }
-//    // set next month
-//    if (![_mm isEqual:@"12"]) {
-//        _mm = [NSString stringWithFormat:@"%02d", [_mm intValue] + 1 ];
-//    } else {
-//        _mm = @"01";
-//        _yyyy = [NSString stringWithFormat:@"%02d", [_yyyy intValue] + 1 ];
-//    }
-//    
-//    // 今月の場合にはmaxの代わりに今日の日付入れる
-//    if ([_month isEqualToString:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
-//        _dd = [_date substringWithRange:NSMakeRange(6, 2)];
-//    } else {
-//        _dd = [self getMaxDate:_mm yyyy:_yyyy];
-//    }
-//    
-//    _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
-//    CGPoint offset;
-//    offset.x = 0;
-//    offset.y = 0;
-//    [_albumCollectionView setContentOffset:offset animated:NO];
-//    [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"viewControllerCell"];
-//    [_albumCollectionView reloadData];
-//    
-//    // get cache in background
-//    [self getImageFromParse];
-//}
-//
-//-(NSString *)getMaxDate:mm yyyy:(NSString *)yyyy
-//{
-//    int month = [mm intValue];
-//    int year = [yyyy intValue];
-//    //今月の場合
-//    if ([_month isEqual:[NSString stringWithFormat:@"%@%@", _yyyy, _mm]]) {
-//        NSLog(@"getMaxDate return this month");
-//        return [_date substringWithRange:NSMakeRange(6, 2)];
-//    }
-//    //閏年
-//    if (year % 4 == 0) {
-//        if (year % 100 == 0 && year % 400 != 0) {
-//            return @"28";
-//        }
-//    }
-//    // 2月
-//    if (month == 2) {
-//        return @"29";
-//    }
-//    //その他
-//    if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
-//        return @"31";
-//    } else {
-//        return @"30";
-//    }
-//}
-
-
-// 以下、pageviewcontroller用のメソッド
-// provides the view controller after the current view controller. In other words, we tell the app what to display for the next screen.
-//- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
-//{
-//    // _dateは今月のmaxなdate
-//    // dateはuploadviewに表示されているdate
-//    // 差分 index = _date - date
-//    int date = [((UploadViewController *) viewController).date intValue];
-//    NSLog(@"viewControllerBeforeViewController : %d", date);
-//    NSUInteger index = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - date;
-//    
-//    if ((index == 0) || (index == NSNotFound)) {
-//        return nil;
-//    }
-//    
-//    index--;
-//    NSLog(@"index-- :%d", index);
-//    return [self viewControllerAtIndex:index];
-//}
-//
-// provides the view controller before the current view controller. In other words, we tell the app what to display when user switches back to the previous screen.
-//- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
-//{
-//    int date = [((UploadViewController *) viewController).date intValue];
-//    NSLog(@"viewControllerAfterViewController : %d", date);
-//    NSUInteger index = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - date;
-//    
-//    if (index >= [_dd intValue] - 1 || index == NSNotFound) {
-//        return nil;
-//    }
-//    
-//    index++;
-//    NSLog(@"index++ :%d", index);
-//    return [self viewControllerAtIndex:index];
-//}
-
-//- (UploadViewController *)viewControllerAtIndex:(NSUInteger)index
-//{
-//    // index = _date - date なので
-//    // date = _date - indexで変更する
-//    NSLog(@"index:%dのviewController", index);
-//    // 設定されたページが0か、indexがpageTitlesよりも多かったらnil返す
-//    //if (([_childArray count] == 0) || (index >= [_childArray count])) {
-//    //NSLog(@"設定されたページが0か、indexがpageTitlesよりも多かったらnil返す");
-//    //    return nil;
-//    //}
-//    
-//    UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
-//    uploadViewController.childObjectId = _childObjectId;
-//    uploadViewController.name = _name;
-//    NSLog(@"calc targetDate index:%d _date:%@", index, _date);
-//    int targetDate = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - index;
-//    
-//    NSLog(@"open uploadviewcontroller date:%d", targetDate);
-//    uploadViewController.date = [NSString stringWithFormat:@"%0d", targetDate];
-//    uploadViewController.month = [NSString stringWithFormat:@"%@%@", _yyyy, _mm];
-//    
-//    // Cacheからはりつけ
-//    NSString *imageCachePath = [NSString stringWithFormat:@"%@%08dthumb", _childObjectId, targetDate];
-//    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
-//    if(imageCacheData) {
-//        uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];
-//    } else {
-//        uploadViewController.uploadedImage = [UIImage imageNamed:@"NoImage"];
-//    }
-//    
-//    uploadViewController.bestFlag = @"choosed";
-//    uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-//    
-//    return uploadViewController;
-//}
-
-// 全体で何ページあるか返す Delegate Method コメント外すとPageControlがあらわれる
-/*
- - (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
- {
- return [self.pageTitles count];
- }
- 
- - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
- {
- return 0;
- }
- */
-
+}
 
 - (NSArray *)getMonthList: (NSString *)targetYearString
 {
@@ -444,7 +255,8 @@
 
 - (void)closeView
 {
-    [self.view removeFromSuperview];
+//    [self.view removeFromSuperview];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)openTagSelectView

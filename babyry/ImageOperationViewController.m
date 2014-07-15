@@ -32,7 +32,6 @@
 
 - (void)viewDidLoad
 {
-    NSLog(@"ImageOperationViewController viewDidLoad");
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
@@ -117,8 +116,6 @@
 {
     TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
     tagEditViewController.imageInfo = self.uploadedViewController.imageInfo;
-    NSLog(@"ImageOperationViewController : %@", self.uploadedViewController.imageInfo);
-    NSLog(@"ImageOperationViewController : %@", tagEditViewController.imageInfo);
     
     _tagEditView = tagEditViewController.view;
     _tagEditView.hidden = YES;

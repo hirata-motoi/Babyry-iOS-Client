@@ -172,8 +172,9 @@
         tagAlbumViewController.tagId = [NSNumber numberWithInteger:tag];
         tagAlbumViewController.childObjectId = _childObjectId;
         tagAlbumViewController.year = _year;
-        [self.parentViewController addChildViewController:tagAlbumViewController];
-        [self.parentViewController.view addSubview:tagAlbumViewController.view];
+//        [self.parentViewController addChildViewController:tagAlbumViewController];
+//        [self.parentViewController.view addSubview:tagAlbumViewController.view];
+        [self presentViewController:tagAlbumViewController animated:YES completion:nil];
         [self clearTagAlpha];
         self.view.hidden = YES;
     } else {
