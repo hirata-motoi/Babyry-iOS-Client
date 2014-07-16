@@ -20,6 +20,7 @@
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
+@property (strong, nonatomic) PFObject *currentInstallation;
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSMutableArray *childArray;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
