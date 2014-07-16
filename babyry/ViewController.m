@@ -50,25 +50,33 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    // メンテナンス状態かどうか確認
-    // バックグラウンドで行わないと一瞬固まる
-    PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
-    maintenanceQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
-    [maintenanceQuery whereKey:@"key" equalTo:@"maintenance"];
-    [maintenanceQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if([objects count] == 1) {
-            if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
-                MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
-                [self presentViewController:maintenanceViewController animated:YES completion:NULL];
-            }
-        }
-    }];
-    
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
         NSLog(@"User Not Logged In");
         [self openLoginView];
     } else {
+        // メンテナンス状態かどうか確認
+        // バックグラウンドで行わないと一瞬固まる
+        PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
+        maintenanceQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
+        [maintenanceQuery whereKey:@"key" equalTo:@"maintenance"];
+        [maintenanceQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if([objects count] == 1) {
+                if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
+                    MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
+                    [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+                }
+            }
+        }];
+        
+        // プッシュ通知用のデータがなければUserIdを突っ込んでおく
+        _currentInstallation = [PFInstallation currentInstallation];
+        if(!_currentInstallation[@"channels"] && _currentUser[@"userId"] && _currentInstallation[@"deviceToken"]) {
+            NSLog(@"set currentInstallation channels");
+            [_currentInstallation addUniqueObject:_currentUser[@"userId"] forKey:@"channels"];
+            [_currentInstallation saveInBackground];
+        }
+        
         /*/////////////////////////////いちいちメール確認必要だから開発中はコメント//////////////////////////////////////
         // emailが確認されているか
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
@@ -553,7 +561,9 @@
                                 if ([c.objectId isEqual:object[@"imageOf"]]) {
                                     tmpDic = [_childArray objectAtIndex:cIndex];
                                     [tmpDic setValue:c[@"name"] forKey:@"name"];
-                                    [tmpDic setValue:c[@"birthday"] forKey:@"birthday"];
+                                    if (c[@"birthday"]) {
+                                        [tmpDic setValue:c[@"birthday"] forKey:@"birthday"];
+                                    }
                                     int wIndex = 0;
                                     for (NSString *date in _weekDateArray) {
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {

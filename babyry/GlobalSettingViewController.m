@@ -12,6 +12,7 @@
 #import "FamilyRole.h"
 #import "ImageCache.h"
 #import "ProfileViewController.h"
+#import "ViewController.h"
 
 @interface GlobalSettingViewController ()
 
@@ -86,6 +87,9 @@
 {
     [ImageCache removeAllCache];
     [PFUser logOut];
+
+    // 親のviewDidAppearを呼び出さないとログインビューが出ない
+    [self.parentViewController viewDidAppear:YES];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
