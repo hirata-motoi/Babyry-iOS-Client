@@ -8,8 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+#import <QuartzCore/QuartzCore.h>
 
-@interface GlobalSettingViewController : UITableViewController
-@property (weak, nonatomic) IBOutlet UISegmentedControl *roleControl;
+@interface GlobalSettingViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
+@property (weak, nonatomic) IBOutlet UITableView *settingTableView;
+@property (weak, nonatomic) IBOutlet UIButton *closeButton;
+@property UISegmentedControl *roleControl;
+
 
 @end

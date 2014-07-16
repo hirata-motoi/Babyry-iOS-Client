@@ -18,9 +18,9 @@
 
 @implementation GlobalSettingViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithStyle:style];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
@@ -31,12 +31,16 @@
 {
     [super viewDidLoad];
     
+    _settingTableView.delegate = self;
+    _settingTableView.dataSource = self;
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    [self.roleControl addTarget:self action:@selector(switchRole) forControlEvents:UIControlEventValueChanged];
+    [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -63,13 +67,95 @@
 
 - (void)close
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    CGRect rect = self.view.frame;
+    [UIView animateWithDuration:0.3
+                          delay:0.0
+                        options: UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         self.view.frame = CGRectMake(rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
+                     }
+                     completion:^(BOOL finished){
+                         [self.view removeFromSuperview];
+                         [self dismissViewControllerAnimated:YES completion:nil];
+                     }];
 }
 
 - (void)logout
 {
     [ImageCache removeAllCache];
     [PFUser logOut];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+    }
+    cell.textLabel.numberOfLines = 0;
+    
+    switch (indexPath.section) {
+        case 0:
+            switch (indexPath.row) {
+                case 0:
+                    NSLog(@"section:0 row:0");
+                    cell.textLabel.text = @"プロフィール";
+                    break;
+                case 1:
+                    NSLog(@"section:0 row:1");
+                    cell.textLabel.text = @"Role";
+                    _roleControl = [self createRoleSwitchSegmentControl];
+                    [cell addSubview:_roleControl];
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 1:
+            switch (indexPath.row) {
+                case 0:
+                    cell.textLabel.text = @"ログアウト";
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 2:
+            switch (indexPath.row) {
+                case 0:
+                    cell.textLabel.text = @"FamilyApply";
+                    break;
+                case 1:
+                    cell.textLabel.text = @"FamilyApplyList";
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+    
+    return cell;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSInteger rowCount;
+    switch (section) {
+        case 0:
+            rowCount = 2;
+            break;
+        case 1:
+            rowCount = 1;
+            break;
+        case 2:
+            rowCount = 2;
+            break;
+        default:
+            break;
+    }
+    return rowCount;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -94,9 +180,6 @@
                     [self logout];
                     [self close];
                     break;
-                case 1:
-                    [self close];
-                    break;
                 default:
                     break;
             }
@@ -116,6 +199,11 @@
         default:
             break;
     }
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 3;
 }
 
 - (void)openFamilyApply
@@ -171,6 +259,32 @@
     [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         self.roleControl.enabled = TRUE;
     }];
+}
+                     
+- (UISegmentedControl *)createRoleSwitchSegmentControl
+{
+    // segment controlの作成
+    UISegmentedControl *sc = [[UISegmentedControl alloc] initWithItems:@[@"uploader", @"chooser"]];
+    CGRect rect = sc.frame;
+    rect.origin.x = 170;
+    rect.origin.y = 7;
+    sc.frame = rect;
+    [sc addTarget:self action:@selector(switchRole) forControlEvents:UIControlEventValueChanged];
+    
+    // 初期値を非同期でセット
+    [FamilyRole fetchFamilyRole:[PFUser currentUser][@"familyId"] withBlock:^(NSArray *objects, NSError *error){
+        if (!error) {
+            PFObject *familyRole = [objects objectAtIndex:0];
+            NSString *uploader = familyRole[@"uploader"];
+            if ([[PFUser currentUser][@"userId"] isEqualToString:uploader]) {
+                sc.selectedSegmentIndex = 0;
+            } else {
+                sc.selectedSegmentIndex = 1;
+            }
+        }
+    }];
+    
+    return sc;
 }
 
 /*
