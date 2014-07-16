@@ -16,6 +16,7 @@
 #import "Config.h"
 #import "IntroFirstViewController.h"
 #import "PageContentViewController.h"
+#import "IntroChildNameViewController.h"
 
 @interface ViewController ()
 
@@ -667,8 +668,15 @@
 
 -(void)setChildNames
 {
-    UIViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
+    IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     [self presentViewController:introChildNameViewController animated:YES completion:NULL];
 }
 
+- (IBAction)addChildTestButton:(id)sender {
+    NSLog(@"addChildTestButton");
+    
+    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
+    icnvc.isNotFirstTime = YES;
+    [self presentViewController:icnvc animated:YES completion:NULL];
+}
 @end

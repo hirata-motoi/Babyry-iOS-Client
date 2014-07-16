@@ -17,7 +17,10 @@
 @property (strong, nonatomic) IBOutlet UITextField *childNameField4;
 @property (strong, nonatomic) IBOutlet UITextField *childNameField5;
 @property (strong, nonatomic) IBOutlet UILabel *childNameSendLabel;
+@property (strong, nonatomic) IBOutlet UILabel *backLabel;
 
 @property BOOL keyboradObserving;
+
+@property BOOL isNotFirstTime;
 
 @end

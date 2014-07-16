@@ -33,6 +33,21 @@
     _childNameSendLabel.layer.borderWidth = 2.0f;
     _childNameSendLabel.tag = 2;
     
+    _backLabel.layer.cornerRadius = _backLabel.frame.size.width/2;
+    _backLabel.layer.borderColor = [UIColor orangeColor].CGColor;
+    _backLabel.layer.borderWidth = 2.0f;
+    _backLabel.tag = 3;
+    
+    NSLog(@"isNotFirstTime is %hhd", _isNotFirstTime);
+    if (!_isNotFirstTime) {
+        _backLabel.hidden = YES;
+    } else {
+        CGRect frame = _childNameSendLabel.frame;
+        frame.origin.x = self.view.frame.size.width*2/3 - _childNameSendLabel.frame.size.width/2;
+        frame = _backLabel.frame;
+        frame.origin.x = self.view.frame.size.width/3 - _backLabel.frame.size.width/2;
+    }
+    
     UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     stgr.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:stgr];
@@ -40,6 +55,10 @@
     UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     stgr2.numberOfTapsRequired = 1;
     [_childNameSendLabel addGestureRecognizer:stgr2];
+    
+    UITapGestureRecognizer *stgr3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    stgr3.numberOfTapsRequired = 1;
+    [_backLabel addGestureRecognizer:stgr3];
 }
 
 - (void)didReceiveMemoryWarning
@@ -169,6 +188,8 @@
             }
             [self dismissViewControllerAnimated:YES completion:NULL];
         }
+    } else if ([sender view].tag == 3) {
+        [self dismissViewControllerAnimated:YES completion:NULL];
     } else {
         [self.view endEditing:YES];
     }
