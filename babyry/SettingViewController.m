@@ -32,7 +32,11 @@
     
     _settingAgeLabel.text = @"";
     _settingPicturesLabel.text = @"";
-    _settingDatePicker.date = _childBirthday;
+    if (_childBirthday) {
+        _settingDatePicker.date = _childBirthday;
+    } else {
+        _settingDatePicker.date = [NSDate date];
+    }
 }
 
 - (void)didReceiveMemoryWarning
