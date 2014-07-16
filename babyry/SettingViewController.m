@@ -35,7 +35,7 @@
     if (_childBirthday) {
         _settingDatePicker.date = _childBirthday;
     } else {
-        _settingDatePicker.date = [NSDate date];
+        _settingDatePicker.date = [NSDate distantFuture];
     }
 }
 
@@ -84,7 +84,11 @@
     
     NSDate *today = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
     float age = [today timeIntervalSinceDate:[DateUtils setSystemTimezoneAndZero:_settingDatePicker.date]]/60/60/24;
-    _settingAgeLabel.text = [NSString stringWithFormat:@"%d日目", (int)(age + 1)];
+    if ((int)(age + 1) > 0) {
+        _settingAgeLabel.text = [NSString stringWithFormat:@"%d日目", (int)(age + 1)];
+    } else {
+        _settingAgeLabel.text = [NSString stringWithFormat:@" - 日目"];        
+    }
 }
 
 /*
