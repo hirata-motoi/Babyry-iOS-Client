@@ -7,18 +7,22 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PageContentViewController.h"
 
 @interface SettingViewController : UIViewController<UIAlertViewDelegate>
 - (IBAction)settingViewBackButton:(id)sender;
 - (IBAction)settingViewSaveButton:(id)sender;
 @property (strong, nonatomic) IBOutlet UIScrollView *settingScrollView;
-@property (strong, nonatomic) IBOutlet UIImageView *settingMyImageView;
-@property (strong, nonatomic) IBOutlet UITextField *settingMyNicknameField;
 @property (strong, nonatomic) IBOutlet UITextField *settingChildNameField;
 @property (strong, nonatomic) IBOutlet UILabel *settingChildBirthdayLabel;
+@property (strong, nonatomic) IBOutlet UILabel *editChildBirthdayLabel;
 - (IBAction)datePickerSaveButton:(id)sender;
 @property (strong, nonatomic) IBOutlet UIButton *datePickerSaveLabel;
 @property (strong, nonatomic) IBOutlet UIDatePicker *settingDatePicker;
+@property (strong, nonatomic) IBOutlet UILabel *settingAgeLabel;
+@property (strong, nonatomic) IBOutlet UILabel *settingPicturesLabel;
+
+@property PageContentViewController *pViewController;
 
 @property NSString *childObjectId;
 @property NSString *childName;

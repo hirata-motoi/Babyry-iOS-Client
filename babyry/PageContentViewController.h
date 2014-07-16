@@ -17,4 +17,7 @@
 
 @property ICTutorialOverlay *overlay;
 
+@property NSString *returnValueOfChildName;
+@property NSString *returnValueOfChildBirthday;
+
 @end

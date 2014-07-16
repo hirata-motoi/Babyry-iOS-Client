@@ -520,6 +520,7 @@
     }
     NSLog(@"%@", monthArrayForQuery);
 
+    int childArrayIndex = 0;
     for (PFObject *c in _childArrayFoundFromParse) {
         for (NSString *month in monthArrayForQuery) {
             PFQuery *childMonthImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", month]];
@@ -550,6 +551,8 @@
                             for (PFObject *c in _childArrayFoundFromParse) {
                                 if ([c.objectId isEqual:object[@"imageOf"]]) {
                                     tmpDic = [_childArray objectAtIndex:cIndex];
+                                    [tmpDic setValue:c[@"name"] forKey:@"name"];
+                                    [tmpDic setValue:c[@"birthday"] forKey:@"birthday"];
                                     int wIndex = 0;
                                     for (NSString *date in _weekDateArray) {
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {
@@ -597,6 +600,7 @@
                 }
             }];
         }
+        childArrayIndex++;
     }
 }
 

@@ -18,6 +18,7 @@
 		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
+		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
 		88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */; };
@@ -101,6 +102,8 @@
 		8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadPickerViewController.h; sourceTree = "<group>"; };
 		8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadPickerViewController.m; sourceTree = "<group>"; };
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		885A223519750DD20039B263 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
+		885A223619750DD20039B263 /* DateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtils.m; sourceTree = "<group>"; };
 		8899C1EB1941EAAE00CD7909 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroFirstViewController.h; sourceTree = "<group>"; };
@@ -231,6 +234,8 @@
 				F20F7642196BC43A00FD2529 /* FamilyRole.m */,
 				882A6A24196B7D4A00E07D60 /* Config.h */,
 				882A6A25196B7D4A00E07D60 /* Config.m */,
+				885A223519750DD20039B263 /* DateUtils.h */,
+				885A223619750DD20039B263 /* DateUtils.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -521,6 +526,7 @@
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
+				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,

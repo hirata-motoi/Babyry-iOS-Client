@@ -140,7 +140,11 @@
     // child name label
     if (indexPath.row == 0) {
         UILabel *nameLabel = [[UILabel alloc] init];
-        nameLabel.text = [NSString stringWithFormat:@"%@", [object objectForKey:@"name"]];
+        if (_returnValueOfChildName) {
+            nameLabel.text = _returnValueOfChildName;
+        } else {
+            nameLabel.text = [NSString stringWithFormat:@"%@", [object objectForKey:@"name"]];
+        }
         nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/8];
         nameLabel.textAlignment = NSTextAlignmentLeft;
         nameLabel.textColor = [UIColor whiteColor];
@@ -309,6 +313,7 @@
         settingViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
         settingViewController.childName = [_childArray[_pageIndex] objectForKey:@"name"];
         settingViewController.childBirthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
+        settingViewController.pViewController = self;
         [self presentViewController:settingViewController animated:YES completion:NULL];
     }
 }
