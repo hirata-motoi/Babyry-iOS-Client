@@ -63,6 +63,8 @@
 		F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */; };
 		F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC8197402090092C712 /* TagAlbumPageViewController.m */; };
 		F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */; };
+		F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDD719766ECC0092C712 /* ProfileViewController.m */; };
+		F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -174,6 +176,10 @@
 		F215DDC8197402090092C712 /* TagAlbumPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumPageViewController.m; sourceTree = "<group>"; };
 		F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumCollectionViewCell.h; sourceTree = "<group>"; };
 		F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumCollectionViewCell.m; sourceTree = "<group>"; };
+		F215DDD619766ECC0092C712 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
+		F215DDD719766ECC0092C712 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
+		F215DDD91976BFB70092C712 /* NicknameEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameEditViewController.h; sourceTree = "<group>"; };
+		F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NicknameEditViewController.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -403,6 +409,10 @@
 				84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */,
 				F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */,
 				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
+				F215DDD619766ECC0092C712 /* ProfileViewController.h */,
+				F215DDD719766ECC0092C712 /* ProfileViewController.m */,
+				F215DDD91976BFB70092C712 /* NicknameEditViewController.h */,
+				F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */,
 			);
 			name = GlobalSetting;
 			sourceTree = "<group>";
@@ -581,6 +591,7 @@
 				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
+				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
@@ -601,6 +612,7 @@
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
 				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
+				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
