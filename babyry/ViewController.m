@@ -413,12 +413,22 @@
 
 - (void)openGlobalSettingView
 {
-    NSLog(@"openGlobalSettingView start");
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
-    
-    NSLog(@"openGlobalSettingView start 2");
-    [self presentViewController:globalSettingViewController animated:true completion:nil];
-    NSLog(@"openGlobalSettingView start 3");
+    [self addChildViewController:globalSettingViewController];
+    CGRect rect = CGRectMake(globalSettingViewController.view.frame.size.width, 0, globalSettingViewController.view.frame.size.width, globalSettingViewController.view.frame.size.height);
+    globalSettingViewController.view.frame = rect;
+    [self.view addSubview:globalSettingViewController.view];
+    [UIView animateWithDuration:0.3
+                          delay:0.0
+                        options: UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         globalSettingViewController.view.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+                     }
+                     completion:^(BOOL finished){
+                         
+                         [MBProgressHUD hideHUDForView:globalSettingViewController.view animated:YES];
+                         
+                     }];
 }
 
 - (void) getWeekDate

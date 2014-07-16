@@ -45,11 +45,11 @@
 
 
 // 非同期でFamiyRoleをfetchして何か処理をする テストしてないのでちゃんと動くか不明
-//+ (void)fetchFamilyRoleWithBlock:(PFArrayResultBlock)block withFamilyId:(NSString *)familyId
-//{
-//    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
-//    [query whereKey:@"familyId" equalTo:familyId];
-//    [query findObjectsInBackgroundWithBlock:block];
-//}
++ (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
+    [query whereKey:@"familyId" equalTo:familyId];
+    [query findObjectsInBackgroundWithBlock:block];
+}
 
 @end
