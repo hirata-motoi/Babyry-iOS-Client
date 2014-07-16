@@ -32,10 +32,12 @@
     
     _settingAgeLabel.text = @"";
     _settingPicturesLabel.text = @"";
-    if (_childBirthday) {
+    if ([_childBirthday isEqual:[NSDate distantFuture]]) {
+        _settingDatePicker.date = [NSDate date];
+    } else if (_childBirthday) {
         _settingDatePicker.date = _childBirthday;
     } else {
-        _settingDatePicker.date = [NSDate distantFuture];
+        _settingDatePicker.date = [NSDate date];
     }
 }
 
