@@ -222,6 +222,10 @@
 			children = (
 				8814A9981945469B0010F516 /* ImageCache.h */,
 				8814A9991945469B0010F516 /* ImageCache.m */,
+				F210670D196E805A00187119 /* TagView.h */,
+				F210670E196E805A00187119 /* TagView.m */,
+				F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */,
+				F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */,
 				84ABD705194DBE8500BC3CDA /* Sequence.h */,
 				84ABD706194DBE8500BC3CDA /* Sequence.m */,
 				8814A9A8194F56620010F516 /* ImageTrimming.h */,
@@ -327,58 +331,15 @@
 		88B18C7C193814CE00ED630C /* babyry */ = {
 			isa = PBXGroup;
 			children = (
+				F215DDCD19761CA50092C712 /* Controller */,
 				88AA2FEA196CE99800F4B40C /* Plugins */,
 				8814A997194546640010F516 /* Model */,
 				88B18C85193814CE00ED630C /* AppDelegate.h */,
 				88B18C86193814CE00ED630C /* AppDelegate.m */,
-				8814A99B194ADB330010F516 /* MultiUploadViewController.h */,
-				8814A99C194ADB330010F516 /* MultiUploadViewController.m */,
-				88B89FBC193EDC04009474DC /* UploadViewController.h */,
-				88B89FBD193EDC04009474DC /* UploadViewController.m */,
-				F210670A196E734D00187119 /* TagEditViewController.h */,
-				F210670B196E734D00187119 /* TagEditViewController.m */,
-				F210670D196E805A00187119 /* TagView.h */,
-				F210670E196E805A00187119 /* TagView.m */,
-				F2106707196E33EE00187119 /* CommentViewController.h */,
-				F2106708196E33EE00187119 /* CommentViewController.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
-				F215DDC7197402090092C712 /* TagAlbumPageViewController.h */,
-				F215DDC8197402090092C712 /* TagAlbumPageViewController.m */,
-				F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */,
-				F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */,
-				F2106710196FD7F600187119 /* TagAlbumViewController.h */,
-				F2106711196FD7F600187119 /* TagAlbumViewController.m */,
-				F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */,
-				F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */,
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
-				F2106704196E29B400187119 /* ImageOperationViewController.h */,
-				F2106705196E29B400187119 /* ImageOperationViewController.m */,
-				88B89FB6193B2D52009474DC /* PageContentViewController.h */,
-				88B89FB7193B2D52009474DC /* PageContentViewController.m */,
-				88B18C8B193814CF00ED630C /* ViewController.h */,
-				88B18C8C193814CF00ED630C /* ViewController.m */,
 				88B18C8E193814CF00ED630C /* Images.xcassets */,
 				88B18C7D193814CE00ED630C /* Supporting Files */,
-				84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */,
-				84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */,
-				8814A9A5194EC4420010F516 /* AlbumViewController.h */,
-				8814A9A6194EC4420010F516 /* AlbumViewController.m */,
-				8814A9AB195812E60010F516 /* SettingViewController.h */,
-				8814A9AC195812E60010F516 /* SettingViewController.m */,
-				F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */,
-				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
-				8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */,
-				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
-				F20F764A196BF86B00FD2529 /* GlobalSettingViewController.h */,
-				F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */,
-				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
-				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
-				88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */,
-				88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */,
-				88AA2FF2196E3C9200F4B40C /* IntroMyNicknameViewController.h */,
-				88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */,
-				88AA2FF5196E667400F4B40C /* IntroChildNameViewController.h */,
-				88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -410,6 +371,101 @@
 				88B18C9E193814CF00ED630C /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F215DDCD19761CA50092C712 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				F215DDD51976203C0092C712 /* MultiUpload */,
+				F215DDD219761DFB0092C712 /* Intro */,
+				F215DDD119761DAC0092C712 /* Album */,
+				F215DDD019761D6E0092C712 /* Upload */,
+				F215DDCF19761D3D0092C712 /* TagAlbum */,
+				F215DDCE19761D260092C712 /* GlobalSetting */,
+				88B89FB6193B2D52009474DC /* PageContentViewController.h */,
+				88B89FB7193B2D52009474DC /* PageContentViewController.m */,
+				88B18C8B193814CF00ED630C /* ViewController.h */,
+				88B18C8C193814CF00ED630C /* ViewController.m */,
+				8814A9AB195812E60010F516 /* SettingViewController.h */,
+				8814A9AC195812E60010F516 /* SettingViewController.m */,
+				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
+				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		F215DDCE19761D260092C712 /* GlobalSetting */ = {
+			isa = PBXGroup;
+			children = (
+				F20F764A196BF86B00FD2529 /* GlobalSettingViewController.h */,
+				F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */,
+				84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */,
+				84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */,
+				F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */,
+				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
+			);
+			name = GlobalSetting;
+			sourceTree = "<group>";
+		};
+		F215DDCF19761D3D0092C712 /* TagAlbum */ = {
+			isa = PBXGroup;
+			children = (
+				F215DDC7197402090092C712 /* TagAlbumPageViewController.h */,
+				F215DDC8197402090092C712 /* TagAlbumPageViewController.m */,
+				F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */,
+				F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */,
+				F2106710196FD7F600187119 /* TagAlbumViewController.h */,
+				F2106711196FD7F600187119 /* TagAlbumViewController.m */,
+			);
+			name = TagAlbum;
+			sourceTree = "<group>";
+		};
+		F215DDD019761D6E0092C712 /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				F2106707196E33EE00187119 /* CommentViewController.h */,
+				F2106708196E33EE00187119 /* CommentViewController.m */,
+				F2106704196E29B400187119 /* ImageOperationViewController.h */,
+				F2106705196E29B400187119 /* ImageOperationViewController.m */,
+				88B89FBC193EDC04009474DC /* UploadViewController.h */,
+				88B89FBD193EDC04009474DC /* UploadViewController.m */,
+				F210670A196E734D00187119 /* TagEditViewController.h */,
+				F210670B196E734D00187119 /* TagEditViewController.m */,
+			);
+			name = Upload;
+			sourceTree = "<group>";
+		};
+		F215DDD119761DAC0092C712 /* Album */ = {
+			isa = PBXGroup;
+			children = (
+				8814A9A5194EC4420010F516 /* AlbumViewController.h */,
+				8814A9A6194EC4420010F516 /* AlbumViewController.m */,
+			);
+			name = Album;
+			sourceTree = "<group>";
+		};
+		F215DDD219761DFB0092C712 /* Intro */ = {
+			isa = PBXGroup;
+			children = (
+				88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */,
+				88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */,
+				88AA2FF2196E3C9200F4B40C /* IntroMyNicknameViewController.h */,
+				88AA2FF3196E3C9200F4B40C /* IntroMyNicknameViewController.m */,
+				88AA2FF5196E667400F4B40C /* IntroChildNameViewController.h */,
+				88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */,
+			);
+			name = Intro;
+			sourceTree = "<group>";
+		};
+		F215DDD51976203C0092C712 /* MultiUpload */ = {
+			isa = PBXGroup;
+			children = (
+				8814A99B194ADB330010F516 /* MultiUploadViewController.h */,
+				8814A99C194ADB330010F516 /* MultiUploadViewController.m */,
+				8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */,
+				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
+			);
+			name = MultiUpload;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
