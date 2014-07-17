@@ -65,6 +65,7 @@
 		F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */; };
 		F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDD719766ECC0092C712 /* ProfileViewController.m */; };
 		F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */; };
+		F215DDDE19777CD00092C712 /* PushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDD19777CD00092C712 /* PushNotification.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -180,6 +181,8 @@
 		F215DDD719766ECC0092C712 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		F215DDD91976BFB70092C712 /* NicknameEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameEditViewController.h; sourceTree = "<group>"; };
 		F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NicknameEditViewController.m; sourceTree = "<group>"; };
+		F215DDDC19777CD00092C712 /* PushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushNotification.h; sourceTree = "<group>"; };
+		F215DDDD19777CD00092C712 /* PushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushNotification.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -246,6 +249,8 @@
 				882A6A25196B7D4A00E07D60 /* Config.m */,
 				885A223519750DD20039B263 /* DateUtils.h */,
 				885A223619750DD20039B263 /* DateUtils.m */,
+				F215DDDC19777CD00092C712 /* PushNotification.h */,
+				F215DDDD19777CD00092C712 /* PushNotification.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -594,6 +599,7 @@
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
 				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
+				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
@@ -746,8 +752,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: jp.co.meaning.babyry";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: jp.co.meaning.babyry";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -755,9 +761,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = babyry.xcodeproj/project.pbxproj;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "D7B42AC4-AAFE-4C26-A915-D2E8E931516E";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -767,8 +773,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: jp.co.meaning.babyry";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development IOS Push Services: jp.co.meaning.babyry";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -776,9 +782,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = babyry.xcodeproj/project.pbxproj;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "D7B42AC4-AAFE-4C26-A915-D2E8E931516E";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
