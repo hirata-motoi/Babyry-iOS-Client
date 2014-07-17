@@ -459,7 +459,6 @@
         NSMutableArray *childImageArray = [[NSMutableArray alloc] init];
         NSMutableArray *dateOfChildImageArray = [[NSMutableArray alloc] init];
         NSMutableArray *monthOfChildImageArray = [[NSMutableArray alloc] init];
-        NSMutableArray *bestFlagOfChildImageArray = [[NSMutableArray alloc] init];
         for (NSString *date in _weekDateArray) {
             [dateOfChildImageArray insertObject:date atIndex:weekIndex];
             imageCachePath = [NSString stringWithFormat:@"%@%@thumb", c.objectId, date];
@@ -469,7 +468,6 @@
             } else {
                 [childImageArray insertObject:[UIImage imageNamed:@"NoImage"] atIndex:weekIndex];
             }
-            [bestFlagOfChildImageArray insertObject:@"noflag" atIndex:weekIndex];
             NSString *month = [date substringToIndex:6];
             [monthOfChildImageArray insertObject:month atIndex:weekIndex];
             weekIndex++;
@@ -481,7 +479,6 @@
         } else {
             [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
         }
-        [childSubDic setObject:bestFlagOfChildImageArray forKey:@"bestFlag"];
         [childSubDic setObject:dateOfChildImageArray forKey:@"date"];
         [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
         [childSubDic setObject:childImageArray forKey:@"thumbImages"];
@@ -496,7 +493,6 @@
 {
     NSLog(@"getParseData");
     
-    NSLog(@"ccccccccccccccc %d %d", [_childArray count], [_childArrayFoundFromParse count]);
     if ([_childArray count] != [_childArrayFoundFromParse count]) {
         [self getCachedImage];
     }
@@ -533,7 +529,6 @@
                             // Parseから持って来たデータでchildArray更新する
                             // (階層が深くなってきて気持ち悪いけどbackgroundだから良いかなと。。。)
                             // childArray - index -- name (String)
-                            //                    |- bestFlag (Array)
                             //                    |- thumbImages (UIImage in Array) これはサムネイル
                             //                    |- orgImages (UIImage in Array) これは本画像
                             //                    |- month (Array)
@@ -553,8 +548,6 @@
                                     int wIndex = 0;
                                     for (NSString *date in _weekDateArray) {
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {
-                                            //NSLog(@"much! %@ %@ %d", object[@"date"], date, wIndex);
-                                            [[tmpDic objectForKey:@"bestFlag"] setObject:object[@"bestFlag"] atIndex:wIndex];
                                             //NSLog(@"ここでParseに接続。全部backgroundにする");
                                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                                                 if(!error){
