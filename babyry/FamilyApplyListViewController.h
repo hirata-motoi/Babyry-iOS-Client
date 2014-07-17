@@ -14,5 +14,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *familyApplyList;
 @property (retain, atomic) NSArray *inviterUsers;
 @property (retain, atomic) NSMutableDictionary *familyApplys;
+@property (weak, nonatomic) IBOutlet UIView *noApplyMessageView;
 
 @end

@@ -32,6 +32,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _noApplyMessageView.hidden = YES;
+    
     // デリゲートメソッドをこのクラスで実装する
     self.familyApplyList.delegate = self;
     self.familyApplyList.dataSource = self;
@@ -53,31 +55,34 @@
     NSLog(@"inviteeUserId : %@", [PFUser currentUser][@"userId"]);
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
     [query whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
-    NSArray * objects = [query findObjects];
-    if (objects.count < 1) {
-        NSLog(@"招待したユーザが存在しない");
-    } else {
-        NSLog(@"found invite user");
-        NSMutableArray * inviterUserIds = [[NSMutableArray alloc] init];
-        for (int i = 0; i < objects.count; i++) {
-            NSString *inviterUserId = objects[i][@"userId"];
-            [inviterUserIds addObject:inviterUserId];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (objects.count < 1) {
+            NSLog(@"招待したユーザが存在しない");
+            [self showNoApplyMessage];
+        } else {
+            NSMutableArray * inviterUserIds = [[NSMutableArray alloc] init];
+            for (int i = 0; i < objects.count; i++) {
+                NSString *inviterUserId = objects[i][@"userId"];
+                [inviterUserIds addObject:inviterUserId];
+                
+                // 後からfamilyApplyのレコードを参照できるように保持しておく
+                [familyApplys setObject:objects[i] forKey:inviterUserId];
+            }
             
-            // 後からfamilyApplyのレコードを参照できるように保持しておく
-            [familyApplys setObject:objects[i] forKey:inviterUserId];
+            [self setupInviterUsers:inviterUserIds];
         }
-        
-        [self setupInviterUsers:inviterUserIds];
-    }
+    }];
 }
 
 - (void)setupInviterUsers: (NSMutableArray *)inviterUserIds
 {
     PFQuery *query = [PFQuery queryWithClassName:@"_User"];
     [query whereKey:@"userId" containedIn:inviterUserIds];
-    NSArray *objects = [query findObjects];
-    inviterUsers = objects;
-    NSLog(@"inviterUsers : %@", objects);
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error) {
+            inviterUsers = objects;
+        }
+    }];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -120,6 +125,11 @@
     
     return cell;
 };
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
 
 - (void)closeFamilyApplyList
 {
@@ -197,6 +207,11 @@
     [familyApplyRow delete];
     NSLog(@"rejecte && delete familyApply: %@", familyApplyRow);
     [self closeFamilyApplyList];
+}
+
+- (void)showNoApplyMessage
+{
+    _noApplyMessageView.hidden = NO;
 }
 
 /*
