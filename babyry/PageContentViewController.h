@@ -20,4 +20,6 @@
 @property NSString *returnValueOfChildName;
 @property NSString *returnValueOfChildBirthday;
 
+@property NSMutableArray *bestFlagArray;
+
 @end

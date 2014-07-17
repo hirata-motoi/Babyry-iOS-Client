@@ -22,5 +22,7 @@
 @property BOOL keyboradObserving;
 
 @property BOOL isNotFirstTime;
+@property int currentChildNum;
+@property int addableChildNum;
 
 @end

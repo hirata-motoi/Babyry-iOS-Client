@@ -44,8 +44,10 @@
     } else {
         CGRect frame = _childNameSendLabel.frame;
         frame.origin.x = self.view.frame.size.width*2/3 - _childNameSendLabel.frame.size.width/2;
+        _childNameSendLabel.frame = frame;
         frame = _backLabel.frame;
         frame.origin.x = self.view.frame.size.width/3 - _backLabel.frame.size.width/2;
+        _backLabel.frame = frame;
     }
     
     UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
@@ -59,6 +61,27 @@
     UITapGestureRecognizer *stgr3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     stgr3.numberOfTapsRequired = 1;
     [_backLabel addGestureRecognizer:stgr3];
+    
+    NSLog(@"Number of Current Child is %d", _currentChildNum);
+    // Maxが5なので、追加できる子供は 5 - _currentChildNum;
+    _addableChildNum = 5 - _currentChildNum;
+    
+    if (_addableChildNum < 5) {
+        _childNameField5.hidden = YES;
+    }
+    if (_addableChildNum < 4) {
+        _childNameField4.hidden = YES;
+    }
+    if (_addableChildNum < 3) {
+        _childNameField3.hidden = YES;
+    }
+    if (_addableChildNum < 2) {
+        _childNameField2.hidden = YES;
+    }
+    if (_addableChildNum < 1) {
+        // この場合はもう追加できないよってメッセージにするべき
+        _childNameField1.hidden = YES;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -168,7 +191,7 @@
         }
         if (_childNameField5.text && ![_childNameField5.text isEqualToString:@""]) {
             [newChildNameArray addObject:_childNameField5.text];
-        NSLog(@"send childname");
+            NSLog(@"send childname");
         }
         NSLog(@"new child %@", newChildNameArray);
         if ([newChildNameArray count] < 1) {

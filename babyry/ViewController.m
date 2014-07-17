@@ -397,25 +397,6 @@
     [self presentViewController:logInViewController animated:YES completion:NULL];
 }
 
-- (void)addChild
-{
-    //NSLog(@"add child");
-    int page_count = [_childArray count];
-    //NSLog(@"page count %d", page_count);
-
-    // Parseにchild追加
-    PFObject *child = [PFObject objectWithClassName:@"Child"];
-    [child setObject:_currentUser forKey:@"createdBy"];
-    child[@"name"] = [NSString stringWithFormat:@"栽培マン%d号", page_count + 1];
-    [child saveInBackground];
-    
-    // 新規に足したpageに移動
-    // page_count +1 だけど 0から始まるので +1はなし
-    PageContentViewController *jumpViewController = [self viewControllerAtIndex:page_count];
-    NSArray *viewControllers = @[jumpViewController];
-    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-}
-
 - (void)openGlobalSettingView
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
@@ -475,7 +456,6 @@
         NSMutableArray *childImageArray = [[NSMutableArray alloc] init];
         NSMutableArray *dateOfChildImageArray = [[NSMutableArray alloc] init];
         NSMutableArray *monthOfChildImageArray = [[NSMutableArray alloc] init];
-        NSMutableArray *bestFlagOfChildImageArray = [[NSMutableArray alloc] init];
         for (NSString *date in _weekDateArray) {
             [dateOfChildImageArray insertObject:date atIndex:weekIndex];
             imageCachePath = [NSString stringWithFormat:@"%@%@thumb", c.objectId, date];
@@ -485,7 +465,6 @@
             } else {
                 [childImageArray insertObject:[UIImage imageNamed:@"NoImage"] atIndex:weekIndex];
             }
-            [bestFlagOfChildImageArray insertObject:@"noflag" atIndex:weekIndex];
             NSString *month = [date substringToIndex:6];
             [monthOfChildImageArray insertObject:month atIndex:weekIndex];
             weekIndex++;
@@ -497,7 +476,6 @@
         } else {
             [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
         }
-        [childSubDic setObject:bestFlagOfChildImageArray forKey:@"bestFlag"];
         [childSubDic setObject:dateOfChildImageArray forKey:@"date"];
         [childSubDic setObject:monthOfChildImageArray forKey:@"month"];
         [childSubDic setObject:childImageArray forKey:@"thumbImages"];
@@ -505,13 +483,17 @@
         [_childArray insertObject:childSubDic atIndex:childIndex];
         childIndex++;
     }
-    //NSLog(@"%@", _childArray);
     [self setPage];
 }
 
 -(void) getParseData
 {
     NSLog(@"getParseData");
+    
+    if ([_childArray count] != [_childArrayFoundFromParse count]) {
+        [self getCachedImage];
+    }
+    
     // Parseから最新データととる
     
     // 一週間表示用のmonth配列を作成
@@ -544,7 +526,6 @@
                             // Parseから持って来たデータでchildArray更新する
                             // (階層が深くなってきて気持ち悪いけどbackgroundだから良いかなと。。。)
                             // childArray - index -- name (String)
-                            //                    |- bestFlag (Array)
                             //                    |- thumbImages (UIImage in Array) これはサムネイル
                             //                    |- orgImages (UIImage in Array) これは本画像
                             //                    |- month (Array)
@@ -564,8 +545,6 @@
                                     int wIndex = 0;
                                     for (NSString *date in _weekDateArray) {
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {
-                                            //NSLog(@"much! %@ %@ %d", object[@"date"], date, wIndex);
-                                            [[tmpDic objectForKey:@"bestFlag"] setObject:object[@"bestFlag"] atIndex:wIndex];
                                             //NSLog(@"ここでParseに接続。全部backgroundにする");
                                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                                                 if(!error){
@@ -689,11 +668,4 @@
     [self presentViewController:introChildNameViewController animated:YES completion:NULL];
 }
 
-- (IBAction)addChildTestButton:(id)sender {
-    NSLog(@"addChildTestButton");
-    
-    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    icnvc.isNotFirstTime = YES;
-    [self presentViewController:icnvc animated:YES completion:NULL];
-}
 @end

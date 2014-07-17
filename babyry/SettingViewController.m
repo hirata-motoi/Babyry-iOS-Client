@@ -84,13 +84,7 @@
     _datePickerSaveLabel.hidden = YES;
     _first_open_picker = 1;
     
-    NSDate *today = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
-    float age = [today timeIntervalSinceDate:[DateUtils setSystemTimezoneAndZero:_settingDatePicker.date]]/60/60/24;
-    if ((int)(age + 1) > 0) {
-        _settingAgeLabel.text = [NSString stringWithFormat:@"%d日目", (int)(age + 1)];
-    } else {
-        _settingAgeLabel.text = [NSString stringWithFormat:@" - 日目"];        
-    }
+    [self updateAgeLabel];
 }
 
 /*
@@ -152,6 +146,20 @@
     
     _settingDatePicker.hidden = YES;
     _datePickerSaveLabel.hidden = YES;
+    
+    
+    [self updateAgeLabel];
+}
+
+- (void) updateAgeLabel
+{
+    NSDate *today = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
+    float age = [today timeIntervalSinceDate:[DateUtils setSystemTimezoneAndZero:_settingDatePicker.date]]/60/60/24;
+    if ((int)(age + 1) > 0) {
+        _settingAgeLabel.text = [NSString stringWithFormat:@"%d日目", (int)(age + 1)];
+    } else {
+        _settingAgeLabel.text = [NSString stringWithFormat:@" - 日目"];
+    }
 }
 
 @end

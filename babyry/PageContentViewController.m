@@ -13,6 +13,7 @@
 #import "AlbumViewController.h"
 #import "ImageTrimming.h"
 #import "SettingViewController.h"
+#import "FamilyRole.h"
 
 @interface PageContentViewController ()
 
@@ -34,6 +35,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     //NSLog(@"%@", _childArray[_pageIndex]);
+    
+    _bestFlagArray = [NSMutableArray arrayWithObjects:@"NO", @"NO", @"NO", @"NO", @"NO", @"NO", @"NO", nil];
     
     [self createCollectionView];
 }
@@ -105,6 +108,7 @@
             cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
             //cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageCacheData]];
         }
+        [_bestFlagArray replaceObjectAtIndex:indexPath.row withObject:@"YES"];
     } else {
         if (indexPath.row == 0) {
             cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageNamed:@"NoImage"]]];
@@ -266,39 +270,32 @@
 {
     //UITouch *touch = [touches anyObject];
     NSLog( @"tag is %d", tagNumber);
-    if (tagNumber > 1 && tagNumber < 8) {
     
-        //NSLog(@"open uploadViewController. pageIndex:%d", _pageIndex);
-        UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
-        //uploadViewController.pageIndex = _pageIndex;
-        //uploadViewController.imageIndex = touch.view.tag;
-        uploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        uploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-        uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
-        uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
-        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"orgImages"][tagNumber -1];
-        uploadViewController.bestFlag = [_childArray[_pageIndex] objectForKey:@"bestFlag"][tagNumber -1];
-        uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    NSString *whichView;
+    
+    if (tagNumber > 1 && tagNumber < 8) {
         
-        if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage && uploadViewController.bestFlag) {
-            [self presentViewController:uploadViewController animated:YES completion:NULL];
+        PFObject *familyRole = [FamilyRole getFamilyRole];
+        NSString *uploaderUserId = familyRole[@"uploader"];
+        
+        // アップローダーの場合は当日以外は全部UploadViewController
+        if ([[PFUser currentUser][@"userId"] isEqualToString:uploaderUserId]) {
+            whichView = @"Upload";
+            
+        // チューザーの場合は、bestshotが決まっていればUploadViewController
+        // bestshotが決まっていなければ、MultiUpload
         } else {
-            // TODO インターネット接続がありません的なメッセージいるかも
+            if ([[_bestFlagArray objectAtIndex:tagNumber - 1] isEqualToString:@"YES"]) {
+                NSLog(@"fixed bestshot");
+                whichView = @"Upload";
+            } else {
+                NSLog(@"not fixed bestshot");
+                whichView = @"MultiUpload";
+            }
         }
     } else if (tagNumber == 1) {
         //[_overlay hide];
-        
-        MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
-        multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-        multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        multiUploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
-        multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
-        multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-            [self presentViewController:multiUploadViewController animated:YES completion:NULL];
-        } else {
-            // TODO インターネット接続がありません的なメッセージいるかも
-        }
+        whichView = @"MultiUpload";
     } else if (tagNumber == 1111111) {
         NSLog(@"open album view");
         AlbumViewController *albumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumViewController"];
@@ -315,6 +312,35 @@
         settingViewController.childBirthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
         settingViewController.pViewController = self;
         [self presentViewController:settingViewController animated:YES completion:NULL];
+    }
+    
+    
+    if ([whichView isEqualToString:@"Upload"]) {
+        UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
+        uploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+        uploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
+        uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
+        uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
+        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"orgImages"][tagNumber -1];
+        uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        
+        if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage) {
+            [self presentViewController:uploadViewController animated:YES completion:NULL];
+        } else {
+            // TODO インターネット接続がありません的なメッセージいるかも
+        }
+    } else if ([whichView isEqualToString:@"MultiUpload"]) {
+        MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
+        multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
+        multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+        multiUploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
+        multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
+        multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
+            [self presentViewController:multiUploadViewController animated:YES completion:NULL];
+        } else {
+            // TODO インターネット接続がありません的なメッセージいるかも
+        }
     }
 }
 

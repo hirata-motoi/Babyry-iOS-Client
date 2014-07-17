@@ -21,7 +21,6 @@
 @property NSString *month;
 @property NSString *date;
 @property UIImage *uploadedImage;
-@property NSString *bestFlag;
 @property NSString *name;
 
 @property NSMutableArray *cellHeightArray;

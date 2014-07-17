@@ -426,7 +426,6 @@
         uploadViewController.uploadedImage = [UIImage imageNamed:@"NoImage"];
     }
     
-    uploadViewController.bestFlag = @"choosed";
     uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
     return uploadViewController;
