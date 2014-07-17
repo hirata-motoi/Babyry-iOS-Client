@@ -40,7 +40,7 @@
                     // デフォルトのchannels(family)をセット
                     NSMutableArray *familyUserIds = [[NSMutableArray alloc]init];
                     for (PFObject *user in familyObjects) {
-                        [familyUserIds addObject:user[@"userId"]];
+                        [familyUserIds addObject:[NSString stringWithFormat:@"userId_%@", user[@"userId"]]];
                     }
                     
                     NSLog(@"familyUserIds : %@", familyUserIds);
@@ -78,6 +78,55 @@
         }
     }];
 }
+
+// このdeviceが自分以外に紐づいている場合は上書きする
++ (void)setupPushNotificationInstallation
+{
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    PFUser *currentUser = [PFUser currentUser];
+    
+    // 未ログインの場合は何もしない
+    if (!currentUser[@"userId"]) {
+        return;
+    }
+    
+    // currentInstallationがない場合(AppDelegateで処理するので基本はないはず)、ここでdeviceTokenを発行
+    // TODO implement
+    
+    
+    NSMutableArray *userIds = [self extractUserIdsFromChannels:currentInstallation];
+    // 自分以外のユーザのIDがあれば消す
+    for (NSString *userId in userIds) {
+        if (! [userId isEqualToString:currentUser[@"userId"]]) {
+            [currentInstallation removeObject:[NSString stringWithFormat:@"userid_%@", userId] forKey:@"channels"];
+        }
+    }
+    
+    // 自分のIDはとりあえず追加
+    [currentInstallation addUniqueObject:[NSString stringWithFormat:@"userId_%@", currentUser[@"userId"]] forKey:@"channels"];
+
+    NSLog(@"set currentInstallation channels");
+    [currentInstallation saveInBackground];
+}
+     
++ (NSMutableArray *)extractUserIdsFromChannels: (PFInstallation *)currentInstallation
+{
+    NSMutableArray *userIds = [[NSMutableArray alloc]init];
+    
+    NSError *error = nil;
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"userId_(.+)$" options:NSRegularExpressionCaseInsensitive error:&error];
+    if (error == nil) {
+        for (NSString *channel in currentInstallation[@"channels"]) {
+            NSTextCheckingResult *match= [regex firstMatchInString:channel options:NSMatchingReportProgress range:NSMakeRange(0, channel.length)];
+            if (match) {
+                NSString *userId = [channel substringWithRange:[match rangeAtIndex:0]];
+                [userIds addObject:userId];
+            }
+        }
+    }
+    return userIds;
+}
+
 
 
 @end

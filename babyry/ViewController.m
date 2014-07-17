@@ -17,6 +17,7 @@
 #import "IntroFirstViewController.h"
 #import "PageContentViewController.h"
 #import "IntroChildNameViewController.h"
+#import "PushNotification.h"
 
 @interface ViewController ()
 
@@ -70,12 +71,8 @@
         }];
         
         // プッシュ通知用のデータがなければUserIdを突っ込んでおく
-        _currentInstallation = [PFInstallation currentInstallation];
-        if(!_currentInstallation[@"channels"] && _currentUser[@"userId"] && _currentInstallation[@"deviceToken"]) {
-            NSLog(@"set currentInstallation channels");
-            [_currentInstallation addUniqueObject:_currentUser[@"userId"] forKey:@"channels"];
-            [_currentInstallation saveInBackground];
-        }
+        //[PushNotification setupPushNotificationInstallation];
+
         
         /*/////////////////////////////いちいちメール確認必要だから開発中はコメント//////////////////////////////////////
         // emailが確認されているか

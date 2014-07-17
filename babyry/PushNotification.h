@@ -12,5 +12,6 @@
 @interface PushNotification : NSObject
 
 + (void)sendInBackground:(NSString *)event withOptions:(NSDictionary *)options;
++ (void)setupPushNotificationInstallation;
 
 @end
