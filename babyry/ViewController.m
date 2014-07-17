@@ -400,25 +400,6 @@
     [self presentViewController:logInViewController animated:YES completion:NULL];
 }
 
-- (void)addChild
-{
-    //NSLog(@"add child");
-    int page_count = [_childArray count];
-    //NSLog(@"page count %d", page_count);
-
-    // Parseにchild追加
-    PFObject *child = [PFObject objectWithClassName:@"Child"];
-    [child setObject:_currentUser forKey:@"createdBy"];
-    child[@"name"] = [NSString stringWithFormat:@"栽培マン%d号", page_count + 1];
-    [child saveInBackground];
-    
-    // 新規に足したpageに移動
-    // page_count +1 だけど 0から始まるので +1はなし
-    PageContentViewController *jumpViewController = [self viewControllerAtIndex:page_count];
-    NSArray *viewControllers = @[jumpViewController];
-    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-}
-
 - (void)openGlobalSettingView
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
@@ -508,13 +489,18 @@
         [_childArray insertObject:childSubDic atIndex:childIndex];
         childIndex++;
     }
-    //NSLog(@"%@", _childArray);
     [self setPage];
 }
 
 -(void) getParseData
 {
     NSLog(@"getParseData");
+    
+    NSLog(@"ccccccccccccccc %d %d", [_childArray count], [_childArrayFoundFromParse count]);
+    if ([_childArray count] != [_childArrayFoundFromParse count]) {
+        [self getCachedImage];
+    }
+    
     // Parseから最新データととる
     
     // 一週間表示用のmonth配列を作成
@@ -692,11 +678,4 @@
     [self presentViewController:introChildNameViewController animated:YES completion:NULL];
 }
 
-- (IBAction)addChildTestButton:(id)sender {
-    NSLog(@"addChildTestButton");
-    
-    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    icnvc.isNotFirstTime = YES;
-    [self presentViewController:icnvc animated:YES completion:NULL];
-}
 @end

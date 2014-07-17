@@ -12,6 +12,7 @@
 #import "FamilyRole.h"
 #import "ImageCache.h"
 #import "ViewController.h"
+#import "IntroChildNameViewController.h"
 
 @interface GlobalSettingViewController ()
 
@@ -136,6 +137,15 @@
                     break;
             }
             break;
+        case 3:
+            switch (indexPath.row) {
+                case 0:
+                    cell.textLabel.text = @"子供追加";
+                    break;
+                default:
+                    break;
+            }
+            break;
         default:
             break;
     }
@@ -155,6 +165,9 @@
             break;
         case 2:
             rowCount = 2;
+            break;
+        case 3:
+            rowCount = 1;
             break;
         default:
             break;
@@ -200,6 +213,15 @@
                     break;
             }
             break;
+        case 3:
+            switch (indexPath.row) {
+                case 0:
+                    [self openAddChildAddView];
+                    break;
+                default:
+                    break;
+            }
+            break;
         default:
             break;
     }
@@ -207,7 +229,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 3;
+    return 4;
 }
 
 - (void)openFamilyApply
@@ -221,6 +243,15 @@
     FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
     NSLog(@"%@", familyApplyListViewController);
     [self presentViewController:familyApplyListViewController animated:true completion:nil];
+}
+
+- (void)openAddChildAddView
+{
+    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
+    icnvc.isNotFirstTime = YES;
+    ViewController *vc = (ViewController *)self.parentViewController;
+    icnvc.currentChildNum = [vc.childArray count];
+    [self presentViewController:icnvc animated:YES completion:NULL];
 }
 
 - (NSString *)getSelectedRole
