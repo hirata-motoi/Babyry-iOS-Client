@@ -43,8 +43,6 @@
     [object save];
 }
 
-
-// 非同期でFamiyRoleをfetchして何か処理をする テストしてないのでちゃんと動くか不明
 + (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block
 {
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];

@@ -14,6 +14,7 @@
 #import "ImageCache.h"
 #import "TagEditViewController.h"
 #import "ImageTrimming.h"
+#import "PushNotification.h"
 
 @interface ImageOperationViewController ()
 
@@ -163,7 +164,6 @@
     self.uploadedViewController.uploadedImageView.frame = [self getUploadedImageFrame:resizedImage];
     [self.uploadedViewController.uploadedImageView setImage:resizedImage];
     
-    NSLog(@"Make PFFile");
     NSData *imageData = [[NSData alloc] init];
     // PNGは透過しないとだめなのでやる
     // その他はJPG
@@ -173,7 +173,6 @@
     } else {
         imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
     }
-    NSLog(@"resize %f %f", originalImage.size.width, resizedImage.size.width);
 
     PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
@@ -188,14 +187,12 @@
     if ([imageArray count] > 1) {
         NSLog(@"これはあり得ないエラー");
     } else if ([imageArray count] == 1) {
-        //NSLog(@"image objectId%@", imageArray[0]);
         imageArray[0][@"imageFile"] = imageFile;
         //ほんとはいらないけど念のため
         imageArray[0][@"bestFlag"] = @"choosed";
         [imageArray[0] saveInBackground];
     // 一つもないなら新たに追加
     } else {
-        NSLog(@"Insert To Parse");
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
         childImage[@"imageFile"] = imageFile;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
@@ -216,15 +213,12 @@
         int childIndex = pvc.currentPageIndex;
         for (int i = 0; i < [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] count]; i++){
             if ([[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i] isEqualToString:_date]) {
-                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i]);
-                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] objectAtIndex:i]);
                 [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
-                //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] objectAtIndex:i]);
                 [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:resizedImage];
             }
         }
     }
-    
+    [PushNotification sendInBackground:@"imageUpload" withOptions:nil];
     NSLog(@"saved");
 }
 

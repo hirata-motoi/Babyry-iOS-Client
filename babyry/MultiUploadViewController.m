@@ -13,6 +13,7 @@
 #import "MultiUploadPickerViewController.h"
 #import "FamilyRole.h"
 #import "MBProgressHUD.h"
+#import "PushNotification.h"
 
 @interface MultiUploadViewController ()
 
@@ -450,6 +451,7 @@
                     }
                     index++;
                 }
+                [PushNotification sendInBackground:@"bestshotChosen" withOptions:nil];
             } else {
                 NSLog(@"error at double tap %@", error);
             }
