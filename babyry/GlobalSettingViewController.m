@@ -11,6 +11,7 @@
 #import "FamilyApplyListViewController.h"
 #import "FamilyRole.h"
 #import "ImageCache.h"
+#import "ProfileViewController.h"
 #import "ViewController.h"
 #import "IntroChildNameViewController.h"
 
@@ -42,7 +43,8 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-
+    [self setupChildList];
+    [self setupPartnerInfo];
 }
 
 - (void)didReceiveMemoryWarning
@@ -103,11 +105,9 @@
         case 0:
             switch (indexPath.row) {
                 case 0:
-                    NSLog(@"section:0 row:0");
                     cell.textLabel.text = @"プロフィール";
                     break;
                 case 1:
-                    NSLog(@"section:0 row:1");
                     cell.textLabel.text = @"Role";
                     _roleControl = [self createRoleSwitchSegmentControl];
                     [cell addSubview:_roleControl];
@@ -182,10 +182,9 @@
         case 0:
             switch (indexPath.row) {
                 case 0:
-                    NSLog(@"section:0 row:0");
+                    [self openProfileEdit];
                     break;
                 case 1:
-                    NSLog(@"section:0 row:1");
                     break;
                 default:
                     break;
@@ -241,7 +240,6 @@
 - (void)openFamilyApplyList
 {
     FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-    NSLog(@"%@", familyApplyListViewController);
     [self presentViewController:familyApplyListViewController animated:true completion:nil];
 }
 
@@ -320,6 +318,64 @@
     }];
     
     return sc;
+}
+
+- (void)openProfileEdit
+{
+    ProfileViewController *profileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ProfileViewController"];
+    
+    // リクエストが増えるのは微妙だが事前に情報を取得しておく
+    // partnerInfo、childともに基本キャッシュ、ネットワークがない場合はキャッシュを使う
+    profileViewController.childList = _childList;
+    profileViewController.partnerInfo = _partnerInfo;
+    [self addChildViewController:profileViewController];
+    
+    // viewをはりつける。アニメーション必須
+    CGRect rect  = profileViewController.view.frame;
+    rect.origin.x = self.view.frame.size.width;
+    profileViewController.view.frame = rect;
+    [self.view addSubview:profileViewController.view];
+    
+    [UIView animateWithDuration:0.3
+                          delay:0.0
+                        options: UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         profileViewController.view.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+                     }
+                     completion:^(BOOL finished){
+                         [MBProgressHUD hideHUDForView:profileViewController.view animated:YES];
+                     }];
+}
+
+- (void)setupChildList
+{
+    NSString *familyId = [PFUser currentUser][@"familyId"];
+    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
+    query.cachePolicy = kPFCachePolicyNetworkElseCache;
+    [query whereKey:@"familyId" equalTo:familyId];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            // TODO createdAtの昇順でsortする
+            _childList = objects;
+        }
+    }];
+}
+
+- (void)setupPartnerInfo
+{
+    NSString *familyId = [PFUser currentUser][@"familyId"];
+    PFQuery *query = [PFQuery queryWithClassName:@"_User"];
+    query.cachePolicy = kPFCachePolicyNetworkElseCache;
+    [query whereKey:@"familyId" equalTo:familyId];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            for (PFObject *user in objects) {
+                if (! [user[@"userId"] isEqualToString:[PFUser currentUser][@"userId"]]) {
+                    _partnerInfo = user;
+                }
+            }
+        }
+    }];
 }
 
 /*
