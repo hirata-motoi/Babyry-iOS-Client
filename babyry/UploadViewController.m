@@ -39,6 +39,7 @@
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
+    [self setupOperationView];
     
     // Parseからちゃんとしたサイズの画像を取得
     PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
@@ -56,7 +57,6 @@
             }];
             _imageInfo = object;
         }
-        [self setupOperationView];
     }];
 }
 
@@ -134,11 +134,6 @@
 }
 */
 
-- (void)closeOperationView
-{
-    NSLog(@"closeOperationView");
-}
-
 -(CGRect) getUploadedImageFrame:(UIImage *) image
 {
     float imageViewAspect = _defaultImageViewFrame.size.width/_defaultImageViewFrame.size.height;
@@ -158,7 +153,6 @@
     frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
     frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
 
-    NSLog(@"frame %@", NSStringFromCGRect(frame));
     return frame;
 }
 
