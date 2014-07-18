@@ -205,29 +205,23 @@
 {
     NSLog(@"viewControllerAtIndex");
     UIViewController *introViewController = [[UIViewController alloc] init];
-    introViewController.view.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-    UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.frame = CGRectMake(20, 20, self.view.frame.size.width, 50);
-    UITextView *introText = [[UITextView alloc] init];
-    introText.frame = CGRectMake(0, titleLabel.frame.origin.y + titleLabel.frame.size.height, self.view.frame.size.width, 200);
+    introViewController.view.backgroundColor = [UIColor colorWithRed:0.95 green:0.85 blue:0.85 alpha:1.0];
     if (index == 0) {
-        titleLabel.text = @"Babyryとは①";
-        introText.text = @"ここにはBabyryのトップViewの画像とアルバムのviewをいれて完成イメージを伝える";
+        UIViewController *firstVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFirstViewController"];
+        [introViewController.view addSubview:firstVC.view];
     } else if (index == 1) {
-        titleLabel.text = @"Babyryとは②";
-        introText.text = @"役割が分かれていること、それによってコミュニケーションが活発になることを伝える";
+        UIViewController *secondVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageSecondViewController"];
+        [introViewController.view addSubview:secondVC.view];
     } else if (index == 2) {
-        titleLabel.text = @"Babyryとは③";
-        introText.text = @"実際の使用方法(写真送る人編)";
+        UIViewController *thirdVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageThirdViewController"];
+        [introViewController.view addSubview:thirdVC.view];
     } else if (index == 3) {
-        titleLabel.text = @"Babyryとは④";
-        introText.text = @"実際の使用方法(ベストショット選ぶ人編)";
+        UIViewController *fourthVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFourthViewController"];
+        [introViewController.view addSubview:fourthVC.view];
     } else if (index == 4) {
-        titleLabel.text = @"Babyryとは⑤";
-        introText.text = @"タグとかの使い方を書いてもいいかも";
+        UIViewController *fifthVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFifthViewController"];
+        [introViewController.view addSubview:fifthVC.view];
     }
-    [introViewController.view addSubview:titleLabel];
-    [introViewController.view addSubview:introText];
     introViewController.view.tag = index;
     NSLog(@"index %d is created.", index);
     
