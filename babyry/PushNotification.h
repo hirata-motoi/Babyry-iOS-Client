@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <Parse/Parse.h>
 
+typedef void (^PushNotificationBlock)();
+
 @interface PushNotification : NSObject
 
 + (void)sendInBackground:(NSString *)event withOptions:(NSDictionary *)options;
 + (void)setupPushNotificationInstallation;
++ (void)removeSelfUserIdFromChannels:(PushNotificationBlock)block;
 
 @end

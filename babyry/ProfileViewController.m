@@ -99,6 +99,7 @@
                 case 0: {
                     cell.textLabel.text = @"パートナー";
                     cell.detailTextLabel.text = _partnerInfo[@"nickName"];
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     break;
                 }
                 default:
@@ -141,6 +142,7 @@
                 default:
                     break;
             }
+            break;
         case 2:
             _editedChildIndex = indexPath.row;
             [self showChildInfo:indexPath.row];

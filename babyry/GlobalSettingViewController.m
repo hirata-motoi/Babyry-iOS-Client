@@ -14,6 +14,7 @@
 #import "ProfileViewController.h"
 #import "ViewController.h"
 #import "IntroChildNameViewController.h"
+#import "PushNotification.h"
 
 @interface GlobalSettingViewController ()
 
@@ -87,10 +88,11 @@
 - (void)logout
 {
     [ImageCache removeAllCache];
-    [PFUser logOut];
-
-    // 親のviewDidAppearを呼び出さないとログインビューが出ない
-    [self.parentViewController viewDidAppear:YES];
+    [PushNotification removeSelfUserIdFromChannels:^(){
+        [PFUser logOut];
+        // 親のviewDidAppearを呼び出さないとログインビューが出ない
+        [self.parentViewController viewDidAppear:YES];
+    }];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

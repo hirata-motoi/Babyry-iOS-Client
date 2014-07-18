@@ -17,7 +17,6 @@
 @property NSMutableArray *tags;
 @property (weak, nonatomic) IBOutlet UIView *tagDisplayView;
 @property (strong, nonatomic) IBOutlet UIView *backgroundView;
-@property BOOL tagTouchDisabled;
 @property NSMutableDictionary *tagUpateQueue;
 
 - (void)updateTag:(TagView *)tagView;

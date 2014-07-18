@@ -71,7 +71,7 @@
         }];
         
         // プッシュ通知用のデータがなければUserIdを突っ込んでおく
-        //[PushNotification setupPushNotificationInstallation];
+        [PushNotification setupPushNotificationInstallation];
 
         
         /*/////////////////////////////いちいちメール確認必要だから開発中はコメント//////////////////////////////////////

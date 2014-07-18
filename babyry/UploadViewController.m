@@ -39,6 +39,7 @@
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
+    [self setupOperationView];
     
     // Parseからちゃんとしたサイズの画像を取得
     PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
@@ -56,7 +57,6 @@
             }];
             _imageInfo = object;
         }
-        [self setupOperationView];
     }];
 }
 
@@ -112,16 +112,10 @@
     // 画像をタップするとoperationViewControllerが表示される
     UITapGestureRecognizer *openOperationViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openOperationView:)];
     openOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
-    _uploadedImageView.userInteractionEnabled = YES;
-    [_uploadedImageView addGestureRecognizer:openOperationViewTapGestureRecognizer];
+    [self.view addGestureRecognizer:openOperationViewTapGestureRecognizer];
     
     // ImageOperationViewControllerからUploadedViewControllerオブジェクトにアクセスするため
     operationView.uploadedViewController = self;
-}
-
-- (void)showOperationView:(id)sender
-{
-    _operationView.hidden = NO;
 }
 
 - (void)hideOperationView:(id)sender
@@ -139,11 +133,6 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-- (void)closeOperationView
-{
-    NSLog(@"closeOperationView");
-}
 
 -(CGRect) getUploadedImageFrame:(UIImage *) image
 {
@@ -164,7 +153,6 @@
     frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
     frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
 
-    NSLog(@"frame %@", NSStringFromCGRect(frame));
     return frame;
 }
 
