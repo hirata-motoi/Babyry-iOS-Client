@@ -41,13 +41,9 @@
     // tagにもNotifiCenterを実装して、更新にミスったときなどはtagにメッセージを送る
     
     [self setupGesture];
-    self.tagDisplayView.frame = CGRectMake(10, 400, 280, 130);
+    self.tagDisplayView.frame = CGRectMake(20, 400, 280, 130);
     
     // tagのattach状態更新処理中はtagを押せないようにする
-    self.tagTouchDisabled = NO; // 初期化
-    
-    // NotificationCenter
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTag:) name:@"updateTag" object:nil];
     
     self.tagDisplayView.layer.cornerRadius = 30;
 }

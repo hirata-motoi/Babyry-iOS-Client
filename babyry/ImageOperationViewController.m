@@ -91,6 +91,8 @@
 
 - (void)openPhotoLibrary
 {
+    [self hideTagView];
+    
     // インタフェース使用可能なら
 	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
 	{
@@ -110,6 +112,7 @@
 
 - (void)openCommentView
 {
+    [self hideTagView];
     _commentView.hidden = FALSE;
 }
 
@@ -120,7 +123,7 @@
     
     _tagEditView = tagEditViewController.view;
     _tagEditView.hidden = YES;
-    _tagEditView.frame = CGRectMake(10, 0, 320, 500);
+    _tagEditView.frame = CGRectMake(0, 0, 320, 500);
     [self addChildViewController:tagEditViewController];
     [self.view addSubview:_tagEditView];
 }
@@ -128,6 +131,11 @@
 - (void)openTagView
 {
     _tagEditView.hidden = NO;
+}
+
+- (void)hideTagView
+{
+    _tagEditView.hidden = YES;
 }
 
 - (void)hideOperationView:(id)sender
