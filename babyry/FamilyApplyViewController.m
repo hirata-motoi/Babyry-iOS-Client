@@ -30,16 +30,12 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    NSLog(@"viewDidLoad start");
-    self.searchContainerView.backgroundColor = [UIColor colorWithRed:0.85 green:0.85 blue:0.85 alpha:1.0];
-    NSLog(@"selUserIdContainer start");
+//    self.searchContainerView.backgroundColor = [UIColor colorWithRed:0.85 green:0.85 blue:0.85 alpha:1.0];
+    self.searchContainerView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
     self.selfUserIdContainer.backgroundColor = [UIColor whiteColor];
-    NSLog(@"closeFamilyApplyButton start");
     [self.closeFamilyApplyButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(closeFamilyApply)];
-    NSLog(@"showSelfUserId start");
     [self showSelfUserId];
     
-//    UIImage *btnImage = [UIImage imageNamed:@"ecalbt008_005.png"];
     [self setupSearchForm];
 }
 
