@@ -84,7 +84,7 @@
     UIView *result = [[UIView alloc]initWithFrame:CGRectMake(0, 10, 250, 60)];
     UILabel * labelNoResult = [[UILabel alloc]initWithFrame:CGRectMake(10, 10, 230, 40)];
     labelNoResult.text = @"ユーザがみつかりません";
-    labelNoResult.textAlignment = UITextAlignmentCenter;
+    labelNoResult.textAlignment = NSTextAlignmentCenter;
     [result addSubview:labelNoResult];
     [self.searchResultContainer addSubview:result];
 }

@@ -10,8 +10,7 @@
 #import <Parse/Parse.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-@interface UploadViewController : UIViewController<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate
->
+@interface UploadViewController : UIViewController
 
 
 @property (weak, nonatomic) IBOutlet UIImageView *uploadedImageView;

@@ -680,7 +680,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                         </state>
                                     </button>
                                     <tableView clipsSubviews="YES" alpha="0.5" contentMode="scaleToFill" bounces="NO" dataMode="prototypes" style="plain" separatorStyle="singleLineEtched" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="7Rg-qh-47P">
-                                        <rect key="frame" x="20" y="-46" width="280" height="494"/>
+                                        <rect key="frame" x="20" y="8" width="280" height="434"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

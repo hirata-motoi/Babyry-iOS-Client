@@ -196,7 +196,6 @@
     
     NSInteger year = comps.year;
     NSInteger month = comps.month;
-    NSInteger day = comps.day;
     
     NSNumber *lastMonth = (year == [targetYearString intValue]) ? [NSNumber numberWithInt:month] : [NSNumber numberWithInt:12];
     

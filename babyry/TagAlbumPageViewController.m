@@ -66,7 +66,6 @@
     NSString *ymd   = [imageInfo[@"date"] substringWithRange:NSMakeRange(1, 8)];
     NSString *year  = [ymd substringWithRange:NSMakeRange(0, 4)];
     NSString *month = [ymd substringWithRange:NSMakeRange(4, 2)];
-    NSString *day   = [ymd substringWithRange:NSMakeRange(6, 2)];
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", year, month];
     uploadViewController.date = ymd;
     uploadViewController.tagAlbumPageIndex = index;
