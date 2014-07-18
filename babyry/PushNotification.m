@@ -93,20 +93,23 @@
     // currentInstallationがない場合(AppDelegateで処理するので基本はないはず)、ここでdeviceTokenを発行
     // TODO implement
     
-    
-    NSMutableArray *userIds = [self extractUserIdsFromChannels:currentInstallation];
-    // 自分以外のユーザのIDがあれば消す
-    for (NSString *userId in userIds) {
-        if (! [userId isEqualToString:currentUser[@"userId"]]) {
-            [currentInstallation removeObject:[NSString stringWithFormat:@"userid_%@", userId] forKey:@"channels"];
-        }
-    }
-    
+    // PFInstallationへのaddとremoveは同時にはできないので、仕方なく2回リクエストを送る
     // 自分のIDはとりあえず追加
     [currentInstallation addUniqueObject:[NSString stringWithFormat:@"userId_%@", currentUser[@"userId"]] forKey:@"channels"];
-
-    NSLog(@"set currentInstallation channels");
-    [currentInstallation saveInBackground];
+    [currentInstallation saveEventually:^(BOOL succeeded, NSError * error) {
+        if (succeeded) {
+            // 自分以外のユーザのIDがあれば消す
+            NSMutableArray *userIds = [self extractUserIdsFromChannels:[PFInstallation currentInstallation]];
+            NSLog(@"extracted userIds : %@", userIds);
+            for (NSString *userId in userIds) {
+                if (! [userId isEqualToString:currentUser[@"userId"]]) {
+                    NSLog(@"remove : %@", userId);
+                    [currentInstallation removeObject:[NSString stringWithFormat:@"userId_%@", userId] forKey:@"channels"];
+                }
+            }
+            [currentInstallation saveEventually];
+        }
+    }];
 }
      
 + (NSMutableArray *)extractUserIdsFromChannels: (PFInstallation *)currentInstallation
@@ -114,12 +117,12 @@
     NSMutableArray *userIds = [[NSMutableArray alloc]init];
     
     NSError *error = nil;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"userId_(.+)$" options:NSRegularExpressionCaseInsensitive error:&error];
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"userId_(.*)" options:NSRegularExpressionCaseInsensitive error:&error];
     if (error == nil) {
         for (NSString *channel in currentInstallation[@"channels"]) {
-            NSTextCheckingResult *match= [regex firstMatchInString:channel options:NSMatchingReportProgress range:NSMakeRange(0, channel.length)];
+            NSTextCheckingResult *match= [regex firstMatchInString:channel options:0 range:NSMakeRange(0, channel.length)];
             if (match) {
-                NSString *userId = [channel substringWithRange:[match rangeAtIndex:0]];
+                NSString *userId = [channel substringWithRange:[match rangeAtIndex:1]];
                 [userIds addObject:userId];
             }
         }
@@ -127,6 +130,17 @@
     return userIds;
 }
 
-
++ (void)removeSelfUserIdFromChannels:(PushNotificationBlock)block
+{
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    // 自分のuserIdを消す
+    NSString *targetChannel = [NSString stringWithFormat:@"userId_%@", [PFUser currentUser][@"userId"]];
+    [currentInstallation removeObject:targetChannel forKey:@"channels"];
+    [currentInstallation saveEventually:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            block();
+        }
+    }];
+}
 
 @end
