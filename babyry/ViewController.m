@@ -341,55 +341,79 @@
         PFLogInFieldsFacebook |
         PFLogInFieldsUsernameAndPassword |
         PFLogInFieldsPasswordForgotten |
-        PFLogInFieldsDismissButton |
         PFLogInFieldsLogInButton |
         PFLogInFieldsSignUpButton
     ];
+    
+    //UIView *fieldsBackground2 = [[logInViewController.logInView subviews] objectAtIndex:0];
+    // for example move down
+    //[fieldsBackground2 setFrame:CGRectOffset(fieldsBackground2.frame,0,80.0f)];
 
     //[logInViewController.logInView setBackgroundColor:[UIColor whiteColor]];
-    //[logInViewController.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BabyryLogo"]]];
-
-    // Set buttons appearance
-    //[logInViewController.logInView.dismissButton setImage:[UIImage imageNamed:@"exit.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.dismissButton setImage:[UIImage imageNamed:@"exit_down.png"] forState:UIControlStateHighlighted];
-     
+    [logInViewController.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
+    
+    // これ反映されない！困る！！！
+    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateNormal];
+    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.usernameField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
+    //[logInViewController.logInView.passwordField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
+    
     //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateNormal];
     //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateHighlighted];
     //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_down.png"] forState:UIControlStateHighlighted];
     //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setTitle:@"" forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setTitle:@"" forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateNormal];
+    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateHighlighted];
  
     //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateNormal];
     //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateHighlighted];
     //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter.png"] forState:UIControlStateNormal];
     //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_down.png"] forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.twitterButton setTitle:@"" forState:UIControlStateNormal];
-    //[logInViewController.logInView.twitterButton setTitle:@"" forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateNormal];
+    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateHighlighted];
      
     //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup.png"] forState:UIControlStateNormal];
     //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_down.png"] forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.signUpButton setTitle:@"" forState:UIControlStateNormal];
-    //[logInViewController.logInView.signUpButton setTitle:@"" forState:UIControlStateHighlighted];
-     
+    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateNormal];
+    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateHighlighted];
+    
+    [logInViewController.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"ForgetPasswordLabel"] forState:UIControlStateNormal];
+    NSLog(@"aaaaaaa %@", NSStringFromCGRect(logInViewController.logInView.passwordForgottenButton.frame));
+    NSLog(@"aaaaaaa %@", NSStringFromCGRect(logInViewController.logInView.frame));
+    
     // Add login field background
-    //fieldsBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.png"]];
-    //[logInViewController.logInView insertSubview:fieldsBackground atIndex:1];
+    UIImageView *fieldsBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
+    fieldsBackground.frame = self.view.frame;
+    [logInViewController.logInView insertSubview:fieldsBackground atIndex:0];
      
     // Remove text shadow
-    //CALayer *layer = logInViewController.logInView.usernameField.layer;
-    //layer.shadowOpacity = 0.0;
-    //layer = logInViewController.logInView.passwordField.layer;
-    //layer.shadowOpacity = 0.0;
+    CALayer *layer = logInViewController.logInView.usernameField.layer;
+    layer.shadowOpacity = 0.0;
+    layer = logInViewController.logInView.passwordField.layer;
+    layer.shadowOpacity = 0.0;
+    layer = logInViewController.logInView.externalLogInLabel.layer;
+    layer.shadowOpacity = 0.0;
+    
+    logInViewController.logInView.usernameField.placeholder = @"ユーザー名";
+    logInViewController.logInView.passwordField.placeholder = @"パスワード";
      
     // Set field text color
     //[logInViewController.logInView.usernameField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     //[logInViewController.logInView.passwordField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
 
+    
+    logInViewController.logInView.externalLogInLabel.text = @"ソーシャルアカウントでログイン";
+    logInViewController.logInView.signUpLabel.text = @"";
+    
     // Create the sign up view controller
     PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
     [signUpViewController setDelegate:self]; // Set ourselves as the delegate
-         
+    
+    [signUpViewController.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
+    UIImageView *fieldsBackground2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
+    fieldsBackground2.frame = self.view.frame;
+    [signUpViewController.signUpView insertSubview:fieldsBackground2 atIndex:0];
+    
     // Assign our sign up controller to be displayed from the login controller
     [logInViewController setSignUpController:signUpViewController];
 
