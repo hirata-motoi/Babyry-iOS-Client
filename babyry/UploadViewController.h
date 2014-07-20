@@ -31,11 +31,7 @@
 @property NSArray *commentArray;
 @property UIView *operationView;
 @property UIView *commentView;
-@property UITableView *commentTable;
-@property UIScrollView *commentScrollView;
-@property UITextField *commentTextField;
-@property UIButton *commentSubmitButton;
-@property UILabel *commentViewCloseButton;
 @property PFObject *imageInfo;
 @property NSInteger tagAlbumPageIndex;
+
 @end

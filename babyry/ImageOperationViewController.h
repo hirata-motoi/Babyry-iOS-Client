@@ -19,7 +19,7 @@
 @property UIImage *uploadedImage;
 @property NSString *name;
 
-@property UploadViewController *uploadedViewController;
+@property UploadViewController *uploadViewController;
 
 @property (strong, nonatomic) IBOutlet UIView *operationView;
 @property (weak, nonatomic) IBOutlet UIButton *closeUploadViewControllerButton;
