@@ -34,6 +34,8 @@
     
     // text field
     _commentTextField.delegate = self;
+    _commentTextField.textColor = [UIColor whiteColor];
+    _commentTextField.attributedPlaceholder = [self stringWithAttribute:@"コメントを追加"];
     
     [self getCommentFromParse];
     
@@ -173,17 +175,17 @@
     }
     
     if ([[_commentArray objectAtIndex:indexPath.row][@"commentBy"] isEqualToString:[PFUser currentUser][@"userId"]]) {
-        cell.textLabel.text = [PFUser currentUser][@"nickName"];
+        [cell.textLabel setAttributedText:[self stringWithAttribute:[PFUser currentUser][@"nickName"]]];
     } else {
         // ニックネーム取得 (ニックネームはかわることがあるのでいちいちクエリ発行 (ただし、キャッシュ優先))
         PFQuery *nickQuery = [PFQuery queryWithClassName:@"_User"];
         [nickQuery whereKey:@"userId" equalTo:[_commentArray objectAtIndex:indexPath.row][@"commentBy"]];
         nickQuery.cachePolicy = kPFCachePolicyCacheElseNetwork;
         PFObject *nickObject = [nickQuery getFirstObject];
-        cell.textLabel.text = nickObject[@"nickName"];
+        [cell.textLabel setAttributedText:[self stringWithAttribute:nickObject[@"nickName"]]];
     }
     cell.detailTextLabel.text = [_commentArray objectAtIndex:indexPath.row][@"comment"];
-    
+    [cell.detailTextLabel setAttributedText:[self stringWithAttribute:[_commentArray objectAtIndex:indexPath.row][@"comment"]]];
     return cell;
 }
 
@@ -353,6 +355,28 @@
 - (void)blockGesture
 {
     // do nothing
+}
+
+- (NSMutableAttributedString *)stringWithAttribute:(NSString *)str
+{
+    // NSShadowオブジェクト
+    NSShadow *shadow = [[NSShadow alloc] init];
+    [shadow setShadowColor:[UIColor colorWithRed:0. green:0. blue:0. alpha:1.]];
+    [shadow setShadowBlurRadius:4.0];
+    [shadow setShadowOffset:CGSizeMake(2, 2)];
+    
+    NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:str];
+    
+    // 影
+    [attrStr addAttribute:NSShadowAttributeName
+                    value:shadow
+                    range:NSMakeRange(0, [attrStr length])];
+    
+    // 文字色
+    [attrStr addAttribute:NSForegroundColorAttributeName
+                    value:[UIColor colorWithRed:1. green:1. blue:1. alpha:1.]
+                    range:NSMakeRange(0, [attrStr length])];
+    return attrStr;
 }
 
 /*
