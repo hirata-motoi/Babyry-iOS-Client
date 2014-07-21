@@ -3,12 +3,11 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "papa2.png"
+      "filename" : "iphone_mock_sample1.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "papa2-1.png"
+      "scale" : "2x"
     }
   ],
   "info" : {
