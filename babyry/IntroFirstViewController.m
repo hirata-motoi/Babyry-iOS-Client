@@ -63,6 +63,12 @@
     singleTapGestureRecognizer2.numberOfTapsRequired = 1;
     [_invitedLabel addGestureRecognizer:singleTapGestureRecognizer2];
     
+    _logout.layer.cornerRadius = _logout.frame.size.width/2;
+    _logout.tag = 99;
+    UITapGestureRecognizer *singleTapGestureRecognizer99 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    singleTapGestureRecognizer99.numberOfTapsRequired = 1;
+    [_logout addGestureRecognizer:singleTapGestureRecognizer99];
+    
     // add gesture on self.view
     UITapGestureRecognizer *singleTapGestureRecognizer0 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     singleTapGestureRecognizer0.numberOfTapsRequired = 1;
@@ -113,6 +119,7 @@
 -(void)handleSingleTap:(id) sender
 {
     int tag = [[sender view] tag];
+    NSLog(@"%d", tag);
     if (tag == 1) {
         UIViewController *inviteViewController = [[UIViewController alloc] init];
         float x = (self.view.frame.size.width - 200)/2;
@@ -165,6 +172,9 @@
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", escapedUrlTitle, escapedUrlText]]];
             [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
         }
+    } else if (tag == 99) {
+        [PFUser logOut];
+        [self dismissViewControllerAnimated:YES completion:NULL];
     } else {
         [self.view endEditing:YES];
     }

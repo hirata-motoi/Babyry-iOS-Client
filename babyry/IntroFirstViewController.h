@@ -12,6 +12,7 @@
 @interface IntroFirstViewController : UIViewController <UIPageViewControllerDataSource>
 @property (strong, nonatomic) IBOutlet UILabel *inviteLabel;
 @property (strong, nonatomic) IBOutlet UILabel *invitedLabel;
+@property (strong, nonatomic) IBOutlet UILabel *logout;
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 //@property (strong, nonatomic) UIViewController *introViewController;
