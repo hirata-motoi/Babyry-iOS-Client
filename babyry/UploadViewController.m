@@ -13,6 +13,7 @@
 #import "ImageOperationViewController.h"
 #import "TagEditViewController.h"
 #import "ImageTrimming.h"
+#import "CommentViewController.h"
 
 @interface UploadViewController ()
 
@@ -39,6 +40,7 @@
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
+    [self setupCommentView];
     [self setupOperationView];
     
     // Parseからちゃんとしたサイズの画像を取得
@@ -90,6 +92,7 @@
 
 - (void)openCommentView:(id)sender
 {
+    
     _commentView.hidden = FALSE;
 }
 
@@ -102,7 +105,7 @@
     operationView.name          = _name;
     operationView.date          = _date;
     operationView.month         = _month;
-    operationView.uploadedViewController  = self;
+    operationView.uploadViewController  = self;
     
     [self addChildViewController:operationView];
     [operationView didMoveToParentViewController:self];
@@ -113,9 +116,6 @@
     UITapGestureRecognizer *openOperationViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openOperationView:)];
     openOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:openOperationViewTapGestureRecognizer];
-    
-    // ImageOperationViewControllerからUploadedViewControllerオブジェクトにアクセスするため
-    operationView.uploadedViewController = self;
 }
 
 - (void)hideOperationView:(id)sender
@@ -154,6 +154,23 @@
     frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
 
     return frame;
+}
+
+- (void)setupCommentView
+{
+    CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
+
+    commentViewController.childObjectId = _childObjectId;
+    commentViewController.name = _name;
+    commentViewController.date = _date;
+    commentViewController.month = _month;
+    commentViewController.uploadViewController = self;
+
+    [self addChildViewController:commentViewController];
+    _commentView = commentViewController.view;
+    _commentView.hidden = YES; // 最初は隠しておく
+
+    [self.view addSubview:commentViewController.view];
 }
 
 @end

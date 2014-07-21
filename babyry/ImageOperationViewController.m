@@ -61,20 +61,9 @@
     hideOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
     self.view.userInteractionEnabled = YES;
     [self.view addGestureRecognizer:hideOperationViewTapGestureRecognizer];
+    
+    _commentView = self.uploadViewController.commentView;
 
-    // commentViewを生成
-    CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
-    
-    commentViewController.childObjectId = _childObjectId;
-    commentViewController.name = _name;
-    commentViewController.date = _date;
-    commentViewController.month = _month;
-    
-    [self addChildViewController:commentViewController];
-    _commentView = commentViewController.view;
-    _commentView.hidden = YES; // 最初は隠しておく
-    
-    [self.view addSubview:commentViewController.view];
     [self setupTagEditView];
 }
 
@@ -113,13 +102,14 @@
 - (void)openCommentView
 {
     [self hideTagView];
-    _commentView.hidden = FALSE;
+    self.view.hidden = YES;
+    _commentView.hidden = NO;
 }
 
 - (void)setupTagEditView
 {
     TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
-    tagEditViewController.imageInfo = self.uploadedViewController.imageInfo;
+    tagEditViewController.imageInfo = self.uploadViewController.imageInfo;
     
     _tagEditView = tagEditViewController.view;
     _tagEditView.hidden = YES;
@@ -169,8 +159,8 @@
     
     [self dismissViewControllerAnimated:YES completion:nil];
     // ImageViewにセット
-    self.uploadedViewController.uploadedImageView.frame = [self getUploadedImageFrame:resizedImage];
-    [self.uploadedViewController.uploadedImageView setImage:resizedImage];
+    self.uploadViewController.uploadedImageView.frame = [self getUploadedImageFrame:resizedImage];
+    [self.uploadViewController.uploadedImageView setImage:resizedImage];
     
     NSData *imageData = [[NSData alloc] init];
     // PNGは透過しないとだめなのでやる
@@ -232,12 +222,12 @@
 
 -(CGRect) getUploadedImageFrame:(UIImage *) image
 {
-    float imageViewAspect = self.uploadedViewController.defaultImageViewFrame.size.width/self.uploadedViewController.defaultImageViewFrame.size.height;
+    float imageViewAspect = self.uploadViewController.defaultImageViewFrame.size.width/self.uploadViewController.defaultImageViewFrame.size.height;
     float imageAspect = image.size.width/image.size.height;
     
     // 横長バージョン
     // 枠より、画像の方が横長、枠の縦を縮める
-    CGRect frame = self.uploadedViewController.defaultImageViewFrame;
+    CGRect frame = self.uploadViewController.defaultImageViewFrame;
     if (imageAspect >= imageViewAspect){
         frame.size.height = frame.size.width/imageAspect;
     // 縦長バージョン
