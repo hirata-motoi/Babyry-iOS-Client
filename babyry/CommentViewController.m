@@ -374,6 +374,9 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 - (NSMutableAttributedString *)stringWithAttribute:(NSString *)str
 {
+    if ([str length] == 0) {
+        str = @"";
+    }
     // NSShadowオブジェクト
     NSShadow *shadow = [[NSShadow alloc] init];
     [shadow setShadowColor:[UIColor colorWithRed:0. green:0. blue:0. alpha:1.]];
