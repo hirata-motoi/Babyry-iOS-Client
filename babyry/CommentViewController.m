@@ -8,10 +8,17 @@
 
 #import "CommentViewController.h"
 #import "PageContentViewController.h"
+#import "CommentTableViewCell.h"
 
 @interface CommentViewController ()
 
 @end
+
+static const NSInteger secondsForOneMinute = 60;
+static const NSInteger secondsForOneHour = secondsForOneMinute * 60;
+static const NSInteger secondsForOneDay = secondsForOneHour * 24;
+static const NSInteger secondsForOneMonth = secondsForOneDay * 30;
+static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 @implementation CommentViewController
 
@@ -54,6 +61,9 @@
     UITapGestureRecognizer *commentViewContainerTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(blockGesture)];
     commentViewContainerTap.numberOfTapsRequired = 1;
     [_commentViewContainer addGestureRecognizer:commentViewContainerTap];
+    
+    UINib *nib = [UINib nibWithNibName:@"CommentTableViewCell" bundle:nil];
+    [_commentTableView registerNib:nib forCellReuseIdentifier:@"Cell"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -141,10 +151,7 @@
 // indexPathの位置にあるセルを返す
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
-    }
+    CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     cell.textLabel.numberOfLines = 0;
     cell.backgroundColor = [UIColor clearColor];
     for (UIView *view in [cell.contentView subviews]) {
@@ -152,8 +159,11 @@
             view.hidden = YES; // コメント入力用formとボタンを隠す
         }
     }
-    cell.textLabel.text = @"";
-    cell.detailTextLabel.text = @"";
+    cell.commentUserName.text = @"";
+    cell.pastTime.text = @"";
+    cell.commentText.text = @"";
+    cell.commentText.numberOfLines = 0;
+    
     
     // 最後のcellはコメント編集text field
     if (indexPath.row == [_commentArray count]) {
@@ -174,18 +184,29 @@
         return cell;
     }
     
-    if ([[_commentArray objectAtIndex:indexPath.row][@"commentBy"] isEqualToString:[PFUser currentUser][@"userId"]]) {
-        [cell.textLabel setAttributedText:[self stringWithAttribute:[PFUser currentUser][@"nickName"]]];
+    // nickName
+    PFObject *commentObject = [_commentArray objectAtIndex:indexPath.row];
+    if ([commentObject[@"commentBy"] isEqualToString:[PFUser currentUser][@"userId"]]) {
+        [cell.commentUserName setAttributedText:[self stringWithAttribute:[PFUser currentUser][@"nickName"]]];
     } else {
         // ニックネーム取得 (ニックネームはかわることがあるのでいちいちクエリ発行 (ただし、キャッシュ優先))
         PFQuery *nickQuery = [PFQuery queryWithClassName:@"_User"];
-        [nickQuery whereKey:@"userId" equalTo:[_commentArray objectAtIndex:indexPath.row][@"commentBy"]];
+        [nickQuery whereKey:@"userId" equalTo:commentObject[@"commentBy"]];
         nickQuery.cachePolicy = kPFCachePolicyCacheElseNetwork;
         PFObject *nickObject = [nickQuery getFirstObject];
-        [cell.textLabel setAttributedText:[self stringWithAttribute:nickObject[@"nickName"]]];
+        [cell.commentUserName setAttributedText:[self stringWithAttribute:nickObject[@"nickName"]]];
     }
-    cell.detailTextLabel.text = [_commentArray objectAtIndex:indexPath.row][@"comment"];
-    [cell.detailTextLabel setAttributedText:[self stringWithAttribute:[_commentArray objectAtIndex:indexPath.row][@"comment"]]];
+    
+    // comment本文
+    [cell.commentText setAttributedText:[self stringWithAttribute:commentObject[@"comment"]]];
+    CGSize sizeCommentText = [cell.commentText.text sizeWithFont:cell.commentText.font constrainedToSize:CGSizeMake(cell.commentText.frame.size.width, 0)];
+    CGRect rect = cell.commentText.frame;
+    rect.size.height = sizeCommentText.height;
+    cell.commentText.frame = rect;
+   
+    // 投稿日時
+    [cell.pastTime setAttributedText:[self stringWithAttribute:[self calcPastTime:commentObject.createdAt]]];
+    
     return cell;
 }
 
@@ -195,31 +216,16 @@
     if (indexPath.row == [_commentArray count]) {
         return _commentTextField.frame.size.height;
     }
+    CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
-    }
-    cell.textLabel.numberOfLines = 0;
-    
-
-    cell.textLabel.text = @"nickName"; // dummy
-    cell.detailTextLabel.text = [_commentArray objectAtIndex:indexPath.row][@"comment"];
+    cell.commentUserName.text = @"nickName"; // dummy
+    cell.commentText.text = [_commentArray objectAtIndex:indexPath.row][@"comment"];
     
     // get cell height
-    CGSize bounds = CGSizeMake(tableView.frame.size.width, tableView.frame.size.height);
-    CGSize size = [cell.textLabel.text
-                   boundingRectWithSize:bounds
-                   options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-                   attributes:[NSDictionary dictionaryWithObject:cell.textLabel.font forKey:NSFontAttributeName]
-                   context:nil].size;
-    CGSize detailSize = [cell.detailTextLabel.text
-                   boundingRectWithSize:bounds
-                   options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-                   attributes:[NSDictionary dictionaryWithObject:cell.textLabel.font forKey:NSFontAttributeName]
-                   context:nil].size;
+    cell.commentText.numberOfLines = 0;
+    CGSize sizeCommentText = [cell.commentText.text sizeWithFont:cell.commentText.font constrainedToSize:CGSizeMake(cell.commentText.frame.size.width, 100000)];
     
-    return size.height + detailSize.height;
+    return sizeCommentText.height + cell.commentUserName.frame.size.height + 10; // 余白10
 }
 
 - (void)keyboardWillShow:(NSNotification*)notification
@@ -330,7 +336,6 @@
     cellHeightSum += 44; // TODO no magic number コメント追加cellの高さ
     for (int i = [_commentArray count] - 1; i >= 0; i--) {
         UITableViewCell * cell = [self tableView:_commentTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-        NSLog(@"index:%d  cell:%@", i, cell);
         cellHeightSum += cell.frame.size.height;
         if (cellHeightSum > 250) {
             break;
@@ -378,6 +383,43 @@
                     range:NSMakeRange(0, [attrStr length])];
     return attrStr;
 }
+
+- (NSString *)calcPastTime: (NSDate *)postDate
+{
+    // 現在時刻を取得
+    NSDate *now = [NSDate date];
+    // 現在時刻との差分
+    NSTimeInterval delta = [now timeIntervalSinceDate:postDate];
+ 
+    int deltaInt = [[NSNumber numberWithDouble:delta] intValue];
+    NSString *pastTimeString;
+    if (deltaInt < secondsForOneMinute) {
+        // 1分以内:今と表記
+        pastTimeString = @"今";
+    } else if (deltaInt < secondsForOneHour) {
+        // 1時間以内:分単位で表記
+        int min = deltaInt / secondsForOneMinute;
+        pastTimeString = [NSString stringWithFormat:@"%d分前", min];
+    } else if (deltaInt < secondsForOneDay) {
+        // 1日以内:時間単位で表記
+        int hour = deltaInt / secondsForOneHour;
+        pastTimeString = [NSString stringWithFormat:@"%d時間前", hour];
+    } else if (deltaInt < secondsForOneMonth) {
+        // 1ヶ月以内:日単位で表記
+        int day = deltaInt / secondsForOneDay;
+        pastTimeString = [NSString stringWithFormat:@"%d日前", day];
+    } else if (deltaInt < secondsForOneYear) {
+        // 1年以内:月単位で表記
+        int month = deltaInt / secondsForOneMonth;
+        pastTimeString = [NSString stringWithFormat:@"%dヶ月前", month];
+    } else {
+        // 1年以上:年単位で表記
+        int year = deltaInt / secondsForOneYear;
+        pastTimeString = [NSString stringWithFormat:@"%d年前", year];
+    }
+    return pastTimeString;
+}
+
 
 /*
 #pragma mark - Navigation

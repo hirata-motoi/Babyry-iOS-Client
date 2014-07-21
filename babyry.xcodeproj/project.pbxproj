@@ -69,6 +69,8 @@
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
+		F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */; };
+		F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ABB122197D295B009E35CB /* CommentTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -189,6 +191,9 @@
 		F261A883196513F60072BBD2 /* IdIssue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdIssue.m; sourceTree = "<group>"; };
 		F261A886196523110072BBD2 /* NSObject+Retry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Retry.h"; sourceTree = "<group>"; };
 		F261A887196523110072BBD2 /* NSObject+Retry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Retry.m"; sourceTree = "<group>"; };
+		F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentTableViewCell.xib; sourceTree = "<group>"; };
+		F2ABB121197D295B009E35CB /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
+		F2ABB122197D295B009E35CB /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -297,6 +302,7 @@
 		88B18C6A193814CE00ED630C = {
 			isa = PBXGroup;
 			children = (
+				F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */,
 				88B18C7C193814CE00ED630C /* babyry */,
 				88B18C9B193814CF00ED630C /* babyryTests */,
 				88B18C75193814CE00ED630C /* Frameworks */,
@@ -446,6 +452,8 @@
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
 				F210670A196E734D00187119 /* TagEditViewController.h */,
 				F210670B196E734D00187119 /* TagEditViewController.m */,
+				F2ABB121197D295B009E35CB /* CommentTableViewCell.h */,
+				F2ABB122197D295B009E35CB /* CommentTableViewCell.m */,
 			);
 			name = Upload;
 			sourceTree = "<group>";
@@ -571,6 +579,7 @@
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
+				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,6 +621,7 @@
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
+				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
