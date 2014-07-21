@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
+#import "SecretConfig.h"
 
 @implementation AppDelegate
 
@@ -23,13 +24,13 @@
     }
     
     // Parse Authentification
-    [Parse setApplicationId:@"6Nq3pgivIO1av3NQ4rB0q6gka24Rn7amUqBsc0CP" clientKey:@"mmNJ6HM6PO8zk3MGmUhaa7NfjlDPUpNWtWHtAPVl"];
+    [Parse setApplicationId:[SecretConfig getParseApplicationId] clientKey:[SecretConfig getParseClientKey]];
 
     // Facebood Auth
     [PFFacebookUtils initializeFacebook];
     
     // Twitter Auth
-    [PFTwitterUtils initializeWithConsumerKey:@"MpVqy3mSYwSyzckS2BGFkJKxQ" consumerSecret:@"NOXpVb39OJRzTuKr3k7IUZ9e1pRBuk1gIHOw2jjsh6lsmYOvOS"];
+    [PFTwitterUtils initializeWithConsumerKey:[SecretConfig getTwitterConsumerKey] consumerSecret:[SecretConfig getTwitterSecretKey]];
 
     // Customize the Page Indicator
     UIPageControl *pageControl = [UIPageControl appearance];
