@@ -137,9 +137,8 @@
     NSString *targetChannel = [NSString stringWithFormat:@"userId_%@", [PFUser currentUser][@"userId"]];
     [currentInstallation removeObject:targetChannel forKey:@"channels"];
     [currentInstallation saveEventually:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            block();
-        }
+        // succeededでもerrorでも次の処理に進ませる
+        block();
     }];
 }
 

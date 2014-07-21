@@ -112,7 +112,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     [commentQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
     [commentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if(!error) {
-            _commentArray = objects;
+            _commentArray = [[NSMutableArray alloc] initWithArray:objects];
             
             // まずcellの高さの合計を算出してtableViewの高さを合わせる
             // reloadDataが別スレッドの処理で、reloadDataの完了をキャッチできないため
@@ -169,7 +169,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     if (indexPath.row == [_commentArray count]) {
         cell.backgroundColor = [UIColor clearColor];
         
-        UITableViewCell *commentEditCell = [_commentTableView cellForRowAtIndexPath:indexPath];
         _commentTextField.frame = CGRectMake(0, 0, 250, 30);
         _commentTextField.hidden = NO;
         _commentTextField.tag = 8888;
@@ -199,7 +198,13 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     
     // comment本文
     [cell.commentText setAttributedText:[self stringWithAttribute:commentObject[@"comment"]]];
-    CGSize sizeCommentText = [cell.commentText.text sizeWithFont:cell.commentText.font constrainedToSize:CGSizeMake(cell.commentText.frame.size.width, 0)];
+    CGSize bounds = CGSizeMake(tableView.frame.size.width, tableView.frame.size.height);
+    CGSize sizeCommentText = [cell.commentText.text
+                   boundingRectWithSize:bounds
+                   options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                   attributes:[NSDictionary dictionaryWithObject:cell.textLabel.font forKey:NSFontAttributeName]
+                   context:nil].size;
+    
     CGRect rect = cell.commentText.frame;
     rect.size.height = sizeCommentText.height;
     cell.commentText.frame = rect;
@@ -223,7 +228,12 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     
     // get cell height
     cell.commentText.numberOfLines = 0;
-    CGSize sizeCommentText = [cell.commentText.text sizeWithFont:cell.commentText.font constrainedToSize:CGSizeMake(cell.commentText.frame.size.width, 100000)];
+    CGSize bounds = CGSizeMake(tableView.frame.size.width, 100000);
+    CGSize sizeCommentText = [cell.commentText.text
+                              boundingRectWithSize:bounds
+                              options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                              attributes:[NSDictionary dictionaryWithObject:cell.textLabel.font forKey:NSFontAttributeName]
+                              context:nil].size;
     
     return sizeCommentText.height + cell.commentUserName.frame.size.height + 10; // 余白10
 }
