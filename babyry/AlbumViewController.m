@@ -234,24 +234,25 @@
 
 -(void) openMonthPageView:(int)index
 {
-    NSLog(@"openMonthPageView");
-    //_pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
     _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
     _pageViewController.dataSource = self;
     
-    //NSLog(@"0ページ目を表示");
     UploadViewController *startingViewController = [self viewControllerAtIndex:index];
     NSArray *viewControllers = @[startingViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
-    // Change the size of page view controller
-    //NSLog(@"view controllerのサイズ変更");
-    //_pageViewController.view.frame = CGRectMake(0, 50, self.view.frame.size.width, self.view.frame.size.height);
-    
-    //NSLog(@"view追加");
     [self addChildViewController:_pageViewController];
+    CGRect rect = _pageViewController.view.frame;
+    _pageViewController.view.frame = CGRectMake(rect.origin.x + rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
     [self.view addSubview:_pageViewController.view];
-    [_pageViewController didMoveToParentViewController:self];
+    [UIView animateWithDuration:0.3
+        delay:0.0
+        options: UIViewAnimationOptionCurveEaseInOut
+        animations:^{
+            _pageViewController.view.frame = rect;
+        }
+        completion:^(BOOL finished){
+        }];
 }
 
 -(void)albumViewBack:(id)sender
@@ -399,23 +400,20 @@
     }
     
     index++;
-    NSLog(@"index++ :%d", index);
     return [self viewControllerAtIndex:index];
 }
 
 - (UploadViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    NSLog(@"index:%dのviewController", index);
     
     UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
     uploadViewController.childObjectId = _childObjectId;
     uploadViewController.name = _name;
-    NSLog(@"calc targetDate index:%d _date:%@", index, _date);
     int targetDate = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - index;
     
-    NSLog(@"open uploadviewcontroller date:%d", targetDate);
     uploadViewController.date = [NSString stringWithFormat:@"%0d", targetDate];
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", _yyyy, _mm];
+    uploadViewController.holdedBy = @"AlbumPageViewController";
     
     // Cacheからはりつけ
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%08dthumb", _childObjectId, targetDate];

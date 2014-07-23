@@ -32,5 +32,6 @@
 
 @property UIView *commentView;
 @property UIView *tagEditView;
+@property NSString *holdedBy;
 
 @end

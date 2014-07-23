@@ -106,6 +106,7 @@
     operationView.date          = _date;
     operationView.month         = _month;
     operationView.uploadViewController  = self;
+    operationView.holdedBy = _holdedBy;
     
     [self addChildViewController:operationView];
     [operationView didMoveToParentViewController:self];

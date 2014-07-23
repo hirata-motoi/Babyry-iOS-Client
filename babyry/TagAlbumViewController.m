@@ -160,14 +160,12 @@
 
 -(void)handleSingleTap:(id) sender
 {
-    //[self openMonthPageView:[[sender view] tag]];
     TagAlbumCollectionViewCell *cell = (TagAlbumCollectionViewCell *)[sender view];
     [self openTagAlbumPageView:cell.currentSection withRow:cell.currentRow];
 }
 
 -(void) openTagAlbumPageView:(int)section withRow:(int)row
 {
-    NSLog(@"openChildImagePageView");
     _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumPageViewController"];
     _pageViewController.childImages = [self sortChildImageByYearMonth];
     _pageViewController.currentSection = section;
@@ -175,10 +173,18 @@
     _pageViewController.childObjectId = _childObjectId;
     //_pageViewController.name = _name;  // nameをどっかでとってくる
     
-//    [self addChildViewController:_pageViewController];
-//    [self.view addSubview:_pageViewController.view];
-    [self presentViewController:_pageViewController animated:YES completion:nil];
-//    [_pageViewController didMoveToParentViewController:self];
+    [self addChildViewController:_pageViewController];
+    CGRect rect = _pageViewController.view.frame;
+    _pageViewController.view.frame = CGRectMake(rect.origin.x + rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
+    [self.view addSubview:_pageViewController.view];
+    [UIView animateWithDuration:0.3
+                          delay:0.0
+                        options: UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         _pageViewController.view.frame = rect;
+                     }
+                     completion:^(BOOL finished){
+                     }];
 }
 
 - (NSArray *)getMonthList: (NSString *)targetYearString

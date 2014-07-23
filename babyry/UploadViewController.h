@@ -33,5 +33,6 @@
 @property UIView *commentView;
 @property PFObject *imageInfo;
 @property NSInteger tagAlbumPageIndex;
+@property NSString *holdedBy; //このインスタンスを保持しているオブジェクトのクラス名
 
 @end

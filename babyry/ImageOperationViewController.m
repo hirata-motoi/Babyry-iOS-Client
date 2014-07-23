@@ -75,7 +75,28 @@
 
 - (void)closeUploadViewController
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (_holdedBy.length < 1) {
+        // トップページから開かれている場合
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else if ([_holdedBy isEqualToString:@"TagAlbumPageViewController"] || [_holdedBy isEqualToString:@"AlbumPageViewController"]) {
+        // TagAlbum or Albumから開かれている場合
+        UIView *uploadViewControllerView = self.view.superview;
+        CGRect rect = uploadViewControllerView.frame;
+        [UIView animateWithDuration:0.3
+            delay:0.0
+            options: UIViewAnimationOptionCurveEaseInOut
+            animations:^{
+                self.view.superview.frame = CGRectMake(rect.origin.x + rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
+            }
+            completion:^(BOOL finished){
+                // viewを消す
+                [self.view.superview.superview.superview.superview removeFromSuperview];
+                // viewcontrollerを消す(PageViewControllerごと)
+                [self.parentViewController.parentViewController removeFromParentViewController];
+            }];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void)openPhotoLibrary
