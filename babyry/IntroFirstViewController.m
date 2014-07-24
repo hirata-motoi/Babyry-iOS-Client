@@ -73,11 +73,6 @@
     UITapGestureRecognizer *singleTapGestureRecognizer0 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     singleTapGestureRecognizer0.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:singleTapGestureRecognizer0];
-
-    [self checkFamilyApply:_tm];
-    
-    _tm = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(checkFamilyApply:) userInfo:nil repeats:YES];
-    [_tm fire];
 }
 
 - (void)didReceiveMemoryWarning
@@ -90,7 +85,7 @@
 {
     [super viewDidAppear:animated];
     // check this acount has family Id or not
-    if ([PFUser currentUser][@"familyId"]) {
+    if ([PFUser currentUser][@"familyId"] && ![[PFUser currentUser][@"familyId"] isEqualToString:@""]) {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     
@@ -253,7 +248,6 @@
 
 - (void) checkFamilyApply:(NSTimer*)timer
 {
-    NSLog(@"checkFamilyApply");
     // 排他処理
     if (_applyCheckingFlag == 1) {
         return;
@@ -265,7 +259,7 @@
     [familyApplyQuery whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
     [familyApplyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(objects && [objects count] > 0){
-            NSLog(@"extist in familyAppy as inviteeUserId");
+            NSLog(@"extist in familyAppy as inviteeUserId %@", objects);
             FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
             NSLog(@"%@", familyApplyListViewController);
             [self presentViewController:familyApplyListViewController animated:true completion:nil];
