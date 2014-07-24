@@ -81,6 +81,7 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             inviterUsers = objects;
+            [_familyApplyList reloadData];
         }
     }];
 }
