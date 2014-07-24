@@ -89,13 +89,13 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
     // check this acount has family Id or not
     if ([PFUser currentUser][@"familyId"]) {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     
     if (![_tm isValid]) {
+        _tm = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(checkFamilyApply:) userInfo:nil repeats:YES];
         [_tm fire];
     }
 }
