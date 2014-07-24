@@ -76,7 +76,7 @@
 
     [self checkFamilyApply:_tm];
     
-    _tm = [NSTimer scheduledTimerWithTimeInterval:30.0f target:self selector:@selector(checkFamilyApply:) userInfo:nil repeats:YES];
+    _tm = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(checkFamilyApply:) userInfo:nil repeats:YES];
     [_tm fire];
 }
 
@@ -253,6 +253,7 @@
 
 - (void) checkFamilyApply:(NSTimer*)timer
 {
+    NSLog(@"checkFamilyApply");
     // 排他処理
     if (_applyCheckingFlag == 1) {
         return;
@@ -263,7 +264,7 @@
     PFQuery *familyApplyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
     [familyApplyQuery whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
     [familyApplyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if([objects count] > 0){
+        if(objects && [objects count] > 0){
             NSLog(@"extist in familyAppy as inviteeUserId");
             FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
             NSLog(@"%@", familyApplyListViewController);
