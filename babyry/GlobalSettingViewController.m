@@ -309,6 +309,9 @@
     // 初期値を非同期でセット
     [FamilyRole fetchFamilyRole:[PFUser currentUser][@"familyId"] withBlock:^(NSArray *objects, NSError *error){
         if (!error) {
+            if (objects.count < 1) {
+                return;
+            }
             PFObject *familyRole = [objects objectAtIndex:0];
             NSString *uploader = familyRole[@"uploader"];
             if ([[PFUser currentUser][@"userId"] isEqualToString:uploader]) {
