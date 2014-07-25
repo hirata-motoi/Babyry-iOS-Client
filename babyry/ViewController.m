@@ -54,6 +54,7 @@
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
         NSLog(@"User Not Logged In");
+        _only_first_load = 1;
         [self openLoginView];
     } else {
         // メンテナンス状態かどうか確認
@@ -94,7 +95,7 @@
         // falimyIdを取得
         //NSLog(@"%@", _currentUser);
         NSLog(@"familyId is %@", _currentUser[@"familyId"]);
-        if (!_currentUser[@"familyId"]) {
+        if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
             NSLog(@"ログインしているけどファミリ- IDがない = 最初のログイン");
             IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
             [self presentViewController:introFirstViewController animated:YES completion:NULL];
