@@ -83,13 +83,15 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    NSLog(@"viewDidAppear");
     [super viewDidAppear:animated];
     // check this acount has family Id or not
     if ([PFUser currentUser][@"familyId"] && ![[PFUser currentUser][@"familyId"] isEqualToString:@""]) {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     
-    if (![_tm isValid]) {
+    if (!_tm || ![_tm isValid]) {
+        NSLog(@"timer fire");
         _tm = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(checkFamilyApply:) userInfo:nil repeats:YES];
         [_tm fire];
     }
@@ -254,17 +256,14 @@
     } else {
         _applyCheckingFlag = 1;
     }
-    
     PFQuery *familyApplyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
     [familyApplyQuery whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
     [familyApplyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(objects && [objects count] > 0){
-            NSLog(@"extist in familyAppy as inviteeUserId %@", objects);
             FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-            NSLog(@"%@", familyApplyListViewController);
             [self presentViewController:familyApplyListViewController animated:true completion:nil];
-            _applyCheckingFlag = 0;
         }
+        _applyCheckingFlag = 0;
     }];
 }
 
