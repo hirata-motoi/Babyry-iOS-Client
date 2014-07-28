@@ -375,15 +375,15 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" id="QPz-4y-SA5">
-                                <rect key="frame" x="5" y="536" width="310" height="26"/>
+                                <rect key="frame" x="5" y="536" width="251" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" id="SEC-Vg-G8v">
-                                        <rect key="frame" x="0.0" y="20" width="310" height="2"/>
+                                        <rect key="frame" x="0.0" y="20" width="251" height="2"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </progressView>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="最新データ取得中..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="c6B-EI-SBT">
-                                        <rect key="frame" x="89" y="0.0" width="133" height="21"/>
+                                        <rect key="frame" x="59" y="0.0" width="133" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -392,6 +392,19 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Ccv-um-xk2">
+                                <rect key="frame" x="258" y="531" width="60" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.92079228940000002" green="0.92079228940000002" blue="0.92079228940000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <state key="normal" title="コメント">
+                                    <color key="titleColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="multiUploadCommentButton:" destination="lcr-La-Ikq" eventType="touchUpInside" id="acq-fX-4Ov"/>
+                                </connections>
+                            </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Explain Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Cbh-Q1-Qw3">
                                 <rect key="frame" x="15" y="69" width="291" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -403,6 +416,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                     </view>
                     <connections>
                         <outlet property="explainLabel" destination="Cbh-Q1-Qw3" id="hKm-Zh-zrm"/>
+                        <outlet property="multiUploadCommentLabel" destination="Ccv-um-xk2" id="xC3-o7-MRX"/>
                         <outlet property="multiUploadLabel" destination="H16-1K-Dhl" id="0NI-YN-vgC"/>
                         <outlet property="multiUploadedImages" destination="PWV-4z-wdb" id="L0v-5L-4XD"/>
                         <outlet property="uploadPregressBar" destination="SEC-Vg-G8v" id="jDM-ua-89i"/>

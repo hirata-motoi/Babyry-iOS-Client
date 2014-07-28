@@ -116,11 +116,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "babyry/MultiUploadViewController.m"
-            timestampString = "428243893.888778"
+            timestampString = "428246989.96867"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "344"
-            endingLineNumber = "344"
+            startingLineNumber = "361"
+            endingLineNumber = "361"
             landmarkName = "-updateImagesFromParse"
             landmarkType = "5">
          </BreakpointContent>

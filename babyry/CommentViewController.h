@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import "UploadViewController.h"
+#import "MultiUploadViewController.h"
 
 @interface CommentViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *closeCommentViewButton;
@@ -27,6 +28,7 @@
 @property BOOL keyboardObserving;
 @property CGRect defaultCommentViewRect;
 @property UploadViewController *uploadViewController;
+@property MultiUploadViewController *multiUploadViewController;
 
 - (void)adjustTableViewHeight;
 

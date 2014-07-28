@@ -14,6 +14,7 @@
 #import "FamilyRole.h"
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
+#import "CommentViewController.h"
 
 @interface MultiUploadViewController ()
 
@@ -38,6 +39,8 @@
     _currentUser = [PFUser currentUser];
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
+    
+    _multiUploadCommentLabel.layer.cornerRadius = _multiUploadCommentLabel.frame.size.height/2;
     
     // フォトアルバムからリスト取得しておく
     NSLog(@"get from photo album.");
@@ -170,6 +173,20 @@
     _needTimer = YES;
     [_myTimer fire];
     NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
+    
+    // コメントView
+    CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
+    commentViewController.childObjectId = _childObjectId;
+    commentViewController.name = _name;
+    commentViewController.date = _date;
+    commentViewController.month = _month;
+    commentViewController.multiUploadViewController = self;
+    
+    [self addChildViewController:commentViewController];
+    _commentView = commentViewController.view;
+    //_commentView.hidden = YES;
+    
+    [self.view addSubview:commentViewController.view];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -800,6 +817,11 @@
     [_overlay addSubview:label];
     
     [_overlay show];
+}
+
+- (IBAction)multiUploadCommentButton:(id)sender {
+    NSLog(@"open commentView");
+    _commentView.hidden = NO;
 }
 
 @end
