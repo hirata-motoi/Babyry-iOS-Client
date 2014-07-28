@@ -79,6 +79,39 @@
     [super viewWillAppear:animated];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    if ([[PFUser currentUser][@"tutorialStep"] intValue] == 5) {
+        _overlay = [[ICTutorialOverlay alloc] init];
+        _overlay.hideWhenTapped = NO;
+        _overlay.animated = YES;
+    
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 170, 300, 150)];
+        label.backgroundColor = [UIColor clearColor];
+        label.textColor = [UIColor whiteColor];
+        label.numberOfLines = 0;
+        label.text = @"過去の画像について(Step 11/13)\n\n過去の画像に関しては、画像の変更、コメントの追加、タグの付与が出来ます。\n画面タップで戻ってください。";
+        [_overlay addSubview:label];
+        [_overlay show];
+        
+        UITapGestureRecognizer *overlayGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeTuto:)];
+        overlayGR.numberOfTapsRequired = 1;
+        [_overlay addGestureRecognizer:overlayGR];
+        
+        PFUser *user = [PFUser currentUser];
+        user[@"tutorialStep"] = [NSNumber numberWithInt:6];
+        [user save];
+    }
+}
+
+- (void)closeTuto:(id)sender
+{
+    NSLog(@"closeTuto");
+    [_overlay hide];
+    [_overlay removeFromSuperview];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     // super

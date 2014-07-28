@@ -8,18 +8,33 @@
 
 #import <UIKit/UIKit.h>
 #import "ICTutorialOverlay.h"
+#import <Parse/Parse.h>
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
+
+@property UILabel *albumLabel;
+@property UILabel *settingLabel;
 
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
 
 @property ICTutorialOverlay *overlay;
+@property UILabel *tutoLabel;
 
 @property NSString *returnValueOfChildName;
 @property NSString *returnValueOfChildBirthday;
 
 @property NSMutableArray *bestFlagArray;
+
+@property NSNumber *tutorialStep;
+
+@property PFUser *currentUser;
+
+@property int isFirstLoad;
+
+@property UICollectionViewCell *isNoImageCellForTutorial;
+
+@property UILabel *tutoSkipLabel;
 
 @end

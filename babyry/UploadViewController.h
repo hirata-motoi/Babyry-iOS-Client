@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "ICTutorialOverlay.h"
 
 @interface UploadViewController : UIViewController
 
@@ -34,5 +35,7 @@
 @property PFObject *imageInfo;
 @property NSInteger tagAlbumPageIndex;
 @property NSString *holdedBy; //このインスタンスを保持しているオブジェクトのクラス名
+
+@property ICTutorialOverlay *overlay;
 
 @end

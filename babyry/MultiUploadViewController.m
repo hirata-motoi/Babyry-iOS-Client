@@ -35,6 +35,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _currentUser = [PFUser currentUser];
+    
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
     
     // フォトアルバムからリスト取得しておく
@@ -85,11 +87,27 @@
 
     
     // role で出し分けるものたち
-    NSLog(@"%@ %@", [PFUser currentUser][@"familyId"], [PFUser currentUser][@"role"]);
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
-        _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
-    } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
-        _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
+    // チュートリアルの場合は両方やってもらう
+    if (![_currentUser objectForKey:@"tutorialStep"] || [[_currentUser objectForKey:@"tutorialStep"] intValue] < 100) {
+        [_currentUser refresh];
+        if ([[_currentUser objectForKey:@"tutorialStep"] intValue] <= 2) {
+            NSLog(@"%@ is under tutorialStep %@", _currentUser[@"userId"], _currentUser[@"tutorialStep"]);
+            _tutorialStep = [NSNumber numberWithInt:2];
+            _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:2];
+            [_currentUser saveInBackground];
+            _explainLabel.text = @"";
+        } else if ([[_currentUser objectForKey:@"tutorialStep"] intValue] == 4) {
+            NSLog(@"%@ is under tutorialStep %@", _currentUser[@"userId"], _currentUser[@"tutorialStep"]);
+            _tutorialStep = [NSNumber numberWithInt:4];
+            _explainLabel.text = @"";
+        }
+    } else {
+        NSLog(@"%@ %@", [PFUser currentUser][@"familyId"], [PFUser currentUser][@"role"]);
+        if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+            _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
+        } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
+            _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
+        }
     }
     
     if ([_childImageArray count] > 0) {
@@ -108,6 +126,40 @@
 {
     [super viewDidAppear:animated];
     
+    // tutorial用
+    if ([_tutorialStep intValue] == 3) {
+        _overlay = [[ICTutorialOverlay alloc] init];
+        _overlay.hideWhenTapped = NO;
+        _overlay.animated = YES;
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 170, 300, 200)];
+        label.backgroundColor = [UIColor clearColor];
+        label.textColor = [UIColor whiteColor];
+        label.numberOfLines = 0;
+        label.text = @"アップロードの方法(Step 6/13)\n\nアップロードが完了しました。\nこれでアップローダーのチュートリアルは終わりです。\n次は、チューザー機能のチュートリアルになります。画面をタップしてください。";
+        [_overlay addSubview:label];
+        [_overlay show];
+        
+        UITapGestureRecognizer *tuto3gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTuto3Gesture:)];
+        tuto3gesture.numberOfTapsRequired = 1;
+        [_overlay addGestureRecognizer:tuto3gesture];
+    } else if ([_tutorialStep intValue] == 4) {
+        // チューザーのチュートリアル
+        _overlay = [[ICTutorialOverlay alloc] init];
+        _overlay.hideWhenTapped = NO;
+        _overlay.animated = YES;
+        [_overlay addHoleWithView:_multiUploadedImages padding:-10.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, 300, 150)];
+        label.backgroundColor = [UIColor clearColor];
+        label.textColor = [UIColor whiteColor];
+        label.shadowColor = [UIColor blackColor];
+        label.shadowOffset = CGSizeMake(0.f, 1.f);
+        label.numberOfLines = 0;
+        label.text = @"チューザー機能(Step 8/13)\n\nベストショットと思う画像をダブルタップしてください。";
+        [_overlay addSubview:label];
+        [_overlay show];
+    }
+    
     _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
                                                 target:self
                                               selector:@selector(doTimer:)
@@ -124,6 +176,8 @@
 {
     // super
     [super viewWillAppear:animated];
+    
+    [_overlay removeFromSuperview];
     
     [_myTimer invalidate];
 }
@@ -165,7 +219,8 @@
     }
     
     // uploaderはアップロード用の画像も最後にはめる
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+    // チュートリアルのStep2の場合もはめる
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"] || [_tutorialStep intValue] == 2) {
         [_childCachedImageArray addObject:[NSString stringWithFormat:@"ForUploadImage"]];
     }
     
@@ -240,6 +295,10 @@
         UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
         uploadGesture.numberOfTapsRequired = 1;
         [cell addGestureRecognizer:uploadGesture];
+        if ([_tutorialStep intValue] == 2) {
+            _plusCellForTutorial = cell;
+            [self setTutorialStep2];
+        }
     } else {
         // ローカルに保存されていたサムネイル画像を貼付け
         NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
@@ -269,46 +328,6 @@
     
     return cell;
 }
-
-/* ヘッターつけたかったらここにつける
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
-{
-    NSLog(@"referenceSizeForHeaderInSection!!!!!!!!!!!!!!!!!!!!!!");
-    return CGSizeMake(self.view.frame.size.width, 30);
-    
-    return CGSizeZero;
-}
-
-// ヘッダー作る
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
-    NSLog(@"viewForSupplementaryElementOfKind!!!!!!!!!!!!!!!!!");
-    //UICollectionReusableView *headerView = [[UICollectionReusableView alloc] init];
-    
-    UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"MultiUploadCellHeader" forIndexPath:indexPath];
-    for (UIView *view in [headerView subviews]) {
-        //NSLog(@"remove cell's child view");
-        [view removeFromSuperview];
-    }
-    headerView.backgroundColor = [UIColor grayColor];
-    UILabel *headerLabel = [[UILabel alloc] init];
-    headerLabel.frame = headerView.frame;
-    CGRect frame = headerLabel.frame;
-    frame.origin.x = 0;
-    frame.origin.y = 0;
-    headerLabel.frame = frame;
-    headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.textColor = [UIColor whiteColor];
-    if (indexPath.section == 0) {
-        headerLabel.text = @"Now Uploading...";
-    } else if (indexPath.section == 1){
-        headerLabel.text = @"Today's Images";
-    }
-    [headerView addSubview:headerLabel];
-    return headerView;
-}
-*/
-/////////////////////////////////////////////////////////////////
 
 -(void)updateImagesFromParse
 {
@@ -393,8 +412,20 @@
     }
 }
 
+-(void)handleTuto3Gesture:(id) sender {
+    NSLog(@"handleTuto3Gesture");
+    
+    _tutorialStep = [NSNumber numberWithInt:4];
+    _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:4];
+    [_currentUser save];
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
 -(void)handleUploadGesture:(id) sender {
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"] || [_tutorialStep intValue] == 2) {
+        [_overlay hide];
+        [_overlay removeFromSuperview];
         _albumTableView = [[UITableView alloc] init];
         _albumTableView.delegate = self;
         _albumTableView.dataSource = self;
@@ -404,6 +435,21 @@
         frame.size.height -= 50;
         _albumTableView.frame = frame;
         [self.view addSubview:_albumTableView];
+        
+        if ([_tutorialStep intValue] == 2) {
+            _overlay = [[ICTutorialOverlay alloc] init];
+            _overlay.hideWhenTapped = NO;
+            _overlay.animated = YES;
+            [_overlay addHoleWithView:_albumTableView padding:-10.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
+        
+            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(40, self.view.frame.size.height/2, 240, 150)];
+            label.backgroundColor = [UIColor clearColor];
+            label.textColor = [UIColor blackColor];
+            label.numberOfLines = 0;
+            label.text = @"アップロードの方法(Step 3/13)\n\nアルバムを選択してください。";
+            [_overlay addSubview:label];
+            [_overlay show];
+        }
     }
 }
 
@@ -411,7 +457,8 @@
     NSLog(@"double tap %d", [[sender view] tag]);
     
     // role bbbのみダブルタップ可能
-    if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
+    // チュートリアルStep 4でも可
+    if ([[FamilyRole selfRole] isEqualToString:@"chooser"] || [_tutorialStep intValue] == 4) {
         
         _bestImageIndex = [[sender view] tag];
         
@@ -478,6 +525,12 @@
                 }
             }
         }
+        // チュートリアル中だったらこれで終わり
+        if ([_tutorialStep intValue] == 4) {
+            _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:5];
+            [_currentUser save];
+            [self dismissViewControllerAnimated:YES completion:NULL];
+        }
     }
 }
 
@@ -538,6 +591,9 @@
     multiUploadPickerViewController.childObjectId = _childObjectId;
     multiUploadPickerViewController.date = _date;
     multiUploadPickerViewController.currentCachedImageNum = [_childImageArray count];
+    if ([_tutorialStep intValue] == 2) {
+        multiUploadPickerViewController.tutorialStep = [NSNumber numberWithInt:2];
+    }
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
 /////////////////////////////////////////////////////////////////
@@ -720,6 +776,28 @@
     [_pageViewController removeFromParentViewController];
     
     [self viewDidAppear:(BOOL)YES];
+}
+
+-(void)setTutorialStep2
+{
+    _overlay = [[ICTutorialOverlay alloc] init];
+    _overlay.hideWhenTapped = NO;
+    _overlay.animated = YES;
+    CGRect frame = _plusCellForTutorial.frame;
+    frame.origin.x += 10;
+    frame.origin.y += 105;
+    frame.size.width -=10;
+    frame.size.height -= 10;
+    [_overlay addHoleWithRect:frame form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, self.view.frame.size.height/2, 300, 200)];
+    label.backgroundColor = [UIColor clearColor];
+    label.textColor = [UIColor whiteColor];
+    label.numberOfLines = 0;
+    label.text = @"アップロードの方法(Step 2/13)\n\nアップローダーの場合は、今日のパネルをタップするとこの画像アップロード画面が開きます。\nアップロードボタンを押して画像をアップロードしてみましょう。";
+    [_overlay addSubview:label];
+    
+    [_overlay show];
 }
 
 @end

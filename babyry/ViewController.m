@@ -55,6 +55,9 @@
     if (!_currentUser) { // No user logged in
         NSLog(@"User Not Logged In");
         _only_first_load = 1;
+        [_pageViewController.view removeFromSuperview];
+        [_pageViewController removeFromParentViewController];
+        _pageViewController = nil;
         [self openLoginView];
     } else {
         // メンテナンス状態かどうか確認
@@ -105,14 +108,12 @@
         // nickname確認 なければ入れてもらう
         // まずはキャッシュから確認
         if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-            [_currentUser refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
-                if(object) {
-                    if (![object objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-                        [self setMyNickNamePage];
-                        return;
-                    }
-                }
-            }];
+            //キャッシュがなければフォアグランドで引いても良い。
+            [_currentUser refresh];
+            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+                [self setMyNickNamePage];
+                return;
+            }
         }
         
         // roleを更新
@@ -155,16 +156,15 @@
                 }
             }];
         }
-        
-        // チュートリアルの途中か判定
-        /*
-        if (![_currentUser objectForKey:@"tutorialStep"] || ![[_currentUser objectForKey:@"tutorialStep"] isEqualToString:@"complete"]) {
+        // チュートリアル済か判定
+        if (![_currentUser objectForKey:@"tutorialStep"] || [[_currentUser objectForKey:@"tutorialStep"] intValue] == 0) {
             [_currentUser refresh];
-            if (![_currentUser objectForKey:@"tutorialStep"] || ![[_currentUser objectForKey:@"tutorialStep"] isEqualToString:@"Step1"]) {
-                NSLog(@"%@ is under tutorialStep %@", _currentUser[@"userId"], _currentUser[@"tutorialStep"]);
+            if (![_currentUser objectForKey:@"tutorialStep"] || [[_currentUser objectForKey:@"tutorialStep"] intValue] == 0) {
+                PFUser *user = [PFUser currentUser];
+                user[@"tutorialStep"] = [NSNumber numberWithInt:1];
+                [user saveInBackground];
             }
         }
-        */
     }
 }
 
@@ -618,7 +618,9 @@
 
 -(void) setPage
 {
+    NSLog(@"setPage");
     if (_only_first_load == 1) {
+        NSLog(@"setPage _only_first_load YES");
         NSLog(@"reflectChildArray");
         NSLog(@"storyboardのPageViewControllerのidとひも付け");
         _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
@@ -637,15 +639,12 @@
         [self addChildViewController:_pageViewController];
         [self.view addSubview:_pageViewController.view];
         [_pageViewController didMoveToParentViewController:self];
-    
-        // +ボタンがなぜかでないけどスルー
-        NSLog(@"addChild ボタン追加");
-        //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
-    
+        
         UIImage *settingImage = [UIImage imageNamed:@"CogWheel"];
         [self.openGlobalSettingViewButton setImage:settingImage forState:UIControlStateNormal];
         [self.openGlobalSettingViewButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
     } else {
+        NSLog(@"setPage _only_first_load NO");
         PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
         NSArray *viewControllers = @[startingViewController];
         [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];

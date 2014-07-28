@@ -9,11 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import "ImageCache.h"
+#import "ICTutorialOverlay.h"
 
 @interface AlbumViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UIPageViewControllerDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *albumCollectionView;
 @property (weak, nonatomic) IBOutlet UILabel *albumViewNameLabel;
-
 
 @property NSString *childObjectId;
 @property NSString *month;
@@ -36,5 +36,8 @@
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property UIView *tagAlbumOperationView;
+
+@property ICTutorialOverlay *overlay;
+@property NSNumber *tutorialStep;
 
 @end

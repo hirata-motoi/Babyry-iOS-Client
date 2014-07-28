@@ -145,6 +145,31 @@
     
     // get Parse data
     [self getImageFromParse];
+    
+    // チュートリアル
+    PFUser *user = [PFUser currentUser];
+    if ([user[@"tutorialStep"] intValue] <= 6){
+        user[@"tutorialStep"] = [NSNumber numberWithInt:7];
+        [user save];
+        
+        _overlay = [[ICTutorialOverlay alloc] init];
+        _overlay.hideWhenTapped = NO;
+        _overlay.animated = YES;
+    
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 170, 300, 200)];
+        label.backgroundColor = [UIColor clearColor];
+        label.textColor = [UIColor whiteColor];
+        label.numberOfLines = 0;
+        label.text = @"アルバムについて(Step 13/13)\n\n過去に選択されたベストショットはアルバムとして一覧できます。また、タグごとの表示も可能です。\n画面をタップして戻る。";
+        [_overlay addSubview:label];
+    
+        [_overlay show];
+    
+        _overlay.tag = 555;
+        UITapGestureRecognizer *overlayRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tutorialBackTap:)];
+        overlayRecognizer.numberOfTapsRequired = 1;
+        [_overlay addGestureRecognizer:overlayRecognizer];
+    }
 }
 
 /*
@@ -230,6 +255,11 @@
 -(void)handleSingleTap:(id) sender
 {
     [self openMonthPageView:[[sender view] tag]];
+}
+
+-(void)tutorialBackTap:(id) sender
+{
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 -(void) openMonthPageView:(int)index

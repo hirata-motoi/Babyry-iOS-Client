@@ -54,4 +54,9 @@
 
 @property int detailedImageIndex;
 
+@property ICTutorialOverlay *overlay;
+@property NSNumber *tutorialStep;
+@property UICollectionViewCell *plusCellForTutorial;
+@property PFUser *currentUser;
+
 @end
