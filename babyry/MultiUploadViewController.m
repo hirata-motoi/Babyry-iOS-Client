@@ -218,9 +218,11 @@
         i++;
     }
     
-    // uploaderはアップロード用の画像も最後にはめる
-    // チュートリアルのStep2の場合もはめる
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"] || [_tutorialStep intValue] == 2) {
+    // アップロード用の画像を最後にはめる、ただし、
+    // uploader もしくは tutorialStep = 2(アップロードのチュートリアル) の場合かつ、
+    // uploader かつ tutorialStepが4(チューザーのチュートリアル)じゃない場合
+    if (([[FamilyRole selfRole] isEqualToString:@"uploader"] || [_tutorialStep intValue] == 2)
+        && ([[FamilyRole selfRole] isEqualToString:@"uploader"] && [_tutorialStep intValue] != 4)) {
         [_childCachedImageArray addObject:[NSString stringWithFormat:@"ForUploadImage"]];
     }
     

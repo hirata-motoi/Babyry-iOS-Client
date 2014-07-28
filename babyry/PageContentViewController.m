@@ -406,6 +406,11 @@
             _tutoLabel.text = @"過去の画像について(Step 10/13)\n\n前日までの画像について\nベストショットがアップロードされていない過去分のパネルには、後から画像をアップロードすることが可能です。ただし、通常のアップローダー、チューザーという機能はありません。\n画像が入っていないパネルをタップしてください。";
             [_overlay addSubview:_tutoLabel];
             [_overlay show];
+        } else {
+            // NoImageのUploadViewがないので飛ばす(そうゆう状態の人はチュートリアル不要だし)。
+            _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:6];
+            [_currentUser save];
+            [_pageContentCollectionView reloadData];
         }
     } else if (tagNumber == 777) {
         [_overlay hide];
