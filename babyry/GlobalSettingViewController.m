@@ -15,6 +15,7 @@
 #import "ViewController.h"
 #import "IntroChildNameViewController.h"
 #import "PushNotification.h"
+#import "Navigation.h"
 
 @interface GlobalSettingViewController ()
 
@@ -46,6 +47,7 @@
     [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self setupChildList];
     [self setupPartnerInfo];
+    [Navigation setTitle:self.navigationItem withTitle:@"設定" withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -108,6 +110,7 @@
             switch (indexPath.row) {
                 case 0:
                     cell.textLabel.text = @"プロフィール";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 case 1:
                     cell.textLabel.text = @"Role";
@@ -131,9 +134,11 @@
             switch (indexPath.row) {
                 case 0:
                     cell.textLabel.text = @"FamilyApply";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 case 1:
                     cell.textLabel.text = @"FamilyApplyList";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
                     break;
@@ -143,6 +148,7 @@
             switch (indexPath.row) {
                 case 0:
                     cell.textLabel.text = @"子供追加";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
                     break;
@@ -236,22 +242,24 @@
 - (void)openFamilyApply
 {
     FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-    [self presentViewController:familyApplyViewController animated:true completion:nil];
+    //[self presentViewController:familyApplyViewController animated:true completion:nil];
+    [self.navigationController pushViewController:familyApplyViewController animated:YES];
 }
 
 - (void)openFamilyApplyList
 {
     FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-    [self presentViewController:familyApplyListViewController animated:true completion:nil];
+    //[self presentViewController:familyApplyListViewController animated:true completion:nil];
+    [self.navigationController pushViewController:familyApplyListViewController animated:YES];
 }
 
 - (void)openAddChildAddView
 {
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     icnvc.isNotFirstTime = YES;
-    ViewController *vc = (ViewController *)self.parentViewController;
-    icnvc.currentChildNum = [vc.childArray count];
-    [self presentViewController:icnvc animated:YES completion:NULL];
+    icnvc.currentChildNum = [[NSNumber numberWithInteger:[_childList count]] intValue];
+    //[self presentViewController:icnvc animated:YES completion:NULL];
+    [self.navigationController pushViewController:icnvc animated:YES];
 }
 
 - (NSString *)getSelectedRole
@@ -330,23 +338,7 @@
     // partnerInfo、childともに基本キャッシュ、ネットワークがない場合はキャッシュを使う
     profileViewController.childList = _childList;
     profileViewController.partnerInfo = _partnerInfo;
-    [self addChildViewController:profileViewController];
-    
-    // viewをはりつける。アニメーション必須
-    CGRect rect  = profileViewController.view.frame;
-    rect.origin.x = self.view.frame.size.width;
-    profileViewController.view.frame = rect;
-    [self.view addSubview:profileViewController.view];
-    
-    [UIView animateWithDuration:0.3
-                          delay:0.0
-                        options: UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         profileViewController.view.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
-                     }
-                     completion:^(BOOL finished){
-                         [MBProgressHUD hideHUDForView:profileViewController.view animated:YES];
-                     }];
+    [self.navigationController pushViewController:profileViewController animated:YES];
 }
 
 - (void)setupChildList

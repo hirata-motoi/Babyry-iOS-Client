@@ -8,6 +8,7 @@
 
 #import "FamilyApplyViewController.h"
 #import "IdIssue.h"
+#import "Navigation.h"
 
 @interface FamilyApplyViewController ()
 
@@ -37,6 +38,7 @@
     [self showSelfUserId];
     
     [self setupSearchForm];
+    [Navigation setTitle:self.navigationItem withTitle:@"Family申請" withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning

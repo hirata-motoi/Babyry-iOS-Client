@@ -9,6 +9,7 @@
 #import "ProfileViewController.h"
 #import "NicknameEditViewController.h"
 #import "SettingViewController.h"
+#import "Navigation.h"
 
 @interface ProfileViewController ()
 
@@ -33,6 +34,7 @@
     _profileTableView.delegate = self;
     _profileTableView.dataSource = self;
     [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+    [Navigation setTitle:self.navigationItem withTitle:@"プロフィール" withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -191,9 +193,10 @@
     nicknameEditViewController.delegate = self;
     CGRect tableViewRect = _nicknameCell.superview.superview.frame;
     
-    nicknameEditViewController.nicknameCellRect = CGRectMake(tableViewRect.origin.x + _nicknameCell.frame.origin.x, tableViewRect.origin.y + _nicknameCell.frame.origin.y, _nicknameCell.frame.size.width, _nicknameCell.frame.size.height);
+    nicknameEditViewController.nicknameCellRect = CGRectMake(tableViewRect.origin.x + _nicknameCell.frame.origin.x, tableViewRect.origin.y + self.navigationController.navigationBar.bounds.size.height + [[UIApplication sharedApplication]statusBarFrame].size.height + _nicknameCell.frame.origin.y, _nicknameCell.frame.size.width, _nicknameCell.frame.size.height);
     [self addChildViewController:nicknameEditViewController];
     [self.view addSubview:nicknameEditViewController.view];
+    
 }
 
 - (void)changeNickname:(NSString *)nickname

@@ -46,7 +46,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     
     [self getCommentFromParse];
     
-    [self.closeCommentViewButton addTarget:self action:@selector(closeCommentView) forControlEvents:UIControlEventTouchUpInside];
     [self.commentSubmitButton addTarget:self action:@selector(submitComment) forControlEvents:UIControlEventTouchUpInside];
     [self hideKeyBoardOnUnforcusingTextForm];
     

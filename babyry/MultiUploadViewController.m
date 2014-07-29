@@ -14,6 +14,7 @@
 #import "FamilyRole.h"
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
+#import "Navigation.h"
 
 @interface MultiUploadViewController ()
 
@@ -88,8 +89,11 @@
     NSLog(@"%@ %@", [PFUser currentUser][@"familyId"], [PFUser currentUser][@"role"]);
     if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
+        [Navigation setTitle:self.navigationItem withTitle:@"写真アップロード" withFont:nil withFontSize:0 withColor:nil];
+        
     } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
+        [Navigation setTitle:self.navigationItem withTitle:@"ベストショット選択" withFont:nil withFontSize:0 withColor:nil];
     }
     
     if ([_childImageArray count] > 0) {
@@ -400,10 +404,11 @@
         _albumTableView.dataSource = self;
         _albumTableView.backgroundColor = [UIColor whiteColor];
         CGRect frame = self.view.frame;
-        frame.origin.y += 50;
-        frame.size.height -= 50;
+        frame.origin.y += 64;
+        frame.size.height -= 64;
         _albumTableView.frame = frame;
         [self.view addSubview:_albumTableView];
+//        [self.navigationController pushViewController:_albumTableView animated:YES];
     }
 }
 

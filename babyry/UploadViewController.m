@@ -14,6 +14,7 @@
 #import "TagEditViewController.h"
 #import "ImageTrimming.h"
 #import "CommentViewController.h"
+#import "Navigation.h"
 
 @interface UploadViewController ()
 
@@ -35,14 +36,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    
     _defaultImageViewFrame = _uploadedImageView.frame;
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
+    NSLog(@"setTitle");
+    [self setupTitle];
+    NSLog(@"setCommentView");
     [self setupCommentView];
+    NSLog(@"setupOperationView");
     [self setupOperationView];
     
+    NSLog(@"get from parse childObjectId : %@", _childObjectId);
     // Parseからちゃんとしたサイズの画像を取得
     PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -65,6 +70,7 @@
 - (void)openOperationView:(id)sender
 {
     _operationView.hidden = NO;
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -119,11 +125,6 @@
     [self.view addGestureRecognizer:openOperationViewTapGestureRecognizer];
 }
 
-- (void)hideOperationView:(id)sender
-{
-    _operationView.hidden = YES;
-}
-
 /*
 #pragma mark - Navigation
 
@@ -160,7 +161,7 @@
 - (void)setupCommentView
 {
     CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
-
+    
     commentViewController.childObjectId = _childObjectId;
     commentViewController.name = _name;
     commentViewController.date = _date;
@@ -173,5 +174,15 @@
 
     [self.view addSubview:commentViewController.view];
 }
+
+- (void)setupTitle
+{
+    NSString *yyyy =  [_date substringWithRange:NSMakeRange(0, 4)];
+    NSString *mm   =  [_date substringWithRange:NSMakeRange(4, 2)];
+    NSString *dd   =  [_date substringWithRange:NSMakeRange(6, 2)];
+    
+    self.navigationItem.title = [NSString stringWithFormat:@"%@/%@/%@", yyyy, mm, dd];
+    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@/%@/%@", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
+}                                                      
 
 @end

@@ -40,6 +40,14 @@
     //_hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
     
     _only_first_load = 1;
+    
+    // navigation controller
+    CGRect rect = CGRectMake(0, 0, 130, 38);
+    UIImageView *titleview = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"babyryTitle"]];
+    titleview.frame = rect;
+    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
+    [view addSubview:titleview];
+    self.navigationItem.titleView = view;
 }
 
 - (void)didReceiveMemoryWarning
@@ -134,6 +142,7 @@
                 [self setChildNames];
                 return;
             }
+            [self initializeChildImages];
             // まずはCacheからオフラインでも表示出来るものを先に表示
             [self getWeekDate];
             [self getCachedImage];
@@ -146,6 +155,7 @@
             [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if(!error) {
                     _childArrayFoundFromParse = objects;
+                    [self initializeChildImages];
                     // Parseにアクセスして最新の情報を取得
                     NSLog(@"update pictures");
                     [self getWeekDate];
@@ -290,6 +300,7 @@
 
 - (PageContentViewController *)viewControllerAtIndex:(NSUInteger)index
 {
+    NSLog(@"viewControllerAtIndex");
     //NSLog(@"index:%dのviewController", index);
     // 設定されたページが0か、indexがpageTitlesよりも多かったらnil返す
     if (([_childArray count] == 0) || (index >= [_childArray count])) {
@@ -304,6 +315,8 @@
 
     pageContentViewController.pageIndex = index;
     pageContentViewController.childArray = _childArray;
+    pageContentViewController.childImages = [_childImages objectForKey:[[_childArray objectAtIndex:index] objectForKey:@"objectId"]];
+    pageContentViewController.childObjectId = [[_childArray objectAtIndex:index] objectForKey:@"objectId"];
     
     return pageContentViewController;
 }
@@ -424,21 +437,7 @@
 - (void)openGlobalSettingView
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
-    [self addChildViewController:globalSettingViewController];
-    CGRect rect = CGRectMake(globalSettingViewController.view.frame.size.width, 0, globalSettingViewController.view.frame.size.width, globalSettingViewController.view.frame.size.height);
-    globalSettingViewController.view.frame = rect;
-    [self.view addSubview:globalSettingViewController.view];
-    [UIView animateWithDuration:0.3
-                          delay:0.0
-                        options: UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         globalSettingViewController.view.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
-                     }
-                     completion:^(BOOL finished){
-                         
-                         [MBProgressHUD hideHUDForView:globalSettingViewController.view animated:YES];
-                         
-                     }];
+    [self.navigationController pushViewController:globalSettingViewController animated:YES];
 }
 
 - (void) getWeekDate
@@ -507,6 +506,7 @@
         [_childArray insertObject:childSubDic atIndex:childIndex];
         childIndex++;
     }
+   
     [self setPage];
 }
 
@@ -546,6 +546,9 @@
                         //NSLog(@"no image in %@ %@", c[@"name"], month);
                     } else if ([objects count] > 0) {
                         //NSLog(@"image found in %@ %@", c[@"name"], month);
+                        
+                        [self setObjectToChildImages:objects];
+                        
                         for (PFObject *object in objects) {
                             // Parseから持って来たデータでchildArray更新する
                             // (階層が深くなってきて気持ち悪いけどbackgroundだから良いかなと。。。)
@@ -566,9 +569,12 @@
                                     if (c[@"birthday"]) {
                                         [tmpDic setValue:c[@"birthday"] forKey:@"birthday"];
                                     }
+                                    
                                     int wIndex = 0;
                                     for (NSString *date in _weekDateArray) {
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {
+                                            
+                                            
                                             //NSLog(@"ここでParseに接続。全部backgroundにする");
                                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                                                 if(!error){
@@ -640,10 +646,11 @@
         // +ボタンがなぜかでないけどスルー
         NSLog(@"addChild ボタン追加");
         //(void)[self.addNewChildButton initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addChild)];
-    
-        UIImage *settingImage = [UIImage imageNamed:@"CogWheel"];
-        [self.openGlobalSettingViewButton setImage:settingImage forState:UIControlStateNormal];
-        [self.openGlobalSettingViewButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
+   
+        UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+        [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"CogWheel"] forState:UIControlStateNormal];
+        [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
     } else {
         PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
         NSArray *viewControllers = @[startingViewController];
@@ -690,6 +697,53 @@
 {
     IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     [self presentViewController:introChildNameViewController animated:YES completion:NULL];
+}
+
+// ImagePageViewControllerの仕様に合わせたchildImagesを作る
+- (void)setObjectToChildImages:(NSArray *)objects
+{
+    NSMutableDictionary *objectsHash = [self arrayToHash:objects withKeyColumn:@"date"];
+    
+    for (PFObject *child in _childArrayFoundFromParse) {
+        NSMutableArray *sections = [_childImages objectForKey:child.objectId];
+        
+        NSMutableDictionary *imageInfoByChild = [[NSMutableDictionary alloc]init];
+        [sections addObject:imageInfoByChild];
+        
+        [imageInfoByChild setObject:[[NSMutableArray alloc]init] forKey:@"images"];
+        for (NSString *date in _weekDateArray) {
+            if ([objectsHash objectForKey:[NSString stringWithFormat:@"D%@", date]]) {
+                // その日のChildImageオブジェクトがあったら単純にobjectをimagesに突っ込む
+                [[imageInfoByChild objectForKey:@"images"] addObjectsFromArray:[objectsHash objectForKey:[NSString stringWithFormat:@"D%@", date]]];
+            } else {
+                // もしその日のChildImageオブジェクトがなかったら空のPFObjectを作ってしまう
+                PFObject *object = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%@", date]];
+                [object setObject:[NSString stringWithFormat:@"D%@", date] forKey:@"date"];
+                [[imageInfoByChild objectForKey:@"images"] addObject:object];
+            }
+        }
+    }
+}
+
+- (NSMutableDictionary *)arrayToHash:(NSArray *)array withKeyColumn:(NSString *)keyColumn
+{
+    NSMutableDictionary *hash = [[NSMutableDictionary alloc]init];
+    for (PFObject *elem in array) {
+        NSString *key = elem[keyColumn];
+        if (![hash objectForKey:key]) {
+            [hash setObject:[[NSMutableArray alloc]init] forKey:key];
+        }
+        [[hash objectForKey:key] addObject:elem];
+    }
+    return hash;
+}
+
+- (void)initializeChildImages
+{
+    _childImages = [[NSMutableDictionary alloc]init];
+    for (PFObject *child in _childArrayFoundFromParse) {
+        [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
+    }
 }
 
 @end

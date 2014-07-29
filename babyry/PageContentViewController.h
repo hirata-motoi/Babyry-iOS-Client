@@ -14,6 +14,7 @@
 
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
+@property NSString *childObjectId;
 
 @property ICTutorialOverlay *overlay;
 
@@ -21,5 +22,6 @@
 @property NSString *returnValueOfChildBirthday;
 
 @property NSMutableArray *bestFlagArray;
+@property NSMutableArray *childImages;
 
 @end

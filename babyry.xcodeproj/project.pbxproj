@@ -70,6 +70,9 @@
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
+		F2694AFC1982618C008239F6 /* Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694AFB1982618C008239F6 /* Navigation.m */; };
+		F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694AFE19827013008239F6 /* UIColor+Hex.m */; };
+		F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694B021983A232008239F6 /* ImagePageViewController.m */; };
 		F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */; };
 		F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ABB122197D295B009E35CB /* CommentTableViewCell.m */; };
 /* End PBXBuildFile section */
@@ -194,6 +197,12 @@
 		F261A883196513F60072BBD2 /* IdIssue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdIssue.m; sourceTree = "<group>"; };
 		F261A886196523110072BBD2 /* NSObject+Retry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Retry.h"; sourceTree = "<group>"; };
 		F261A887196523110072BBD2 /* NSObject+Retry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Retry.m"; sourceTree = "<group>"; };
+		F2694AFA1982618C008239F6 /* Navigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Navigation.h; sourceTree = "<group>"; };
+		F2694AFB1982618C008239F6 /* Navigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Navigation.m; sourceTree = "<group>"; };
+		F2694AFD19827013008239F6 /* UIColor+Hex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Hex.h"; sourceTree = "<group>"; };
+		F2694AFE19827013008239F6 /* UIColor+Hex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Hex.m"; sourceTree = "<group>"; };
+		F2694B011983A232008239F6 /* ImagePageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePageViewController.h; sourceTree = "<group>"; };
+		F2694B021983A232008239F6 /* ImagePageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImagePageViewController.m; sourceTree = "<group>"; };
 		F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentTableViewCell.xib; sourceTree = "<group>"; };
 		F2ABB121197D295B009E35CB /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
 		F2ABB122197D295B009E35CB /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
@@ -261,6 +270,10 @@
 				F215DDDD19777CD00092C712 /* PushNotification.m */,
 				885A224B197D75550039B263 /* SecretConfig.h */,
 				885A224C197D75550039B263 /* SecretConfig.m */,
+				F2694AFA1982618C008239F6 /* Navigation.h */,
+				F2694AFB1982618C008239F6 /* Navigation.m */,
+				F2694AFD19827013008239F6 /* UIColor+Hex.h */,
+				F2694AFE19827013008239F6 /* UIColor+Hex.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -398,6 +411,7 @@
 		F215DDCD19761CA50092C712 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				F2694B001983A17B008239F6 /* PageView */,
 				F215DDD51976203C0092C712 /* MultiUpload */,
 				F215DDD219761DFB0092C712 /* Intro */,
 				F215DDD119761DAC0092C712 /* Album */,
@@ -494,6 +508,15 @@
 				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
 			);
 			name = MultiUpload;
+			sourceTree = "<group>";
+		};
+		F2694B001983A17B008239F6 /* PageView */ = {
+			isa = PBXGroup;
+			children = (
+				F2694B011983A232008239F6 /* ImagePageViewController.h */,
+				F2694B021983A232008239F6 /* ImagePageViewController.m */,
+			);
+			name = PageView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -618,6 +641,7 @@
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
+				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
@@ -633,7 +657,9 @@
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
 				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
+				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
+				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
@@ -779,7 +805,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "30D08E1C-1CA7-4B5E-A4E8-7306C5A5B35C";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -800,7 +826,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "30D08E1C-1CA7-4B5E-A4E8-7306C5A5B35C";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -20,8 +20,6 @@
     id<NicknameEditViewDelegate>delegate;
 }
 @property (nonatomic, assign) id<NicknameEditViewDelegate> delegate;
-@property (weak, nonatomic) IBOutlet UIButton *cancelButton;
-@property (weak, nonatomic) IBOutlet UIButton *saveButton;
 @property (weak, nonatomic) IBOutlet UITextField *nicknameEditTextField;
 
 @property CGRect nicknameCellRect;

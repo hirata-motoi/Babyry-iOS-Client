@@ -7,6 +7,7 @@
 //
 
 #import "IntroChildNameViewController.h"
+#import "Navigation.h"
 
 @interface IntroChildNameViewController ()
 
@@ -82,6 +83,8 @@
         // この場合はもう追加できないよってメッセージにするべき
         _childNameField1.hidden = YES;
     }
+    
+    [Navigation setTitle:self.navigationItem withTitle:@"こども追加" withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning

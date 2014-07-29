@@ -22,7 +22,6 @@
 @property UploadViewController *uploadViewController;
 
 @property (strong, nonatomic) IBOutlet UIView *operationView;
-@property (weak, nonatomic) IBOutlet UIButton *closeUploadViewControllerButton;
 @property (weak, nonatomic) IBOutlet UILabel *yearMonthLabel;
 @property (weak, nonatomic) IBOutlet UILabel *dayLabel;
 @property (weak, nonatomic) IBOutlet UILabel *childNameLabel;
