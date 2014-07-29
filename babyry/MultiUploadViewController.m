@@ -184,7 +184,7 @@
     
     [self addChildViewController:commentViewController];
     _commentView = commentViewController.view;
-    //_commentView.hidden = YES;
+    _commentView.hidden = YES;
     
     [self.view addSubview:commentViewController.view];
 }
