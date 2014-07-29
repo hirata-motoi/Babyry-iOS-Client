@@ -12,8 +12,6 @@
 #import "MultiUploadViewController.h"
 
 @interface CommentViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, UITextFieldDelegate>
-@property (weak, nonatomic) IBOutlet UIButton *closeCommentViewButton;
-
 @property (weak, nonatomic) IBOutlet UITableView *commentTableView;
 @property (weak, nonatomic) IBOutlet UITextField *commentTextField;
 @property (weak, nonatomic) IBOutlet UIButton *commentSubmitButton;

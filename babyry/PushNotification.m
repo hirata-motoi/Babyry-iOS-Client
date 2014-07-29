@@ -107,7 +107,9 @@
                     [currentInstallation removeObject:[NSString stringWithFormat:@"userId_%@", userId] forKey:@"channels"];
                 }
             }
+            NSLog(@"aaaaaaaaaaaaa");
             [currentInstallation saveEventually];
+            NSLog(@"bbbbbbbbbbbbb");
         }
     }];
 }

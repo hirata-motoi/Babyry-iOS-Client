@@ -9,6 +9,7 @@
 #import "SettingViewController.h"
 #import <Parse/Parse.h>
 #import "DateUtils.h"
+#import "Navigation.h"
 
 @interface SettingViewController ()
 
@@ -39,6 +40,8 @@
     } else {
         _settingDatePicker.date = [NSDate date];
     }
+   
+    [Navigation setTitle:self.navigationItem withTitle:_childName withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning

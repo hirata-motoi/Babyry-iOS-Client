@@ -37,9 +37,8 @@
     _nicknameEditTextField.frame = _nicknameCellRect;
     [_nicknameEditTextField becomeFirstResponder]; // focusをあてる
     
-    [_cancelButton addTarget:self action:@selector(closeNicknameEdit) forControlEvents:UIControlEventTouchUpInside];
-    
-    [_saveButton addTarget:self action:@selector(saveNickname) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonItemStylePlain target:self action:@selector(saveNickname)];
+    self.parentViewController.navigationItem.rightBarButtonItem = button;
 }
 
 - (void)didReceiveMemoryWarning
@@ -52,6 +51,7 @@
 {
     [self.view removeFromSuperview];
     [self dismissViewControllerAnimated:YES completion:nil];
+    self.parentViewController.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)saveNickname
@@ -68,6 +68,7 @@
     
     [self closeNicknameEdit];
 }
+
 
 /*
 #pragma mark - Navigation

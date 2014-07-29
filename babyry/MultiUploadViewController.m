@@ -15,6 +15,7 @@
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
 #import "CommentViewController.h"
+#import "Navigation.h"
 
 @interface MultiUploadViewController ()
 
@@ -450,8 +451,8 @@
         _albumTableView.dataSource = self;
         _albumTableView.backgroundColor = [UIColor whiteColor];
         CGRect frame = self.view.frame;
-        frame.origin.y += 50;
-        frame.size.height -= 50;
+        frame.origin.y += 64;
+        frame.size.height -= 64;
         _albumTableView.frame = frame;
         [self.view addSubview:_albumTableView];
         

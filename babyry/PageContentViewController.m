@@ -14,6 +14,7 @@
 #import "ImageTrimming.h"
 #import "SettingViewController.h"
 #import "FamilyRole.h"
+#import "ImagePageViewController.h"
 
 @interface PageContentViewController ()
 
@@ -99,11 +100,11 @@
 
 // セルの大きさを指定するメソッド
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    float size = self.view.frame.size.width;
+    float width = self.view.frame.size.width;
     if (indexPath.row == 0) {
-        return CGSizeMake(size, self.view.frame.size.height - 50 - size*2/3);
+        return CGSizeMake(width, self.view.frame.size.height - 44 - 20  - width*2/3); // TODO magic number
     }
-    return CGSizeMake(size/3, size/3);
+    return CGSizeMake(width/3, width/3);
 }
 
 // 指定された場所のセルを作るメソッド
@@ -123,6 +124,7 @@
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         if (indexPath.row == 0) {
+            // TODO ここで画像のサイズをうまいこと設定してやる
             cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
             //cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
         } else {
@@ -380,7 +382,8 @@
         albumViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
         albumViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][0];
         albumViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][0];
-        [self presentViewController:albumViewController animated:YES completion:NULL];
+        //[self presentViewController:albumViewController animated:YES completion:NULL];
+        [self.navigationController pushViewController:albumViewController animated:YES];
     } else if (tagNumber == 2222222) {
         NSLog(@"open setting view");
         SettingViewController *settingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingViewController"];
@@ -388,7 +391,7 @@
         settingViewController.childName = [_childArray[_pageIndex] objectForKey:@"name"];
         settingViewController.childBirthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
         settingViewController.pViewController = self;
-        [self presentViewController:settingViewController animated:YES completion:NULL];
+        [self.navigationController pushViewController:settingViewController animated:YES];
     } else if (tagNumber == 555) {
         if (_isNoImageCellForTutorial) {
             [_overlay hide];
@@ -430,7 +433,16 @@
         uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         
         if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage) {
-            [self presentViewController:uploadViewController animated:YES completion:NULL];
+//            [self presentViewController:uploadViewController animated:YES completion:NULL];
+            
+            ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
+            pageViewController.childImages = _childImages;
+            NSLog(@"pageViewController.childImages : %@", _childImages);
+            pageViewController.currentSection = 0;
+            pageViewController.currentRow = tagNumber - 1;
+            pageViewController.childObjectId = _childObjectId;
+            //_pageViewController.name = _name;  // nameをどっかでとってくる
+            [self.navigationController pushViewController:pageViewController animated:YES];
         } else {
             // TODO インターネット接続がありません的なメッセージいるかも
         }
@@ -442,12 +454,14 @@
         multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
         multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-            [self presentViewController:multiUploadViewController animated:YES completion:NULL];
+            //[self presentViewController:multiUploadViewController animated:YES completion:NULL];
+            [self.navigationController pushViewController:multiUploadViewController animated:YES];
         } else {
             // TODO インターネット接続がありません的なメッセージいるかも
         }
     }
 }
+
 
 /*
 #pragma mark - Navigation

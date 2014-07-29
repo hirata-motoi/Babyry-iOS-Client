@@ -10,6 +10,7 @@
 #import "ImageTrimming.h"
 #import "UploadViewController.h"
 #import "TagAlbumOperationViewController.h"
+#import "Navigation.h"
 
 @interface AlbumViewController ()
 
@@ -48,6 +49,8 @@
     // album name
     _albumViewNameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:20];
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
+    [self setupTitle];
+    
     
     // buttom buttons
     float buttonRadius = 30.0f;
@@ -323,12 +326,10 @@
     _dd = [self getMaxDate:_mm yyyy:_yyyy];
     
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
-    CGPoint offset;
-    offset.x = 0;
-    offset.y = 0;
-    [_albumCollectionView setContentOffset:offset animated:NO];
     [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
     [_albumCollectionView reloadData];
+    
+    [self setupTitle];
     
     // get cache in background
     [self getImageFromParse];
@@ -359,12 +360,10 @@
     }
     
     _albumViewNameLabel.text = [NSString stringWithFormat:@"%@/%@ %@", _yyyy, _mm, _name];
-    CGPoint offset;
-    offset.x = 0;
-    offset.y = 0;
-    [_albumCollectionView setContentOffset:offset animated:NO];
     [_albumCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumViewControllerCell"];
     [_albumCollectionView reloadData];
+    
+    [self setupTitle];
     
     // get cache in background
     [self getImageFromParse];
@@ -501,6 +500,11 @@
             }
         }
     }];
+}
+
+- (void)setupTitle
+{
+    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@/%@", _yyyy, _mm] withFont:nil withFontSize:0 withColor:nil];
 }
 
 @end

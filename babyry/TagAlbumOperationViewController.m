@@ -174,9 +174,10 @@
         tagAlbumViewController.year = _year;
 //        [self.parentViewController addChildViewController:tagAlbumViewController];
 //        [self.parentViewController.view addSubview:tagAlbumViewController.view];
-        [self presentViewController:tagAlbumViewController animated:YES completion:nil];
+        //[self presentViewController:tagAlbumViewController animated:YES completion:nil];
+        [self.parentViewController.navigationController pushViewController:tagAlbumViewController animated:YES];
         [self clearTagAlpha];
-        self.view.hidden = YES;
+        //self.view.hidden = YES;
     } else {
         // 画面更新のnotificationを登録
         NSMutableDictionary *params = [[NSMutableDictionary alloc]init];

@@ -22,6 +22,7 @@
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSMutableArray *childArray;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
+@property NSMutableDictionary *childImages;
 
 @property NSUInteger currentPageIndex;
 

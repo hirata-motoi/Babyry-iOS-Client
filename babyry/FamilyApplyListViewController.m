@@ -8,6 +8,7 @@
 
 #import "FamilyApplyListViewController.h"
 #import "FamilyRole.h"
+#import "Navigation.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -39,8 +40,7 @@
     self.familyApplyList.dataSource = self;
     
     [self showFamilyApplyList];
-    
-    [self.closeFamilyApplyListButton addTarget:self action:@selector(closeFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
+    [Navigation setTitle:self.navigationItem withTitle:@"Family承認" withFont:nil withFontSize:0 withColor:nil];
 }
 
 

@@ -10,7 +10,6 @@
 #import <Parse/Parse.h>
 
 @interface FamilyApplyListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>;
-@property (weak, nonatomic) IBOutlet UIButton *closeFamilyApplyListButton;
 @property (weak, nonatomic) IBOutlet UITableView *familyApplyList;
 @property (retain, atomic) NSArray *inviterUsers;
 @property (retain, atomic) NSMutableDictionary *familyApplys;

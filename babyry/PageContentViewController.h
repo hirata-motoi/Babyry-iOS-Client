@@ -18,6 +18,7 @@
 
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
+@property NSString *childObjectId;
 
 @property ICTutorialOverlay *overlay;
 @property UILabel *tutoLabel;
@@ -26,6 +27,7 @@
 @property NSString *returnValueOfChildBirthday;
 
 @property NSMutableArray *bestFlagArray;
+@property NSMutableArray *childImages;
 
 @property NSNumber *tutorialStep;
 

@@ -36,7 +36,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    [self.closeUploadViewControllerButton addTarget:self action:@selector(closeUploadViewController) forControlEvents:UIControlEventTouchUpInside];
     [self.openPhotoLibraryButton addTarget:self action:@selector(openPhotoLibrary) forControlEvents:UIControlEventTouchUpInside];
     [self.openCommentViewButton addTarget:self action:@selector(openCommentView) forControlEvents:UIControlEventTouchUpInside];
     [self.openTagViewButton addTarget:self action:@selector(openTagView) forControlEvents:UIControlEventTouchUpInside];
@@ -125,6 +124,32 @@
     [self hideTagView];
     self.view.hidden = YES;
     _commentView.hidden = NO;
+    
+    UIBarButtonItem *closeCommentViewButton = [[UIBarButtonItem alloc]
+                              initWithTitle:@"cancel"
+                              style:UIBarButtonItemStyleBordered
+                              target:self
+                              action:@selector(hideCommentView)];
+    // TODO トップページの画像タップ時にもPageViewControllerを使うようにすれば
+    // この分岐がなくなる
+    if ([_holdedBy isEqualToString:@"TagAlbumPageViewController"] || [_holdedBy isEqualToString:@"AlbumPageViewController"]) {
+        self.parentViewController.parentViewController.parentViewController.navigationItem.rightBarButtonItem = closeCommentViewButton;
+    } else {
+        self.parentViewController.navigationItem.rightBarButtonItem = closeCommentViewButton;
+    }
+}
+
+- (void)hideCommentView
+{
+    _commentView.hidden = YES;
+    // TODO トップページの画像タップ時にもPageViewControllerを使うようにすれば
+    // この分岐がなくなる
+    if ([_holdedBy isEqualToString:@"TagAlbumPageViewController"] || [_holdedBy isEqualToString:@"AlbumPageViewController"]) {
+        self.parentViewController.parentViewController.parentViewController.navigationItem.rightBarButtonItem = nil;
+    } else {
+        self.parentViewController.navigationItem.rightBarButtonItem = nil;
+    }
+    _operationView.hidden = NO;
 }
 
 - (void)setupTagEditView
@@ -151,6 +176,7 @@
 
 - (void)hideOperationView:(id)sender
 {
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
     self.view.hidden = YES;
 }
 

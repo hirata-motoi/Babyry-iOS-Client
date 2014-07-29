@@ -12,6 +12,7 @@
 #import "ImageTrimming.h"
 #import "TagAlbumOperationViewController.h"
 #import "TagAlbumCollectionViewCell.h"
+#import "Navigation.h"
 
 @interface TagAlbumViewController ()
 
@@ -45,11 +46,11 @@
     // 非同期でデータを読み込んできてcollectionViewをreloadする
     [self setupCollectionView:@"create"];
     [self.closeButton addTarget:self action:@selector(closeView) forControlEvents:UIControlEventTouchUpInside];
-    [self.tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
-    
-    // tagSelectButtonの画像
-    UIImage *tagSelectImage = [UIImage imageNamed:@"badgeBlue"];
-    [self.tagSelectButton setImage:tagSelectImage forState:UIControlStateNormal];
+    //[self.tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *tagSelectButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [tagSelectButton setBackgroundImage:[self filterImage:[UIImage imageNamed:@"badgeRed"]] forState:UIControlStateNormal];
+    [tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:tagSelectButton];
     
     // year change
     [self setPaging];
@@ -59,6 +60,9 @@
     
     // notification
     [self setupNotificationReceiver];
+    
+    // title
+    [Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -234,6 +238,12 @@
                 [result setObject:year forKey:@"year"];
                 [result setObject:month forKey:@"month"];
                 [_childImages addObject:result];
+                
+                // childImages[0]
+                //    year
+                //    month
+                //    images
+                //       ChildImageオブジェクト
                  
                 int __block index = 0;
                 for (PFObject *object in objects) {
@@ -363,12 +373,14 @@
 {
     _year = [[NSNumber numberWithInt:[_year intValue] - 1] stringValue];
     [self setupCollectionView:@"reload"];
+    [Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)showNextYearAlbum:(id)sender
 {
     _year = [[NSNumber numberWithInt:[_year intValue] + 1] stringValue];
     [self setupCollectionView:@"reload"];
+    [Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (NSArray *)sortChildImageByYearMonth
@@ -379,6 +391,21 @@
         return (BOOL)(yearMonthObj2 > yearMonthObj1);
     }];
     return sortedChildImages;
+}
+
+- (UIImage *)filterImage:(UIImage *)originImage
+{
+    CIImage *filteredImage = [[CIImage alloc] initWithCGImage:originImage.CGImage];
+    CIFilter *filter = [CIFilter filterWithName:@"CIMinimumComponent"];
+    [filter setValue:filteredImage forKey:@"inputImage"];
+    filteredImage = filter.outputImage;
+    
+    CIContext *ciContext = [CIContext contextWithOptions:nil];
+    CGImageRef imageRef = [ciContext createCGImage:filteredImage
+                                          fromRect:[filteredImage extent]];
+    UIImage *outputImage  = [UIImage imageWithCGImage:imageRef scale:1.0f orientation:UIImageOrientationUp];
+    CGImageRelease(imageRef);
+    return outputImage;
 }
 
 /*
