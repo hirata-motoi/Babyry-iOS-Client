@@ -92,6 +92,7 @@
     [ImageCache removeAllCache];
     [PushNotification removeSelfUserIdFromChannels:^(){
         [PFUser logOut];
+        [self.navigationController popViewControllerAnimated:YES];
         // 親のviewDidAppearを呼び出さないとログインビューが出ない
         [self.parentViewController viewDidAppear:YES];
     }];
