@@ -487,11 +487,13 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                     <connections>
                         <outlet property="childNameLabel" destination="MK2-pc-5QS" id="mVt-EN-Kpb"/>
                         <outlet property="dayLabel" destination="U9y-un-VjL" id="hN6-Vf-Gsm"/>
+                        <outlet property="navbar" destination="1ct-4w-tO9" id="6by-2o-FLe"/>
                         <outlet property="navbarItem" destination="KIE-Nv-dFa" id="QC7-Ec-Bhk"/>
                         <outlet property="openCommentViewButton" destination="jA7-Mv-cVb" id="b0h-1l-aAc"/>
                         <outlet property="openPhotoLibraryButton" destination="cDj-gP-aIH" id="KN2-92-qsk"/>
                         <outlet property="openTagViewButton" destination="0SD-fB-ll1" id="PsS-ti-b2J"/>
                         <outlet property="operationView" destination="8vg-eB-kNf" id="7pr-KO-7Tp"/>
+                        <outlet property="statusBarCoverView" destination="R3J-C1-4g3" id="fkY-hK-6wa"/>
                         <outlet property="yearMonthLabel" destination="vyA-XL-smD" id="W0R-ej-oLP"/>
                     </connections>
                 </viewController>

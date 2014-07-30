@@ -10,4 +10,5 @@
 
 @interface Navigation : NSObject
 + (void)setTitle: (UINavigationItem *)navigationItem withTitle:(NSString *)title withFont:(NSString *)font withFontSize:(CGFloat)fontSize withColor:(UIColor *)color;
++ (void)setNavbarColor: (UINavigationBar *)navigationBar withColor:(UIColor *)color withEtcElements:(NSArray *)elements;
 @end

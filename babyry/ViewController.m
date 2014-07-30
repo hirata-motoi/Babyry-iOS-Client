@@ -18,6 +18,7 @@
 #import "PageContentViewController.h"
 #import "IntroChildNameViewController.h"
 #import "PushNotification.h"
+#import "UIColor+Hex.h"
 
 @interface ViewController ()
 
@@ -48,6 +49,7 @@
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
     [view addSubview:titleview];
     self.navigationItem.titleView = view;
+                    self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"EEEEEE" alpha:0.6]; // TODO 外だし
 }
 
 - (void)didReceiveMemoryWarning

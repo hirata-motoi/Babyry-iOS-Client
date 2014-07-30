@@ -28,7 +28,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *openPhotoLibraryButton;
 @property (weak, nonatomic) IBOutlet UIButton *openCommentViewButton;
 @property (weak, nonatomic) IBOutlet UIButton *openTagViewButton;
+@property (weak, nonatomic) IBOutlet UINavigationBar *navbar;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navbarItem;
+@property (weak, nonatomic) IBOutlet UIView *statusBarCoverView;
 
 @property UIView *commentView;
 @property UIView *tagEditView;
