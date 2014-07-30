@@ -15,6 +15,7 @@
 #import "TagEditViewController.h"
 #import "ImageTrimming.h"
 #import "PushNotification.h"
+#import "Navigation.h"
 
 @interface ImageOperationViewController ()
 
@@ -64,6 +65,7 @@
     _commentView = self.uploadViewController.commentView;
 
     [self setupTagEditView];
+    [self setupNavigation];
 }
 
 - (void)didReceiveMemoryWarning
@@ -176,7 +178,7 @@
 
 - (void)hideOperationView:(id)sender
 {
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    //[self.navigationController setNavigationBarHidden:YES animated:YES];
     self.view.hidden = YES;
 }
 
@@ -291,6 +293,27 @@
     
 }
 
+// NavigationController(self.navigationController)を使うとPageViewControllerがずれるため
+// self.navigationControllerは非表示にして、自前でnavigationを作る
+- (void)setupNavigation
+{
+    UIButton *backButton = [UIButton buttonWithType:101];
+    [backButton addTarget:self action:@selector(doBack) forControlEvents:UIControlEventTouchUpInside]; [backButton setTitle:@"戻る" forState:UIControlStateNormal];
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    _navbarItem.leftBarButtonItem = backItem;
+    
+    NSString *yyyy =  [_date substringWithRange:NSMakeRange(0, 4)];
+    NSString *mm   =  [_date substringWithRange:NSMakeRange(4, 2)];
+    NSString *dd   =  [_date substringWithRange:NSMakeRange(6, 2)];
+    
+    [Navigation setTitle:_navbarItem withTitle:[NSString stringWithFormat:@"%@/%@/%@", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
+}
+
+- (void)doBack
+{
+    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController setNavigationBarHidden:NO];
+}
 
 /*
 #pragma mark - Navigation

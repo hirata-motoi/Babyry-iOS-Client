@@ -40,14 +40,9 @@
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
-    NSLog(@"setTitle");
-    [self setupTitle];
-    NSLog(@"setCommentView");
     [self setupCommentView];
-    NSLog(@"setupOperationView");
     [self setupOperationView];
     
-    NSLog(@"get from parse childObjectId : %@", _childObjectId);
     // Parseからちゃんとしたサイズの画像を取得
     PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -70,7 +65,7 @@
 - (void)openOperationView:(id)sender
 {
     _operationView.hidden = NO;
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    //[self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -207,15 +202,5 @@
 
     [self.view addSubview:commentViewController.view];
 }
-
-- (void)setupTitle
-{
-    NSString *yyyy =  [_date substringWithRange:NSMakeRange(0, 4)];
-    NSString *mm   =  [_date substringWithRange:NSMakeRange(4, 2)];
-    NSString *dd   =  [_date substringWithRange:NSMakeRange(6, 2)];
-    
-    self.navigationItem.title = [NSString stringWithFormat:@"%@/%@/%@", yyyy, mm, dd];
-    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@/%@/%@", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
-}                                                      
 
 @end

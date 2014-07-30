@@ -274,6 +274,7 @@
     pageViewController.currentRow = index;
     pageViewController.childObjectId = _childObjectId;
     //_pageViewController.name = _name;  // nameをどっかでとってくる
+    [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
 }
 

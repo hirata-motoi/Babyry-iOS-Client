@@ -442,6 +442,7 @@
             pageViewController.currentRow = tagNumber - 1;
             pageViewController.childObjectId = _childObjectId;
             //_pageViewController.name = _name;  // nameをどっかでとってくる
+            [self.navigationController setNavigationBarHidden:YES];
             [self.navigationController pushViewController:pageViewController animated:YES];
         } else {
             // TODO インターネット接続がありません的なメッセージいるかも
