@@ -11,6 +11,7 @@
 #import "UploadViewController.h"
 #import "TagAlbumOperationViewController.h"
 #import "Navigation.h"
+#import "ImagePageViewController.h"
 
 @interface AlbumViewController ()
 
@@ -267,25 +268,13 @@
 
 -(void) openMonthPageView:(int)index
 {
-    _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
-    _pageViewController.dataSource = self;
-    
-    UploadViewController *startingViewController = [self viewControllerAtIndex:index];
-    NSArray *viewControllers = @[startingViewController];
-    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-    
-    [self addChildViewController:_pageViewController];
-    CGRect rect = _pageViewController.view.frame;
-    _pageViewController.view.frame = CGRectMake(rect.origin.x + rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
-    [self.view addSubview:_pageViewController.view];
-    [UIView animateWithDuration:0.3
-        delay:0.0
-        options: UIViewAnimationOptionCurveEaseInOut
-        animations:^{
-            _pageViewController.view.frame = rect;
-        }
-        completion:^(BOOL finished){
-        }];
+    ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
+    pageViewController.childImages = _childImages;
+    pageViewController.currentSection = 0;
+    pageViewController.currentRow = index;
+    pageViewController.childObjectId = _childObjectId;
+    //_pageViewController.name = _name;  // nameをどっかでとってくる
+    [self.navigationController pushViewController:pageViewController animated:YES];
 }
 
 -(void)albumViewBack:(id)sender
@@ -405,7 +394,6 @@
     // dateはuploadviewに表示されているdate
     // 差分 index = _date - date
     int date = [((UploadViewController *) viewController).date intValue];
-    NSLog(@"viewControllerBeforeViewController : %d", date);
     NSUInteger index = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - date;
     
     if ((index == 0) || (index == NSNotFound)) {
@@ -413,7 +401,6 @@
     }
     
     index--;
-    NSLog(@"index-- :%d", index);
     return [self viewControllerAtIndex:index];
 }
 
@@ -421,7 +408,6 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
     int date = [((UploadViewController *) viewController).date intValue];
-    NSLog(@"viewControllerAfterViewController : %d", date);
     NSUInteger index = [[NSString stringWithFormat:@"%@%@%@", _yyyy, _mm, _dd] intValue] - date;
     
     if (index >= [_dd intValue] - 1 || index == NSNotFound) {
@@ -480,6 +466,11 @@
     [childMonthImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
     [childMonthImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if(!error) {
+            _childImages = [[NSMutableArray alloc]init];
+            NSMutableDictionary *sectionInfo = [[NSMutableDictionary alloc]init];
+            [sectionInfo setObject:objects forKey:@"images"];
+            [_childImages addObject:sectionInfo];
+
             int __block index = 0;
             for (PFObject *object in objects) {
                 NSString *date = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];

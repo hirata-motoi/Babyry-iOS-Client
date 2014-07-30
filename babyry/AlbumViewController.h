@@ -39,5 +39,6 @@
 
 @property ICTutorialOverlay *overlay;
 @property NSNumber *tutorialStep;
+@property NSMutableArray *childImages;
 
 @end

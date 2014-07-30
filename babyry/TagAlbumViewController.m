@@ -176,19 +176,7 @@
     _pageViewController.currentRow = row;
     _pageViewController.childObjectId = _childObjectId;
     //_pageViewController.name = _name;  // nameをどっかでとってくる
-    
-    [self addChildViewController:_pageViewController];
-    CGRect rect = _pageViewController.view.frame;
-    _pageViewController.view.frame = CGRectMake(rect.origin.x + rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
-    [self.view addSubview:_pageViewController.view];
-    [UIView animateWithDuration:0.3
-                          delay:0.0
-                        options: UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         _pageViewController.view.frame = rect;
-                     }
-                     completion:^(BOOL finished){
-                     }];
+    [self.navigationController pushViewController:_pageViewController animated:YES];
 }
 
 - (NSArray *)getMonthList: (NSString *)targetYearString
