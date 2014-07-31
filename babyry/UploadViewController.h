@@ -27,11 +27,11 @@
 
 @property BOOL keyboradObserving;
 
-@property CGRect defaultCommentViewRect;
+//@property CGRect defaultCommentViewRect;
 
-@property NSArray *commentArray;
+//@property NSArray *commentArray;
 @property UIView *operationView;
-@property UIView *commentView;
+//@property UIView *commentView;
 @property PFObject *imageInfo;
 @property NSInteger tagAlbumPageIndex;
 @property NSString *holdedBy; //このインスタンスを保持しているオブジェクトのクラス名

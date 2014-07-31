@@ -41,8 +41,6 @@
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
     
-    _multiUploadCommentLabel.layer.cornerRadius = _multiUploadCommentLabel.frame.size.height/2;
-    
     // フォトアルバムからリスト取得しておく
     NSLog(@"get from photo album.");
     _albumListArray = [[NSMutableArray alloc] init];
@@ -181,13 +179,11 @@
     commentViewController.name = _name;
     commentViewController.date = _date;
     commentViewController.month = _month;
-    commentViewController.multiUploadViewController = self;
-    
-    [self addChildViewController:commentViewController];
     _commentView = commentViewController.view;
-    _commentView.hidden = YES;
-    
-    [self.view addSubview:commentViewController.view];
+    _commentView.hidden = NO;
+    _commentView.frame = CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
+    [self addChildViewController:commentViewController];
+    [self.view addSubview:_commentView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -818,11 +814,6 @@
     [_overlay addSubview:label];
     
     [_overlay show];
-}
-
-- (IBAction)multiUploadCommentButton:(id)sender {
-    NSLog(@"open commentView");
-    _commentView.hidden = NO;
 }
 
 @end
