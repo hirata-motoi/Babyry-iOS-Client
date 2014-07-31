@@ -247,6 +247,8 @@
 // self.navigationControllerは非表示にして、自前でnavigationを作る
 - (void)setupNavigation
 {
+    [self setColorForNavigation];
+    
     UIButton *backButton = [UIButton buttonWithType:101];
     [backButton addTarget:self action:@selector(doBack) forControlEvents:UIControlEventTouchUpInside]; [backButton setTitle:@"戻る" forState:UIControlStateNormal];
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
@@ -257,6 +259,11 @@
     NSString *dd   =  [_date substringWithRange:NSMakeRange(6, 2)];
     
     [Navigation setTitle:_navbarItem withTitle:[NSString stringWithFormat:@"%@/%@/%@", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
+}
+
+- (void)setColorForNavigation
+{
+    [Navigation setNavbarColor:_navbar withColor:nil withEtcElements:@[_statusBarCoverView]];
 }
 
 - (void)doBack

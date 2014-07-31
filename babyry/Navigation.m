@@ -11,7 +11,7 @@
 
 @implementation Navigation
 
-+ (void)setTitle: (UINavigationItem *)navigationItem withTitle:(NSString *)title withFont: (NSString *)font withFontSize: (CGFloat)fontSize withColor: (UIColor *)color;
++ (void)setTitle: (UINavigationItem *)navigationItem withTitle:(NSString *)title withFont: (NSString *)font withFontSize: (CGFloat)fontSize withColor: (UIColor *)color
 {
     UILabel *label = [[UILabel alloc]init];
     label.text = title;
@@ -27,7 +27,7 @@
     }
     label.font = [UIFont fontWithName:font size:fontSize];
     label.textColor = color;
-   
+    
     // 表示最大サイズ
     CGSize bounds = CGSizeMake(320, 44);
     
@@ -55,4 +55,15 @@
     navigationItem.titleView = label;
 }
 
++ (void)setNavbarColor: (UINavigationBar *)navigationBar withColor:(UIColor *)color withEtcElements:(NSArray *)elements
+{
+    if (color == nil) {
+        color = [UIColor_Hex colorWithHexString:@"EEEEEE" alpha:0.6f];
+    }
+    navigationBar.backgroundColor = color;
+    
+    for (UIView *element in elements) {
+        element.backgroundColor = color;
+    }
+}
 @end
