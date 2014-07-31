@@ -13,6 +13,7 @@
 #import "TagAlbumOperationViewController.h"
 #import "TagAlbumCollectionViewCell.h"
 #import "Navigation.h"
+#import "ImagePageViewController.h"
 
 @interface TagAlbumViewController ()
 
@@ -170,13 +171,14 @@
 
 -(void) openTagAlbumPageView:(int)section withRow:(int)row
 {
-    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumPageViewController"];
-    _pageViewController.childImages = [self sortChildImageByYearMonth];
-    _pageViewController.currentSection = section;
-    _pageViewController.currentRow = row;
-    _pageViewController.childObjectId = _childObjectId;
+    ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
+    pageViewController.childImages = [self sortChildImageByYearMonth];
+    pageViewController.currentSection = section;
+    pageViewController.currentRow = row;
+    pageViewController.childObjectId = _childObjectId;
     //_pageViewController.name = _name;  // nameをどっかでとってくる
-    [self.navigationController pushViewController:_pageViewController animated:YES];
+    [self.navigationController setNavigationBarHidden:YES];
+    [self.navigationController pushViewController:pageViewController animated:YES];
 }
 
 - (NSArray *)getMonthList: (NSString *)targetYearString

@@ -23,6 +23,5 @@
 @property UIView *operationView;
 @property UILabel *albumViewPreYearLabel;
 @property UILabel *albumViewNextYearLabel;
-@property TagAlbumPageViewController *pageViewController;
 
 @end

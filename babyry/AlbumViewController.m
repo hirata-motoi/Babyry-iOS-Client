@@ -273,6 +273,7 @@
     pageViewController.currentSection = 0;
     pageViewController.currentRow = index;
     pageViewController.childObjectId = _childObjectId;
+    
     //_pageViewController.name = _name;  // nameをどっかでとってくる
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
@@ -467,10 +468,7 @@
     [childMonthImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
     [childMonthImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if(!error) {
-            _childImages = [[NSMutableArray alloc]init];
-            NSMutableDictionary *sectionInfo = [[NSMutableDictionary alloc]init];
-            [sectionInfo setObject:objects forKey:@"images"];
-            [_childImages addObject:sectionInfo];
+            [self setObjectToChildImages:objects];
 
             int __block index = 0;
             for (PFObject *object in objects) {
@@ -497,6 +495,46 @@
 - (void)setupTitle
 {
     [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@/%@", _yyyy, _mm] withFont:nil withFontSize:0 withColor:nil];
+}
+
+// ImagePageViewControllerの仕様に合わせたchildImagesを作る
+- (void)setObjectToChildImages:(NSArray *)objects
+{
+    NSMutableDictionary *objectsHash = [self arrayToHash:objects withKeyColumn:@"date"];
+    NSMutableArray *images = [[NSMutableArray alloc]init];
+    
+    NSString *yyyymm = [NSString stringWithFormat:@"%@%@", _yyyy, _mm];
+    
+    int lastDayOfMonth = [_dd intValue];
+    for (int d = lastDayOfMonth; d > 0; d--) {
+        if ([objectsHash objectForKey:[NSString stringWithFormat:@"D%@%d", yyyymm, d]]) {
+            // その日のChildImageオブジェクトがあったら単純にobjectをimagesに突っ込む
+            [images addObjectsFromArray:[objectsHash objectForKey:[NSString stringWithFormat:@"D%@%d", yyyymm, d]]];
+        } else {
+            // もしその日のChildImageオブジェクトがなかったら空のPFObjectを作ってしまう
+            PFObject *object = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%@%d", yyyymm, d]];
+            [object setObject:[NSString stringWithFormat:@"D%@%d", yyyymm, d] forKey:@"date"];
+            [images addObject:object];
+        }
+    }
+    
+    _childImages = [[NSMutableArray alloc]init];
+    NSMutableDictionary *section = [[NSMutableDictionary alloc]init];
+    [_childImages addObject:section];
+    [section setObject:images forKey:@"images"];
+}
+
+- (NSMutableDictionary *)arrayToHash:(NSArray *)array withKeyColumn:(NSString *)keyColumn
+{
+    NSMutableDictionary *hash = [[NSMutableDictionary alloc]init];
+    for (PFObject *elem in array) {
+        NSString *key = elem[keyColumn];
+        if (![hash objectForKey:key]) {
+            [hash setObject:[[NSMutableArray alloc]init] forKey:key];
+        }
+        [[hash objectForKey:key] addObject:elem];
+    }
+    return hash;
 }
 
 @end
