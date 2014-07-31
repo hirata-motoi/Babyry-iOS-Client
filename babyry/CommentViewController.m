@@ -50,10 +50,10 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentTextView.layer.cornerRadius = 5;
     
     // comment系設置
-    _commentTextView.frame = CGRectMake(10, self.view.frame.size.height - 40, 250, 30);
+    _commentTextView.frame = CGRectMake(10, _commentTableContainer.frame.size.height - 40, 250, 30);
     _commentTextView.hidden = NO;
     [_commentTableContainer addSubview:_commentTextView];
-    _commentSubmitButton.frame = CGRectMake(260, self.view.frame.size.height - 40, 30, 20);
+    _commentSubmitButton.frame = CGRectMake(260, _commentTableContainer.frame.size.height - 40, 30, 20);
     _commentSubmitButton.hidden = NO;
     [_commentTableContainer addSubview:_commentSubmitButton];
     
@@ -418,13 +418,13 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 - (IBAction)commentViewTopButton:(id)sender {
     CGRect currentFrame = self.view.frame;
-    if (currentFrame.origin.y < 1) {
+    if (currentFrame.origin.y <= 20 + 44) {
         NSLog(@"hide commentView");
-        currentFrame.origin.y = self.view.frame.size.height - 50;
+        currentFrame.origin.y = self.parentViewController.view.frame.size.height - 50;
         [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
     } else {
         NSLog(@"open commentView");
-        currentFrame.origin.y = 0;
+        currentFrame.origin.y = 20 + 44;
         [_commentViewTopButton setTitle:@"コメントを隠す" forState:UIControlStateNormal];
     }
     [UIView animateWithDuration:0.3

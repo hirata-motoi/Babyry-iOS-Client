@@ -21,8 +21,6 @@
 @property (strong, nonatomic) IBOutlet UIView *uploadProgressView;
 @property (strong, nonatomic) IBOutlet UIProgressView *uploadPregressBar;
 @property (strong, nonatomic) IBOutlet UILabel *explainLabel;
-- (IBAction)multiUploadCommentButton:(id)sender;
-@property (strong, nonatomic) IBOutlet UIButton *multiUploadCommentLabel;
 
 @property NSString *childObjectId;
 @property NSString *name;
