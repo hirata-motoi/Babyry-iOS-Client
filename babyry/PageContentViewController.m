@@ -382,6 +382,7 @@
         albumViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
         albumViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][0];
         albumViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][0];
+        
         //[self presentViewController:albumViewController animated:YES completion:NULL];
         [self.navigationController pushViewController:albumViewController animated:YES];
     } else if (tagNumber == 2222222) {
