@@ -10,10 +10,11 @@
 #import <Parse/Parse.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "ICTutorialOverlay.h"
+#import "CommentViewController.h"
 
 @interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource, UIPageViewControllerDataSource>
 
-- (IBAction)multiUploadViewBackButton:(id)sender;
+//- (IBAction)multiUploadViewBackButton:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
@@ -59,6 +60,7 @@
 @property UICollectionViewCell *plusCellForTutorial;
 @property PFUser *currentUser;
 
+@property CommentViewController *commentViewController;
 @property UIView *commentView;
 
 @end

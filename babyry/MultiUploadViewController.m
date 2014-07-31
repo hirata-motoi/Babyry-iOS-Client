@@ -14,7 +14,6 @@
 #import "FamilyRole.h"
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
-#import "CommentViewController.h"
 #import "Navigation.h"
 
 @interface MultiUploadViewController ()
@@ -174,16 +173,7 @@
     NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
     
     // コメントView
-    CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
-    commentViewController.childObjectId = _childObjectId;
-    commentViewController.name = _name;
-    commentViewController.date = _date;
-    commentViewController.month = _month;
-    _commentView = commentViewController.view;
-    _commentView.hidden = NO;
-    _commentView.frame = CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
-    [self addChildViewController:commentViewController];
-    [self.view addSubview:_commentView];
+    [self setupCommentView:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -244,7 +234,7 @@
     
     [_multiUploadedImages reloadData];
 }
-
+/*
 - (IBAction)multiUploadViewBackButton:(id)sender {
     BOOL isTableView = NO;
     for (UIView *view in self.view.subviews) {
@@ -258,7 +248,7 @@
     } else {
         [self dismissViewControllerAnimated:YES completion:NULL];
     }
-}
+}*/
 
 -(void)createCollectionView
 {
@@ -377,6 +367,7 @@
         PFObject *object = [objects objectAtIndex:0];
         if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
             _bestImageIndex = _indexForCache;
+            [self setupCommentView:object];
         }
         [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
             if(!error){
@@ -450,8 +441,10 @@
         frame.origin.y += 64;
         frame.size.height -= 64;
         _albumTableView.frame = frame;
-        [self.view addSubview:_albumTableView];
-        
+        UIViewController *albumTableViewController = [[UIViewController alloc] init];
+        albumTableViewController.view = _albumTableView;
+        [self.navigationController pushViewController:albumTableViewController animated:YES];
+
         if ([_tutorialStep intValue] == 2) {
             _overlay = [[ICTutorialOverlay alloc] init];
             _overlay.hideWhenTapped = NO;
@@ -504,6 +497,7 @@
                         if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
                             object[@"bestFlag"] =  @"choosed";
                             [object saveInBackground];
+                            [self setupCommentView:object];
                         }
                     } else {
                         NSLog(@"unchoosed %@", object.objectId);
@@ -532,10 +526,7 @@
             int childIndex = pvc.currentPageIndex;
             for (int i = 0; i < [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] count]; i++){
                 if ([[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i] isEqualToString:_date]) {
-                    //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i]);
-                    //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] objectAtIndex:i]);
                     [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
-                    //NSLog(@"%@",[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] objectAtIndex:i]);
                     // サムネイル(キャッシュ)をとりあえず入れる
                     [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:[UIImage imageWithData:thumbData]];
                 }
@@ -816,4 +807,29 @@
     [_overlay show];
 }
 
+-(void)setupCommentView:(PFObject *) imageInfo;
+{
+    CGRect defFrame;
+    if (_commentView) {
+        defFrame = _commentView.frame;
+    } else {
+        defFrame = CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
+    }
+    
+    [_commentViewController removeFromParentViewController];
+    [_commentView removeFromSuperview];
+    
+    _commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
+    _commentViewController.childObjectId = _childObjectId;
+    _commentViewController.name = _name;
+    _commentViewController.date = _date;
+    _commentViewController.month = _month;
+    _commentViewController.imageInfo = imageInfo;
+    _commentView = _commentViewController.view;
+    _commentView.hidden = NO;
+    _commentView.frame = defFrame;
+    [self addChildViewController:_commentViewController];
+    [self.view addSubview:_commentView];
+}
+    
 @end

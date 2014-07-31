@@ -132,19 +132,20 @@
     NSArray *originalTagList = [NSArray arrayWithArray:attachedTagsList];
     
     if (tagView.attached) {
-        // 今attachされた
+        //NSLog(@"今attachされた");
         [attachedTagsList addObject:tagId];
     } else {
-        // 今detachされた
+        //NSLog(@"今detachされた");
         [attachedTagsList removeObject:tagId];
     }
     
     // 一応重複を排除
     attachedTagsList = [NSMutableArray arrayWithArray: [[[NSSet alloc] initWithArray:[NSArray arrayWithArray:attachedTagsList]]allObjects]];
-
+    
     // 一回ChildImageオブジェクトを最新にしてから更新処理
     [_imageInfo fetchInBackgroundWithBlock:^(PFObject *object, NSError *error){
         _imageInfo[@"tags"] = attachedTagsList;
+        NSLog(@"bbbbbbbbbbbb %@", object);
         [_imageInfo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (!succeeded) {
                 // 失敗したことを通知

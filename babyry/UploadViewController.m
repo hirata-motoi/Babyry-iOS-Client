@@ -40,7 +40,6 @@
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
-    [self setupOperationView];
     
     // Parseからちゃんとしたサイズの画像を取得
     PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
@@ -58,6 +57,7 @@
             }];
             _imageInfo = object;
         }
+        [self setupOperationView];
     }];
 }
 
@@ -133,6 +133,7 @@
     operationView.month         = _month;
     operationView.uploadViewController  = self;
     operationView.holdedBy = _holdedBy;
+    operationView.imageInfo = _imageInfo;
     
     [self addChildViewController:operationView];
     [operationView didMoveToParentViewController:self];

@@ -60,15 +60,17 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
     
     // TagViewを設置
-    TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
-    tagEditViewController.imageInfo = self.uploadViewController.imageInfo;
-    _tagViewOnCommentView = tagEditViewController.view;
-    _tagViewOnCommentView.hidden = NO;
-    _tagViewOnCommentView.frame = CGRectMake(0, 50, self.view.frame.size.width, 60);
-    _tagViewOnCommentView.userInteractionEnabled = YES;
-    [self addChildViewController:tagEditViewController];
-    [_commentTableContainer addSubview:_tagViewOnCommentView];
-    
+    NSLog(@"set tagview %@", _imageInfo);
+    if (_imageInfo) {
+        TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
+        tagEditViewController.imageInfo = _imageInfo;
+        _tagViewOnCommentView = tagEditViewController.view;
+        _tagViewOnCommentView.hidden = NO;
+        _tagViewOnCommentView.frame = CGRectMake(0, 50, self.view.frame.size.width, 60);
+        _tagViewOnCommentView.userInteractionEnabled = YES;
+        [self addChildViewController:tagEditViewController];
+        [_commentTableContainer addSubview:_tagViewOnCommentView];
+    }
     
     [self getCommentFromParse];
     

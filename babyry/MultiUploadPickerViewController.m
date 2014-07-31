@@ -301,9 +301,8 @@
                 }
                 
                 //アルバム表示のViewも消す
-                int last = [[self presentingViewController].view.subviews count] - 1;
-                UIView *view = [[self presentingViewController].view.subviews objectAtIndexedSubscript:last];
-                [view removeFromSuperview];
+                UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
+                [naviController popViewControllerAnimated:YES];
             }
         }];
     }
