@@ -41,11 +41,10 @@
     // tagにもNotifiCenterを実装して、更新にミスったときなどはtagにメッセージを送る
     
     [self setupGesture];
-    self.tagDisplayView.frame = CGRectMake(20, 400, 280, 130);
     
     // tagのattach状態更新処理中はtagを押せないようにする
     
-    self.tagDisplayView.layer.cornerRadius = 30;
+    _tagDisplayView.layer.cornerRadius = 20;
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,11 +92,6 @@
 
 - (void)setupGesture
 {
-    UITapGestureRecognizer *backgroundViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideTagView:)];
-    backgroundViewTapGestureRecognizer.numberOfTapsRequired = 1;
-    backgroundViewTapGestureRecognizer.delegate = self;
-    [_backgroundView addGestureRecognizer:backgroundViewTapGestureRecognizer];
-    
     // イベントがなぜか伝搬してしまうので空処理を設定しておく
     UITapGestureRecognizer *tagDisplayViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blockGesture:)];
     tagDisplayViewTapGestureRecognizer.numberOfTapsRequired = 1;
@@ -108,7 +102,7 @@
 
 - (void)hideTagView:(id)sender
 {
-    self.view.hidden = YES;
+    //self.view.hidden = YES;
 }
 
 - (void)blockGesture:(id)sender

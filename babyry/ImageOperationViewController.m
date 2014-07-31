@@ -38,9 +38,6 @@
     // Do any additional setup after loading the view.
     
     [self.openPhotoLibraryButton addTarget:self action:@selector(openPhotoLibrary) forControlEvents:UIControlEventTouchUpInside];
-    [self.openCommentViewButton addTarget:self action:@selector(openCommentView) forControlEvents:UIControlEventTouchUpInside];
-    [self.openTagViewButton addTarget:self action:@selector(openTagView) forControlEvents:UIControlEventTouchUpInside];
-    
 
     [self setStyle];
     
@@ -61,10 +58,9 @@
     hideOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
     self.view.userInteractionEnabled = YES;
     [self.view addGestureRecognizer:hideOperationViewTapGestureRecognizer];
-    
-    _commentView = self.uploadViewController.commentView;
 
-    [self setupTagEditView];
+    [self setupCommentView];
+    //[self setupTagEditView];
     [self setupNavigation];
 }
 
@@ -102,7 +98,7 @@
 
 - (void)openPhotoLibrary
 {
-    [self hideTagView];
+    //[self hideTagView];
     
     // インタフェース使用可能なら
 	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
@@ -121,77 +117,31 @@
 	}
 }
 
-- (void)openCommentView
-{
-    [self hideTagView];
-    self.view.hidden = YES;
-    _commentView.hidden = NO;
-    
-    UIBarButtonItem *closeCommentViewButton = [[UIBarButtonItem alloc]
-                              initWithTitle:@"cancel"
-                              style:UIBarButtonItemStyleBordered
-                              target:self
-                              action:@selector(hideCommentView)];
-    // TODO トップページの画像タップ時にもPageViewControllerを使うようにすれば
-    // この分岐がなくなる
-    if ([_holdedBy isEqualToString:@"TagAlbumPageViewController"] || [_holdedBy isEqualToString:@"AlbumPageViewController"]) {
-        self.parentViewController.parentViewController.parentViewController.navigationItem.rightBarButtonItem = closeCommentViewButton;
-    } else {
-        self.parentViewController.navigationItem.rightBarButtonItem = closeCommentViewButton;
-    }
-}
-
-- (void)hideCommentView
-{
-    _commentView.hidden = YES;
-    // TODO トップページの画像タップ時にもPageViewControllerを使うようにすれば
-    // この分岐がなくなる
-    if ([_holdedBy isEqualToString:@"TagAlbumPageViewController"] || [_holdedBy isEqualToString:@"AlbumPageViewController"]) {
-        self.parentViewController.parentViewController.parentViewController.navigationItem.rightBarButtonItem = nil;
-    } else {
-        self.parentViewController.navigationItem.rightBarButtonItem = nil;
-    }
-    _operationView.hidden = NO;
-}
-
-- (void)setupTagEditView
-{
-    TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
-    tagEditViewController.imageInfo = self.uploadViewController.imageInfo;
-    
-    _tagEditView = tagEditViewController.view;
-    _tagEditView.hidden = YES;
-    _tagEditView.frame = CGRectMake(0, 0, 320, 500);
-    [self addChildViewController:tagEditViewController];
-    [self.view addSubview:_tagEditView];
-}
-
-- (void)openTagView
-{
-    _tagEditView.hidden = NO;
-}
-
-- (void)hideTagView
-{
-    _tagEditView.hidden = YES;
-}
-
 - (void)hideOperationView:(id)sender
 {
     //[self.navigationController setNavigationBarHidden:YES animated:YES];
     self.view.hidden = YES;
+    //_commentView.hidden = YES;
 }
 
-
+- (void)setupCommentView
+{
+    CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
+    commentViewController.childObjectId = _childObjectId;
+    commentViewController.name = _name;
+    commentViewController.date = _date;
+    commentViewController.month = _month;
+    _commentView = commentViewController.view;
+    _commentView.hidden = NO;
+    _commentView.frame = CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height);
+    [self addChildViewController:commentViewController];
+    [self.view addSubview:_commentView];
+}
 
 - (void)setStyle
 {
     _openPhotoLibraryButton.layer.cornerRadius = 20;
     _openPhotoLibraryButton.clipsToBounds = YES;
-    _openCommentViewButton.layer.cornerRadius = 20;
-    _openCommentViewButton.clipsToBounds = YES;
-    _openTagViewButton.layer.cornerRadius = 20;
-    _openTagViewButton.clipsToBounds = YES;
 }
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info

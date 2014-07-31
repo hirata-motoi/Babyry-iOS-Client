@@ -10,13 +10,16 @@
 #import <Parse/Parse.h>
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
+#import "UIPlaceHolderTextView.h"
+#import "TagEditViewController.h"
 
 @interface CommentViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *commentTableView;
-@property (weak, nonatomic) IBOutlet UITextField *commentTextField;
 @property (weak, nonatomic) IBOutlet UIButton *commentSubmitButton;
 @property (weak, nonatomic) IBOutlet UIView *commentTableContainer;
 @property (strong, nonatomic) IBOutlet UIView *commentViewContainer;
+- (IBAction)commentViewTopButton:(id)sender;
+@property (strong, nonatomic) IBOutlet UIButton *commentViewTopButton;
 
 @property NSString *name;
 @property NSString *date;
@@ -27,7 +30,7 @@
 @property CGRect defaultCommentViewRect;
 @property UploadViewController *uploadViewController;
 @property MultiUploadViewController *multiUploadViewController;
-
-- (void)adjustTableViewHeight;
+@property UIPlaceHolderTextView *commentTextView;
+@property UIView *tagViewOnCommentView;
 
 @end

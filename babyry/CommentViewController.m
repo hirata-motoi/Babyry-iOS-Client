@@ -38,11 +38,37 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     
     _commentTableView.dataSource = self;
     _commentTableView.delegate = self;
+    _commentTableView.layer.borderColor = [UIColor whiteColor].CGColor;
+    _commentTableView.layer.borderWidth = 1;
+    _commentTableView.layer.cornerRadius = 5;
     
     // text field
-    _commentTextField.delegate = self;
-    _commentTextField.textColor = [UIColor whiteColor];
-    _commentTextField.attributedPlaceholder = [self stringWithAttribute:@"コメントを追加"];
+    _commentTextView = [[UIPlaceHolderTextView alloc] init];
+    _commentTextView.delegate = self;
+    _commentTextView.textColor = [UIColor blackColor];
+    _commentTextView.placeholder = @"コメントを追加";
+    _commentTextView.layer.cornerRadius = 5;
+    
+    // comment系設置
+    _commentTextView.frame = CGRectMake(10, self.view.frame.size.height - 40, 250, 30);
+    _commentTextView.hidden = NO;
+    [_commentTableContainer addSubview:_commentTextView];
+    _commentSubmitButton.frame = CGRectMake(260, self.view.frame.size.height - 40, 30, 20);
+    _commentSubmitButton.hidden = NO;
+    [_commentTableContainer addSubview:_commentSubmitButton];
+    
+    [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
+    
+    // TagViewを設置
+    TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
+    tagEditViewController.imageInfo = self.uploadViewController.imageInfo;
+    _tagViewOnCommentView = tagEditViewController.view;
+    _tagViewOnCommentView.hidden = NO;
+    _tagViewOnCommentView.frame = CGRectMake(0, 50, self.view.frame.size.width, 60);
+    _tagViewOnCommentView.userInteractionEnabled = YES;
+    [self addChildViewController:tagEditViewController];
+    [_commentTableContainer addSubview:_tagViewOnCommentView];
+    
     
     [self getCommentFromParse];
     
@@ -80,8 +106,10 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:[_commentArray count] inSection:0];
-    [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    if ([_commentArray count] > 0) {
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
+        [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -113,12 +141,9 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         if(!error) {
             _commentArray = [[NSMutableArray alloc] initWithArray:objects];
             
-            // まずcellの高さの合計を算出してtableViewの高さを合わせる
-            // reloadDataが別スレッドの処理で、reloadDataの完了をキャッチできないため
             if ([_commentArray count] > 0) {
                 [self reloadData];
-                //[self performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
-               NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count] inSection:0];
+               NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
                [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             } else {
                 [self reloadData];
@@ -143,8 +168,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 // section目のセクションにいくつ行があるかを返す
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // 1 : コメント追加form
-    return [_commentArray count] + 1;
+    return [_commentArray count];
 }
 
 // indexPathの位置にあるセルを返す
@@ -153,34 +177,11 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     cell.textLabel.numberOfLines = 0;
     cell.backgroundColor = [UIColor clearColor];
-    for (UIView *view in [cell.contentView subviews]) {
-        if (view.tag == 8888 || view.tag == 9999) {
-            view.hidden = YES; // コメント入力用formとボタンを隠す
-        }
-    }
+
     cell.commentUserName.text = @"";
     cell.pastTime.text = @"";
     cell.commentText.text = @"";
     cell.commentText.numberOfLines = 0;
-    
-    
-    // 最後のcellはコメント編集text field
-    if (indexPath.row == [_commentArray count]) {
-        cell.backgroundColor = [UIColor clearColor];
-        
-        _commentTextField.frame = CGRectMake(0, 0, 250, 30);
-        _commentTextField.hidden = NO;
-        _commentTextField.tag = 8888;
-        [cell.contentView addSubview:_commentTextField];
-        _commentSubmitButton.frame = CGRectMake(260, 10, 30, 20);
-        _commentSubmitButton.hidden = YES;
-        _commentSubmitButton.tag = 9999;
-        [cell.contentView addSubview:_commentSubmitButton];
-        
-        [self adjustTableViewHeight];
-        
-        return cell;
-    }
     
     // nickName
     PFObject *commentObject = [_commentArray objectAtIndex:indexPath.row];
@@ -197,11 +198,11 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     
     // comment本文
     [cell.commentText setAttributedText:[self stringWithAttribute:commentObject[@"comment"]]];
-    CGSize bounds = CGSizeMake(tableView.frame.size.width, tableView.frame.size.height);
+    CGSize bounds = CGSizeMake(cell.commentText.frame.size.width, tableView.frame.size.height);
     CGSize sizeCommentText = [cell.commentText.text
                    boundingRectWithSize:bounds
                    options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-                   attributes:[NSDictionary dictionaryWithObject:cell.textLabel.font forKey:NSFontAttributeName]
+                   attributes:[NSDictionary dictionaryWithObject:cell.commentText.font forKey:NSFontAttributeName]
                    context:nil].size;
     
     CGRect rect = cell.commentText.frame;
@@ -218,7 +219,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == [_commentArray count]) {
-        return _commentTextField.frame.size.height;
+        return _commentTextView.frame.size.height;
     }
     CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
@@ -227,11 +228,11 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     
     // get cell height
     cell.commentText.numberOfLines = 0;
-    CGSize bounds = CGSizeMake(tableView.frame.size.width, 100000);
+    CGSize bounds = CGSizeMake(cell.commentText.frame.size.width, tableView.frame.size.height);
     CGSize sizeCommentText = [cell.commentText.text
                               boundingRectWithSize:bounds
                               options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
-                              attributes:[NSDictionary dictionaryWithObject:cell.textLabel.font forKey:NSFontAttributeName]
+                              attributes:[NSDictionary dictionaryWithObject:cell.commentText.font forKey:NSFontAttributeName]
                               context:nil].size;
     
     return sizeCommentText.height + cell.commentUserName.frame.size.height + 10; // 余白10
@@ -239,7 +240,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 - (void)keyboardWillShow:(NSNotification*)notification
 {
-    _commentSubmitButton.hidden = NO;
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -248,8 +248,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     CGRect keyboardFrame;
     keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     keyboardFrame = [self.view.superview convertRect:keyboardFrame fromView:nil];
-    float originY = MAX(0.0f, self.view.frame.size.height - keyboardFrame.size.height - _commentTableContainer.frame.size.height);
-
+    float originY = self.view.frame.size.height - keyboardFrame.size.height - _commentTableContainer.frame.size.height;
     
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -297,18 +296,20 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 -(void)hideKeyBoard
 {
     NSLog(@"hideKeyBoard");
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count] inSection:0];
-    [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    if ([_commentArray count] > 0) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
+        [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }
     [self.view endEditing:YES];
 }
 
 - (void)submitComment
 {
     
-    if ( _commentTextField && ![_commentTextField.text isEqualToString:@""] ) {
+    if ( _commentTextView && ![_commentTextView.text isEqualToString:@""] ) {
         // Insert To Parse
         PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"DailyComment%@", _month]];
-        dailyComment[@"comment"] = _commentTextField.text;
+        dailyComment[@"comment"] = _commentTextView.text;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         dailyComment[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         dailyComment[@"childId"] = _childObjectId;
@@ -318,7 +319,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         [self reloadData];
         
         if ([_commentArray count] > 0) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count] inSection:0];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
             [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
         }
         [dailyComment saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
@@ -327,44 +328,15 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                 [self reloadData];
             }
         }];
-        _commentTextField.text = @"";
+        _commentTextView.text = @"";
     }
     [self.view endEditing:YES];
 }
 
 - (void)reloadData
 {
-    [self adjustTableViewHeight];
     [_commentTableView reloadData];
 }
-
-
-- (void)adjustTableViewHeight
-{
-    NSInteger cellHeightSum = 0;
-    cellHeightSum += 44; // TODO no magic number コメント追加cellの高さ
-    for (int i = [_commentArray count] - 1; i >= 0; i--) {
-        UITableViewCell * cell = [self tableView:_commentTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-        cellHeightSum += cell.frame.size.height;
-        if (cellHeightSum > 250) {
-            break;
-        }
-    }
-    
-    CGRect rect = _commentTableView.frame;
-    CGRect containerRect = _commentTableContainer.frame;
-    
-    if (cellHeightSum > 250) {
-        rect.size.height = 250;
-    } else {
-        rect.size.height = cellHeightSum;
-    }
-    containerRect.size.height = rect.size.height + 10;
-    containerRect.origin.y = self.view.frame.size.height - containerRect.size.height;
-    _commentTableContainer.frame = containerRect;
-    _commentTableView.frame = rect;
-}
-
 
 - (void)blockGesture
 {
@@ -444,4 +416,23 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 }
 */
 
+- (IBAction)commentViewTopButton:(id)sender {
+    CGRect currentFrame = self.view.frame;
+    if (currentFrame.origin.y < 1) {
+        NSLog(@"hide commentView");
+        currentFrame.origin.y = self.view.frame.size.height - 50;
+        [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
+    } else {
+        NSLog(@"open commentView");
+        currentFrame.origin.y = 0;
+        [_commentViewTopButton setTitle:@"コメントを隠す" forState:UIControlStateNormal];
+    }
+    [UIView animateWithDuration:0.3
+                          delay:0.0
+                        options: UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         self.view.frame = currentFrame;
+                     }
+                     completion:^(BOOL finished){}];
+}
 @end

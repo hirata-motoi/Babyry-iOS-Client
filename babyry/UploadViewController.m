@@ -40,7 +40,6 @@
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
-    [self setupCommentView];
     [self setupOperationView];
     
     // Parseからちゃんとしたサイズの画像を取得
@@ -65,7 +64,6 @@
 - (void)openOperationView:(id)sender
 {
     _operationView.hidden = NO;
-    //[self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -124,12 +122,6 @@
     _operationView.hidden = YES;
 }
 
-- (void)openCommentView:(id)sender
-{
-    
-    _commentView.hidden = FALSE;
-}
-
 - (void)setupOperationView
 {
     // operationView
@@ -184,23 +176,6 @@
     frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
 
     return frame;
-}
-
-- (void)setupCommentView
-{
-    CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
-    
-    commentViewController.childObjectId = _childObjectId;
-    commentViewController.name = _name;
-    commentViewController.date = _date;
-    commentViewController.month = _month;
-    commentViewController.uploadViewController = self;
-
-    [self addChildViewController:commentViewController];
-    _commentView = commentViewController.view;
-    _commentView.hidden = YES; // 最初は隠しておく
-
-    [self.view addSubview:commentViewController.view];
 }
 
 @end
