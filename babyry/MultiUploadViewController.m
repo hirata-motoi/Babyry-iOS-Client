@@ -467,7 +467,7 @@
         }
         
         // 大きく表示された(Cell)以外のパネル。これにもベストラベル付ける
-        if ([[sender view] isKindOfClass:[UIView class]]) {
+        if (![[sender view] isKindOfClass:[UICollectionViewCell class]]) {
             CGRect frame = [sender view].frame;
             frame.origin = CGPointMake(0, 0);
             frame.size.height = frame.size.width;
