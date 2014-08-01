@@ -123,7 +123,7 @@
     commentViewController.imageInfo = _imageInfo;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
-    _commentView.frame = CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
+    _commentView.frame = CGRectMake(self.view.frame.size.width - 50, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
     [self addChildViewController:commentViewController];
     [self.view addSubview:_commentView];
 }

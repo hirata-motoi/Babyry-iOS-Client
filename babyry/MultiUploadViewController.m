@@ -169,7 +169,10 @@
     NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
     
     // コメントView
-    [self setupCommentView:nil];
+    // 写真が一枚もないのであればコメントViewは表示しない
+    if ([_childImageArray count] > 0) {
+        [self setupCommentView:nil];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -673,181 +676,7 @@
     // ダブルタップに失敗した時だけシングルタップとする
     [detailImageSingleTGR requireGestureRecognizerToFail:detailImageDoubleTGR];
     [detailViewController.view addGestureRecognizer:detailImageSingleTGR];
-    
-    /*
-    detailImageView.userInteractionEnabled = YES;
-    detailImageView.tag = index;
-    UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-    doubleTapGestureRecognizer.numberOfTapsRequired = 2;
-    [detailImageView addGestureRecognizer:doubleTapGestureRecognizer];
-    */
 }
-/*
-/////////////////////////////////////////////////////////////////
-
-// 大きい写真を見るPageView用
--(void) openUploadedDetailImage
-{
-    // PageViewController追加
-    _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
-    _pageViewController.dataSource = self;
-    
-    CGRect frame = _pageViewController.view.frame;
-    frame.origin.y = 20 + 44 + 200;
-    frame.size.height -= (20 + 44 + 200);
-    _pageViewController.view.frame = frame;
-    
-    UIViewController *startingViewController = [self viewControllerAtIndex:_detailedImageIndex];
-    NSArray *viewControllers = @[startingViewController];
-    [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-    
-    //[self.navigationController setNavigationBarHidden:YES];
-    [self.navigationController pushViewController:_pageViewController animated:YES];
-    //[self addChildViewController:_pageViewController];
-    //[self.view addSubview:_pageViewController.view];
-    //[_pageViewController didMoveToParentViewController:self];
-}
-
-// provides the view controller after the current view controller. In other words, we tell the app what to display for the next screen.
-- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
-{
-    NSInteger index = viewController.view.tag;
-    NSLog(@"viewControllerBeforeViewController %d", index);
-    if ((index == 0) || (index == NSNotFound)) {
-        return nil;
-    }
-    
-    index--;
-    NSLog(@"index-- :%d", index);
-    return [self viewControllerAtIndex:index];
-}
-
-// provides the view controller before the current view controller. In other words, we tell the app what to display when user switches back to the previous screen.
-- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
-{
-    NSInteger index = viewController.view.tag;
-    NSLog(@"viewControllerAfterViewController %d", index);
-    
-    // Uploaderの場合には_childImageArrayの最後にアップロード用のラベルがついているからそこも除外する(-2)
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
-        if (index >= [_childImageArray count] - 2 || index == NSNotFound) {
-            return nil;
-        }
-    // 通常は -1
-    } else {
-        if (index >= [_childImageArray count] - 1 || index == NSNotFound) {
-            return nil;
-        }
-    }
-    
-    index++;
-    NSLog(@"index++ :%d", index);
-    return [self viewControllerAtIndex:index];
-}
-
-- (UIViewController *)viewControllerAtIndex:(NSUInteger)index
-{
-    NSLog(@"viewControllerAtIndex");
-
-    UIViewController *detailImageViewController = [[UIViewController alloc] init];
-    CGRect tmpFrame = self.view.frame;
-    detailImageViewController.view.frame = tmpFrame;
-    detailImageViewController.view.backgroundColor = [UIColor blackColor];
-    
-    
-    UIImageView *detailImageView = [[UIImageView alloc] init];
-    // ローカルに保存されていたサムネイル画像を貼付け
-    NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, index]];
-
-    detailImageView.backgroundColor = [UIColor blackColor];
-    UIImage *tmpImage = [UIImage imageWithData:tmpImageData];
-    detailImageView.image = tmpImage;
-        
-    float imageViewAspect = self.view.frame.size.width/self.view.frame.size.height;
-    float imageAspect = tmpImage.size.width/tmpImage.size.height;
-        
-    // 横長バージョン
-    // 枠より、画像の方が横長、枠の縦を縮める
-    CGRect frame = self.view.frame;
-    if (imageAspect >= imageViewAspect){
-        frame.size.height = frame.size.width/imageAspect;
-        // 縦長バージョン
-        // 枠より、画像の方が縦長、枠の横を縮める
-    } else {
-        frame.size.width = frame.size.height*imageAspect;
-    }
-        
-    frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
-    frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
-        
-    NSLog(@"frame %@", NSStringFromCGRect(frame));
-    detailImageView.frame = frame;
-    NSLog(@"cache image set done");
-
-    // 画像が小さくなければ本画像
-    if ([tmpImageData length] > 100) {
-        NSLog(@"uploaded images");
-        
-        PFObject *object = [_childDetailImageArray objectAtIndex:index];
-        NSLog(@"get PFObject %@", object);
-        [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if (data) {
-                NSLog(@"set detailData");
-                detailImageView.image = [UIImage imageWithData:data];
-            } else {
-                NSLog(@"error %@", error);
-            }
-        }];
-        
-        detailImageView.userInteractionEnabled = YES;
-        detailImageView.tag = index;
-        UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-        doubleTapGestureRecognizer.numberOfTapsRequired = 2;
-        [detailImageView addGestureRecognizer:doubleTapGestureRecognizer];
-     
-    } else {
-        // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
-        NSLog(@"uploading images");
-        detailImageView.backgroundColor = [UIColor blackColor];
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:detailImageView animated:YES];
-        hud.frame = detailImageView.frame;
-        hud.labelText = @"Uploading...";
-        hud.margin = 0;
-        hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
-    }
-    [detailImageViewController.view addSubview:detailImageView];
-    
-    detailImageViewController.view.tag = index;
-    
-    // bestShotラベル貼る
-    if (_bestImageIndex == index) {
-        CGRect frame = detailImageView.frame;
-        frame.size.height = frame.size.width;
-        frame.origin = CGPointMake(0, 0);
-        _bestShotLabelView.frame = frame;
-        [detailImageView addSubview:_bestShotLabelView];
-    }
-    
-    // 戻るボタン設置
-    UILabel *backLabel = [[UILabel alloc] init];
-    backLabel.text = @"終了";
-    backLabel.userInteractionEnabled = YES;
-    backLabel.layer.cornerRadius = 10;
-    backLabel.textColor = [UIColor whiteColor];
-    backLabel.layer.borderColor = [UIColor whiteColor].CGColor;
-    backLabel.layer.borderWidth = 2;
-    backLabel.textAlignment = NSTextAlignmentCenter;
-    UITapGestureRecognizer *backGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backFromDetailImage:)];
-    backGesture.numberOfTapsRequired = 1;
-    [backLabel addGestureRecognizer:backGesture];
-    
-    CGRect labelFrame = CGRectMake(self.view.frame.size.width - 60, 20, 50, 30);
-    backLabel.frame = labelFrame;
-    [detailImageViewController.view addSubview:backLabel];
-
-    return detailImageViewController;
-}
-*/
 
 -(void)backFromDetailImage:(id) sender
 {
@@ -885,7 +714,7 @@
     if (_commentView) {
         defFrame = _commentView.frame;
     } else {
-        defFrame = CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
+        defFrame = CGRectMake(self.view.frame.size.width -50, self.view.frame.size.height-50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
     }
     
     [_commentViewController removeFromParentViewController];

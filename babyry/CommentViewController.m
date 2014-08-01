@@ -36,6 +36,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0];
+    
     _commentTableView.dataSource = self;
     _commentTableView.delegate = self;
     _commentTableView.layer.borderColor = [UIColor whiteColor].CGColor;
@@ -147,6 +149,14 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                 [self reloadData];
                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
                [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+                
+                // コメントのバッヂの数字更新
+                // 99以上は99で！
+                if ([_commentArray count] < 100) {
+                    _commentNumIcon.text = [NSString stringWithFormat:@"%d", [_commentArray count]];
+                } else {
+                    _commentNumIcon.text = @"99";
+                }
             } else {
                 [self reloadData];
             }
@@ -423,18 +433,35 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     if (currentFrame.origin.y <= 20 + 44) {
         NSLog(@"hide commentView");
         currentFrame.origin.y = self.parentViewController.view.frame.size.height - 50;
+        currentFrame.origin.x = self.view.frame.size.width - 50;
         [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
+        [UIView animateWithDuration:0.3
+                              delay:0.0
+                            options: UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.view.frame = currentFrame;
+                         }
+                         completion:^(BOOL finished){
+                            _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0];
+                            _commentIconImageView.hidden = NO;
+                            _commentNumIcon.hidden = NO;
+                         }];
     } else {
         NSLog(@"open commentView");
         currentFrame.origin.y = 20 + 44;
+        currentFrame.origin.x = 0;
         [_commentViewTopButton setTitle:@"コメントを隠す" forState:UIControlStateNormal];
+        _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
+        _commentIconImageView.hidden = YES;
+        _commentNumIcon.hidden = YES;
+        [UIView animateWithDuration:0.3
+                              delay:0.0
+                            options: UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.view.frame = currentFrame;
+                         }
+                         completion:^(BOOL finished){
+                         }];
     }
-    [UIView animateWithDuration:0.3
-                          delay:0.0
-                        options: UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         self.view.frame = currentFrame;
-                     }
-                     completion:^(BOOL finished){}];
 }
 @end
