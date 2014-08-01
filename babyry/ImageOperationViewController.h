@@ -33,5 +33,7 @@
 @property NSString *holdedBy;
 
 @property PFObject *imageInfo;
+// isPreloadの場合キャッシュのサムネイルを表示するだけなのでコメントViewは表示させない
+@property BOOL isPreload;
 
 @end

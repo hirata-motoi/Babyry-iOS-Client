@@ -83,10 +83,6 @@
     
     _bestImageIndex = -1;
     
-    // Parseから画像を非同期に読み取ってサムネイルを作成 collectionViewをreload (viewDidAppearに移動)
-    //[self updateImagesFromParse];
-
-    
     // role で出し分けるものたち
     // チュートリアルの場合は両方やってもらう
     if (![_currentUser objectForKey:@"tutorialStep"] || [[_currentUser objectForKey:@"tutorialStep"] intValue] < 100) {
@@ -234,21 +230,6 @@
     
     [_multiUploadedImages reloadData];
 }
-/*
-- (IBAction)multiUploadViewBackButton:(id)sender {
-    BOOL isTableView = NO;
-    for (UIView *view in self.view.subviews) {
-        if([view isEqual:_albumTableView]){
-            isTableView = YES;
-        }
-    }
-    
-    if (isTableView) {
-        [_albumTableView removeFromSuperview];
-    } else {
-        [self dismissViewControllerAnimated:YES completion:NULL];
-    }
-}*/
 
 -(void)createCollectionView
 {
@@ -471,17 +452,27 @@
         
         _bestImageIndex = [[sender view] tag];
         
-        // change label
-        if ([sender view].frame.size.width < self.view.frame.size.width/2) {
-            _bestShotLabelView.frame = [sender view].frame;
-            [_multiUploadedImages addSubview:_bestShotLabelView];
-        } else {
+        // _multiUploadedImagesにのってるパネルにBestshot付ける
+        for (UIView *view in _multiUploadedImages.subviews) {
+            if (view.tag == [[sender view] tag] && [view isKindOfClass:[UICollectionViewCell class]]) {
+                CGRect frame = view.frame;
+                frame.origin = CGPointMake(0, 0);
+                frame.size.height = frame.size.width;
+                _bestShotLabelView.frame = frame;
+                [view addSubview:_bestShotLabelView];
+            }
+        }
+        
+        // 大きく表示された(Cell)以外のパネル。これにもベストラベル付ける
+        if ([[sender view] isKindOfClass:[UIView class]]) {
             CGRect frame = [sender view].frame;
             frame.origin = CGPointMake(0, 0);
             frame.size.height = frame.size.width;
-            _bestShotLabelView.frame = frame;
-            [[sender view] addSubview:_bestShotLabelView];
+            UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
+            bestShotExtraLabelView.frame = frame;
+            [[sender view] addSubview:bestShotExtraLabelView];
         }
+        
         // update Parse
         PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
         childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -542,10 +533,17 @@
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
-    NSLog(@"single tap %d", [[sender view] tag]);
-    
     _detailedImageIndex = [[sender view] tag];
-    [self openUploadedDetailImage];
+    [self openModalImageView];
+}
+
+-(void)handleSingleTapInModalView:(UIGestureRecognizer *) sender {
+    // モーダルViewをクリックされたら次の画像に移る。最後まで言ったら消える
+    _detailedImageIndex = [[sender view] tag] + 1;
+    [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
+    if ([_childImageArray count] > _detailedImageIndex) {
+        [self openModalImageView];
+    }
 }
 
 /////////////////////////////////////////////////////////////////
@@ -603,6 +601,88 @@
     }
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
+
+-(void)openModalImageView
+{
+    UIViewController *detailViewController = [[UIViewController alloc] init];
+    detailViewController.view.frame = CGRectMake(20, 60, self.view.frame.size.width - 40, self.view.frame.size.height - 80);
+    detailViewController.view.backgroundColor = [UIColor whiteColor];
+    
+    UIImageView *detailImageView = [[UIImageView alloc] init];
+    // ローカルに保存されていたサムネイル画像を貼付け
+    NSData *cacheImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _detailedImageIndex]];
+    detailImageView.backgroundColor = [UIColor blackColor];
+    UIImage *cacheImage = [UIImage imageWithData:cacheImageData];
+    detailImageView.image = cacheImage;
+    
+    float imageViewAspect = detailViewController.view.frame.size.width/detailViewController.view.frame.size.height;
+    float imageAspect = cacheImage.size.width/cacheImage.size.height;
+    
+    // 横長バージョン
+    // 枠より、画像の方が横長、枠の縦を縮める
+    CGRect frame = detailViewController.view.frame;
+    if (imageAspect >= imageViewAspect){
+        frame.size.height = frame.size.width/imageAspect;
+        // 縦長バージョン
+        // 枠より、画像の方が縦長、枠の横を縮める
+    } else {
+        frame.size.width = frame.size.height*imageAspect;
+    }
+    
+    frame.origin.x = (detailViewController.view.frame.size.width - frame.size.width)/2;
+    frame.origin.y = (detailViewController.view.frame.size.height - frame.size.height)/2;
+    
+    detailViewController.view.frame = frame;
+    frame.origin = CGPointMake(0, 0);
+    detailImageView.frame = frame;
+    [detailViewController.view addSubview:detailImageView];
+    [self presentPopupViewController:detailViewController animationType:MJPopupViewAnimationFade];
+    
+    PFObject *object = [_childDetailImageArray objectAtIndex:_detailedImageIndex];
+    [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        if (data) {
+            // 本画像を上にのせる
+            UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
+            orgImageView.frame = frame;
+            
+            // ベストショットラベル付ける
+            if (_bestImageIndex == _detailedImageIndex) {
+                CGRect extraFrame = frame;
+                extraFrame.origin = CGPointMake(0, 0);
+                extraFrame.size.height = frame.size.width;
+                UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
+                bestShotExtraLabelView.frame = extraFrame;
+                [orgImageView addSubview:bestShotExtraLabelView];
+            }
+            
+            [detailViewController.view addSubview:orgImageView];
+        } else {
+            NSLog(@"error %@", error);
+        }
+    }];
+
+    detailViewController.view.userInteractionEnabled = YES;
+    
+    UITapGestureRecognizer *detailImageDoubleTGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    detailViewController.view.tag = _detailedImageIndex;
+    detailImageDoubleTGR.numberOfTapsRequired = 2;
+    [detailViewController.view addGestureRecognizer:detailImageDoubleTGR];
+    
+    UITapGestureRecognizer *detailImageSingleTGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapInModalView:)];
+    detailImageSingleTGR.numberOfTapsRequired = 1;
+    // ダブルタップに失敗した時だけシングルタップとする
+    [detailImageSingleTGR requireGestureRecognizerToFail:detailImageDoubleTGR];
+    [detailViewController.view addGestureRecognizer:detailImageSingleTGR];
+    
+    /*
+    detailImageView.userInteractionEnabled = YES;
+    detailImageView.tag = index;
+    UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+    doubleTapGestureRecognizer.numberOfTapsRequired = 2;
+    [detailImageView addGestureRecognizer:doubleTapGestureRecognizer];
+    */
+}
+/*
 /////////////////////////////////////////////////////////////////
 
 // 大きい写真を見るPageView用
@@ -613,15 +693,19 @@
     _pageViewController.dataSource = self;
     
     CGRect frame = _pageViewController.view.frame;
+    frame.origin.y = 20 + 44 + 200;
+    frame.size.height -= (20 + 44 + 200);
     _pageViewController.view.frame = frame;
     
     UIViewController *startingViewController = [self viewControllerAtIndex:_detailedImageIndex];
     NSArray *viewControllers = @[startingViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
-    [self addChildViewController:_pageViewController];
-    [self.view addSubview:_pageViewController.view];
-    [_pageViewController didMoveToParentViewController:self];
+    //[self.navigationController setNavigationBarHidden:YES];
+    [self.navigationController pushViewController:_pageViewController animated:YES];
+    //[self addChildViewController:_pageViewController];
+    //[self.view addSubview:_pageViewController.view];
+    //[_pageViewController didMoveToParentViewController:self];
 }
 
 // provides the view controller after the current view controller. In other words, we tell the app what to display for the next screen.
@@ -762,18 +846,6 @@
     [detailImageViewController.view addSubview:backLabel];
 
     return detailImageViewController;
-}
-
-// 全体で何ページあるか返す Delegate Method コメント外すとPageControlがあらわれる
-/*
-- (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
-{
-    return [_childImageArray count];
-}
-
-- (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
-{
-    return _detailedImageIndex;
 }
 */
 

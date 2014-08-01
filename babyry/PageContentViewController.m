@@ -425,24 +425,12 @@
     
     
     if ([whichView isEqualToString:@"Upload"]) {
-        UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
-        uploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        uploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-        uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
-        uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
-        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"orgImages"][tagNumber -1];
-        uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        
-        if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage) {
-//            [self presentViewController:uploadViewController animated:YES completion:NULL];
-            
+        if(_childObjectId && _childImages) {
             ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
             pageViewController.childImages = _childImages;
-            NSLog(@"pageViewController.childImages : %@", _childImages);
             pageViewController.currentSection = 0;
             pageViewController.currentRow = tagNumber - 1;
             pageViewController.childObjectId = _childObjectId;
-            //_pageViewController.name = _name;  // nameをどっかでとってくる
             [self.navigationController setNavigationBarHidden:YES];
             [self.navigationController pushViewController:pageViewController animated:YES];
         } else {

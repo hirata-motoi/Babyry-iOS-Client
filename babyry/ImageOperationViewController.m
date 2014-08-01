@@ -48,7 +48,8 @@
     [self.view addGestureRecognizer:hideOperationViewTapGestureRecognizer];
 
     // 画像がなければコメントは出来ない
-    if (_imageInfo) {
+    // プリロード(サムネイルだけで本画像ではない)時もコメントは出さない(出せない)
+    if (_imageInfo && !_isPreload) {
         [self setupCommentView];
     }
     [self setupNavigation];
