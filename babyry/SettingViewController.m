@@ -41,7 +41,7 @@
         _settingDatePicker.date = [NSDate date];
     }
    
-    [Navigation setTitle:self.navigationItem withTitle:_childName withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:@"こどものプロフィール編集" withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning

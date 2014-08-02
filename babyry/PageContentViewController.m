@@ -181,40 +181,6 @@
         nameLabel.shadowColor = [UIColor blackColor];
         nameLabel.frame = CGRectMake(0, cellHeight - cellHeight/8, cellWidth, cellHeight/8);
         [cell addSubview:nameLabel];
-        
-        _albumLabel = [[UILabel alloc] init];
-        _albumLabel.text = @"album";
-        _albumLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:20];
-        _albumLabel.textColor = [UIColor blackColor];
-        _albumLabel.textAlignment = NSTextAlignmentCenter;
-        _albumLabel.backgroundColor = [UIColor whiteColor];
-        _albumLabel.alpha = 0.5;
-        _albumLabel.frame = CGRectMake(cell.frame.size.width - 65, cell.frame.size.height -65, 60, 60);
-        _albumLabel.layer.cornerRadius = 30;
-        [_albumLabel setClipsToBounds:YES];
-        _albumLabel.userInteractionEnabled = YES;
-        [cell addSubview:_albumLabel];
-        _albumLabel.tag = 1111111;
-        UITapGestureRecognizer *singleTapGestureRecognizer1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-        singleTapGestureRecognizer1.numberOfTapsRequired = 1;
-        [_albumLabel addGestureRecognizer:singleTapGestureRecognizer1];
-        
-        _settingLabel = [[UILabel alloc] init];
-        _settingLabel.text = @"setting";
-        _settingLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:20];
-        _settingLabel.textColor = [UIColor blackColor];
-        _settingLabel.textAlignment = NSTextAlignmentCenter;
-        _settingLabel.backgroundColor = [UIColor whiteColor];
-        _settingLabel.alpha = 0.5;
-        _settingLabel.frame = CGRectMake(cell.frame.size.width - 65, cell.frame.size.height -65 -65, 60, 60);
-        _settingLabel.layer.cornerRadius = 30;
-        [_settingLabel setClipsToBounds:YES];
-        _settingLabel.userInteractionEnabled = YES;
-        [cell addSubview:_settingLabel];
-        _settingLabel.tag = 2222222;
-        UITapGestureRecognizer *singleTapGestureRecognizer2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-        singleTapGestureRecognizer2.numberOfTapsRequired = 1;
-        [_settingLabel addGestureRecognizer:singleTapGestureRecognizer2];
     }
     
     cell.tag = indexPath.row + 1;
@@ -257,7 +223,6 @@
                         _overlay = [[ICTutorialOverlay alloc] init];
                         _overlay.hideWhenTapped = NO;
                         _overlay.animated = YES;
-                        [_overlay addHoleWithView:_albumLabel padding:0.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
                     }
                     
                     [_tutoLabel removeFromSuperview];
@@ -375,24 +340,6 @@
         }
     } else if (tagNumber == 1) {
         whichView = @"MultiUpload";
-    } else if (tagNumber == 1111111) {
-        NSLog(@"open album view");
-        AlbumViewController *albumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumViewController"];
-        albumViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        albumViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-        albumViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][0];
-        albumViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][0];
-        
-        //[self presentViewController:albumViewController animated:YES completion:NULL];
-        [self.navigationController pushViewController:albumViewController animated:YES];
-    } else if (tagNumber == 2222222) {
-        NSLog(@"open setting view");
-        SettingViewController *settingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingViewController"];
-        settingViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        settingViewController.childName = [_childArray[_pageIndex] objectForKey:@"name"];
-        settingViewController.childBirthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
-        settingViewController.pViewController = self;
-        [self.navigationController pushViewController:settingViewController animated:YES];
     } else if (tagNumber == 555) {
         if (_isNoImageCellForTutorial) {
             [_overlay hide];

@@ -322,7 +322,8 @@
             // objectが見つかれば上書き
             if (object) {
                 object[@"isTmpData"] = @"FALSE";
-                object[@"imageFile"] = [_uploadImageDataArray objectAtIndex:0];
+                PFFile *childImage = [_uploadImageDataArray objectAtIndex:0];
+                object[@"imageFile"] = childImage;
                 object[@"date"] = [NSString stringWithFormat:@"D%@", _date];
                 object[@"bestFlag"] = @"unchoosed";
                 [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){

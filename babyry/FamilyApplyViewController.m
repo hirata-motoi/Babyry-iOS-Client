@@ -38,7 +38,7 @@
     [self showSelfUserId];
     
     [self setupSearchForm];
-    [Navigation setTitle:self.navigationItem withTitle:@"Family申請" withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:@"パートナー検索" withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -210,7 +210,7 @@
     // 透明のform
     searchForm = [[UITextField alloc]initWithFrame:CGRectMake(12, 10, 215, 30)];
     searchForm.clearButtonMode = UITextFieldViewModeAlways;
-    searchForm.placeholder = @"ユーザ検索";
+    searchForm.placeholder = @"ユーザID";
     searchForm.keyboardType = UIKeyboardTypeASCIICapable;
     searchForm.opaque = NO;
     searchForm.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];

@@ -167,12 +167,6 @@
     _needTimer = YES;
     [_myTimer fire];
     NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
-    
-    // コメントView
-    // 写真が一枚もないのであればコメントViewは表示しない
-    if ([_childImageArray count] > 0) {
-        [self setupCommentView:nil];
-    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
