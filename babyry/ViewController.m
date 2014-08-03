@@ -552,7 +552,7 @@
                     } else if ([objects count] > 0) {
                         //NSLog(@"image found in %@ %@", c[@"name"], month);
                         
-                        [self setObjectToChildImages:objects];
+                        [self babyry/AWSS3Utils.h:objects];
                         
                         for (PFObject *object in objects) {
                             // Parseから持って来たデータでchildArray更新する
