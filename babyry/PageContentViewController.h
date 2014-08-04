@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "ICTutorialOverlay.h"
 #import <Parse/Parse.h>
+#import "DragView.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -28,7 +29,15 @@
 
 @property NSMutableArray *bestFlagArray;
 @property NSMutableArray *childImages;
-
+@property NSMutableDictionary *childImagesIndexMap;
+@property NSMutableArray *scrollPositionData;
+@property CGFloat nextSectionHeight;
+@property DragView *dragView;
+@property BOOL dragging;
+@property CGFloat dragViewUpperLimitOffset;
+@property CGFloat dragViewLowerLimitOffset;
+@property BOOL dragViewZoomed;
+                  
 @property NSNumber *tutorialStep;
 
 @property PFUser *currentUser;
@@ -38,5 +47,7 @@
 @property UICollectionViewCell *isNoImageCellForTutorial;
 
 @property UILabel *tutoSkipLabel;
+@property BOOL isLoading;
+@property NSDateComponents *dateComp;
 
 @end

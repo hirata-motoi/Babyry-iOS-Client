@@ -12,6 +12,7 @@
 #import "TagAlbumOperationViewController.h"
 #import "Navigation.h"
 #import "ImagePageViewController.h"
+#import "ArrayUtils.h"
 
 @interface AlbumViewController ()
 
@@ -500,7 +501,7 @@
 // ImagePageViewControllerの仕様に合わせたchildImagesを作る
 - (void)setObjectToChildImages:(NSArray *)objects
 {
-    NSMutableDictionary *objectsHash = [self arrayToHash:objects withKeyColumn:@"date"];
+    NSMutableDictionary *objectsHash = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
     NSMutableArray *images = [[NSMutableArray alloc]init];
     
     NSString *yyyymm = [NSString stringWithFormat:@"%@%@", _yyyy, _mm];
@@ -522,19 +523,6 @@
     NSMutableDictionary *section = [[NSMutableDictionary alloc]init];
     [_childImages addObject:section];
     [section setObject:images forKey:@"images"];
-}
-
-- (NSMutableDictionary *)arrayToHash:(NSArray *)array withKeyColumn:(NSString *)keyColumn
-{
-    NSMutableDictionary *hash = [[NSMutableDictionary alloc]init];
-    for (PFObject *elem in array) {
-        NSString *key = elem[keyColumn];
-        if (![hash objectForKey:key]) {
-            [hash setObject:[[NSMutableArray alloc]init] forKey:key];
-        }
-        [[hash objectForKey:key] addObject:elem];
-    }
-    return hash;
 }
 
 @end
