@@ -111,7 +111,8 @@
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
             NSLog(@"ログインしているけどファミリ- IDがない = 最初のログイン");
             IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
-            [self presentViewController:introFirstViewController animated:YES completion:NULL];
+            //[self presentViewController:introFirstViewController animated:YES completion:NULL];
+            [self.navigationController pushViewController:introFirstViewController animated:YES];
             return;
         }
         

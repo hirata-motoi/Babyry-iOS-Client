@@ -14,7 +14,6 @@
 @interface ProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, NicknameEditViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *profileTableView;
-@property (weak, nonatomic) IBOutlet UIButton *closeButton;
 @property NSInteger numberOfChild;
 @property PFObject *partnerInfo;
 @property NSArray *childList;

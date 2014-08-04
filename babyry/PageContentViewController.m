@@ -12,7 +12,6 @@
 #import "MultiUploadViewController.h"
 #import "AlbumViewController.h"
 #import "ImageTrimming.h"
-#import "SettingViewController.h"
 #import "FamilyRole.h"
 #import "ImagePageViewController.h"
 

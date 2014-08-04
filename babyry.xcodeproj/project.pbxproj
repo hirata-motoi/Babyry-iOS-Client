@@ -13,7 +13,6 @@
 		8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A99C194ADB330010F516 /* MultiUploadViewController.m */; };
 		8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A6194EC4420010F516 /* AlbumViewController.m */; };
 		8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A9194F56620010F516 /* ImageTrimming.m */; };
-		8814A9AD195812E60010F516 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9AC195812E60010F516 /* SettingViewController.m */; };
 		882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A22196B796E00E07D60 /* MaintenanceViewController.m */; };
 		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
@@ -21,6 +20,8 @@
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
 		885A224D197D75550039B263 /* SecretConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A224C197D75550039B263 /* SecretConfig.m */; };
 		887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */; };
+		889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FA198F5EC7005775B5 /* ChildProfileViewController.m */; };
+		889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */; };
 		8899C1EC1941EAAE00CD7909 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1EB1941EAAE00CD7909 /* Parse.framework */; };
 		8899C1F21942FF4C00CD7909 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */; };
 		88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */; };
@@ -102,8 +103,6 @@
 		8814A9A6194EC4420010F516 /* AlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumViewController.m; sourceTree = "<group>"; };
 		8814A9A8194F56620010F516 /* ImageTrimming.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTrimming.h; sourceTree = "<group>"; };
 		8814A9A9194F56620010F516 /* ImageTrimming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageTrimming.m; sourceTree = "<group>"; };
-		8814A9AB195812E60010F516 /* SettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
-		8814A9AC195812E60010F516 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
 		882A6A21196B796E00E07D60 /* MaintenanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaintenanceViewController.h; sourceTree = "<group>"; };
 		882A6A22196B796E00E07D60 /* MaintenanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaintenanceViewController.m; sourceTree = "<group>"; };
 		882A6A24196B7D4A00E07D60 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -118,6 +117,10 @@
 		885A224C197D75550039B263 /* SecretConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecretConfig.m; sourceTree = "<group>"; };
 		887CF8E01987822300B90C2E /* UIPlaceHolderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPlaceHolderTextView.h; sourceTree = "<group>"; };
 		887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPlaceHolderTextView.m; sourceTree = "<group>"; };
+		889002F9198F5EC7005775B5 /* ChildProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileViewController.h; sourceTree = "<group>"; };
+		889002FA198F5EC7005775B5 /* ChildProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileViewController.m; sourceTree = "<group>"; };
+		889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileEditViewController.h; sourceTree = "<group>"; };
+		889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileEditViewController.m; sourceTree = "<group>"; };
 		8899C1EB1941EAAE00CD7909 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		8899C1F11942FF4C00CD7909 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroFirstViewController.h; sourceTree = "<group>"; };
@@ -427,8 +430,6 @@
 				88B89FB7193B2D52009474DC /* PageContentViewController.m */,
 				88B18C8B193814CF00ED630C /* ViewController.h */,
 				88B18C8C193814CF00ED630C /* ViewController.m */,
-				8814A9AB195812E60010F516 /* SettingViewController.h */,
-				8814A9AC195812E60010F516 /* SettingViewController.m */,
 				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
 				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
 			);
@@ -448,6 +449,10 @@
 				F215DDD719766ECC0092C712 /* ProfileViewController.m */,
 				F215DDD91976BFB70092C712 /* NicknameEditViewController.h */,
 				F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */,
+				889002F9198F5EC7005775B5 /* ChildProfileViewController.h */,
+				889002FA198F5EC7005775B5 /* ChildProfileViewController.m */,
+				889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */,
+				889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */,
 			);
 			name = GlobalSetting;
 			sourceTree = "<group>";
@@ -638,9 +643,9 @@
 				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				8814A9A7194EC4420010F516 /* AlbumViewController.m in Sources */,
+				889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
-				8814A9AD195812E60010F516 /* SettingViewController.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				885A224D197D75550039B263 /* SecretConfig.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
@@ -668,6 +673,7 @@
 				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
+				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
