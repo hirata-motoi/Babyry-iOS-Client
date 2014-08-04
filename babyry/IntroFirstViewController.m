@@ -73,6 +73,7 @@
     UITapGestureRecognizer *singleTapGestureRecognizer0 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     singleTapGestureRecognizer0.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:singleTapGestureRecognizer0];
+    [self.navigationController setNavigationBarHidden:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -86,6 +87,8 @@
     NSLog(@"viewDidAppear");
     [super viewDidAppear:animated];
     // check this acount has family Id or not
+    [self.navigationController setNavigationBarHidden:YES];
+    
     if ([PFUser currentUser][@"familyId"] && ![[PFUser currentUser][@"familyId"] isEqualToString:@""]) {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
@@ -152,12 +155,15 @@
         [inviteViewController.view addSubview:inviteByMailLabel];
     } else if (tag == 2) {
         FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-        [self presentViewController:familyApplyViewController animated:YES completion:NULL];
+        //[self presentViewController:familyApplyViewController animated:YES completion:NULL];
+        [self.navigationController setNavigationBarHidden:NO];
+        [self.navigationController pushViewController:familyApplyViewController animated:YES];
     } else if (tag == 3 || tag == 4) {
-        NSString *plainTitle = @"Babyryへ招待";
+        NSString *plainTitle = @"Babyryへようこそ";
         NSString *escapedUrlTitle = [plainTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
-        NSString *plainText = [NSString stringWithFormat:@"Babyryに招待します。\n以下のURLからアプリをインストール後、ユーザーID %@ を入力してください。\nhttps://app.store/id=3333",     [PFUser currentUser][@"userId"]];
+        NSString *plainText = [NSString stringWithFormat:
+                               @"Babyryへようこそ。\nあなたのパートナーからBabyryへの招待が届いています。\n以下のURLからアプリをインストール後、パートナーのユーザーID %@ を入力してください。\nhttps://app.store/id=3333",     [PFUser currentUser][@"userId"]];
         NSString *escapedUrlText = [plainText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         NSLog(@"%@", escapedUrlText);
         if (tag == 3) {
@@ -171,7 +177,8 @@
         }
     } else if (tag == 99) {
         [PFUser logOut];
-        [self dismissViewControllerAnimated:YES completion:NULL];
+        [self.navigationController setNavigationBarHidden:NO];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     } else {
         [self.view endEditing:YES];
     }

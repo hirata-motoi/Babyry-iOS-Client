@@ -8,7 +8,7 @@
 
 #import "ProfileViewController.h"
 #import "NicknameEditViewController.h"
-#import "SettingViewController.h"
+#import "ChildProfileViewController.h"
 #import "Navigation.h"
 
 @interface ProfileViewController ()
@@ -33,7 +33,6 @@
     
     _profileTableView.delegate = self;
     _profileTableView.dataSource = self;
-    [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [Navigation setTitle:self.navigationItem withTitle:@"プロフィール" withFont:nil withFontSize:0 withColor:nil];
 }
 
@@ -172,21 +171,6 @@
     return title;
 }
 
-- (void)close
-{
-    CGRect rect = self.view.frame;
-    [UIView animateWithDuration:0.3
-                          delay:0.0
-                        options: UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         self.view.frame = CGRectMake(rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
-                     }
-                     completion:^(BOOL finished){
-                         [self.view removeFromSuperview];
-                         [self dismissViewControllerAnimated:YES completion:nil];
-                     }];
-}
-
 - (void)showNicknameEditView
 {
     NicknameEditViewController *nicknameEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NicknameEditViewController"];
@@ -206,15 +190,13 @@
 
 - (void)showChildInfo:(NSInteger)index
 {
-    SettingViewController *settingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingViewController"];
+    ChildProfileViewController *childProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileViewController"];
     PFObject *child = [_childList objectAtIndex:index];
-    settingViewController.childObjectId = child.objectId;
+    childProfileViewController.childObjectId = child.objectId;
     
-    settingViewController.childName = child[@"name"];
-    settingViewController.childBirthday = child[@"birthday"];
-    //settingViewController.pViewController = self;
-    [self.navigationController pushViewController:settingViewController animated:YES];
-    //[self presentViewController:settingViewController animated:YES completion:NULL];
+    childProfileViewController.childName = child[@"name"];
+    childProfileViewController.childBirthday = child[@"birthday"];
+    [self.navigationController pushViewController:childProfileViewController animated:YES];
 }
 
 /*

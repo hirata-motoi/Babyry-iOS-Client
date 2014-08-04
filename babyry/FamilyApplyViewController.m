@@ -31,20 +31,29 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-//    self.searchContainerView.backgroundColor = [UIColor colorWithRed:0.85 green:0.85 blue:0.85 alpha:1.0];
     self.searchContainerView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
     self.selfUserIdContainer.backgroundColor = [UIColor whiteColor];
-    [self.closeFamilyApplyButton initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(closeFamilyApply)];
     [self showSelfUserId];
     
     [self setupSearchForm];
     [Navigation setTitle:self.navigationItem withTitle:@"パートナー検索" withFont:nil withFontSize:0 withColor:nil];
+    
+    // set navigator
+    // view押したらキーボードを隠す
+    UITapGestureRecognizer *hideKeyboradGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard:)];
+    hideKeyboradGesture.numberOfTapsRequired = 1;
+    [self.view addGestureRecognizer:hideKeyboradGesture];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)hideKeyboard:(id) sender
+{
+    [self.view endEditing:YES];
 }
 
 - (void)closeFamilyApply
@@ -79,6 +88,7 @@
             NSLog(@"error occured %@", error);
         }
     }];
+    [self.view endEditing:YES];
 }
 
 - (void)showSearchNoResult
@@ -210,7 +220,7 @@
     // 透明のform
     searchForm = [[UITextField alloc]initWithFrame:CGRectMake(12, 10, 215, 30)];
     searchForm.clearButtonMode = UITextFieldViewModeAlways;
-    searchForm.placeholder = @"ユーザID";
+    searchForm.placeholder = @"パートナーのIDを入力";
     searchForm.keyboardType = UIKeyboardTypeASCIICapable;
     searchForm.opaque = NO;
     searchForm.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];

@@ -16,6 +16,7 @@
 #import "ImageTrimming.h"
 #import "PushNotification.h"
 #import "Navigation.h"
+//#import "AWSS3Utils.h"
 
 @interface ImageOperationViewController ()
 
@@ -174,10 +175,17 @@
     if ([imageArray count] > 1) {
         NSLog(@"これはあり得ないエラー");
     } else if ([imageArray count] == 1) {
+        //PFObject *tmpImageObject = imageArray[0];
         imageArray[0][@"imageFile"] = imageFile;
         //ほんとはいらないけど念のため
         imageArray[0][@"bestFlag"] = @"choosed";
         [imageArray[0] saveInBackground];
+//        [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+//            if (succeeded) {
+//                NSLog(@"save to s3");
+//                [AWSS3Utils saveToS3InBackground:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], tmpImageObject.objectId] imageData:imageData];
+//            }
+//        }];
     // 一つもないなら新たに追加
     } else {
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
@@ -186,7 +194,13 @@
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"choosed";
-        [childImage saveInBackground];
+        [imageArray[0] saveInBackground];
+//        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+//            if (succeeded) {
+//                NSLog(@"save to s3");
+//                [AWSS3Utils saveToS3InBackground:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId] imageData:imageData];
+//            }
+//        }];
     }
     
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
@@ -228,7 +242,6 @@
     frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
     frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
 
-    NSLog(@"frame %@", NSStringFromCGRect(frame));
     return frame;
     
 }
@@ -272,5 +285,92 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+/*
+- (void) saveToS3InBackground:(NSString *)key imageData:(NSData *)imageData
+{
+    AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+    putRequest.bucket = @"babyrydev-images";
+    putRequest.key = key;
+    putRequest.body = imageData;
+    putRequest.contentLength = [NSNumber numberWithInt:[imageData length]];
+    
+    // AWS cognite
+    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
+                                                          credentialsWithRegionType:AWSRegionUSEast1
+                                                          accountId:@"424568627207"
+                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
+                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
+                                                          authRoleArn:nil];
+    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
+    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+    
+    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+    [[[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task){
+        if (task.error) {
+            NSLog(@"S3 get error: %@", [task.error description]);
+        }
+        return nil;
+    }] waitUntilFinished];
+    
+ 
+ 
+ 
+    NSLog(@"aaaaaaaaa %@", imageURL);
+    _uploadRequest = [AWSS3TransferManagerUploadRequest new];
+    _uploadRequest.bucket = @"babyrydev-images";
+    _uploadRequest.key = key;
+    _uploadRequest.body = imageURL;
+    
+    AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
+    
+    [[transferManager upload:_uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (task.error != nil) {
+            NSLog(@"no such???? %@", imageURL);
+            if( task.error.code != AWSS3TransferManagerErrorCancelled && task.error.code != AWSS3TransferManagerErrorPaused ) {
+                NSLog(@"Upload Failed! %d", task.error.code);
+                NSLog(@"Upload Failed! %@", task.error);
+            }
+        } else {
+            //_uploadRequest = nil;
+        }
+        return nil;
+    }];
+    
+    // AWS cognite
+    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
+                                                          credentialsWithRegionType:AWSRegionUSEast1
+                                                          accountId:@"424568627207"
+                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
+                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
+                                                          authRoleArn:nil];
+    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
+    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+    
+    AWSS3GetObjectRequest *awsS3GetObjectRequest = [AWSS3GetObjectRequest new];
+    awsS3GetObjectRequest.key = @"20121028125656.jpg";
+    awsS3GetObjectRequest.bucket = @"babyrydev-images";
+    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+    [[[awsS3 getObject:awsS3GetObjectRequest] continueWithBlock:^id(BFTask *task)
+      {
+          if (task.error)
+          {
+              NSLog(@"S3 get error: %@", [task.error description]);
+          }
+          else
+          {
+              NSLog(@"S3 file size: %@", ((AWSS3GetObjectOutput *)task.result).contentLength);
+          }
+          return nil;
+      }] waitUntilFinished];
+    [awsS3 putObject:(AWSS3PutObjectRequest *)]
+    [[[awsS3 putObject:_uploadRequest] continueWithBlock:^id(BFTask *task){
+        if (task.error) {
+            NSLog(@"S3 get error: %@", [task.error description]);
+        }
+        return nil;
+    }] waitUntilFinished];
+}
+ */
 
 @end
