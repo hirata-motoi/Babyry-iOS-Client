@@ -86,7 +86,6 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    NSLog(@"touchedEnded");
     CGRect rect = self.frame;
     rect.size.width = 70;
     rect.origin.x = self.superview.frame.size.width - rect.size.width;

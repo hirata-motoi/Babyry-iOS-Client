@@ -18,6 +18,12 @@
 #import "TagAlbumCollectionViewCell.h"
 #import "DateUtils.h"
 #import "DragView.h"
+#import "CellBackgroundViewToEncourageUpload.h"
+#import "CellBackgroundViewToEncourageUploadLarge.h"
+#import "CellBackgroundViewToEncourageChoose.h"
+#import "CellBackgroundViewToEncourageChooseLarge.h"
+#import "CellBackgroundViewToWaitUpload.h"
+#import "CellBackgroundViewToWaitUploadLarge.h"
 
 @interface PageContentViewController ()
 
@@ -134,27 +140,10 @@
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
     NSString *dd = [ymd substringWithRange:NSMakeRange(6, 2)];
+   
     
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
-    
-    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
-    if(imageCacheData) {
-        if (indexPath.section == 0 && indexPath.row == 0) {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
-        } else {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
-        }
-        cell.isChoosed = YES;
-    } else {
-        if (indexPath.section == 0 && indexPath.row == 0) {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageNamed:@"NoImage"]]];
-        } else {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageNamed:@"NoImage"]]];
-            if(!_isNoImageCellForTutorial){
-                _isNoImageCellForTutorial = cell;
-            }
-        }
-    }
+    [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
     
     float cellWidth = cell.frame.size.width;
     float cellHeight = cell.frame.size.height;
@@ -699,7 +688,6 @@
 //- (void)dragView:(UIPanGestureRecognizer *)sender
 - (void)drag:(DragView *)targetView
 {
-    NSLog(@"drag start ");
     _dragging = YES;
  
     // scrollViewを連動
@@ -875,6 +863,77 @@
     
     CGPoint movedPoint = CGPointMake(_dragView.center.x, dragViewOffsetInt + _dragView.frame.size.height / 2 + _dragViewUpperLimitOffset);
     _dragView.center = movedPoint;
+}
+
+- (void)setBackgroundViewOfCell:(TagAlbumCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
+{
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
+    NSString *role = [FamilyRole selfRole];
+    
+    if (!imageCacheData) {
+        if ([role isEqualToString:@"uploader"]) {
+            // uploadを促す
+            if (indexPath.section == 0 && indexPath.row == 0) {
+                CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
+                CGRect rect = backgroundView.frame;
+                rect.size.width = cell.frame.size.width;
+                rect.size.height = cell.frame.size.height;
+                backgroundView.frame = rect;
+                [cell addSubview:backgroundView];
+            } else {
+                CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
+                CGRect rect = backgroundView.frame;
+                rect.size.width = self.view.frame.size.width / 3;
+                rect.size.height = rect.size.width;
+                backgroundView.frame = rect;
+                [cell addSubview:backgroundView];
+                
+                if(!_isNoImageCellForTutorial){
+                    _isNoImageCellForTutorial = cell;
+                }
+            }
+        } else {
+            // upload待ち
+            if (indexPath.section == 0 && indexPath.row == 0) {
+                CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
+                CGRect rect = backgroundView.frame;
+                rect.size.width = cell.frame.size.width;
+                rect.size.height = cell.frame.size.height;
+                backgroundView.frame = rect;
+                [cell addSubview:backgroundView];
+            } else {
+                CellBackgroundViewToWaitUpload *backgroundView = [CellBackgroundViewToWaitUpload view];
+                CGRect rect = backgroundView.frame;
+                rect.size.width = cell.frame.size.width;
+                rect.size.height = cell.frame.size.height;
+                backgroundView.frame = rect;
+                [cell addSubview:backgroundView];
+                if(!_isNoImageCellForTutorial){
+                    _isNoImageCellForTutorial = cell;
+                }
+            }
+        }
+        return;
+    }
+    
+    // TODO best shot未選択時の分岐
+//    if (uploader) {
+//        if (今週) {
+//            // 今週の場合はuploadを促す + choose待ち表記
+//        } else {
+//            // 今週より前の場合はuploadを促す
+//        }
+//    } else {
+//        // chooseをうながす
+//    }
+    
+    // best shotが既に選択済の場合は普通に写真を表示
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
+    } else {
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
+    }
+    cell.isChoosed = YES;
 }
 
 /*
