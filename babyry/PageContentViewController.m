@@ -131,16 +131,14 @@
     NSString *dd = [ymd substringWithRange:NSMakeRange(6, 2)];
     
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
+    
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         if (indexPath.section == 0 && indexPath.row == 0) {
             cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
-            //cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
         } else {
             cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
-            //cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:imageCacheData]];
         }
-        //[_bestFlagArray replaceObjectAtIndex:indexPath.row withObject:@"YES"];
         cell.isChoosed = YES;
     } else {
         if (indexPath.section == 0 && indexPath.row == 0) {
@@ -516,7 +514,6 @@
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
-            NSLog(@"find object year:%ld month:%ld", year, month);
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", year, month]] integerValue];
             NSMutableDictionary *section = [_childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];
@@ -525,8 +522,11 @@
             for (int i = 0; i < [images count]; i++) {
                 PFObject *childImage = [images objectAtIndex:i];
                 NSString *ymdWithPrefix = childImage[@"date"];
+                
                 if ([childImageHash objectForKey:ymdWithPrefix]) {
-                    [images replaceObjectAtIndex:i withObject:[[childImageHash objectForKey:ymdWithPrefix] objectAtIndex:0]];
+                    PFObject *childImage = [[childImageHash objectForKey:ymdWithPrefix] objectAtIndex:0];
+                    [self cacheThumbnail:childImage];
+                    [images replaceObjectAtIndex:i withObject:childImage];
                 }
             }
           
@@ -539,6 +539,23 @@
             _isLoading = NO;
         } else {
             NSLog(@"error occured %@", error);
+        }
+    }];
+}
+
+- (void)cacheThumbnail:(PFObject *)childImage
+{
+    NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+   
+    [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+        
+        NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+        // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
+        if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+    
+            NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+            [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
         }
     }];
 }

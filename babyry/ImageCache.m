@@ -82,7 +82,7 @@
         NSMutableDictionary *fileAttribute = [NSMutableDictionary dictionaryWithDictionary:[[NSFileManager defaultManager] attributesOfItemAtPath:imageCacheFilePath error:nil]];
         return [fileAttribute objectForKey:@"NSFileModificationDate"];
     } else {
-        return [NSDate dateWithTimeIntervalSinceNow:-5*24*60*60];
+        return [NSDate dateWithTimeIntervalSinceNow:-30*365*24*60*60];
     }
 }
 
