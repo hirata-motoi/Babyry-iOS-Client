@@ -137,6 +137,7 @@
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
+    
     // 拡張子取得
     NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
     NSString *fileExtension = [[assetURL path] pathExtension];
@@ -194,7 +195,7 @@
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"choosed";
-        [imageArray[0] saveInBackground];
+        [childImage saveInBackground];
 //        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
 //            if (succeeded) {
 //                NSLog(@"save to s3");
