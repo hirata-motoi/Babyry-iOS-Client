@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Parse/Parse.h>
+#import <AWSiOSSDKv2/S3.h>
 
 @class UploadViewController;
 
