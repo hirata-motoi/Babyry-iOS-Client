@@ -207,18 +207,6 @@
     UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
     [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
     
-    // topのviewに設定する
-    // このやり方でいいのかは不明 (MultiUploadViewControllerと同じ処理、ここなおすならそっちも直す)
-    ViewController *pvc = (ViewController *)[self presentingViewController];
-    if (pvc) {
-        int childIndex = pvc.currentPageIndex;
-        for (int i = 0; i < [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] count]; i++){
-            if ([[[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"date"] objectAtIndex:i] isEqualToString:_date]) {
-                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"thumbImages"] replaceObjectAtIndex:i withObject:thumbImage];
-                [[[pvc.childArray objectAtIndex:childIndex] objectForKey:@"orgImages"] replaceObjectAtIndex:i withObject:resizedImage];
-            }
-        }
-    }
     [PushNotification sendInBackground:@"imageUpload" withOptions:nil];
     NSLog(@"saved");
 }
