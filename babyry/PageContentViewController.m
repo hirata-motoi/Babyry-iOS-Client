@@ -55,7 +55,6 @@
     
     _isNoImageCellForTutorial = nil;
     [self initializeChildImages];
-    [self initializeNextSectionHeight];
     
     [self createCollectionView];
     [self showChildImages];
@@ -77,6 +76,7 @@
     // ViewControllerにcurrentPageIndexを教える
     ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
     vc.currentPageIndex = _pageIndex;
+   
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -353,22 +353,16 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    
     // scroll位置からどの月を表示ようとしているかを判定
     // その月のデータをまだとってなければ取得
     [self reflectPageScrollToDragView];
+    
+    // 今のsection : _currentScrollSection
     NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
+    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld%02ld", currentYearMonth.year, currentYearMonth.month];
+    
     NSCalendar *cal = [NSCalendar currentCalendar];
-    
     NSDate *currentDate = [cal dateFromComponents:currentYearMonth];
-   
-    NSDateComponents *c = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit fromDate:currentDate];
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", c.year, c.month];
-    
-    if (![self shouldShowNewSection]) {
-        return;
-    }
-    
     NSDate *loadedDate = [cal dateFromComponents:_dateComp];
     if ([currentDate compare:loadedDate] == NSOrderedAscending) {
         if (_isLoading) {
@@ -530,18 +524,6 @@
             NSMutableArray *images = [section objectForKey:@"images"];
             
             NSMutableDictionary *childImageHash = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
-//            NSInteger lastDayOfMonth = [self getLastDayOfMonthWithYear:year withMonth:month];
-//            for (NSInteger d = lastDayOfMonth; d > 0; d--) {
-//                NSString *ymd = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)year, (long)month, (long)d];
-//                if ( [childImageHash objectForKey:ymd] ) {
-//                    [images addObjectsFromArray:[childImageHash objectForKey:ymd]];
-//                } else {
-//                    // もしその日のChildImageオブジェクトがなかったら空のPFObjectを作ってしまう
-//                    PFObject *object = [[PFObject alloc]initWithClassName:ymd];
-//                    [object setObject:ymd forKey:@"date"];
-//                    [images addObject:object];
-//                }
-//            }
             for (int i = 0; i < [images count]; i++) {
                 PFObject *childImage = [images objectAtIndex:i];
                 NSString *ymdWithPrefix = childImage[@"date"];
@@ -565,16 +547,6 @@
         }
     }];
 }
-
-//- (NSArray *)sortChildImageByDate:(NSArray *)childImages
-//{
-//    NSArray *sortedChildImages = [childImages sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-//        int dateObj1 = [[[obj1 objectForKey:@"date"] substringWithRange:NSMakeRange(1, 8)] intValue];
-//        int dateObj2 = [[[obj2 objectForKey:@"date"] substringWithRange:NSMakeRange(1, 8)] intValue];
-//        return (BOOL)(dateObj2 > dateObj1);
-//    }];
-//    return sortedChildImages;
-//}
 
 - (NSDateComponents *)dateComps
 {
@@ -695,7 +667,7 @@
 - (void)setupScrollBarView
 {
     _dragViewUpperLimitOffset = 20;
-    _dragViewLowerLimitOffset = self.view.bounds.size.height - 44 - 20;
+    _dragViewLowerLimitOffset = self.view.bounds.size.height - 44 - 20 - 30;
     
     _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 20, 40, 30)];
     _dragView.userInteractionEnabled = YES;
@@ -722,8 +694,8 @@
     if (movedPointY < _dragViewUpperLimitOffset + targetView.frame.size.height/2) {
         movedPointY = 35;
     }
-    if (movedPointY + targetView.frame.size.height/2 >= _dragViewLowerLimitOffset) {
-        movedPointY = _dragViewLowerLimitOffset - targetView.frame.size.height/2;
+    if (movedPointY >= _dragViewLowerLimitOffset + targetView.frame.size.height/2) {
+        movedPointY = _dragViewLowerLimitOffset + targetView.frame.size.height/2;
     }                                                                            
     CGPoint movedPoint = CGPointMake(targetView.center.x, movedPointY);
     targetView.center = movedPoint;
@@ -731,12 +703,12 @@
     [sender setTranslation:CGPointZero inView:targetView];
    
     // scrollViewを連動
-    CGFloat contentHeight = _pageContentCollectionView.contentSize.height;
+    CGFloat contentHeight = _pageContentCollectionView.contentSize.height - (self.view.bounds.size.height - 64);
     CGFloat viewHeight = _dragViewLowerLimitOffset - _dragViewUpperLimitOffset;
 
     CGFloat rate = contentHeight / viewHeight ;
     
-    CGFloat scrolledHeight = targetView.frame.origin.y * rate;
+    CGFloat scrolledHeight = (targetView.frame.origin.y - _dragViewUpperLimitOffset) * rate;
     CGPoint scrolledPoint = CGPointMake(0, scrolledHeight);
     [_pageContentCollectionView setContentOffset:scrolledPoint];
     _dragging = NO;
@@ -843,39 +815,20 @@
 - (void)setupScrollPositionData
 {
     _scrollPositionData = [[NSMutableArray alloc]init];
-    // _childImageをforでまわしながら、各sectionが必要とする高さを取得
-    // 最初のsectionは不要
     for (NSMutableDictionary *section in _childImages) {
-        
-    }
-    
-    for (int i = 0; i < [_childImages count]; i++) {
-        if (i == 0) {
-            continue;
-        }
-      
-        NSMutableDictionary *section = [_childImages objectAtIndex:i];
         NSInteger cellCount = [[section objectForKey:@"images"] count];
         double verticalCellCount = ceil(cellCount / 3);
-        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + 30; // 30 : section header
+        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + 30 + 60; // 30 : section header  60: わからんが微調整用に必要
         NSNumber *n = [NSNumber numberWithDouble:requiredHeight];
         NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
         [_scrollPositionData addObject:sectionHeightInfo];
     }
-}
-
-- (void)initializeNextSectionHeight
-{
-    // 1つ目のsectionは不要
-    for (NSInteger i = 1; i < [_scrollPositionData count] - 1; i++) {
-        _nextSectionHeight += [[[_scrollPositionData objectAtIndex:i] objectForKey:@"heightNumber"] floatValue];
-    }
-    NSLog(@"nextSectionHeight %f", _nextSectionHeight);
+    NSLog(@"scrollPositionData : %@", _scrollPositionData);
 }
 
 - (BOOL)shouldShowNewSection
 {
-    CGFloat hiddenHeight = _pageContentCollectionView.contentSize.height - (_pageContentCollectionView.contentOffset.y + _pageContentCollectionView.bounds.size.height);
+    CGFloat hiddenHeight = _pageContentCollectionView.contentSize.height - (_pageContentCollectionView.contentOffset.y + _pageContentCollectionView.bounds.size.height/2);
     if (hiddenHeight < _nextSectionHeight) {
         return YES;
     }
@@ -884,18 +837,18 @@
 
 - (NSDateComponents *)getCurrentYearMonthByScrollPosition
 {
-    CGFloat hiddenHeight = _pageContentCollectionView.contentSize.height - (_pageContentCollectionView.contentOffset.y + _pageContentCollectionView.bounds.size.height);
+    CGFloat hiddenHeight = _pageContentCollectionView.contentSize.height - (_pageContentCollectionView.contentOffset.y + (_pageContentCollectionView.bounds.size.height - 64)/2);
     
     NSDateComponents *c = [[NSDateComponents alloc]init];
     [c setYear:[[[_childImages objectAtIndex:0] objectForKey:@"year"] intValue]];
     [c setMonth:[[[_childImages objectAtIndex:0] objectForKey:@"month"] intValue]];
-    CGFloat sectionHeightSum;
-    for (NSInteger i = [_scrollPositionData count] - 1; i > 0; i--) {
+    
+    CGFloat sectionHeightSum = 0.0f;
+    for (NSInteger i = [_scrollPositionData count] - 1; i >= 0; i--) {
         CGFloat sectionHeight = [[[_scrollPositionData objectAtIndex:i] objectForKey:@"heightNumber"] floatValue];
         sectionHeightSum += sectionHeight;
         
         if (sectionHeightSum >= hiddenHeight) {
-            _nextSectionHeight = sectionHeightSum - sectionHeight;
             
             NSString *yearString = [[_scrollPositionData objectAtIndex:i] objectForKey:@"year"];
             NSString *monthString = [[_scrollPositionData objectAtIndex:i] objectForKey:@"month"];
@@ -912,7 +865,7 @@
     if (_dragging) {
         return;
     }
-    CGFloat contentHeight = _pageContentCollectionView.contentSize.height;
+    CGFloat contentHeight = _pageContentCollectionView.contentSize.height - (self.view.bounds.size.height - 64);
     CGFloat viewHeight = _dragViewLowerLimitOffset - _dragViewUpperLimitOffset;
 
     CGFloat rate = viewHeight / contentHeight;

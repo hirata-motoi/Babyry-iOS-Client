@@ -34,7 +34,7 @@
 @property CGFloat dragViewUpperLimitOffset;
 @property CGFloat dragViewLowerLimitOffset;
 @property BOOL dragViewZoomed;
-                  
+
 @property NSNumber *tutorialStep;
 
 @property PFUser *currentUser;
