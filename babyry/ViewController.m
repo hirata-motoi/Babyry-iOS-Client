@@ -49,6 +49,7 @@
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
     [view addSubview:titleview];
     self.navigationItem.titleView = view;
+//@property TagAlbumPageViewController *pageViewController;
                     self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"EEEEEE" alpha:0.6]; // TODO 外だし
 }
 
@@ -321,7 +322,7 @@
 
     pageContentViewController.pageIndex = index;
     pageContentViewController.childArray = _childArray;
-    pageContentViewController.childImages = [_childImages objectForKey:[[_childArray objectAtIndex:index] objectForKey:@"objectId"]];
+        //pageContentViewController.childImages = [_childImages objectForKey:[[_childArray objectAtIndex:index] objectForKey:@"objectId"]];
     pageContentViewController.childObjectId = [[_childArray objectAtIndex:index] objectForKey:@"objectId"];
     
     return pageContentViewController;
@@ -553,7 +554,7 @@
                     } else if ([objects count] > 0) {
                         //NSLog(@"image found in %@ %@", c[@"name"], month);
                         
-                        [self setObjectToChildImages:objects];
+                        //[self setObjectToChildImages:objects];
                         
                         for (PFObject *object in objects) {
                             // Parseから持って来たデータでchildArray更新する

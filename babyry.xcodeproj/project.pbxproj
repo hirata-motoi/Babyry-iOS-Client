@@ -69,6 +69,8 @@
 		F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDD719766ECC0092C712 /* ProfileViewController.m */; };
 		F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */; };
 		F215DDDE19777CD00092C712 /* PushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDD19777CD00092C712 /* PushNotification.m */; };
+		F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */; };
+		F2310C22198F43DF00E01DA3 /* DragView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2310C21198F43DF00E01DA3 /* DragView.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -197,6 +199,10 @@
 		F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NicknameEditViewController.m; sourceTree = "<group>"; };
 		F215DDDC19777CD00092C712 /* PushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushNotification.h; sourceTree = "<group>"; };
 		F215DDDD19777CD00092C712 /* PushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushNotification.m; sourceTree = "<group>"; };
+		F22C976A198B7E2A00A5BD19 /* ArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtils.h; sourceTree = "<group>"; };
+		F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArrayUtils.m; sourceTree = "<group>"; };
+		F2310C20198F43DF00E01DA3 /* DragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragView.h; sourceTree = "<group>"; };
+		F2310C21198F43DF00E01DA3 /* DragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DragView.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -282,6 +288,10 @@
 				F2694AFE19827013008239F6 /* UIColor+Hex.m */,
 				887CF8E01987822300B90C2E /* UIPlaceHolderTextView.h */,
 				887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */,
+				F22C976A198B7E2A00A5BD19 /* ArrayUtils.h */,
+				F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */,
+				F2310C20198F43DF00E01DA3 /* DragView.h */,
+				F2310C21198F43DF00E01DA3 /* DragView.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -639,6 +649,7 @@
 				F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */,
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
+				F2310C22198F43DF00E01DA3 /* DragView.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
 				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
@@ -663,6 +674,7 @@
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
 				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
+				F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,

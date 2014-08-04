@@ -12,5 +12,6 @@
 
 @property NSInteger currentSection;
 @property NSInteger currentRow;
+@property BOOL isChoosed;
 
 @end
