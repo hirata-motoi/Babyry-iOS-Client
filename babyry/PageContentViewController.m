@@ -668,39 +668,22 @@
     _dragViewUpperLimitOffset = 20;
     _dragViewLowerLimitOffset = self.view.bounds.size.height - 44 - 20 - 30;
     
-    _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 20, 40, 30)];
+    _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, _dragViewUpperLimitOffset, 40, 30)];
     _dragView.userInteractionEnabled = YES;
+    _dragView.delegate = self;
     _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", _dateComp.year, _dateComp.month];
+    _dragView.dragViewLowerLimitOffset = _dragViewLowerLimitOffset;
+    _dragView.dragViewUpperLimitOffset = _dragViewUpperLimitOffset;
     
     [self.view addSubview:_dragView];
-    [self setDragForView:_dragView];
 }
 
-- (void)setDragForView:(UIView *)view
+//- (void)dragView:(UIPanGestureRecognizer *)sender
+- (void)drag:(DragView *)targetView
 {
-    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragView:)];
-    [view addGestureRecognizer:panGestureRecognizer];
-}
-
-- (void)dragView:(UIPanGestureRecognizer *)sender
-{
+    NSLog(@"drag start ");
     _dragging = YES;
-    UIView *targetView = sender.view;
  
-    CGPoint p = [sender translationInView:targetView];
-
-    CGFloat movedPointY = targetView.center.y + p.y;
-    if (movedPointY < _dragViewUpperLimitOffset + targetView.frame.size.height/2) {
-        movedPointY = 35;
-    }
-    if (movedPointY >= _dragViewLowerLimitOffset + targetView.frame.size.height/2) {
-        movedPointY = _dragViewLowerLimitOffset + targetView.frame.size.height/2;
-    }                                                                            
-    CGPoint movedPoint = CGPointMake(targetView.center.x, movedPointY);
-    targetView.center = movedPoint;
-
-    [sender setTranslation:CGPointZero inView:targetView];
-   
     // scrollViewを連動
     CGFloat contentHeight = _pageContentCollectionView.contentSize.height - (self.view.bounds.size.height - 64);
     CGFloat viewHeight = _dragViewLowerLimitOffset - _dragViewUpperLimitOffset;

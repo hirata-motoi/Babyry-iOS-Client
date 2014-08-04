@@ -10,6 +10,7 @@
 #import "UIColor+Hex.h"
 
 @implementation DragView
+@synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -41,7 +42,8 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    NSLog(@"touchesBegan");
+    _startLocation = [[touches anyObject] locationInView:self];
+    
     CGRect rect = self.frame;
     rect.size.width = 100;
     rect.origin.x = self.superview.frame.size.width - rect.size.width;
@@ -64,6 +66,22 @@
                      _dragViewLabel.frame = CGRectMake(10, 0, rect.size.width - 10, self.frame.size.height);
                      _dragViewLabel.hidden = NO;
                  }];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint pt = [[touches anyObject] locationInView:self];
+	CGRect frame = [self frame];
+	frame.origin.y += pt.y - _startLocation.y;
+    
+    if (frame.origin.y < _dragViewUpperLimitOffset) {
+        frame.origin.y = _dragViewUpperLimitOffset;
+    }                    
+    if (frame.origin.y >= _dragViewLowerLimitOffset) {
+        frame.origin.y = _dragViewLowerLimitOffset;
+    }
+	[self setFrame:frame];
+    [_delegate drag:self];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event

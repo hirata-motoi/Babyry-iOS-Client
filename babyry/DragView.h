@@ -7,9 +7,22 @@
 //
 
 #import <UIKit/UIKit.h>
+
+@class DragView;
+@protocol DragViewDelegate <NSObject>
+- (void)drag:(DragView *)dragView;
+@end
+
 @interface DragView : UIView
+{
+    id<DragViewDelegate>delegate;
+}
+@property (nonatomic,assign) id<DragViewDelegate> delegate;
 
 @property UILabel *dragViewLabel;
 @property UIImageView *arrow;
+@property CGPoint startLocation;
+@property CGFloat dragViewLowerLimitOffset;
+@property CGFloat dragViewUpperLimitOffset;
                              
 @end

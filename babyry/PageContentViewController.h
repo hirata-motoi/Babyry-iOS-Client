@@ -11,7 +11,7 @@
 #import <Parse/Parse.h>
 #import "DragView.h"
 
-@interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
+@interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
 @property NSUInteger pageIndex;
@@ -46,5 +46,7 @@
 @property UILabel *tutoSkipLabel;
 @property BOOL isLoading;
 @property NSDateComponents *dateComp;
+
+- (void)drag:(DragView *)dragView;
 
 @end
