@@ -10,7 +10,6 @@
 #import "PageContentViewController.h"
 #import "ImageCache.h"
 #import "ViewController.h"
-#import "ImageOperationViewController.h"
 #import "TagEditViewController.h"
 #import "ImageTrimming.h"
 #import "CommentViewController.h"
@@ -40,7 +39,9 @@
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
     _uploadedImageView.image = _uploadedImage;
-    [self setupOperationView];
+    
+    BOOL __block isPreload = YES;
+    [self setupOperationView:isPreload];
     
     // Parseからちゃんとしたサイズの画像を取得
     PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
@@ -58,6 +59,8 @@
             }];
             _imageInfo = object;
         }
+        isPreload = NO;
+        [self setupOperationView:isPreload];
     }];
 }
 
@@ -122,27 +125,33 @@
     _operationView.hidden = YES;
 }
 
-- (void)setupOperationView
+- (void)setupOperationView:(BOOL) isPreload
 {
-    // operationView
-    ImageOperationViewController *operationView = [self.storyboard instantiateViewControllerWithIdentifier:@"OperationView"];
+    if (_operationViewController) {
+        //既にあったら一度消す
+        [_operationViewController removeFromParentViewController];
+        [_operationView removeFromSuperview];
+    } else {
+        // 画像をタップするとoperationViewControllerが表示される
+        UITapGestureRecognizer *openOperationViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openOperationView:)];
+        openOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
+        [self.view addGestureRecognizer:openOperationViewTapGestureRecognizer];
+    }
     
-    operationView.childObjectId = _childObjectId;
-    operationView.name          = _name;
-    operationView.date          = _date;
-    operationView.month         = _month;
-    operationView.uploadViewController  = self;
-    operationView.holdedBy = _holdedBy;
+    _operationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"OperationView"];
+    _operationViewController.childObjectId = _childObjectId;
+    _operationViewController.name          = _name;
+    _operationViewController.date          = _date;
+    _operationViewController.month         = _month;
+    _operationViewController.uploadViewController  = self;
+    _operationViewController.holdedBy = _holdedBy;
+    _operationViewController.imageInfo = _imageInfo;
+    _operationViewController.isPreload = isPreload;
     
-    [self addChildViewController:operationView];
-    [operationView didMoveToParentViewController:self];
-    [self.view addSubview:operationView.view];
-    _operationView = operationView.view;
- 
-    // 画像をタップするとoperationViewControllerが表示される
-    UITapGestureRecognizer *openOperationViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openOperationView:)];
-    openOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
-    [self.view addGestureRecognizer:openOperationViewTapGestureRecognizer];
+    [self addChildViewController:_operationViewController];
+    [_operationViewController didMoveToParentViewController:self];
+    [self.view addSubview:_operationViewController.view];
+    _operationView = _operationViewController.view;
 }
 
 /*

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <Parse/Parse.h>
 
 @class UploadViewController;
 
@@ -22,9 +23,6 @@
 @property UploadViewController *uploadViewController;
 
 @property (strong, nonatomic) IBOutlet UIView *operationView;
-@property (weak, nonatomic) IBOutlet UILabel *yearMonthLabel;
-@property (weak, nonatomic) IBOutlet UILabel *dayLabel;
-@property (weak, nonatomic) IBOutlet UILabel *childNameLabel;
 @property (weak, nonatomic) IBOutlet UIButton *openPhotoLibraryButton;
 @property (weak, nonatomic) IBOutlet UINavigationBar *navbar;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navbarItem;
@@ -33,5 +31,9 @@
 @property UIView *commentView;
 @property UIView *tagEditView;
 @property NSString *holdedBy;
+
+@property PFObject *imageInfo;
+// isPreloadの場合キャッシュのサムネイルを表示するだけなのでコメントViewは表示させない
+@property BOOL isPreload;
 
 @end

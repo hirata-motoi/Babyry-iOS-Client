@@ -114,7 +114,7 @@
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 case 1:
-                    cell.textLabel.text = @"Role";
+                    cell.textLabel.text = @"あなたのパート";
                     _roleControl = [self createRoleSwitchSegmentControl];
                     [cell addSubview:_roleControl];
                     break;
@@ -134,11 +134,11 @@
         case 2:
             switch (indexPath.row) {
                 case 0:
-                    cell.textLabel.text = @"FamilyApply";
+                    cell.textLabel.text = @"パートナー検索";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 case 1:
-                    cell.textLabel.text = @"FamilyApplyList";
+                    cell.textLabel.text = @"パートナーからの申請";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
@@ -148,7 +148,7 @@
         case 3:
             switch (indexPath.row) {
                 case 0:
-                    cell.textLabel.text = @"子供追加";
+                    cell.textLabel.text = @"こどもを追加";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
@@ -308,7 +308,7 @@
 - (UISegmentedControl *)createRoleSwitchSegmentControl
 {
     // segment controlの作成
-    UISegmentedControl *sc = [[UISegmentedControl alloc] initWithItems:@[@"uploader", @"chooser"]];
+    UISegmentedControl *sc = [[UISegmentedControl alloc] initWithItems:@[@"アップ", @"チョイス"]];
     CGRect rect = sc.frame;
     rect.origin.x = 170;
     rect.origin.y = 7;

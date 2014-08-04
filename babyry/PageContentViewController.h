@@ -14,9 +14,6 @@
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
-@property UILabel *albumLabel;
-@property UILabel *settingLabel;
-
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
 @property NSString *childObjectId;

@@ -87,7 +87,7 @@
         case 0:
             switch (indexPath.row) {
                 case 0: {
-                    cell.textLabel.text = @"ニックネーム";
+                    cell.textLabel.text = @"あなたの名前";
                     cell.detailTextLabel.text = [PFUser currentUser][@"nickName"];
                     _nicknameCell = cell;
                     break;
@@ -99,7 +99,7 @@
         case 1:
             switch (indexPath.row) {
                 case 0: {
-                    cell.textLabel.text = @"パートナー";
+                    cell.textLabel.text = @"パートナーの名前";
                     cell.detailTextLabel.text = _partnerInfo[@"nickName"];
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     break;
@@ -163,7 +163,7 @@
     NSString *title;
     switch (section) {
         case 2:
-            title = @"子供";
+            title = @"こども";
             break;
         default:
             title = @"";
@@ -212,8 +212,9 @@
     
     settingViewController.childName = child[@"name"];
     settingViewController.childBirthday = child[@"birthday"];
-    settingViewController.pViewController = self;
-    [self presentViewController:settingViewController animated:YES completion:NULL];
+    //settingViewController.pViewController = self;
+    [self.navigationController pushViewController:settingViewController animated:YES];
+    //[self presentViewController:settingViewController animated:YES completion:NULL];
 }
 
 /*

@@ -166,6 +166,21 @@
     dateLabel.frame = CGRectMake(0, cellHeight/10, cellWidth, cellHeight/5);
     [cell addSubview:dateLabel];
 
+    // child name label
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        UILabel *nameLabel = [[UILabel alloc] init];
+        if (_returnValueOfChildName) {
+            nameLabel.text = _returnValueOfChildName;
+        } else {
+            nameLabel.text = [NSString stringWithFormat:@"%@", [[_childArray objectAtIndex:_pageIndex] objectForKey:@"name"]];
+        }                                                       
+        nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/8];
+        nameLabel.textAlignment = NSTextAlignmentLeft;
+        nameLabel.textColor = [UIColor whiteColor];
+        nameLabel.shadowColor = [UIColor blackColor];
+        nameLabel.frame = CGRectMake(0, cellHeight - cellHeight/8, cellWidth, cellHeight/8);
+        [cell addSubview:nameLabel];
+    }
     
     cell.tag = indexPath.row + 1;
     
@@ -197,7 +212,6 @@
                         _overlay = [[ICTutorialOverlay alloc] init];
                         _overlay.hideWhenTapped = NO;
                         _overlay.animated = YES;
-                        [_overlay addHoleWithView:_albumLabel padding:0.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
                     }
                     
                     [_tutoLabel removeFromSuperview];

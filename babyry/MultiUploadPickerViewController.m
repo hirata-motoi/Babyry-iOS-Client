@@ -301,9 +301,8 @@
                 }
                 
                 //アルバム表示のViewも消す
-                int last = [[self presentingViewController].view.subviews count] - 1;
-                UIView *view = [[self presentingViewController].view.subviews objectAtIndexedSubscript:last];
-                [view removeFromSuperview];
+                UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
+                [naviController popViewControllerAnimated:YES];
             }
         }];
     }
@@ -323,7 +322,8 @@
             // objectが見つかれば上書き
             if (object) {
                 object[@"isTmpData"] = @"FALSE";
-                object[@"imageFile"] = [_uploadImageDataArray objectAtIndex:0];
+                PFFile *childImage = [_uploadImageDataArray objectAtIndex:0];
+                object[@"imageFile"] = childImage;
                 object[@"date"] = [NSString stringWithFormat:@"D%@", _date];
                 object[@"bestFlag"] = @"unchoosed";
                 [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){

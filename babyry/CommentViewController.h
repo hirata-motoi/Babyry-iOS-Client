@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import "UploadViewController.h"
-#import "MultiUploadViewController.h"
 #import "UIPlaceHolderTextView.h"
 #import "TagEditViewController.h"
 
@@ -20,6 +19,8 @@
 @property (strong, nonatomic) IBOutlet UIView *commentViewContainer;
 - (IBAction)commentViewTopButton:(id)sender;
 @property (strong, nonatomic) IBOutlet UIButton *commentViewTopButton;
+@property (strong, nonatomic) IBOutlet UIImageView *commentIconImageView;
+@property (strong, nonatomic) IBOutlet UILabel *commentNumIcon;
 
 @property NSString *name;
 @property NSString *date;
@@ -29,8 +30,9 @@
 @property BOOL keyboardObserving;
 @property CGRect defaultCommentViewRect;
 @property UploadViewController *uploadViewController;
-@property MultiUploadViewController *multiUploadViewController;
 @property UIPlaceHolderTextView *commentTextView;
 @property UIView *tagViewOnCommentView;
+
+@property PFObject *imageInfo;
 
 @end

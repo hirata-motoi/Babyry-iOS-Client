@@ -65,7 +65,6 @@
 {
     PFObject *imageInfo = [_imageList objectAtIndex:index];
     
-    
     UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
     uploadViewController.childObjectId = _childObjectId;
     uploadViewController.name = _name;

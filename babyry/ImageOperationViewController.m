@@ -41,26 +41,17 @@
 
     [self setStyle];
     
-    // day
-    NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
-    _dayLabel.text = [NSString stringWithFormat:@"%@", dd];
-    
-    // year & month
-    NSString *yyyy = [_month substringToIndex:4];
-    NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
-    _yearMonthLabel.text = [NSString stringWithFormat:@"%@/%@", yyyy, mm];
-    
-    // name
-    _childNameLabel.text = _name;
-    
     // タップでoperationViewを非表示にする
     UITapGestureRecognizer *hideOperationViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideOperationView:)];
     hideOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
     self.view.userInteractionEnabled = YES;
     [self.view addGestureRecognizer:hideOperationViewTapGestureRecognizer];
 
-    [self setupCommentView];
-    //[self setupTagEditView];
+    // 画像がなければコメントは出来ない
+    // プリロード(サムネイルだけで本画像ではない)時もコメントは出さない(出せない)
+    if (_imageInfo && !_isPreload) {
+        [self setupCommentView];
+    }
     [self setupNavigation];
 }
 
@@ -129,9 +120,10 @@
     commentViewController.name = _name;
     commentViewController.date = _date;
     commentViewController.month = _month;
+    commentViewController.imageInfo = _imageInfo;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
-    _commentView.frame = CGRectMake(0, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
+    _commentView.frame = CGRectMake(self.view.frame.size.width - 50, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
     [self addChildViewController:commentViewController];
     [self.view addSubview:_commentView];
 }

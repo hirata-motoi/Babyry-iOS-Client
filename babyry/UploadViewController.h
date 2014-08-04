@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "ICTutorialOverlay.h"
+#import "ImageOperationViewController.h"
 
 @interface UploadViewController : UIViewController
 
@@ -27,15 +28,15 @@
 
 @property BOOL keyboradObserving;
 
-//@property CGRect defaultCommentViewRect;
-
-//@property NSArray *commentArray;
-@property UIView *operationView;
-//@property UIView *commentView;
 @property PFObject *imageInfo;
 @property NSInteger tagAlbumPageIndex;
 @property NSString *holdedBy; //このインスタンスを保持しているオブジェクトのクラス名
 
 @property ICTutorialOverlay *overlay;
+
+// ImageOperationView使い回すため
+@property UIView *operationView;
+@property ImageOperationViewController *operationViewController;
+
 
 @end

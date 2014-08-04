@@ -174,7 +174,9 @@
             [_currentUser refresh];
             if (![_currentUser objectForKey:@"tutorialStep"] || [[_currentUser objectForKey:@"tutorialStep"] intValue] == 0) {
                 PFUser *user = [PFUser currentUser];
-                user[@"tutorialStep"] = [NSNumber numberWithInt:1];
+                //ひとまずチュートリアルを全部飛ばせるように100を設定しておく
+                user[@"tutorialStep"] = [NSNumber numberWithInt:100];
+                //user[@"tutorialStep"] = [NSNumber numberWithInt:1];
                 [user saveInBackground];
             }
         }
