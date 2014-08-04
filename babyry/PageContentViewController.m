@@ -510,7 +510,6 @@
 // mergeがtrueだった場合は取得したobjectsを1つ前のsectionにmergeする
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
-    //return;
     _isLoading = YES;
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
@@ -527,10 +526,7 @@
                 PFObject *childImage = [images objectAtIndex:i];
                 NSString *ymdWithPrefix = childImage[@"date"];
                 if ([childImageHash objectForKey:ymdWithPrefix]) {
-                    NSLog(@"remove start");
-                    //NSLog(@"childImageHash objectForKey : %@", [[childImageHash objectForKey:ymdWithPrefix] objectAtIndex:0]);
                     [images replaceObjectAtIndex:i withObject:[[childImageHash objectForKey:ymdWithPrefix] objectAtIndex:0]];
-                    NSLog(@"remove end");
                 }
             }
           
@@ -666,9 +662,9 @@
 - (void)setupScrollBarView
 {
     _dragViewUpperLimitOffset = 20;
-    _dragViewLowerLimitOffset = self.view.bounds.size.height - 44 - 20 - 30;
+    _dragViewLowerLimitOffset = self.view.bounds.size.height - 44 - 20 - 60;
     
-    _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, _dragViewUpperLimitOffset, 40, 30)];
+    _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 70, _dragViewUpperLimitOffset, 70, 60)];
     _dragView.userInteractionEnabled = YES;
     _dragView.delegate = self;
     _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", _dateComp.year, _dateComp.month];

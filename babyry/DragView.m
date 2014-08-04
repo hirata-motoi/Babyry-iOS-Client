@@ -20,7 +20,7 @@
         UIBezierPath *maskPath;
         maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
                                          byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerTopLeft)
-                                               cornerRadii:CGSizeMake(10.0, 10.0)];
+                                               cornerRadii:CGSizeMake(25.0, 25.0)];
         
         CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
         maskLayer.frame = self.bounds;
@@ -45,12 +45,12 @@
     _startLocation = [[touches anyObject] locationInView:self];
     
     CGRect rect = self.frame;
-    rect.size.width = 100;
+    rect.size.width = 150;
     rect.origin.x = self.superview.frame.size.width - rect.size.width;
     
-    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, 100, self.bounds.size.height)
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, 150, self.bounds.size.height)
                                      byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerTopLeft)
-                                           cornerRadii:CGSizeMake(10.0, 10.0)];
+                                           cornerRadii:CGSizeMake(25.0, 25.0)];
     
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
     maskLayer.frame = self.bounds;
@@ -88,7 +88,7 @@
 {
     NSLog(@"touchedEnded");
     CGRect rect = self.frame;
-    rect.size.width = 40;
+    rect.size.width = 70;
     rect.origin.x = self.superview.frame.size.width - rect.size.width;
     [UIView animateWithDuration:0.3f
                  animations:^{
