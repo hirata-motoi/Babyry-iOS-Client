@@ -348,20 +348,20 @@
 //    [self reflectPageScrollToDragView];
     
     // 今のsection : _currentScrollSection
-//    NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
-//    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld%02ld", currentYearMonth.year, currentYearMonth.month];
-//    
-//    NSCalendar *cal = [NSCalendar currentCalendar];
-//    NSDate *currentDate = [cal dateFromComponents:currentYearMonth];
-//    NSDate *loadedDate = [cal dateFromComponents:_dateComp];
-//    if ([currentDate compare:loadedDate] == NSOrderedAscending) {
-//        if (_isLoading) {
-//            return;
-//        }
-//       
-//        _dateComp = [self addDateComps:_dateComp withUnit:@"month" withValue:-1];
-//        [self getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
-//    }
+    NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
+    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld%02ld", currentYearMonth.year, currentYearMonth.month];
+    
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *currentDate = [cal dateFromComponents:currentYearMonth];
+    NSDate *loadedDate = [cal dateFromComponents:_dateComp];
+    if ([currentDate compare:loadedDate] == NSOrderedAscending) {
+        if (_isLoading) {
+            return;
+        }
+       
+        _dateComp = [self addDateComps:_dateComp withUnit:@"month" withValue:-1];
+        [self getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
+    }
 }
 
 -(void)handleDoubleTap:(id) sender
