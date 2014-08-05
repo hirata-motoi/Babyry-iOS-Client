@@ -9,6 +9,8 @@
 #import "DragView.h"
 #import "UIColor+Hex.h"
 
+const NSInteger dragViewHideInterval = 4;
+
 @implementation DragView
 @synthesize delegate = _delegate;
 
@@ -36,9 +38,13 @@
         _arrow = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"arrowUpperLower"]];
         _arrow.frame = CGRectMake(self.frame.size.width - 25, (self.frame.size.height - 25) / 2, 25, 25);
         [self addSubview:_arrow];
+       
+        _lastTachDate = [NSDate date];
+        [NSTimer scheduledTimerWithTimeInterval:dragViewHideInterval target:self selector:@selector(hideDragView:) userInfo:nil repeats:NO];
     }
     return self;
 }
+
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -55,6 +61,8 @@
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
     maskLayer.frame = self.bounds;
     maskLayer.path = maskPath.CGPath;
+    
+    _lastTachDate = [NSDate date];
     
     [UIView animateWithDuration:0.3f
                  animations:^{
@@ -82,6 +90,7 @@
     }
 	[self setFrame:frame];
     [_delegate drag:self];
+    _lastTachDate = [NSDate date];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -97,7 +106,21 @@
                  completion:^(BOOL finished){
                      _dragViewLabel.hidden = YES;
                  }];
+    _lastTachDate = [NSDate date];
     
+    // 4秒後にviewをhideにする
+    // ただしlast tapからの時間が4秒未満の場合はskip
+    [NSTimer scheduledTimerWithTimeInterval:dragViewHideInterval target:self selector:@selector(hideDragView:) userInfo:nil repeats:NO];
+}
+
+- (void)hideDragView:(id)sender
+{
+    
+    NSLog(@"hideDragView");
+    NSDate *currentDate = [NSDate date];
+    if ( [currentDate timeIntervalSinceDate:_lastTachDate] >= dragViewHideInterval ) {
+        self.hidden = YES;
+    }
 }
 
 /*

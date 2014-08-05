@@ -24,5 +24,6 @@
 @property CGPoint startLocation;
 @property CGFloat dragViewLowerLimitOffset;
 @property CGFloat dragViewUpperLimitOffset;
+@property NSDate *lastTachDate;
                              
 @end
