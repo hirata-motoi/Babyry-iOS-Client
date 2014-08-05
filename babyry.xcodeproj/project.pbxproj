@@ -83,6 +83,8 @@
 		F2305221198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305220198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m */; };
 		F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */; };
 		F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */; };
+		F230522919906D05000F5E32 /* ImageEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = F230522819906D05000F5E32 /* ImageEdit.m */; };
+		F230522C19907927000F5E32 /* PageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F230522B19907927000F5E32 /* PageViewController.m */; };
 		F2310C22198F43DF00E01DA3 /* DragView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2310C21198F43DF00E01DA3 /* DragView.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
@@ -235,6 +237,10 @@
 		F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellBackgroundViewToEncourageUploadLarge.xib; sourceTree = "<group>"; };
 		F2305224198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewToEncourageUploadLarge.h; sourceTree = "<group>"; };
 		F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewToEncourageUploadLarge.m; sourceTree = "<group>"; };
+		F230522719906D05000F5E32 /* ImageEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageEdit.h; sourceTree = "<group>"; };
+		F230522819906D05000F5E32 /* ImageEdit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageEdit.m; sourceTree = "<group>"; };
+		F230522A19907927000F5E32 /* PageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageViewController.h; sourceTree = "<group>"; };
+		F230522B19907927000F5E32 /* PageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageViewController.m; sourceTree = "<group>"; };
 		F2310C20198F43DF00E01DA3 /* DragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragView.h; sourceTree = "<group>"; };
 		F2310C21198F43DF00E01DA3 /* DragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DragView.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
@@ -303,6 +309,8 @@
 				84ABD706194DBE8500BC3CDA /* Sequence.m */,
 				8814A9A8194F56620010F516 /* ImageTrimming.h */,
 				8814A9A9194F56620010F516 /* ImageTrimming.m */,
+				F230522719906D05000F5E32 /* ImageEdit.h */,
+				F230522819906D05000F5E32 /* ImageEdit.m */,
 				F261A882196513F60072BBD2 /* IdIssue.h */,
 				F261A883196513F60072BBD2 /* IdIssue.m */,
 				F261A886196523110072BBD2 /* NSObject+Retry.h */,
@@ -486,6 +494,8 @@
 				88B18C8C193814CF00ED630C /* ViewController.m */,
 				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
 				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
+				F230522A19907927000F5E32 /* PageViewController.h */,
+				F230522B19907927000F5E32 /* PageViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -773,6 +783,7 @@
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
+				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
@@ -805,6 +816,7 @@
 				F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */,
+				F230522C19907927000F5E32 /* PageViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
