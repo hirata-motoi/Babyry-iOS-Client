@@ -134,7 +134,7 @@
 
 - (void)closeFamilyApplyList
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)admit: (UIButton *)sender event:(UIEvent *)event
