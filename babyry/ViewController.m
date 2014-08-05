@@ -20,6 +20,9 @@
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
 #import "AWSS3Utils.h"
+#import "ImageEdit.h"
+#import "TagAlbumOperationViewController.h"
+#import "ArrayUtils.h"
 
 @interface ViewController ()
 
@@ -399,8 +402,6 @@
     [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateHighlighted];
     
     [logInViewController.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"ForgetPasswordLabel"] forState:UIControlStateNormal];
-    NSLog(@"aaaaaaa %@", NSStringFromCGRect(logInViewController.logInView.passwordForgottenButton.frame));
-    NSLog(@"aaaaaaa %@", NSStringFromCGRect(logInViewController.logInView.frame));
     
     // Add login field background
     UIImageView *fieldsBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
@@ -654,9 +655,16 @@
 
         // global setting
         UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-        [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"CogWheel"] forState:UIControlStateNormal];
+        [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
         [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
+        
+        // tag album
+        UIButton *tagSelectButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+        [tagSelectButton setBackgroundImage:[ImageEdit filterImage:[UIImage imageNamed:@"badgeRed"]] forState:UIControlStateNormal];
+        [tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
+        
+        self.navigationItem.rightBarButtonItems = @[ [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton], [[UIBarButtonItem alloc] initWithCustomView:tagSelectButton]];
+                                                                                                                           
     } else {
         NSLog(@"setPage _only_first_load NO");
         PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
@@ -709,7 +717,7 @@
 // ImagePageViewControllerの仕様に合わせたchildImagesを作る
 - (void)setObjectToChildImages:(NSArray *)objects
 {
-    NSMutableDictionary *objectsHash = [self arrayToHash:objects withKeyColumn:@"date"];
+    NSMutableDictionary *objectsHash = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
     
     for (PFObject *child in _childArrayFoundFromParse) {
         NSMutableArray *sections = [_childImages objectForKey:child.objectId];
@@ -732,19 +740,6 @@
     }
 }
 
-- (NSMutableDictionary *)arrayToHash:(NSArray *)array withKeyColumn:(NSString *)keyColumn
-{
-    NSMutableDictionary *hash = [[NSMutableDictionary alloc]init];
-    for (PFObject *elem in array) {
-        NSString *key = elem[keyColumn];
-        if (![hash objectForKey:key]) {
-            [hash setObject:[[NSMutableArray alloc]init] forKey:key];
-        }
-        [[hash objectForKey:key] addObject:elem];
-    }
-    return hash;
-}
-
 - (void)initializeChildImages
 {
     _childImages = [[NSMutableDictionary alloc]init];
@@ -752,5 +747,27 @@
         [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
     }
 }
+
+-(void)setupTagAlbumOperationView
+{
+    // tagAlbumのviewcontrollerをinstans化
+    TagAlbumOperationViewController *tagAlbumOperationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumOperationViewController"];
+    tagAlbumOperationViewController.holdedBy = @"AlbumViewController";
+//    tagAlbumOperationViewController.childObjectId = _childObjectId;
+//    tagAlbumOperationViewController.year = _yyyy;
+    tagAlbumOperationViewController.holdedBy = @"ViewController";
+    tagAlbumOperationViewController.frameOption = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithInt:160], [NSNumber numberWithInt:400], [NSNumber numberWithInt:150], [NSNumber numberWithInt:100]] forKeys:@[@"x", @"y", @"width", @"height"]];
+    tagAlbumOperationViewController.view.hidden = YES;
+    [self addChildViewController:tagAlbumOperationViewController];
+    [self.view addSubview:tagAlbumOperationViewController.view];
+    
+    _tagAlbumOperationView = tagAlbumOperationViewController.view;
+}
+
+- (void)openTagSelectView
+{
+    _tagAlbumOperationView.hidden = NO;
+}
+
 
 @end
