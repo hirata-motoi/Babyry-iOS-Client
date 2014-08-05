@@ -32,11 +32,8 @@
     // Do any additional setup after loading the view.
     self.dataSource = self;
    
-    NSLog(@"setupDataSource start");
     [self setupDataSource];
-    NSLog(@"showInitialImage start");
     [self showInitialImage];
-    NSLog(@"showInitialImage end");
 }
 
 - (void)didReceiveMemoryWarning
