@@ -12,6 +12,7 @@
 
 @interface AWSS3Utils : NSObject
 
-+ (void) saveToS3InBackground:(NSString *)key imageData:(NSData *)imageData;
++ (BFTask *) putObjectInBackground:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType;
++ (BFTask *) getObjectInBackground:(NSString *)key;
 
 @end

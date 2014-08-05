@@ -64,4 +64,6 @@
 @property CommentViewController *commentViewController;
 @property UIView *commentView;
 
+@property int uploadUppeLimit;
+
 @end
