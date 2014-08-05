@@ -90,7 +90,7 @@
     [self.navigationController setNavigationBarHidden:YES];
     
     if ([PFUser currentUser][@"familyId"] && ![[PFUser currentUser][@"familyId"] isEqualToString:@""]) {
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self.navigationController popViewControllerAnimated:YES];
     }
     
     if (!_tm || ![_tm isValid]) {
@@ -155,7 +155,6 @@
         [inviteViewController.view addSubview:inviteByMailLabel];
     } else if (tag == 2) {
         FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-        //[self presentViewController:familyApplyViewController animated:YES completion:NULL];
         [self.navigationController setNavigationBarHidden:NO];
         [self.navigationController pushViewController:familyApplyViewController animated:YES];
     } else if (tag == 3 || tag == 4) {
@@ -163,7 +162,7 @@
         NSString *escapedUrlTitle = [plainTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
         NSString *plainText = [NSString stringWithFormat:
-                               @"Babyryへようこそ。\nあなたのパートナーからBabyryへの招待が届いています。\n以下のURLからアプリをインストール後、パートナーのユーザーID %@ を入力してください。\nhttps://app.store/id=3333",     [PFUser currentUser][@"userId"]];
+                               @"Babyryへようこそ。\nあなたのパートナーからBabyryへの招待が届いています。\n以下のURLからアプリをインストール後、パートナーのユーザーID %@ を検索してください。\nhttps://app.store/id=3333",     [PFUser currentUser][@"userId"]];
         NSString *escapedUrlText = [plainText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         NSLog(@"%@", escapedUrlText);
         if (tag == 3) {
@@ -267,8 +266,9 @@
     [familyApplyQuery whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
     [familyApplyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(objects && [objects count] > 0){
+            [self.navigationController setNavigationBarHidden:NO];
             FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-            [self presentViewController:familyApplyListViewController animated:true completion:nil];
+            [self.navigationController pushViewController:familyApplyListViewController animated:YES];
         }
         _applyCheckingFlag = 0;
     }];
