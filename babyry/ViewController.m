@@ -657,7 +657,7 @@
         UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
         [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
         [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
-        
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
         // tag album
 //        UIButton *tagSelectButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
 //        [tagSelectButton setBackgroundImage:[ImageEdit filterImage:[UIImage imageNamed:@"badgeRed"]] forState:UIControlStateNormal];
