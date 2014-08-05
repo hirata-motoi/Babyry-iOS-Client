@@ -76,12 +76,9 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error){
             [self deleteSearchResult];
-            NSLog(@"Successfully searched %@", objects);
             if (objects.count < 1) {
-                NSLog(@"no result");
                 [self showSearchNoResult];
             } else {
-                NSLog(@"found");
                 [self showSearchResult:[objects objectAtIndex:0]];
             }
         } else {
@@ -117,7 +114,6 @@
 
     
     // 対象ユーザのPFObjectを保持
-    NSLog(@"%@", searchedUser);
     searchedUserObject = searchedUser;
 
     [result addSubview:userImageView];
@@ -141,16 +137,11 @@
 // family申請を出す
 - (void)apply
 {
-    NSLog(@"apply start");
-        
     // 相手が既にfamilyになっているかを確認
     PFQuery *query = [PFQuery queryWithClassName:@"_User"];
     [query whereKey:@"userId" equalTo:searchedUserObject[@"userId"]];
-    NSLog(@"query : %@", query);
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error){
-            NSLog(@"Successfully searched FamilyApply %@", objects);
-            NSLog(@"objects.count : %d", objects.count);
             if (objects.count < 1) {
                 NSLog(@"ユーザがいないよ");
             } else if ([objects objectAtIndex:0][@"familyId"] == NULL) {
@@ -191,7 +182,7 @@
     familyApply[@"inviteeUserId"] = searchedUserObject[@"userId"];
     familyApply[@"status"] = @"applying"; // 申請中
     familyApply[@"role"] = [self getSelectedRole];
-
+    
     [familyApply save];
     // そのうちpush通知送る
     

@@ -52,7 +52,7 @@
 
 - (void)showFamilyApplyList
 {
-    NSLog(@"inviteeUserId : %@", [PFUser currentUser][@"userId"]);
+    familyApplys = [[NSMutableDictionary alloc]init];
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
     [query whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
@@ -94,7 +94,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"tableView");
     static NSString *CellIdentifier = @"Cell";
     // 再利用できるセルがあれば再利用する
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -145,7 +144,6 @@
     
     // 自分の行のfamilyIdを更新
     PFObject *inviterUser = [inviterUsers objectAtIndex:indexPath.row];
-    NSLog(@"inviterUser : %@", inviterUser);
     NSString *familyId = inviterUser[@"familyId"];
 
     // そのうちこの辺りの処理はすべてFamilyRole classに隠蔽したい
@@ -162,7 +160,6 @@
     
     PFUser *selfUser = [PFUser currentUser];
     selfUser[@"familyId"] = familyId;
-    NSLog(@"save user");
     [selfUser save];
     
     // FamilyRoleにinsert
@@ -176,18 +173,15 @@
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
     [query whereKey:@"inviteeUserId" equalTo:selfUser[@"userId"]];
     NSArray *familyApplyRows = [query findObjects];
-    NSLog(@"delete familyApply : %@", familyApplyRows);
     for (int i = 0; i < familyApplyRows.count; i++) {
         PFObject *row = [familyApplyRows objectAtIndex:i];
         [row delete];
     }
-    NSLog(@"delete FamilyApply succeeded");
     [self closeFamilyApplyList];
 }
 
 - (void)reject: (UIButton *)sender event:(UIEvent *)event
 {
-    NSLog(@"reject");
     UITouch *touch = [[event allTouches] anyObject];
     CGPoint point = [touch locationInView:_familyApplyList];
     NSIndexPath *indexPath = [_familyApplyList indexPathForRowAtPoint:point];
@@ -197,7 +191,6 @@
     NSString *familyId = inviterUser[@"familyId"];
     PFUser *selfUser = [PFUser currentUser];
     
-    NSLog(@"delete family apply start");
     
     // FamilyApplyから消す
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
@@ -206,7 +199,6 @@
     [query whereKey:@"userId" equalTo:inviterUser[@"userId"]];
     PFObject *familyApplyRow = [query getFirstObject];
     [familyApplyRow delete];
-    NSLog(@"rejecte && delete familyApply: %@", familyApplyRow);
     [self closeFamilyApplyList];
 }
 
