@@ -65,7 +65,7 @@
     [self createCollectionView];
     [self showChildImages];
     
-    [self setupScrollBarView];
+    //[self setupScrollBarView];
 }
 
 - (void)didReceiveMemoryWarning
