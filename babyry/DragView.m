@@ -30,7 +30,7 @@ const NSInteger dragViewHideInterval = 4;
         self.layer.mask = maskLayer;
         
         
-        self.backgroundColor = [UIColor_Hex colorWithHexString:@"ffbd22" alpha:1.0f];
+        self.backgroundColor = [UIColor_Hex colorWithHexString:@"ffbd22" alpha:0.6f];
         _dragViewLabel = [[UILabel alloc]init];
         _dragViewLabel.hidden = YES;
         [self addSubview:_dragViewLabel];
