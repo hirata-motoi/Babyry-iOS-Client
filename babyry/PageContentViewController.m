@@ -344,6 +344,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    _dragView.hidden = NO;
     // scroll位置からどの月を表示ようとしているかを判定
     // その月のデータをまだとってなければ取得
     [self reflectPageScrollToDragView];
