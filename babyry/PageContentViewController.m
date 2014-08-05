@@ -328,13 +328,11 @@
 
     CGRect labelRect = rect;
     labelRect.origin.x = 20;
-    NSLog(@"section header");
     UILabel *headerLabel = [[UILabel alloc]initWithFrame:labelRect];
     NSString *year = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"year"];
     NSString *month = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"month"];
     headerLabel.text = [NSString stringWithFormat:@"%@/%@", year, month];
     [headerImageView addSubview:headerLabel];
-    NSLog(@"section header end");
     
     [headerView addSubview:headerImageView];
     
@@ -709,6 +707,10 @@
     
     // 誕生日
     NSDate *birthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
+    NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
+    if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
+        birthday = [NSDate date];
+    }
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *birthdayComps = [cal components:
         NSYearCalendarUnit  |
@@ -728,7 +730,7 @@
     // 誕生日の1年前
     NSDate *firstday = [cal dateFromComponents:lowerLimitDayComps];
     BOOL needMergeThisMonthObjectsToLastMonth = (todayComps.day < 7) ? YES : NO;
-                                                
+    
     NSMutableDictionary *childImagesHash = [[NSMutableDictionary alloc]init];
     while ([today compare:firstday] == NSOrderedDescending) {
         NSDateComponents *c = [cal components:
@@ -795,7 +797,7 @@
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
     }
-    if (needMergeThisMonthObjectsToLastMonth) {
+    if (needMergeThisMonthObjectsToLastMonth && [ymList count] > 1) {
         NSString *ym = [ymList objectAtIndex:[ymList count] - 1];
         [_childImagesIndexMap setObject:@"0" forKey:ym];
     }
@@ -812,7 +814,6 @@
         NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
         [_scrollPositionData addObject:sectionHeightInfo];
     }
-    NSLog(@"scrollPositionData : %@", _scrollPositionData);
 }
 
 - (BOOL)shouldShowNewSection
