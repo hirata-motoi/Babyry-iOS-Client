@@ -659,12 +659,12 @@
         [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
         
         // tag album
-        UIButton *tagSelectButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-        [tagSelectButton setBackgroundImage:[ImageEdit filterImage:[UIImage imageNamed:@"badgeRed"]] forState:UIControlStateNormal];
-        [tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
+//        UIButton *tagSelectButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+//        [tagSelectButton setBackgroundImage:[ImageEdit filterImage:[UIImage imageNamed:@"badgeRed"]] forState:UIControlStateNormal];
+//        [tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
+//        
+//        self.navigationItem.rightBarButtonItems = @[ [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton], [[UIBarButtonItem alloc] initWithCustomView:tagSelectButton]];
         
-        self.navigationItem.rightBarButtonItems = @[ [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton], [[UIBarButtonItem alloc] initWithCustomView:tagSelectButton]];
-                                                                                                                           
     } else {
         NSLog(@"setPage _only_first_load NO");
         PageContentViewController *startingViewController = [self viewControllerAtIndex:_currentPageIndex];
