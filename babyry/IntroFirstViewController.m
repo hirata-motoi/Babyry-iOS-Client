@@ -90,6 +90,7 @@
     [self.navigationController setNavigationBarHidden:YES];
     
     if ([PFUser currentUser][@"familyId"] && ![[PFUser currentUser][@"familyId"] isEqualToString:@""]) {
+        [self.navigationController setNavigationBarHidden:NO];
         [self.navigationController popViewControllerAnimated:YES];
     }
     
