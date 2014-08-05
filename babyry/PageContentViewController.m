@@ -59,12 +59,13 @@
     _currentUser = [PFUser currentUser];
     
     _isNoImageCellForTutorial = nil;
+    _selfRole = [FamilyRole selfRole];
     [self initializeChildImages];
     
     [self createCollectionView];
     [self showChildImages];
     
-    //[self setupScrollBarView];
+    [self setupScrollBarView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -342,10 +343,18 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-//    _dragView.hidden = NO;
+    _dragCount++;
+    if (_dragCount % 10 != 0) {
+        return;
+    }
+    if (_dragCount > 10000000) {
+        _dragCount = 0;
+    }
+    
+    _dragView.hidden = NO;
     // scroll位置からどの月を表示ようとしているかを判定
     // その月のデータをまだとってなければ取得
-//    [self reflectPageScrollToDragView];
+    [self reflectPageScrollToDragView];
     
     // 今のsection : _currentScrollSection
     NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
@@ -870,7 +879,7 @@
 - (void)setBackgroundViewOfCell:(TagAlbumCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
 {
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
-    NSString *role = [FamilyRole selfRole];
+    NSString *role = _selfRole;
     
     if (!imageCacheData) {
         if ([role isEqualToString:@"uploader"]) {
