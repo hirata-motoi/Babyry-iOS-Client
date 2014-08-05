@@ -275,6 +275,7 @@
         [_multiUploadedImages addSubview:_bestShotLabelView];
     }
     if ([[_childCachedImageArray objectAtIndex:cell.tag] isEqualToString:@"ForUploadImage"]) {
+        _uploadUppeLimit = indexPath.row;
         cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UploadImageLabel"]];
         UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
         uploadGesture.numberOfTapsRequired = 1;
@@ -538,8 +539,16 @@
     // モーダルViewをクリックされたら次の画像に移る。最後まで言ったら消える
     _detailedImageIndex = [[sender view] tag] + 1;
     [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
-    if ([_childImageArray count] > _detailedImageIndex) {
-        [self openModalImageView];
+    
+    // アップの場合にはアップロードボタン分だけ少なくなるので
+    if (_uploadUppeLimit) {
+        if (_uploadUppeLimit > _detailedImageIndex) {
+            [self openModalImageView];
+        }
+    } else {
+        if ([_childImageArray count] > _detailedImageIndex) {
+            [self openModalImageView];
+        }
     }
 }
 

@@ -10,15 +10,10 @@
 
 @implementation AWSS3Utils
 
-+ (void) saveToS3InBackground:(NSString *)key imageData:(NSData *)imageData
++ (BFTask *) putObjectInBackground:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType
 {
-    AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-    putRequest.bucket = @"babyrydev-images";
-    putRequest.key = key;
-    putRequest.body = imageData;
-    putRequest.contentLength = [NSNumber numberWithInt:[imageData length]];
-    
     // AWS cognite
+    // これは適当に共通化した方が良さげ
     AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
                                                           credentialsWithRegionType:AWSRegionUSEast1
                                                           accountId:@"424568627207"
@@ -28,15 +23,35 @@
     AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
     
+    AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+    putRequest.bucket = @"babyrydev-images";
+    putRequest.key = key;
+    putRequest.body = imageData;
+    putRequest.contentLength = [NSNumber numberWithInt:[imageData length]];
+    putRequest.contentType = imageType;
+    
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-    [[[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task){
-        if (task.error) {
-            NSLog(@"S3 get error: %@", [task.error description]);
-        } else {
-            NSLog(@"saved to S3");
-        }
-        return nil;
-    }] waitUntilFinished];
+    return [awsS3 putObject:putRequest];
+}
+
++ (BFTask *) getObjectInBackground:(NSString *)key
+{
+    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
+                                                          credentialsWithRegionType:AWSRegionUSEast1
+                                                          accountId:@"424568627207"
+                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
+                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
+                                                          authRoleArn:nil];
+    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
+    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+    
+    AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+    getRequest.bucket = @"babyrydev-images";
+    getRequest.key = key;
+    
+    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+    
+    return [awsS3 getObject:getRequest];
 }
 
 @end

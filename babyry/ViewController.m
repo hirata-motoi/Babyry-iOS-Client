@@ -19,6 +19,7 @@
 #import "IntroChildNameViewController.h"
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
+#import "AWSS3Utils.h"
 
 @interface ViewController ()
 
@@ -580,7 +581,6 @@
                                     int wIndex = 0;
                                     for (NSString *date in _weekDateArray) {
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {
-                                            
                                             
                                             //NSLog(@"ここでParseに接続。全部backgroundにする");
                                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
