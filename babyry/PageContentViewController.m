@@ -60,6 +60,7 @@
     _currentUser = [PFUser currentUser];
     
     _isNoImageCellForTutorial = nil;
+    _selfRole = [FamilyRole selfRole];
     [self initializeChildImages];
     
     [self createCollectionView];
@@ -158,7 +159,7 @@
     dateLabel.frame = CGRectMake(0, cellHeight/10, cellWidth, cellHeight/5);
     [cell addSubview:dateLabel];
 
-    // child name label
+    // 今日のcellには子供名を表示
     if (indexPath.section == 0 && indexPath.row == 0) {
         UILabel *nameLabel = [[UILabel alloc] init];
         if (_returnValueOfChildName) {
@@ -272,7 +273,13 @@
             }
         }
     }
-    
+
+    // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
+    if (indexPath.section == 0 && indexPath.row == 1) {
+        CGRect rect = cell.frame;
+        rect.origin.x = 0;
+        cell.frame = rect;
+    }
     return cell;
 }
 
@@ -311,9 +318,6 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    if (section == 0) {
-        return CGSizeMake(0, 0);
-    }
     return CGSizeMake(self.view.frame.size.width, 30);
 }
 
@@ -343,10 +347,18 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-//    _dragView.hidden = NO;
+    _dragCount++;
+    if (_dragCount % 10 != 0) {
+        return;
+    }
+    if (_dragCount > 10000000) {
+        _dragCount = 0;
+    }
+    
+    _dragView.hidden = NO;
     // scroll位置からどの月を表示ようとしているかを判定
     // その月のデータをまだとってなければ取得
-//    [self reflectPageScrollToDragView];
+    [self reflectPageScrollToDragView];
     
     // 今のsection : _currentScrollSection
     NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
@@ -743,13 +755,12 @@
     // 現在日時
     NSDateComponents *todayComps = [self dateComps];
     // 現在
-    //NSDate *today = [DateUtils setSystemTimezone:[NSDate date]];
     NSDate *today = [NSDate date];
+    
     // 誕生日の1年前
     NSDate *firstday = [cal dateFromComponents:lowerLimitDayComps];
-    BOOL needMergeThisMonthObjectsToLastMonth = (todayComps.day < 7) ? YES : NO;
     
-    NSMutableDictionary *childImagesHash = [[NSMutableDictionary alloc]init];
+    NSMutableDictionary *childImagesDic = [[NSMutableDictionary alloc]init];
     while ([today compare:firstday] == NSOrderedDescending) {
         NSDateComponents *c = [cal components:
             NSYearCalendarUnit  |
@@ -760,14 +771,14 @@
         NSString *ym = [NSString stringWithFormat:@"%ld%02ld", c.year, c.month];
         
         NSMutableDictionary *section;
-        if ([childImagesHash objectForKey:ym]) {
-            section = [childImagesHash objectForKey:ym];
+        if ([childImagesDic objectForKey:ym]) {
+            section = [childImagesDic objectForKey:ym];
         } else {     
             section = [[NSMutableDictionary alloc]init];
             [section setObject:[[NSMutableArray alloc]init] forKey:@"images"];
             [section setObject:[[NSNumber numberWithInteger:c.year] stringValue] forKey:@"year"];
             [section setObject:[[NSNumber numberWithInteger:c.month] stringValue] forKey:@"month"];
-            [childImagesHash setObject:section forKey:ym];
+            [childImagesDic setObject:section forKey:ym];
         }
         
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld%02ld", c.year, c.month, c.day]];
@@ -779,33 +790,22 @@
     }
     
     // needMergeがtrueの時は、mergeConfに従ってsectionをmergeする
-    [self setObjectsToChildImages:childImagesHash withMerge:needMergeThisMonthObjectsToLastMonth];
+    [self setObjectsToChildImages:childImagesDic];
     
     // scroll位置と表示月の関係
     [self setupScrollPositionData];
     
 }
 
-- (void)setObjectsToChildImages:(NSMutableDictionary *)childImagesHash withMerge:(BOOL)needMergeThisMonthObjectsToLastMonth
+- (void)setObjectsToChildImages:(NSMutableDictionary *)childImagesDic
 {
-    NSArray *ymList = [[childImagesHash allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2){
+    NSArray *ymList = [[childImagesDic allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2){
         return [obj1 integerValue] > [obj2 integerValue];
     }];
    
     NSMutableArray *childImagesAsc = [[NSMutableArray alloc]init];
-    int i = 0;
     for (NSString *ym in ymList) {
-        if (needMergeThisMonthObjectsToLastMonth && i == [ymList count] - 1) {
-            // mergeが必要な場合は最後の(つまり今月の)sectionを先月のsectionにmergeする
-            NSMutableDictionary *mergeToSection  = [childImagesAsc objectAtIndex:[childImagesAsc count] - 1];
-            NSMutableDictionary *mergeOrgSection = [childImagesHash objectForKey:ym];
-            NSMutableArray *images = [mergeOrgSection objectForKey:@"images"];
-            [images addObjectsFromArray:[mergeToSection objectForKey:@"images"]];
-            [mergeToSection setObject:images forKey:@"images"];
-        } else {
-            [childImagesAsc addObject:[childImagesHash objectForKey:ym]];
-        }
-        i++;
+        [childImagesAsc addObject:[childImagesDic objectForKey:ym]];
     }
     _childImages = [[NSMutableArray alloc]initWithArray:[[childImagesAsc reverseObjectEnumerator] allObjects]];
    
@@ -814,10 +814,6 @@
         NSString *ym = [NSString stringWithFormat:@"%@%@", [section objectForKey:@"year"], [section objectForKey:@"month"]];
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
-    }
-    if (needMergeThisMonthObjectsToLastMonth && [ymList count] > 1) {
-        NSString *ym = [ymList objectAtIndex:[ymList count] - 1];
-        [_childImagesIndexMap setObject:@"0" forKey:ym];
     }
 }
 
@@ -888,7 +884,7 @@
 - (void)setBackgroundViewOfCell:(TagAlbumCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
 {
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
-    NSString *role = [FamilyRole selfRole];
+    NSString *role = _selfRole;
     
     if (!imageCacheData) {
         if ([role isEqualToString:@"uploader"]) {

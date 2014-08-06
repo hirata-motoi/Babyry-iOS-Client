@@ -41,14 +41,19 @@ const NSInteger dragViewHideInterval = 4;
        
         _lastTachDate = [NSDate date];
         [NSTimer scheduledTimerWithTimeInterval:dragViewHideInterval target:self selector:@selector(hideDragView:) userInfo:nil repeats:NO];
+        
+        UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(drag:)];
+        [self addGestureRecognizer:gesture];
     }
     return self;
 }
 
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)dragBegin:(UIPanGestureRecognizer *)sender
 {
-    _startLocation = [[touches anyObject] locationInView:self];
+    NSLog(@"dragBegin");
+    //_startLocation = [[touches anyObject] locationInView:self];
+    _startLocation = [sender locationInView:self];
     
     CGRect rect = self.frame;
     rect.size.width = 150;
@@ -76,9 +81,11 @@ const NSInteger dragViewHideInterval = 4;
                  }];
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)dragChanged:(UIPanGestureRecognizer *)sender
 {
-    CGPoint pt = [[touches anyObject] locationInView:self];
+    NSLog(@"dragChanged");
+    //CGPoint pt = [[touches anyObject] locationInView:self];
+    CGPoint pt = [sender locationInView:self];
 	CGRect frame = [self frame];
 	frame.origin.y += pt.y - _startLocation.y;
     
@@ -93,8 +100,9 @@ const NSInteger dragViewHideInterval = 4;
     _lastTachDate = [NSDate date];
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)dragEnded:(UIPanGestureRecognizer *)sender
 {
+    NSLog(@"dragEnded");
     CGRect rect = self.frame;
     rect.size.width = 70;
     rect.origin.x = self.superview.frame.size.width - rect.size.width;
@@ -120,6 +128,17 @@ const NSInteger dragViewHideInterval = 4;
     NSDate *currentDate = [NSDate date];
     if ( [currentDate timeIntervalSinceDate:_lastTachDate] >= dragViewHideInterval ) {
         self.hidden = YES;
+    }
+}
+
+- (void)drag:(UIPanGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [self dragBegin:sender];
+    } else if (sender.state == UIGestureRecognizerStateChanged) {
+        [self dragChanged:sender];
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        [self dragEnded:sender];
     }
 }
 
