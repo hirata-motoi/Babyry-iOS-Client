@@ -27,6 +27,7 @@
 @property NSMutableArray *checkedImageFragArray;
 @property NSMutableArray *checkedImageArray;
 @property NSMutableArray *uploadImageDataArray;
+@property NSMutableArray *uploadImageDataTypeArray;
 
 @property NSString *month;
 @property NSString *childObjectId;

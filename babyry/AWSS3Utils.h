@@ -12,7 +12,7 @@
 
 @interface AWSS3Utils : NSObject
 
-+ (BFTask *) putObjectInBackground:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType;
-+ (BFTask *) getObjectInBackground:(NSString *)key;
++ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType;
++ (BFTask *) getObject:(NSString *)key;
 
 @end

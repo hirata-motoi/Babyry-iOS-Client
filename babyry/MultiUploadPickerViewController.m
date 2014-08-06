@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import "ImageCache.h"
 #import "ImageTrimming.h"
+#import "AWSS3Utils.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -250,8 +251,10 @@
     
     int __block saveCount = 0;
     
-    // imageFileをフォアグランドで用意しておく
+    // imageFileをフォアグランドで_uploadImageDataArrayに用意しておく
+    // backgroundでセットしようとするとセット前の画像が解放されてしまうので
     _uploadImageDataArray = [[NSMutableArray alloc] init];
+    _uploadImageDataTypeArray = [[NSMutableArray alloc] init];
     for (NSIndexPath *indexPath in _checkedImageArray) {
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
         ALAssetRepresentation *representation = [asset defaultRepresentation];
@@ -263,21 +266,26 @@
         UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
         
         NSData *imageData = [[NSData alloc] init];
+        NSString *imageType = [[NSString alloc] init];
         if ([fileExtension isEqualToString:@"PNG"]) {
             imageData = UIImagePNGRepresentation(resizedImage);
+            imageType = @"image/png";
         } else {
             imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
+            imageType = @"image/jpeg";
         }
-        PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
-        [_uploadImageDataArray addObject:imageFile];
-        
+        //PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
+        [_uploadImageDataArray addObject:imageData];
+        [_uploadImageDataTypeArray addObject:imageType];
 
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
         
-        // 適当な小さいtxtファイルであげておく (あとから大きな画像は非同期で送る)
-        NSData *tmpData = [@"a" dataUsingEncoding:NSUTF8StringEncoding];
+        ///// 適当な小さいtxtファイルであげておく (あとから大きな画像は非同期で送る)
+        ///// NSData *tmpData = [@"a" dataUsingEncoding:NSUTF8StringEncoding];
         
-        childImage[@"imageFile"] = [PFFile fileWithName:@"NowUploading.txt" data:tmpData];
+        /////childImage[@"imageFile"] = [PFFile fileWithName:@"NowUploading.txt" data:tmpData];
+        
+        // tmpData = @"TRUE" にセットしておく画像はあとからあげる
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"unchoosed";
@@ -321,26 +329,49 @@
         [tmpImageQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
             // objectが見つかれば上書き
             if (object) {
-                object[@"isTmpData"] = @"FALSE";
-                PFFile *childImage = [_uploadImageDataArray objectAtIndex:0];
-                object[@"imageFile"] = childImage;
-                object[@"date"] = [NSString stringWithFormat:@"D%@", _date];
-                object[@"bestFlag"] = @"unchoosed";
-                [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    [_uploadImageDataArray removeObjectAtIndex:0];
-                    [self saveToParseInBackground];
+                // S3に上げる
+                [[AWSS3Utils putObject:
+                 [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId]
+                            imageData:[_uploadImageDataArray objectAtIndex:0]
+                             imageType:[_uploadImageDataTypeArray objectAtIndex:0]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                    if (!task.error) {
+                        // エラーがなければisTmpDataを更新
+                        object[@"isTmpData"] = @"FALSE";
+                        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            [_uploadImageDataArray removeObjectAtIndex:0];
+                            [_uploadImageDataTypeArray removeObjectAtIndex:0];
+                            [self saveToParseInBackground];
+                        }];
+                    } else {
+                        // 失敗したらレコードごと消す(でいいのかな？リトライ？)
+                        [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            [_uploadImageDataArray removeObjectAtIndex:0];
+                            [_uploadImageDataTypeArray removeObjectAtIndex:0];
+                            [self saveToParseInBackground];
+                        }];
+                    }
+                    return nil;
                 }];
             } else {
                 // objectが見つからなければ新たに作成
-                PFFile *imageFile = [_uploadImageDataArray objectAtIndex:0];
                 PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-                childImage[@"imageFile"] = imageFile;
                 childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
                 childImage[@"imageOf"] = _childObjectId;
                 childImage[@"bestFlag"] = @"unchoosed";
                 [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    [_uploadImageDataArray removeObjectAtIndex:0];
-                    [self saveToParseInBackground];
+                    // S3に上げる
+                    [[AWSS3Utils putObject:
+                      [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId]
+                                 imageData:[_uploadImageDataArray objectAtIndex:0]
+                                 imageType:[_uploadImageDataTypeArray objectAtIndex:0]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                        if (!task.error) {
+                            // エラーがなければisTmpDataを更新
+                            [_uploadImageDataArray removeObjectAtIndex:0];
+                            [_uploadImageDataTypeArray removeObjectAtIndex:0];
+                            [self saveToParseInBackground];
+                        }
+                        return nil;
+                    }];
                 }];
             }
         }];

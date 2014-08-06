@@ -7,18 +7,19 @@
 //
 
 #import "AWSS3Utils.h"
+#import "SecretConfig.h"
 
 @implementation AWSS3Utils
 
-+ (BFTask *) putObjectInBackground:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType
++ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType
 {
     // AWS cognite
     // これは適当に共通化した方が良さげ
     AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
                                                           credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:@"424568627207"
-                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
-                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
+                                                          accountId:[SecretConfig getAWSAccountId]
+                                                          identityPoolId:[SecretConfig getAWSCognitoIdentityPoolId]
+                                                          unauthRoleArn:[SecretConfig getAWSCognitoUnauthRoleArn]
                                                           authRoleArn:nil];
     AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
@@ -34,13 +35,13 @@
     return [awsS3 putObject:putRequest];
 }
 
-+ (BFTask *) getObjectInBackground:(NSString *)key
++ (BFTask *) getObject:(NSString *)key
 {
     AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
                                                           credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:@"424568627207"
-                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
-                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
+                                                          accountId:[SecretConfig getAWSAccountId]
+                                                          identityPoolId:[SecretConfig getAWSCognitoIdentityPoolId]
+                                                          unauthRoleArn:[SecretConfig getAWSCognitoUnauthRoleArn]
                                                           authRoleArn:nil];
     AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;

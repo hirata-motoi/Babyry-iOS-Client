@@ -583,36 +583,63 @@
                                     for (NSString *date in _weekDateArray) {
                                         if ([object[@"date"] isEqual:[NSString stringWithFormat:@"D%@", date]]) {
                                             
-                                            //NSLog(@"ここでParseに接続。全部backgroundにする");
-                                            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                                                if(!error){
-                                                    // キャッシュのタイムスタンプよりParseのタイムスタンプが新しいときだけ更新 (レプリ遅延防止のため)
-                                                    // タイムゾーン考えて実装したけど意味なかった模様(もしかしたら後から使えるかもしれんので、とりあえずコメントで残しておく)
-                                                    //NSDate *sourceDate = [NSDate dateWithTimeIntervalSinceNow:3600*24*60];
-                                                    //NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-                                                    //float timeZoneOffset = [destinationTimeZone secondsFromGMTForDate:sourceDate];
-                                                    //NSDate *localDate = [object.updatedAt dateByAddingTimeInterval:timeZoneOffset];
-                                                    //NSLog(@"Parse updatedAt %@", localDate);
-                                                    
-                                                    // Parse - Cache
+                                            NSLog(@"まずはS3に接続");
+                                            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                                                if (!task.error && task.result) {
+                                                    NSLog(@"S3から取得できた場合はそこからセット");
+                                                    // S3 - Cache
                                                     // 正のときだけデータ更新
-                                                    if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date]]] > 0) {
+                                                    AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+                                                    if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date]]] > 0) {
                                                         // サムネイル画像作成
-                                                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                                                    
+                                                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                                                        
                                                         // childArrayに突っ込む
                                                         [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
-                                                        [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
-                                                    
+                                                        [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:getResult.body] atIndex:wIndex];
+                                                        
                                                         // bestshotはローカルキャッシュに保存しておく
                                                         NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                                                         [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
-                                                    
+                                                        
                                                         [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
-                                                
+                                                        
                                                         [self setPage];
                                                     }
+                                                } else {
+                                                    NSLog(@"S3になければParseに取りにいく (これはそのうちなくなる予定)");
+                                                    [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                                                        if(!error){
+                                                            // キャッシュのタイムスタンプよりParseのタイムスタンプが新しいときだけ更新 (レプリ遅延防止のため)
+                                                            // タイムゾーン考えて実装したけど意味なかった模様(もしかしたら後から使えるかもしれんので、とりあえずコメントで残しておく)
+                                                            //NSDate *sourceDate = [NSDate dateWithTimeIntervalSinceNow:3600*24*60];
+                                                            //NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+                                                            //float timeZoneOffset = [destinationTimeZone secondsFromGMTForDate:sourceDate];
+                                                            //NSDate *localDate = [object.updatedAt dateByAddingTimeInterval:timeZoneOffset];
+                                                            //NSLog(@"Parse updatedAt %@", localDate);
+                                                            
+                                                            // Parse - Cache
+                                                            // 正のときだけデータ更新
+                                                            if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date]]] > 0) {
+                                                                // サムネイル画像作成
+                                                                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                                                                
+                                                                // childArrayに突っ込む
+                                                                [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
+                                                                [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
+                                                                
+                                                                // bestshotはローカルキャッシュに保存しておく
+                                                                NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                                                                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
+                                                                
+                                                                [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
+                                                                
+                                                                [self setPage];
+                                                            }
+                                                        }
+                                                    }];
                                                 }
+                                                return nil;
                                             }];
                                         }
                                         wIndex++;

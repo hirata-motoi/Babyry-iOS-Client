@@ -24,6 +24,7 @@
 #import "CellBackgroundViewToEncourageChooseLarge.h"
 #import "CellBackgroundViewToWaitUpload.h"
 #import "CellBackgroundViewToWaitUploadLarge.h"
+#import "AWSS3Utils.h"
 
 @interface PageContentViewController ()
 
@@ -539,17 +540,34 @@
 - (void)cacheThumbnail:(PFObject *)childImage
 {
     NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-   
-    [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-        
-        NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-        // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
-        if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
     
-            NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-            [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+    // まずはS3に接続
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (!task.error && task.result) {
+            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+            // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
+            if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                
+                NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+            }
+        } else {
+            // S3になければParseに
+            [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
+                if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+    
+                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                }
+            }];
         }
+        return nil;
     }];
 }
 

@@ -15,6 +15,7 @@
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
 #import "Navigation.h"
+#import "AWSS3Utils.h"
 
 @interface MultiUploadViewController ()
 
@@ -348,27 +349,46 @@
             _bestImageIndex = _indexForCache;
             [self setupCommentView:object];
         }
-        [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-            if(!error){
-                if (data) {
-                    if ([data length] < 2) {
-                        // こんなに小さい画像はない。なので初期アップロード時に入れた仮のtxtファイル
-                        // 小さい画像(67byte)をcacheにセット
-                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
-                        _tmpCacheCount++;
-                    } else {
-                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                    }
+        if ([object[@"isTmpData"] isEqualToString:@"TRUE"]) {
+            NSLog(@"本画像が上がってない場合 普通の写真ではあり得ない小さい画像(67byte)をcacheにセット -> あとでcache画像サイズ確認して小さければクルクル出す cacheNO:%d", _tmpCacheCount);
+            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
+            _tmpCacheCount++;
+            
+            _indexForCache++;
+            [objects removeObjectAtIndex:0];
+            _uploadPregressBar.progress = (float)_indexForCache/ (float)([_childCachedImageArray count] + 1);
+            [self setCacheOfParseImage:objects];
+        } else {
+            NSLog(@"本画像が上がっている場合 S3から取る");
+            NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
+            NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                if (!task.error && task.result) {
+                    AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                    
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
                     _uploadPregressBar.progress = (float)_indexForCache/ (float)([_childCachedImageArray count] + 1);
                     [self setCacheOfParseImage:objects];
+                } else {
+                    NSLog(@"S3にないならParseから");
+                    [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                        if (!error && data) {
+                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                            
+                            _indexForCache++;
+                            [objects removeObjectAtIndex:0];
+                            _uploadPregressBar.progress = (float)_indexForCache/ (float)([_childCachedImageArray count] + 1);
+                            [self setCacheOfParseImage:objects];
+                        }
+                    }];
                 }
-            } else {
-                NSLog(@"error %@", error);
-            }
-        }];
+                return nil;
+            }];
+        }
     } else {
         //NSLog(@"setCacheOfParseImage2 %d", _tmpCacheCount);
         //古いキャッシュは消す
@@ -645,10 +665,14 @@
     [self presentPopupViewController:detailViewController animationType:MJPopupViewAnimationFade];
     
     PFObject *object = [_childDetailImageArray objectAtIndex:_detailedImageIndex];
-    [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-        if (data) {
+    // まずはS3に接続
+    NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
+    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (!task.error && task.result) {
+            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             // 本画像を上にのせる
-            UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
+            UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:getResult.body]];
             orgImageView.frame = frame;
             
             // ベストショットラベル付ける
@@ -663,10 +687,32 @@
             
             [detailViewController.view addSubview:orgImageView];
         } else {
-            NSLog(@"error %@", error);
+            // S3になければParseに (そのうち消す)
+            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+                if (data) {
+                    // 本画像を上にのせる
+                    UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
+                    orgImageView.frame = frame;
+            
+                    // ベストショットラベル付ける
+                    if (_bestImageIndex == _detailedImageIndex) {
+                        CGRect extraFrame = frame;
+                        extraFrame.origin = CGPointMake(0, 0);
+                        extraFrame.size.height = frame.size.width;
+                        UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
+                        bestShotExtraLabelView.frame = extraFrame;
+                        [orgImageView addSubview:bestShotExtraLabelView];
+                    }
+            
+                    [detailViewController.view addSubview:orgImageView];
+                } else {
+                    NSLog(@"error %@", error);
+                }
+            }];
         }
+        return nil;
     }];
-
+    
     detailViewController.view.userInteractionEnabled = YES;
     
     UITapGestureRecognizer *detailImageDoubleTGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];

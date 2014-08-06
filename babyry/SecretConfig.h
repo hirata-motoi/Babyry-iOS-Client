@@ -14,5 +14,8 @@
 + (NSString *) getParseClientKey;
 + (NSString *) getTwitterConsumerKey;
 + (NSString *) getTwitterSecretKey;
++ (NSString *) getAWSAccountId;
++ (NSString *) getAWSCognitoIdentityPoolId;
++ (NSString *) getAWSCognitoUnauthRoleArn;
 
 @end
