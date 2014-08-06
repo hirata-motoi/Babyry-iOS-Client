@@ -191,10 +191,13 @@
                 child[@"familyId"] = user[@"familyId"];
                 [child save];
             }
-            [self dismissViewControllerAnimated:YES completion:NULL];
+            
+            if ([self.navigationController isViewLoaded]) {
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            } else {
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
         }
-    } else if ([sender view].tag == 3) {
-        [self dismissViewControllerAnimated:YES completion:NULL];
     } else {
         [self.view endEditing:YES];
     }

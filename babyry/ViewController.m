@@ -34,10 +34,10 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    NSLog(@"viewDidLoad");
+    //NSLog(@"viewDidLoad");
     
     // よく使うからここに書いておく
-    //[PFUser logOut];
+    [PFUser logOut];
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ準備中";

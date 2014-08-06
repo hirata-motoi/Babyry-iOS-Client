@@ -100,7 +100,6 @@
             _explainLabel.text = @"";
         }
     } else {
-        NSLog(@"%@ %@", [PFUser currentUser][@"familyId"], [PFUser currentUser][@"role"]);
         if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
             _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
         } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {

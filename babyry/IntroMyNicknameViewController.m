@@ -142,7 +142,11 @@
             user[@"nickName"] = _introMyNicknameField.text;
             [user save];
 
-            [self dismissViewControllerAnimated:YES completion:NULL];
+            if ([self.navigationController isViewLoaded]) {
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            } else {
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
         }
     } else {
         [self.view endEditing:YES];
