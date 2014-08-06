@@ -591,20 +591,22 @@
                                                     // 正のときだけデータ更新
                                                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                                                     if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date]]] > 0) {
-                                                        // サムネイル画像作成
+                                                        //NSLog(@"サムネイル画像作成");
                                                         UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                                                         
-                                                        // childArrayに突っ込む
+                                                        //NSLog(@"childArrayに突っ込む");
                                                         [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
                                                         [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:getResult.body] atIndex:wIndex];
                                                         
-                                                        // bestshotはローカルキャッシュに保存しておく
+                                                        //NSLog(@"bestshotはローカルキャッシュに保存しておく");
                                                         NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                                                         [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
                                                         
                                                         [_childArray replaceObjectAtIndex:cIndex withObject:tmpDic];
                                                         
                                                         [self setPage];
+                                                    } else {
+                                                        //NSLog(@"Skip cache");
                                                     }
                                                 } else {
                                                     NSLog(@"S3になければParseに取りにいく (これはそのうちなくなる予定)");
@@ -621,14 +623,14 @@
                                                             // Parse - Cache
                                                             // 正のときだけデータ更新
                                                             if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date]]] > 0) {
-                                                                // サムネイル画像作成
+                                                                //NSLog(@"サムネイル画像作成");
                                                                 UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
                                                                 
-                                                                // childArrayに突っ込む
+                                                                //NSLog(@"childArrayに突っ込む");
                                                                 [[tmpDic objectForKey:@"thumbImages"] setObject:thumbImage atIndex:wIndex];
                                                                 [[tmpDic objectForKey:@"orgImages"] setObject:[UIImage imageWithData:data] atIndex:wIndex];
                                                                 
-                                                                // bestshotはローカルキャッシュに保存しておく
+                                                                //NSLog(@"bestshotはローカルキャッシュに保存しておく");
                                                                 NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                                                                 [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", c.objectId, date] image:thumbData];
                                                                 
@@ -636,6 +638,8 @@
                                                                 
                                                                 [self setPage];
                                                             }
+                                                        } else {
+                                                            //NSLog(@"Error to get image form Parse");
                                                         }
                                                     }];
                                                 }

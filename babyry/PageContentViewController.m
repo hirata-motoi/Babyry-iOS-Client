@@ -52,11 +52,7 @@
     _tutoLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 170, 300, 250)];
     
     _isFirstLoad = 1;
-    
-    //NSLog(@"%@", _childArray[_pageIndex]);
-    
-    //_bestFlagArray = [NSMutableArray arrayWithObjects:@"NO", @"NO", @"NO", @"NO", @"NO", @"NO", @"NO", nil];
-    
+
     _currentUser = [PFUser currentUser];
     
     _isNoImageCellForTutorial = nil;
@@ -362,7 +358,7 @@
     
     // 今のsection : _currentScrollSection
     NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld%02ld", currentYearMonth.year, currentYearMonth.month];
+    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld%02ld", (long)currentYearMonth.year, (long)currentYearMonth.month];
     
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDate *currentDate = [cal dateFromComponents:currentYearMonth];
@@ -371,7 +367,6 @@
         if (_isLoading) {
             return;
         }
-       
         _dateComp = [self addDateComps:_dateComp withUnit:@"month" withValue:-1];
         [self getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
     }
@@ -520,7 +515,8 @@
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
-            NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", year, month]] integerValue];
+            NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
+            NSString *keyString = [NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month];
             NSMutableDictionary *section = [_childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];
             
@@ -559,8 +555,8 @@
         if (!task.error && task.result) {
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-            // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
-            if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+            // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
+            if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
                 UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                 
                 NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
@@ -658,7 +654,6 @@
     [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:NO];
    
     // 先月
-    BOOL needMerge = (comp.day < 7) ? YES : NO;
     NSDateComponents *lastComp = [self dateComps];
     lastComp.month--;
     [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
@@ -768,7 +763,7 @@
             NSDayCalendarUnit
         fromDate:today];
         
-        NSString *ym = [NSString stringWithFormat:@"%ld%02ld", c.year, c.month];
+        NSString *ym = [NSString stringWithFormat:@"%ld%02ld", (long)c.year, (long)c.month];
         
         NSMutableDictionary *section;
         if ([childImagesDic objectForKey:ym]) {
@@ -776,13 +771,15 @@
         } else {     
             section = [[NSMutableDictionary alloc]init];
             [section setObject:[[NSMutableArray alloc]init] forKey:@"images"];
-            [section setObject:[[NSNumber numberWithInteger:c.year] stringValue] forKey:@"year"];
-            [section setObject:[[NSNumber numberWithInteger:c.month] stringValue] forKey:@"month"];
+            NSString *year = [NSString stringWithFormat:@"%ld", (long)c.year];
+            [section setObject:year forKey:@"year"];
+            NSString *month = [NSString stringWithFormat:@"%02ld", (long)c.month];
+            [section setObject:month forKey:@"month"];
             [childImagesDic setObject:section forKey:ym];
         }
         
-        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld%02ld", c.year, c.month, c.day]];
-        childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", c.year, c.month, c.day];
+        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day]];
+        childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day];
         [[section objectForKey:@"images"] addObject:childImage];
        
         todayComps = [self addDateComps:todayComps withUnit:@"day" withValue:-1];
@@ -809,6 +806,7 @@
     }
     _childImages = [[NSMutableArray alloc]initWithArray:[[childImagesAsc reverseObjectEnumerator] allObjects]];
    
+    _childImagesIndexMap = [[NSMutableDictionary alloc] init];
     int n = 0;
     for (NSMutableDictionary *section in _childImages) {
         NSString *ym = [NSString stringWithFormat:@"%@%@", [section objectForKey:@"year"], [section objectForKey:@"month"]];
