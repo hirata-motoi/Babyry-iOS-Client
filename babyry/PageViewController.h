@@ -7,7 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TagAlbumOperationViewController.h"
+#import "PageContentViewController.h"
 
-@interface PageViewController : UIPageViewController
+@interface PageViewController : UIPageViewController<TagAlbumOperationViewControllerDelegate>
+
+@property NSMutableArray *childArray;
+@property UIView *tagAlbumOperationView;
+@property NSInteger currentPageIndex;
+@property PageContentViewController *currentDisplayedPageContentViewController;
+
+- (void)openTagSelectView;
+- (NSMutableDictionary *)getYearMonthMap;
+- (NSString *)getDisplayedChildObjectId;
 
 @end

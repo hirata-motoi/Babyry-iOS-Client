@@ -52,14 +52,10 @@
     
     _isFirstLoad = 1;
     
-    //NSLog(@"%@", _childArray[_pageIndex]);
-    
-    //_bestFlagArray = [NSMutableArray arrayWithObjects:@"NO", @"NO", @"NO", @"NO", @"NO", @"NO", @"NO", nil];
     
     _currentUser = [PFUser currentUser];
     
     _isNoImageCellForTutorial = nil;
-    _selfRole = [FamilyRole selfRole];
     [self initializeChildImages];
     
     [self createCollectionView];
@@ -76,18 +72,13 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    _selfRole = [FamilyRole selfRole];
     [_pageContentCollectionView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    //[_pageContentCollectionView reloadData];
-
-    // ViewControllerにcurrentPageIndexを教える
-    ViewController *vc = (ViewController*)self.parentViewController.parentViewController;
-    vc.currentPageIndex = _pageIndex;
-   
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -386,131 +377,6 @@
 //    [self touchEvent:[[sender view] tag]];
 }
 
-//- (void)touchEvent:(int) tagNumber
-//{
-//    //UITouch *touch = [touches anyObject];
-//    NSLog( @"tag is %d", tagNumber);
-//    
-//    NSString *whichView;
-//    
-//    if (tagNumber > 1 && tagNumber < 8) {
-//        
-//        PFObject *familyRole = [FamilyRole getFamilyRole];
-//        NSString *uploaderUserId = familyRole[@"uploader"];
-//        
-//        // チュートリアル中はUploadViewController
-//        if (![_currentUser objectForKey:@"tutorialStep"] || [[_currentUser objectForKey:@"tutorialStep"] intValue] < 100) {
-//            whichView = @"Upload";
-//            
-//        // アップローダーの場合は当日以外は全部UploadViewController
-//        } else if ([[PFUser currentUser][@"userId"] isEqualToString:uploaderUserId]) {
-//            whichView = @"Upload";
-//            
-//        // チューザーの場合は、bestshotが決まっていればUploadViewController
-//        // bestshotが決まっていなければ、MultiUpload
-//        } else {
-//              // TODO cell.isChoosedを見て判定すべし
-//              whichView = @"Upload";
-////            if ([[_bestFlagArray objectAtIndex:tagNumber - 1] isEqualToString:@"YES"]) {
-////                NSLog(@"fixed bestshot");
-////                whichView = @"Upload";
-////            } else {
-////                NSLog(@"not fixed bestshot");
-////                whichView = @"MultiUpload";
-////            }
-//        }
-//    } else if (tagNumber == 1) {
-//        whichView = @"MultiUpload";
-//    } else if (tagNumber == 1111111) {
-//        NSLog(@"open album view");
-//        AlbumViewController *albumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumViewController"];
-//        albumViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-//        albumViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-//        albumViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][0];
-//        albumViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][0];
-//        
-//        //[self presentViewController:albumViewController animated:YES completion:NULL];
-//        [self.navigationController pushViewController:albumViewController animated:YES];
-//    } else if (tagNumber == 2222222) {
-//        NSLog(@"open setting view");
-//        SettingViewController *settingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingViewController"];
-//        settingViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-//        settingViewController.childName = [_childArray[_pageIndex] objectForKey:@"name"];
-//        settingViewController.childBirthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
-//        settingViewController.pViewController = self;
-//        [self.navigationController pushViewController:settingViewController animated:YES];
-//    } else if (tagNumber == 555) {
-//        if (_isNoImageCellForTutorial) {
-//            [_overlay hide];
-//            _overlay = [[ICTutorialOverlay alloc] init];
-//            _overlay.hideWhenTapped = NO;
-//            _overlay.animated = YES;
-//            [_overlay addHoleWithView:_isNoImageCellForTutorial padding:0.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-//            [_tutoLabel removeFromSuperview];
-//            _tutoLabel.backgroundColor = [UIColor clearColor];
-//            _tutoLabel.textColor = [UIColor whiteColor];
-//            _tutoLabel.numberOfLines = 0;
-//            CGRect frame = _tutoLabel.frame;
-//            frame.origin.y = 100;
-//            _tutoLabel.frame = frame;
-//            _tutoLabel.text = @"過去の画像について(Step 10/13)\n\n前日までの画像について\nベストショットがアップロードされていない過去分のパネルには、後から画像をアップロードすることが可能です。ただし、通常のアップローダー、チューザーという機能はありません。\n画像が入っていないパネルをタップしてください。";
-//            [_overlay addSubview:_tutoLabel];
-//            [_overlay show];
-//        } else {
-//            // NoImageのUploadViewがないので飛ばす(そうゆう状態の人はチュートリアル不要だし)。
-//            _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:6];
-//            [_currentUser save];
-//            [_pageContentCollectionView reloadData];
-//        }
-//    } else if (tagNumber == 777) {
-//        [_overlay hide];
-//        [_overlay removeFromSuperview];
-//        _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:100];
-//        [_currentUser save];
-//    }
-//    
-//    
-//    if ([whichView isEqualToString:@"Upload"]) {
-//        UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
-//        uploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-//        uploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-//        uploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
-//        uploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
-//        uploadViewController.uploadedImage = [_childArray[_pageIndex] objectForKey:@"orgImages"][tagNumber -1];
-//        uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-//        
-//        if(uploadViewController.childObjectId && uploadViewController.date && uploadViewController.month && uploadViewController.uploadedImage) {
-////            [self presentViewController:uploadViewController animated:YES completion:NULL];
-//            
-//            ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
-//            pageViewController.childImages = _childImages;
-//            NSLog(@"pageViewController.childImages : %@", _childImages);
-//            pageViewController.currentSection = 0;
-//            pageViewController.currentRow = tagNumber - 1;
-//            pageViewController.childObjectId = _childObjectId;
-//            //_pageViewController.name = _name;  // nameをどっかでとってくる
-//            [self.navigationController setNavigationBarHidden:YES];
-//            [self.navigationController pushViewController:pageViewController animated:YES];
-//        } else {
-//            // TODO インターネット接続がありません的なメッセージいるかも
-//        }
-//    } else if ([whichView isEqualToString:@"MultiUpload"]) {
-//        MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
-//        multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-//        multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-//        multiUploadViewController.date = [_childArray[_pageIndex] objectForKey:@"date"][tagNumber -1];
-//        multiUploadViewController.month = [_childArray[_pageIndex] objectForKey:@"month"][tagNumber -1];
-//        multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-//        if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-//            //[self presentViewController:multiUploadViewController animated:YES completion:NULL];
-//            [self.navigationController pushViewController:multiUploadViewController animated:YES];
-//        } else {
-//            // TODO インターネット接続がありません的なメッセージいるかも
-//        }
-//    }
-//}
-
-// mergeがtrueだった場合は取得したobjectsを1つ前のsectionにmergeする
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
     _isLoading = YES;
@@ -523,13 +389,14 @@
             NSMutableDictionary *section = [_childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];
             
-            NSMutableDictionary *childImageHash = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
+            NSMutableDictionary *childImageDic = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
+            
             for (int i = 0; i < [images count]; i++) {
                 PFObject *childImage = [images objectAtIndex:i];
                 NSString *ymdWithPrefix = childImage[@"date"];
                 
-                if ([childImageHash objectForKey:ymdWithPrefix]) {
-                    PFObject *childImage = [[childImageHash objectForKey:ymdWithPrefix] objectAtIndex:0];
+                if ([childImageDic objectForKey:ymdWithPrefix]) {
+                    PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
                     [self cacheThumbnail:childImage];
                     [images replaceObjectAtIndex:i withObject:childImage];
                 }
@@ -640,7 +507,6 @@
     [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:NO];
    
     // 先月
-    BOOL needMerge = (comp.day < 7) ? YES : NO;
     NSDateComponents *lastComp = [self dateComps];
     lastComp.month--;
     [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
@@ -790,10 +656,11 @@
         [childImagesAsc addObject:[childImagesDic objectForKey:ym]];
     }
     _childImages = [[NSMutableArray alloc]initWithArray:[[childImagesAsc reverseObjectEnumerator] allObjects]];
+    _childImagesIndexMap = [[NSMutableDictionary alloc]init];
    
     int n = 0;
     for (NSMutableDictionary *section in _childImages) {
-        NSString *ym = [NSString stringWithFormat:@"%@%@", [section objectForKey:@"year"], [section objectForKey:@"month"]];
+        NSString *ym = [NSString stringWithFormat:@"%@%02ld", [section objectForKey:@"year"], [[section objectForKey:@"month"] integerValue]];
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
     }
@@ -932,6 +799,22 @@
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
     }
     cell.isChoosed = YES;
+}
+
+- (NSMutableDictionary *)getYearMonthMap
+{
+    NSMutableDictionary *yearMonthMap = [[NSMutableDictionary alloc]init];
+    for (NSMutableDictionary *section in _childImages) {
+        NSString *year = [section objectForKey:@"year"];
+        NSString *month = [section objectForKey:@"month"];
+        
+        if (![yearMonthMap objectForKey:year]) {
+            [yearMonthMap setObject: [[NSMutableArray alloc]init] forKey:year];
+        }
+        
+        [[yearMonthMap objectForKey:year] addObject:month];
+    }
+    return yearMonthMap;
 }
 
 /*

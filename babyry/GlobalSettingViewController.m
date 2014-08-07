@@ -302,6 +302,7 @@
     self.roleControl.enabled = FALSE;
     [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         self.roleControl.enabled = TRUE;
+        [FamilyRole updateCache];
     }];
 }
                      
