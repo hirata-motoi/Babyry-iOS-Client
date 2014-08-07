@@ -20,8 +20,7 @@
 @property NSNumber *tagId;
 @property NSString *childObjectId;
 @property NSString *year;
+@property NSMutableDictionary *yearMonthMap;
 @property UIView *operationView;
-@property UILabel *albumViewPreYearLabel;
-@property UILabel *albumViewNextYearLabel;
 
 @end

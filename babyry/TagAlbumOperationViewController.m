@@ -14,6 +14,7 @@
 @end
 
 @implementation TagAlbumOperationViewController
+@synthesize delegate = _delegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -82,6 +83,19 @@
         }
     }];
     
+    // cancel button  適当に作る
+    UILabel *tagCancelButton = [[UILabel alloc]initWithFrame:CGRectMake(40, 60, 80, 30)];
+    tagCancelButton.text = @"tag cancel";
+    tagCancelButton.backgroundColor = [UIColor grayColor];
+    tagCancelButton.layer.cornerRadius = 10;
+    tagCancelButton.clipsToBounds = YES;
+    UITapGestureRecognizer *cancelGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(cancelTagSelection)];
+    cancelGesture.numberOfTapsRequired = 1;
+    tagCancelButton.userInteractionEnabled = YES;
+    [tagCancelButton addGestureRecognizer:cancelGesture];
+    [_tagAlbumOperationView addSubview:tagCancelButton];
+    
+    
     // tap event
     UITapGestureRecognizer *tagTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(narrowDownByTag:)];
     tagTapGestureRecognizer.numberOfTapsRequired = 1;
@@ -126,9 +140,8 @@
         imageView.alpha = 1;
     }
     
-    // AlbumViewControllerが保持するtagObjectはalphaなし
-    //
-    if ([_holdedBy isEqualToString:@"AlbumViewController"]) {
+    // ViewControllerが保持するtagObjectはalphaなし
+    if ([_holdedBy isEqualToString:@"ViewController"]) {
         imageView.alpha = 1;
     }
     
@@ -165,19 +178,24 @@
         tagView.alpha = 0.3;
     }
     
-    // AlbumViewControllerに保持されているインスタンスの場合は
+    // PageViewControllerに保持されているインスタンスの場合は
     // TagAlbumViewControllerを実体化
-    if ( [_holdedBy isEqualToString:@"AlbumViewController"] ) {
-        TagAlbumViewController *tagAlbumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumViewController"];
-        tagAlbumViewController.tagId = [NSNumber numberWithInteger:tag];
-        tagAlbumViewController.childObjectId = _childObjectId;
-        tagAlbumViewController.year = _year;
-//        [self.parentViewController addChildViewController:tagAlbumViewController];
-//        [self.parentViewController.view addSubview:tagAlbumViewController.view];
-        //[self presentViewController:tagAlbumViewController animated:YES completion:nil];
-        [self.parentViewController.navigationController pushViewController:tagAlbumViewController animated:YES];
+    if ( [_holdedBy isEqualToString:@"PageViewController"] ) {
+        NSString *childObjectId = [_delegate getDisplayedChildObjectId];
+        //NSInteger year = [_delegate getDisplayedYear];
+        NSMutableDictionary *yearMonthMap = [_delegate getYearMonthMap];
+
+        if (_tagAlbumViewController) {
+            [self cancelTagSelection];
+        }
+        
+        _tagAlbumViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumViewController"];
+        _tagAlbumViewController.tagId = [NSNumber numberWithInteger:tag];
+        _tagAlbumViewController.childObjectId = childObjectId;
+        _tagAlbumViewController.yearMonthMap = yearMonthMap;
+        [self.parentViewController addChildViewController:_tagAlbumViewController];
+        [self.parentViewController.view insertSubview:_tagAlbumViewController.view belowSubview:self.view];
         [self clearTagAlpha];
-        //self.view.hidden = YES;
     } else {
         // 画面更新のnotificationを登録
         NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
@@ -191,6 +209,12 @@
     for (UIImageView *tag in _tags) {
         tag.alpha = 1;
     }
+}
+
+- (void)cancelTagSelection
+{
+    [_tagAlbumViewController.view removeFromSuperview];
+    [_tagAlbumViewController removeFromParentViewController];
 }
 
 /*

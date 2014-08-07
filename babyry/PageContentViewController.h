@@ -50,5 +50,6 @@
 @property NSDateComponents *dateComp;
 
 - (void)drag:(DragView *)dragView;
+- (NSMutableDictionary *)getYearMonthMap;
 
 @end

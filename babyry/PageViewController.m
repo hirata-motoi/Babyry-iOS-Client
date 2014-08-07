@@ -7,6 +7,9 @@
 //
 
 #import "PageViewController.h"
+#import "PageContentViewController.h"
+#import "ImageEdit.h"
+#import "TagAlbumOperationViewController.h"
 
 @interface PageViewController ()
 
@@ -27,6 +30,12 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+   
+    PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
+    NSArray *startingViewControllers = @[startingViewController];
+    [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    
+    [self setupTagAlbumOperationView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -34,6 +43,86 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+// pragma mark - Page View Controller Data Source
+// provides the view controller after the current view controller. In other words, we tell the app what to display for the next screen.
+- (PageContentViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(PageContentViewController *)viewController
+{
+    NSUInteger index = ((PageContentViewController*) viewController).pageIndex;
+    
+    if ((index == 0) || (index == NSNotFound)) {
+        return nil;
+    }
+    
+    index--;
+    return [self viewControllerAtIndex:index];
+}
+
+// provides the view controller before the current view controller. In other words, we tell the app what to display when user switches back to the previous screen.
+- (PageContentViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(PageContentViewController *)viewController
+{
+    NSUInteger index = ((PageContentViewController*) viewController).pageIndex;
+    
+    if (index == NSNotFound) {
+        return nil;
+    }
+    
+    index++;
+    if (index == [_childArray count]) {
+        return nil;
+    }
+    return [self viewControllerAtIndex:index];
+}
+
+- (PageContentViewController *)viewControllerAtIndex:(NSUInteger)index
+{
+    if (([_childArray count] == 0) || (index >= [_childArray count])) {
+        return nil;
+    }
+    
+    PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
+
+    pageContentViewController.pageIndex = index;
+    pageContentViewController.childArray = _childArray;
+        //pageContentViewController.childImages = [_childImages objectForKey:[[_childArray objectAtIndex:index] objectForKey:@"objectId"]];
+    pageContentViewController.childObjectId = [[_childArray objectAtIndex:index] objectForKey:@"objectId"];
+    
+    _currentPageIndex = index;
+    _currentDisplayedPageContentViewController = pageContentViewController;
+    
+    return pageContentViewController;
+}
+
+// ViewControllerから叩かれる
+- (void)openTagSelectView
+{
+    _tagAlbumOperationView.hidden = NO;
+}
+
+- (void)setupTagAlbumOperationView
+{
+    // tagAlbumのviewcontrollerをinstans化
+    TagAlbumOperationViewController *tagAlbumOperationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumOperationViewController"];
+    tagAlbumOperationViewController.delegate = self;
+    tagAlbumOperationViewController.holdedBy = @"PageViewController";
+    tagAlbumOperationViewController.view.hidden = YES;
+    [self addChildViewController:tagAlbumOperationViewController];
+    [self.view addSubview:tagAlbumOperationViewController.view];
+    
+    _tagAlbumOperationView = tagAlbumOperationViewController.view;
+}
+
+- (NSMutableDictionary *)getYearMonthMap
+{
+    NSMutableDictionary *yearMonthMap = [_currentDisplayedPageContentViewController getYearMonthMap];
+    return yearMonthMap;
+}
+
+- (NSString *)getDisplayedChildObjectId
+{
+    return [[_childArray objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
+}
+
 
 /*
 #pragma mark - Navigation

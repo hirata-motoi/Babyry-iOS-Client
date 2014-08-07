@@ -44,8 +44,6 @@
     
     // 各ボタンのイベント設定などはしておく
     
-    // viewにheaderを設定
-    // 非同期でデータを読み込んできてcollectionViewをreloadする
     [self setupCollectionView:@"create"];
     [self.closeButton addTarget:self action:@selector(closeView) forControlEvents:UIControlEventTouchUpInside];
     //[self.tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
@@ -54,9 +52,6 @@
     [tagSelectButton addTarget:self action:@selector(openTagSelectView) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:tagSelectButton];
     
-    // year change
-    [self setPaging];
-    
     // operationView
     [self setupOperationView];
     
@@ -64,7 +59,8 @@
     [self setupNotificationReceiver];
     
     // title
-    [Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
+    //[Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
+    // TODO 適当にheader titlerを作る
 }
 
 - (void)didReceiveMemoryWarning
@@ -210,14 +206,16 @@
     return sortedMonthList;
 }
 
-
-- (void) setImageDataSource:(NSString *)year monthList:(NSArray *)monthList tagId:(NSNumber *)tagId
+// TODO sectionの表示順がなんだかおかしいが、phase1ではtagを見せないことにしたので一旦置き
+- (void) setImageDataSource:(NSArray *)yearMonthList tagId:(NSNumber *)tagId
 {
     // monthListは降順で渡される
-    for (int i = 0; i < monthList.count; i++) {
-        NSString *month = [monthList objectAtIndex:i];
+    for (int i = 0; i < yearMonthList.count; i++) {
+        NSString *month = [[yearMonthList objectAtIndex:i] objectForKey:@"month"];
+        NSString *year = [[yearMonthList objectAtIndex:i] objectForKey:@"year"];
+        
         NSString *childImageClassName = [NSString stringWithFormat:@"ChildImage%@%02d", year, [month intValue]];
-
+        
         PFQuery *query = [PFQuery queryWithClassName:childImageClassName];
         [query whereKey:@"imageOf" equalTo:_childObjectId];
         [query whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -327,68 +325,8 @@
         [_collectionView reloadData];
     }
     
-    NSArray *monthList = [self getMonthList:_year];
-    [self setImageDataSource:_year monthList:monthList tagId:_tagId];
-}
-
-- (void)setPaging
-{
-    _albumViewPreYearLabel = [self createButton:@"pre"];
-    _albumViewNextYearLabel = [self createButton:@"next"];
-    [self.view addSubview:_albumViewPreYearLabel];
-    [self.view addSubview:_albumViewNextYearLabel];
-}
-
-
-// TODO button用classを作ってあげたい
-- (UILabel *)createButton: (NSString *)type
-{
-    // buttom buttons
-    float buttonRadius = 30.0f;
-    float diff = (self.view.frame.size.width/4 - 2*buttonRadius)/2;
-    int buttonFontSize = 20;
-    float buttonAlpha = 0.5;
-    
-    UILabel *label = [[UILabel alloc] init];
-    label.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:buttonFontSize];
-    label.textColor = [UIColor blackColor];
-    label.textAlignment = NSTextAlignmentCenter;
-    label.backgroundColor = [UIColor orangeColor];
-    label.alpha = buttonAlpha;
-    label.layer.cornerRadius = buttonRadius;
-    [label setClipsToBounds:YES];
-    label.userInteractionEnabled = YES;
-    
-    if ([type isEqualToString:@"pre"]) {
-        label.text = @"<<";
-        label.frame = CGRectMake(self.view.frame.size.width/4 + diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
-
-        UITapGestureRecognizer *preGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPreYearAlbum:)];
-        preGestureRecognizer.numberOfTapsRequired = 1;
-        [label addGestureRecognizer:preGestureRecognizer];
-    } else if ([type isEqualToString:@"next"]) {
-            label.text = @">>";
-        label.frame = CGRectMake(self.view.frame.size.width*2/4 + diff, self.view.frame.size.height -2*buttonRadius -3, 2*buttonRadius, 2*buttonRadius);
-        
-        UITapGestureRecognizer *nextGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showNextYearAlbum:)];
-        nextGestureRecognizer.numberOfTapsRequired = 1;
-        [label addGestureRecognizer:nextGestureRecognizer];
-    }
-    return label;
-}
-
-- (void)showPreYearAlbum:(id)sender
-{
-    _year = [[NSNumber numberWithInt:[_year intValue] - 1] stringValue];
-    [self setupCollectionView:@"reload"];
-    [Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
-}
-
-- (void)showNextYearAlbum:(id)sender
-{
-    _year = [[NSNumber numberWithInt:[_year intValue] + 1] stringValue];
-    [self setupCollectionView:@"reload"];
-    [Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
+    NSMutableArray *yearMonthList = [self flattenMonthList:_yearMonthMap];
+    [self setImageDataSource:yearMonthList tagId:_tagId];
 }
 
 - (NSArray *)sortChildImageByYearMonth
@@ -414,6 +352,24 @@
     UIImage *outputImage  = [UIImage imageWithCGImage:imageRef scale:1.0f orientation:UIImageOrientationUp];
     CGImageRelease(imageRef);
     return outputImage;
+}
+
+- (NSMutableArray *)flattenMonthList:(NSMutableDictionary *)yearMonthMap
+{
+    NSMutableArray *flattenedYearMonthList = [[NSMutableArray alloc]init];
+    NSArray *yearList = [[yearMonthMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [obj1 integerValue] < [obj2 integerValue];
+    }];
+    for (NSString *year in yearList) {
+        NSArray *monthList = [[yearMonthMap objectForKey:year] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            return [obj1 integerValue] < [obj2 integerValue];
+        }];
+        for (NSString *month in monthList) {
+            NSDictionary *unit = [[NSDictionary alloc]initWithObjects:@[year, month] forKeys:@[@"year", @"month"]];
+            [flattenedYearMonthList addObject:unit];
+        }
+    }
+    return flattenedYearMonthList;
 }
 
 /*

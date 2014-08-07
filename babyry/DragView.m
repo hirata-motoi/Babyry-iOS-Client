@@ -51,8 +51,6 @@ const NSInteger dragViewHideInterval = 4;
 
 - (void)dragBegin:(UIPanGestureRecognizer *)sender
 {
-    NSLog(@"dragBegin");
-    //_startLocation = [[touches anyObject] locationInView:self];
     _startLocation = [sender locationInView:self];
     
     CGRect rect = self.frame;
@@ -83,8 +81,6 @@ const NSInteger dragViewHideInterval = 4;
 
 - (void)dragChanged:(UIPanGestureRecognizer *)sender
 {
-    NSLog(@"dragChanged");
-    //CGPoint pt = [[touches anyObject] locationInView:self];
     CGPoint pt = [sender locationInView:self];
 	CGRect frame = [self frame];
 	frame.origin.y += pt.y - _startLocation.y;
@@ -102,7 +98,6 @@ const NSInteger dragViewHideInterval = 4;
 
 - (void)dragEnded:(UIPanGestureRecognizer *)sender
 {
-    NSLog(@"dragEnded");
     CGRect rect = self.frame;
     rect.size.width = 70;
     rect.origin.x = self.superview.frame.size.width - rect.size.width;

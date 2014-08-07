@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import "PageContentViewController.h"
 #import "MBProgressHUD.h"
+#import "PageViewController.h"
 
 @interface ViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UIPageViewControllerDataSource>
 @property (weak, nonatomic) IBOutlet UIButton *openGlobalSettingViewButton;
@@ -19,8 +20,9 @@
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
 @property (strong, nonatomic) PFObject *currentInstallation;
-@property (strong, nonatomic) UIPageViewController *pageViewController;
-@property (strong, nonatomic) NSMutableArray *childArray;
+@property (strong, nonatomic) PageViewController *pageViewController;
+//@property (strong, nonatomic) NSMutableArray *childArray;
+@property NSMutableArray *childProperties;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;
 
