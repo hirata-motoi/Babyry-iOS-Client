@@ -55,6 +55,8 @@
 		88B1909D1938D23700ED630C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B1909C1938D23700ED630C /* Social.framework */; };
 		88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FB7193B2D52009474DC /* PageContentViewController.m */; };
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
+		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
+		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		D79AFBEA8B9F4207B47E8CAD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB30DD347E5C4D729656DE8C /* libPods.a */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
@@ -189,6 +191,9 @@
 		88B89FB7193B2D52009474DC /* PageContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageContentViewController.m; sourceTree = "<group>"; };
 		88B89FBC193EDC04009474DC /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
 		88B89FBD193EDC04009474DC /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
+		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CalenderLabel.xib; sourceTree = "<group>"; };
+		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
+		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB30DD347E5C4D729656DE8C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
@@ -337,6 +342,8 @@
 				F2310C21198F43DF00E01DA3 /* DragView.m */,
 				889002F6198E6FA9005775B5 /* AWSS3Utils.h */,
 				889002F7198E6FA9005775B5 /* AWSS3Utils.m */,
+				88CFF4DA19938A0600B56481 /* CalenderLabel.h */,
+				88CFF4DB19938A0600B56481 /* CalenderLabel.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -383,6 +390,7 @@
 		88B18C6A193814CE00ED630C = {
 			isa = PBXGroup;
 			children = (
+				88CFF4D8199386C500B56481 /* CalenderLabel.xib */,
 				F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */,
 				F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */,
 				F230521D198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib */,
@@ -698,6 +706,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
 				F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */,
 				F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */,
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
@@ -810,6 +819,7 @@
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
+				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
 				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,

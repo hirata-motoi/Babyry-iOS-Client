@@ -25,6 +25,7 @@
 #import "CellBackgroundViewToWaitUpload.h"
 #import "CellBackgroundViewToWaitUploadLarge.h"
 #import "AWSS3Utils.h"
+#import "CalenderLabel.h"
 
 @interface PageContentViewController ()
 
@@ -121,7 +122,19 @@
     if (indexPath.section == 0 && indexPath.row == 0) {
         return CGSizeMake(width, self.view.frame.size.height - 44 - 20  - width*2/3); // TODO magic number
     }
-    return CGSizeMake(width/3, width/3);
+    return CGSizeMake(width/3 - 2, width/3 - 2);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
+{
+    
+    return 2.0;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
+{
+    
+    return 1.0;
 }
 
 // 指定された場所のセルを作るメソッド
@@ -135,26 +148,62 @@
 
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     
+    NSMutableArray *weekdayArray = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"weekdays"];
+    NSString *weekdayString = [[NSString alloc] init];
+    weekdayString = [DateUtils getWeekStringFromNum:[[weekdayArray objectAtIndex:indexPath.row] intValue]];
+    
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
     NSString *dd = [ymd substringWithRange:NSMakeRange(6, 2)];
-   
     
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
     [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
     
     float cellWidth = cell.frame.size.width;
     float cellHeight = cell.frame.size.height;
+    
+    // カレンダーラベル
+    CalenderLabel *calLabelView = [CalenderLabel view];
+    if (indexPath.row == 0 && indexPath.section == 0) {
+        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/6, cellHeight/6);
+    } else {
+        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/4, cellHeight/4);
+    }
+    calLabelView.calLabelBack.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height);
+    calLabelView.calLabelBack.layer.cornerRadius = calLabelView.calLabelBack.frame.size.width/20;
+    calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height/3);
+    calLabelView.calLabelTop.layer.cornerRadius = calLabelView.frame.size.width/20;
+    calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
+    
+    if ([weekdayString isEqualToString:@"SUN"]) {
+        calLabelView.calLabelTop.backgroundColor = [UIColor redColor];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor redColor];
+    } else if ([weekdayString isEqualToString:@"SAT"]) {
+        calLabelView.calLabelTop.backgroundColor = [UIColor blueColor];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor blueColor];
+    } else {
+        calLabelView.calLabelTop.backgroundColor = [UIColor orangeColor];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor orangeColor];
+    }
+    
+    // カレンダーweekラベル
+    UILabel *calWeekLabel = [[UILabel alloc] initWithFrame:calLabelView.calLabelTop.frame];
+    calWeekLabel.textColor = [UIColor whiteColor];
+    calWeekLabel.text = weekdayString;
+    calWeekLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height*0.8];
+    calWeekLabel.textAlignment = NSTextAlignmentCenter;
+    [calLabelView.calLabelTop addSubview:calWeekLabel];
+    
+    // 日付ラベル
+    UILabel *calDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, calLabelView.frame.size.height/3, calLabelView.frame.size.width, calLabelView.frame.size.height*2/3)];
+    calDateLabel.textColor = [UIColor blackColor];
+    calDateLabel.text = dd;
+    calDateLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height];
+    calDateLabel.textAlignment = NSTextAlignmentCenter;
+    [calLabelView.calLabelBack addSubview:calDateLabel];
 
-    // date label
-    UILabel *dateLabel = [[UILabel alloc] init];
-    dateLabel.text = [NSString stringWithFormat:@"%@", dd];
-    dateLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/5];
-    dateLabel.textColor = [UIColor whiteColor];
-    dateLabel.shadowColor = [UIColor blackColor];
-    dateLabel.frame = CGRectMake(0, cellHeight/10, cellWidth, cellHeight/5);
-    [cell addSubview:dateLabel];
-
+    [cell addSubview:calLabelView];
+     
     // 今日のcellには子供名を表示
     if (indexPath.section == 0 && indexPath.row == 0) {
         UILabel *nameLabel = [[UILabel alloc] init];
@@ -760,7 +809,8 @@
         NSDateComponents *c = [cal components:
             NSYearCalendarUnit  |
             NSMonthCalendarUnit |
-            NSDayCalendarUnit
+            NSDayCalendarUnit   |
+            NSWeekdayCalendarUnit
         fromDate:today];
         
         NSString *ym = [NSString stringWithFormat:@"%ld%02ld", (long)c.year, (long)c.month];
@@ -771,6 +821,7 @@
         } else {     
             section = [[NSMutableDictionary alloc]init];
             [section setObject:[[NSMutableArray alloc]init] forKey:@"images"];
+            [section setObject:[[NSMutableArray alloc]init] forKey:@"weekdays"];
             NSString *year = [NSString stringWithFormat:@"%ld", (long)c.year];
             [section setObject:year forKey:@"year"];
             NSString *month = [NSString stringWithFormat:@"%02ld", (long)c.month];
@@ -781,6 +832,7 @@
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day]];
         childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day];
         [[section objectForKey:@"images"] addObject:childImage];
+        [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInt: c.weekday]];
        
         todayComps = [self addDateComps:todayComps withUnit:@"day" withValue:-1];
         today = [cal dateFromComponents:todayComps];

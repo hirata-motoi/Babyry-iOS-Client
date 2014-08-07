@@ -38,4 +38,42 @@
     return [self setSystemTimezone:[self setZero:date]];
 }
 
+// weekday num to string
++(NSString *) getWeekStringFromNum:(int)weekDayNum
+{
+    switch (weekDayNum) {
+        case 1:
+            return @"SUN";
+            break;
+
+        case 2:
+            return @"MON";
+            break;
+            
+        case 3:
+            return @"TUE";
+            break;
+            
+        case 4:
+            return @"WED";
+            break;
+            
+        case 5:
+            return @"THU";
+            break;
+            
+        case 6:
+            return @"FRI";
+            break;
+            
+        case 7:
+            return @"SAT";
+            break;
+            
+        default:
+            break;
+    }
+    return @"";
+}
+
 @end

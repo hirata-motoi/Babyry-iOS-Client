@@ -13,5 +13,6 @@
 +(NSDate *) setSystemTimezone:date;
 +(NSDate *) setZero:date;
 +(NSDate *) setSystemTimezoneAndZero:date;
++(NSString *) getWeekStringFromNum:(int)weekDayNum;
 
 @end
