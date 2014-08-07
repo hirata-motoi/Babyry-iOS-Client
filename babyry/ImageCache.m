@@ -126,7 +126,7 @@
 // このクラスでいいのか？という疑問は置いておいて
 + (UIImage *) makeThumbNail:(UIImage *)orgImage
 {
-    float width = 100.0f;
+    float width = 320.0f;
     float height = width * orgImage.size.height/orgImage.size.width;
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
     [orgImage drawInRect:CGRectMake(0, 0, width, height)];

@@ -16,7 +16,7 @@
 #import "ImageTrimming.h"
 #import "PushNotification.h"
 #import "Navigation.h"
-//#import "AWSS3Utils.h"
+#import "AWSS3Utils.h"
 
 @interface ImageOperationViewController ()
 
@@ -154,16 +154,19 @@
     [self.uploadViewController.uploadedImageView setImage:resizedImage];
     
     NSData *imageData = [[NSData alloc] init];
+    NSString *imageType = [[NSString alloc] init];
     // PNGは透過しないとだめなのでやる
     // その他はJPG
     // TODO 画像圧縮率
     if ([fileExtension isEqualToString:@"PNG"]) {
         imageData = UIImagePNGRepresentation(resizedImage);
+        imageType = @"image/png";
     } else {
         imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
+        imageType = @"image/jpeg";
     }
 
-    PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
+    //PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
     // Parseに既に画像があるかどうかを確認
     PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
@@ -176,32 +179,46 @@
     if ([imageArray count] > 1) {
         NSLog(@"これはあり得ないエラー");
     } else if ([imageArray count] == 1) {
-        //PFObject *tmpImageObject = imageArray[0];
-        imageArray[0][@"imageFile"] = imageFile;
+        PFObject *tmpImageObject = imageArray[0];
+        //imageArray[0][@"imageFile"] = imageFile;
         //ほんとはいらないけど念のため
         imageArray[0][@"bestFlag"] = @"choosed";
-        [imageArray[0] saveInBackground];
-//        [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-//            if (succeeded) {
-//                NSLog(@"save to s3");
-//                [AWSS3Utils saveToS3InBackground:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], tmpImageObject.objectId] imageData:imageData];
-//            }
-//        }];
+        [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (succeeded) {
+                NSLog(@"save to s3");
+                [[AWSS3Utils putObject:
+                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], tmpImageObject.objectId]
+                             imageData:imageData
+                             imageType:imageType] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                    if (task.error) {
+                        NSLog(@"save error to S3 %@", task.error);
+                    }
+                    return nil;
+                }];
+            }
+        }];
     // 一つもないなら新たに追加
     } else {
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-        childImage[@"imageFile"] = imageFile;
+        //childImage[@"imageFile"] = imageFile;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"choosed";
-        [childImage saveInBackground];
-//        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-//            if (succeeded) {
-//                NSLog(@"save to s3");
-//                [AWSS3Utils saveToS3InBackground:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId] imageData:imageData];
-//            }
-//        }];
+        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (succeeded) {
+                NSLog(@"save to s3");
+                [[AWSS3Utils putObject:
+                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId]
+                             imageData:imageData
+                             imageType:imageType] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                    if (task.error) {
+                        NSLog(@"save error to S3 %@", task.error);
+                    }
+                    return nil;
+                }];
+            }
+        }];
     }
     
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
