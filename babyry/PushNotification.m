@@ -7,6 +7,7 @@
 //
 
 #import "PushNotification.h"
+#import "Partner.h"
 
 @implementation PushNotification
 
@@ -20,9 +21,12 @@
         if (!error && objects.count > 0) { // 存在しないイベントの場合は通知を送らない
             PFObject *eventInfo = [objects objectAtIndex:0];
             
-            NSLog(@"eventInfo : %@", eventInfo);
-            
             NSString *message = eventInfo[@"message"];
+            if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
+                message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
+            }                                                 
+            
+            NSLog(@"message : %@", message);
             
             // 相方の情報を取得
             PFQuery *queryFamily = [PFQuery queryWithClassName:@"_User"];
@@ -30,7 +34,6 @@
             [queryFamily whereKey:@"userId" notEqualTo:[PFUser currentUser][@"userId"]];
             queryFamily.cachePolicy = kPFCachePolicyCacheElseNetwork;
             [queryFamily findObjectsInBackgroundWithBlock:^(NSArray *familyObjects, NSError *familyError){
-                NSLog(@"familyObjects : %@", familyObjects);
                 if (!error && familyObjects.count > 0) { // familyが自分だけだったら送らない
                     
                     NSLog(@"push notification send start");

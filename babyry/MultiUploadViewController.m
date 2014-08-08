@@ -17,6 +17,7 @@
 #import "Navigation.h"
 #import "AWSS3Utils.h"
 #import "NotificationHistory.h"
+#import "Partner.h"
 
 @interface MultiUploadViewController ()
 
@@ -519,8 +520,11 @@
                     }
                     index++;
                 }
-                [PushNotification sendInBackground:@"bestshotChosen" withOptions:nil];
-                [self createNotificationHistory:@"bestShotChange"];
+                PFObject *partner = [Partner partnerUser];
+                if (partner != nil) {
+                    [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:[[NSMutableDictionary alloc]initWithObjects:@[partner[@"nickName"]] forKeys:@[@"formatArgs"]]];
+                    [self createNotificationHistory:@"bestShotChange"];
+                }
                 
             } else {
                 NSLog(@"error at double tap %@", error);
@@ -775,15 +779,16 @@
 
 - (void)createNotificationHistory:(NSString *)type
 {
-    PFQuery *query = [PFQuery queryWithClassName:@"_User"];
-    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
-    [query whereKey:@"userId" notEqualTo:[PFUser currentUser][@"userId"]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error && [objects count] == 1) {
-            PFObject *object = [objects objectAtIndex:0];
-            [NotificationHistory createNotificationHistoryWithType:type withTo:object[@"userId"] withDate:_date];
-        }
-    }];
+    [NSThread detachNewThreadSelector:@selector(executeNotificationHistory:) toTarget:self withObject:[[NSMutableDictionary alloc]initWithObjects:@[type] forKeys:@[@"type"]]];
+    
+}
+
+- (void)executeNotificationHistory:(id)param
+{
+    NSString *type = [param objectForKey:@"type"];
+    NSLog(@"executeNotificationHistory type:%@", type);
+    PFObject *partner = [Partner partnerUser];
+    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:_date];
 }
 
 - (void)setupThanksButton
@@ -801,8 +806,8 @@
 {
     [self createNotificationHistory:@"bestShotReply"];
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    [options setObject:@"1" forKey:@"setName"];
-    [PushNotification sendInBackground:@"bestshotChosen" withOptions:options];
+    [options setObject:[[NSArray alloc]initWithObjects:[PFUser currentUser][@"nickName"], nil] forKey:@"formatArgs"];
+    [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
 }
     
 @end
