@@ -66,11 +66,13 @@
     
     [self showCacheImages];
     
+    
     // set label
     NSString *yyyy = [_month substringToIndex:4];
     NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
     NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
-    _multiUploadLabel.text = [NSString stringWithFormat:@"%@/%@/%@の%@", yyyy, mm, dd, _name];
+    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
+    _multiUploadLabel.text = [NSString stringWithFormat:@"%@の写真", _name];
     
     // set cell size
     _cellHeight = 100.0f;
