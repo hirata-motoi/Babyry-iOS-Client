@@ -23,6 +23,7 @@
 @property NSString *date;
 @property UIImage *uploadedImage;
 @property NSString *name;
+@property NSString *promptText;
 
 @property NSMutableArray *cellHeightArray;
 

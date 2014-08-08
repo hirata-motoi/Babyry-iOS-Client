@@ -31,6 +31,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.dataSource = self;
+    self.delegate = self;
    
     [self setupDataSource];
     [self showInitialImage];
@@ -84,6 +85,8 @@
         uploadViewController.uploadedImage = [UIImage imageNamed:@"NoImage"];
     }
     uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+  
+    uploadViewController.promptText = [NSString stringWithFormat:@"%ld/%ld", index + 1, _childImages.count];
     
     return uploadViewController;
 }
@@ -120,7 +123,6 @@
     index++;
     return [self viewControllerAtIndex:index];
 }
-
 
 /*
 #pragma mark - Navigation

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ImagePageViewController : UIPageViewController<UIPageViewControllerDataSource>
+@interface ImagePageViewController : UIPageViewController<UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property NSInteger currentSection;
 @property NSInteger currentRow;
