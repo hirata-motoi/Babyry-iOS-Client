@@ -38,4 +38,21 @@
     return [self setSystemTimezone:[self setZero:date]];
 }
 
++ (NSDateComponents *)dateCompsFromDate:(NSDate *)date
+{
+    if (date == nil) {
+        date = [NSDate date];
+    }
+    
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *dateComps = [cal components:
+        NSYearCalendarUnit   |
+        NSMonthCalendarUnit  |
+        NSDayCalendarUnit    |
+        NSHourCalendarUnit
+    fromDate:date];
+    return dateComps;
+}
+
+
 @end
