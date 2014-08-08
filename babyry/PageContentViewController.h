@@ -48,8 +48,8 @@
 @property UILabel *tutoSkipLabel;
 @property BOOL isLoading;
 @property NSDateComponents *dateComp;
+@property NSMutableDictionary *notificationHistory;
 
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
-
 @end

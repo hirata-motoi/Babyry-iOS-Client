@@ -16,6 +16,7 @@
 #import "PushNotification.h"
 #import "Navigation.h"
 #import "AWSS3Utils.h"
+#import "NotificationHistory.h"
 
 @interface MultiUploadViewController ()
 
@@ -111,6 +112,9 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
         [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
+    
+    // for test
+    [self setupThanksButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -463,7 +467,6 @@
 -(void)handleDoubleTap:(id) sender {
     NSLog(@"double tap %d", [[sender view] tag]);
     
-    // role bbbのみダブルタップ可能
     // チュートリアルStep 4でも可
     if ([[FamilyRole selfRole] isEqualToString:@"chooser"] || [_tutorialStep intValue] == 4) {
         
@@ -517,6 +520,8 @@
                     index++;
                 }
                 [PushNotification sendInBackground:@"bestshotChosen" withOptions:nil];
+                [self createNotificationHistory:@"bestShotChange"];
+                
             } else {
                 NSLog(@"error at double tap %@", error);
             }
@@ -766,6 +771,38 @@
     _commentView.frame = defFrame;
     [self addChildViewController:_commentViewController];
     [self.view addSubview:_commentView];
+}
+
+- (void)createNotificationHistory:(NSString *)type
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"_User"];
+    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+    [query whereKey:@"userId" notEqualTo:[PFUser currentUser][@"userId"]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error && [objects count] == 1) {
+            PFObject *object = [objects objectAtIndex:0];
+            [NotificationHistory createNotificationHistoryWithType:type withTo:object[@"userId"] withDate:_date];
+        }
+    }];
+}
+
+- (void)setupThanksButton
+{
+    if (![[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        return;
+    }
+    UIButton *thanksButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [thanksButton setBackgroundImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
+    [thanksButton addTarget:self action:@selector(sendThanks) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:thanksButton];
+}
+
+- (void)sendThanks
+{
+    [self createNotificationHistory:@"bestShotReply"];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    [options setObject:@"1" forKey:@"setName"];
+    [PushNotification sendInBackground:@"bestshotChosen" withOptions:options];
 }
     
 @end
