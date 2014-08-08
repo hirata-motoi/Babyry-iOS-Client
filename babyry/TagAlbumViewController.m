@@ -59,7 +59,7 @@
     [self setupNotificationReceiver];
     
     // title
-    //[Navigation setTitle:self.navigationItem withTitle:_year withFont:nil withFontSize:0 withColor:nil];
+    //[Navigation setTitle:self.navigationItem withTitle:_year withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     // TODO 適当にheader titlerを作る
 }
 

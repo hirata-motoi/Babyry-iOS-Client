@@ -513,7 +513,7 @@
 
 - (void)setupTitle
 {
-    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@/%@", _yyyy, _mm] withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@/%@", _yyyy, _mm] withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
 // ImagePageViewControllerの仕様に合わせたchildImagesを作る

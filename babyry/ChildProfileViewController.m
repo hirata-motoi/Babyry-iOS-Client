@@ -32,7 +32,7 @@
     
     _childProfileTableView.delegate = self;
     _childProfileTableView.dataSource = self;
-    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@プロフィール編集", _childName] withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@プロフィール編集", _childName] withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning

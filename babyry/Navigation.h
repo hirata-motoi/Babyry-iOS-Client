@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface Navigation : NSObject
-+ (void)setTitle: (UINavigationItem *)navigationItem withTitle:(NSString *)title withFont:(NSString *)font withFontSize:(CGFloat)fontSize withColor:(UIColor *)color;
++ (void)setTitle: (UINavigationItem *)navigationItem withTitle:(NSString *)title withSubtitle:(NSString *)subtitle withFont:(NSString *)font withFontSize:(CGFloat)fontSize withColor:(UIColor *)color;
 + (void)setNavbarColor: (UINavigationBar *)navigationBar withColor:(UIColor *)color withEtcElements:(NSArray *)elements;
 @end
