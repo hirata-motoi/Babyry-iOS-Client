@@ -23,6 +23,7 @@
 #import "ImageEdit.h"
 #import "TagAlbumOperationViewController.h"
 #import "ArrayUtils.h"
+#import "Partner.h"
 
 @interface ViewController ()
 
@@ -53,6 +54,9 @@
     [view addSubview:titleview];
     self.navigationItem.titleView = view;
     self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"EEEEEE" alpha:0.6]; // TODO 外だし
+    
+    // partner情報初期化
+    [Partner initialize];
 }
 
 - (void)didReceiveMemoryWarning
