@@ -44,6 +44,11 @@
     BOOL __block isPreload = YES;
     [self setupOperationView:isPreload];
     
+    // zoom
+    _scrollView.minimumZoomScale = 1.0f;
+    _scrollView.maximumZoomScale = 3.0f;
+    _scrollView.delegate = self;
+    
     // Parseからちゃんとしたサイズの画像を取得
     PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
     originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -197,6 +202,10 @@
     frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
 
     return frame;
+}
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return _uploadedImageView;
 }
 
 @end

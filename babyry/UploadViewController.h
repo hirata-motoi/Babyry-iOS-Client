@@ -12,10 +12,11 @@
 #import "ICTutorialOverlay.h"
 #import "ImageOperationViewController.h"
 
-@interface UploadViewController : UIViewController
+@interface UploadViewController : UIViewController<UIScrollViewDelegate>
 
 
 @property (weak, nonatomic) IBOutlet UIImageView *uploadedImageView;
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 @property CGRect defaultImageViewFrame;
 @property NSString *childObjectId;
