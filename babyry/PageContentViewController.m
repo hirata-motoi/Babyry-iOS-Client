@@ -10,8 +10,8 @@
 #import "ViewController.h"
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
-#import "AlbumViewController.h"
 #import "ImageTrimming.h"
+#import "ImageCache.h"
 #import "FamilyRole.h"
 #import "ImagePageViewController.h"
 #import "ArrayUtils.h"
@@ -24,7 +24,6 @@
 #import "CellBackgroundViewToEncourageChooseLarge.h"
 #import "CellBackgroundViewToWaitUpload.h"
 #import "CellBackgroundViewToWaitUploadLarge.h"
-#import "AWSS3Utils.h"
 #import "CalenderLabel.h"
 
 @interface PageContentViewController ()
@@ -46,6 +45,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
     
     _overlay = [[ICTutorialOverlay alloc] init];
     _overlay.hideWhenTapped = NO;
@@ -433,22 +434,23 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
-            NSString *keyString = [NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month];
             NSMutableDictionary *section = [_childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];
             
             NSMutableDictionary *childImageDic = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
             
+            NSMutableArray *cacheSetQueueArray = [[NSMutableArray alloc] init];
             for (int i = 0; i < [images count]; i++) {
                 PFObject *childImage = [images objectAtIndex:i];
                 NSString *ymdWithPrefix = childImage[@"date"];
                 
                 if ([childImageDic objectForKey:ymdWithPrefix]) {
                     PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
-                    [self cacheThumbnail:childImage];
                     [images replaceObjectAtIndex:i withObject:childImage];
+                    [cacheSetQueueArray addObject:childImage];
                 }
             }
+            [self setImageCache:cacheSetQueueArray withReload:reload];
           
             if (reload) {
                 [_pageContentCollectionView reloadData];
@@ -463,38 +465,55 @@
     }];
 }
 
-- (void)cacheThumbnail:(PFObject *)childImage
+- (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
 {
-    NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-    
-    // まずはS3に接続
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (!task.error && task.result) {
-            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-            // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
-            if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                
-                NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
-            }
-        } else {
-            // S3になければParseに
-            [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+    if ([cacheSetQueueArray count] > 0) {
+        NSLog(@"get image cache queue remain %d", [cacheSetQueueArray count]);
+        // キャッシュ取り出し
+        PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
+        [cacheSetQueueArray removeObjectAtIndex:0];
+        
+        NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+        NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
+        
+        AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+        getRequest.bucket = @"babyrydev-images";
+        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId];
+        AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+        
+        [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+            if (!task.error && task.result) {
+                AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                 NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
-                if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-    
+                // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
+                if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                    
                     NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                     [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
                 }
-            }];
-        }
-        return nil;
-    }];
+            } else {
+                [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                    NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                    // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
+                    if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                        
+                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                    }
+                }];
+            }
+            if (reload) {
+                // このタイミングでreloadしたいけどするとtopページが一瞬かくっとなるので微妙
+                //[_pageContentCollectionView reloadData];
+            }
+            [self setImageCache:cacheSetQueueArray withReload:reload];
+            return nil;
+        }];
+    } else {
+        NSLog(@"get image cache queue end!");
+    }
 }
 
 - (NSDateComponents *)dateComps

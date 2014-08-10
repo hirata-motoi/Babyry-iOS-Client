@@ -36,6 +36,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    
     _defaultImageViewFrame = _uploadedImageView.frame;
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
@@ -54,7 +56,7 @@
         if ([objects count] > 0) {
             PFObject * object = [objects objectAtIndex:0];
             // まずはS3に接続
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     _uploadedImageView.image = [UIImage imageWithData:getResult.body];

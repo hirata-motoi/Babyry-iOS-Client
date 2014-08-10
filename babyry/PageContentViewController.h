@@ -10,6 +10,7 @@
 #import "ICTutorialOverlay.h"
 #import <Parse/Parse.h>
 #import "DragView.h"
+#import "AWSS3Utils.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -51,5 +52,7 @@
 
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
+
+@property AWSServiceConfiguration *configuration;
 
 @end

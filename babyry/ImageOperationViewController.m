@@ -16,7 +16,6 @@
 #import "ImageTrimming.h"
 #import "PushNotification.h"
 #import "Navigation.h"
-#import "AWSS3Utils.h"
 
 @interface ImageOperationViewController ()
 
@@ -37,6 +36,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
     
     [self.openPhotoLibraryButton addTarget:self action:@selector(openPhotoLibrary) forControlEvents:UIControlEventTouchUpInside];
 
@@ -189,7 +190,8 @@
                 [[AWSS3Utils putObject:
                   [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], tmpImageObject.objectId]
                              imageData:imageData
-                             imageType:imageType] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                             imageType:imageType
+                         configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
                         NSLog(@"save error to S3 %@", task.error);
                     }
@@ -211,7 +213,8 @@
                 [[AWSS3Utils putObject:
                   [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId]
                              imageData:imageData
-                             imageType:imageType] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                             imageType:imageType
+                         configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
                         NSLog(@"save error to S3 %@", task.error);
                     }
@@ -291,92 +294,5 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-/*
-- (void) saveToS3InBackground:(NSString *)key imageData:(NSData *)imageData
-{
-    AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-    putRequest.bucket = @"babyrydev-images";
-    putRequest.key = key;
-    putRequest.body = imageData;
-    putRequest.contentLength = [NSNumber numberWithInt:[imageData length]];
-    
-    // AWS cognite
-    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
-                                                          credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:@"424568627207"
-                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
-                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
-                                                          authRoleArn:nil];
-    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
-    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-    
-    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-    [[[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task){
-        if (task.error) {
-            NSLog(@"S3 get error: %@", [task.error description]);
-        }
-        return nil;
-    }] waitUntilFinished];
-    
- 
- 
- 
-    NSLog(@"aaaaaaaaa %@", imageURL);
-    _uploadRequest = [AWSS3TransferManagerUploadRequest new];
-    _uploadRequest.bucket = @"babyrydev-images";
-    _uploadRequest.key = key;
-    _uploadRequest.body = imageURL;
-    
-    AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
-    
-    [[transferManager upload:_uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (task.error != nil) {
-            NSLog(@"no such???? %@", imageURL);
-            if( task.error.code != AWSS3TransferManagerErrorCancelled && task.error.code != AWSS3TransferManagerErrorPaused ) {
-                NSLog(@"Upload Failed! %d", task.error.code);
-                NSLog(@"Upload Failed! %@", task.error);
-            }
-        } else {
-            //_uploadRequest = nil;
-        }
-        return nil;
-    }];
-    
-    // AWS cognite
-    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
-                                                          credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:@"424568627207"
-                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
-                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
-                                                          authRoleArn:nil];
-    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
-    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-    
-    AWSS3GetObjectRequest *awsS3GetObjectRequest = [AWSS3GetObjectRequest new];
-    awsS3GetObjectRequest.key = @"20121028125656.jpg";
-    awsS3GetObjectRequest.bucket = @"babyrydev-images";
-    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-    [[[awsS3 getObject:awsS3GetObjectRequest] continueWithBlock:^id(BFTask *task)
-      {
-          if (task.error)
-          {
-              NSLog(@"S3 get error: %@", [task.error description]);
-          }
-          else
-          {
-              NSLog(@"S3 file size: %@", ((AWSS3GetObjectOutput *)task.result).contentLength);
-          }
-          return nil;
-      }] waitUntilFinished];
-    [awsS3 putObject:(AWSS3PutObjectRequest *)]
-    [[[awsS3 putObject:_uploadRequest] continueWithBlock:^id(BFTask *task){
-        if (task.error) {
-            NSLog(@"S3 get error: %@", [task.error description]);
-        }
-        return nil;
-    }] waitUntilFinished];
-}
- */
 
 @end

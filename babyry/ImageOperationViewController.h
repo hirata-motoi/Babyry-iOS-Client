@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Parse/Parse.h>
-#import <AWSiOSSDKv2/S3.h>
+#import "AWSS3Utils.h"
 
 @class UploadViewController;
 
@@ -36,5 +36,7 @@
 @property PFObject *imageInfo;
 // isPreloadの場合キャッシュのサムネイルを表示するだけなのでコメントViewは表示させない
 @property BOOL isPreload;
+
+@property AWSServiceConfiguration *configuration;
 
 @end

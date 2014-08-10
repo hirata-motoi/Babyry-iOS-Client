@@ -37,6 +37,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+        _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    
     _currentUser = [PFUser currentUser];
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
@@ -361,7 +363,7 @@
             NSLog(@"本画像が上がっている場合 S3から取る");
             NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
             NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId] configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
@@ -654,7 +656,7 @@
     // まずはS3に接続
     NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
     NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId] configuration:_configuration] continueWithBlock:^id(BFTask *task) {
         if (!task.error && task.result) {
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             // 本画像を上にのせる

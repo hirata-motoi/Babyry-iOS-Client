@@ -32,6 +32,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    
     _albumImageCollectionView.delegate = self;
     _albumImageCollectionView.dataSource = self;
     [_albumImageCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"MultiUploadPickerViewControllerCell"];
@@ -321,6 +323,7 @@
 {
     // _uploadImageDataArray に上げる画像が入っている
     // これが count 0になるまで再起実行
+    
     if ([_uploadImageDataArray count] != 0){
         // isTmpDataがついているレコードを探す
         PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
@@ -333,7 +336,8 @@
                 [[AWSS3Utils putObject:
                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId]
                             imageData:[_uploadImageDataArray objectAtIndex:0]
-                             imageType:[_uploadImageDataTypeArray objectAtIndex:0]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                             imageType:[_uploadImageDataTypeArray objectAtIndex:0]
+                         configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                     if (!task.error) {
                         // エラーがなければisTmpDataを更新
                         object[@"isTmpData"] = @"FALSE";
@@ -363,7 +367,8 @@
                     [[AWSS3Utils putObject:
                       [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId]
                                  imageData:[_uploadImageDataArray objectAtIndex:0]
-                                 imageType:[_uploadImageDataTypeArray objectAtIndex:0]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                                 imageType:[_uploadImageDataTypeArray objectAtIndex:0]
+                             configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                         if (!task.error) {
                             // エラーがなければisTmpDataを更新
                             [_uploadImageDataArray removeObjectAtIndex:0];

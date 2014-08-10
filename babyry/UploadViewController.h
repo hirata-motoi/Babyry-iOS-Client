@@ -38,5 +38,6 @@
 @property UIView *operationView;
 @property ImageOperationViewController *operationViewController;
 
+@property AWSServiceConfiguration *configuration;
 
 @end

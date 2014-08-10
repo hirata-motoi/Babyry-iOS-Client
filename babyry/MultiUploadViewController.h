@@ -66,4 +66,6 @@
 
 @property int uploadUppeLimit;
 
+@property AWSServiceConfiguration *configuration;
+
 @end

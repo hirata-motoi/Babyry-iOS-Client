@@ -40,4 +40,6 @@
 @property ICTutorialOverlay *overlay;
 @property NSNumber *tutorialStep;
 
+@property AWSServiceConfiguration *configuration;
+
 @end
