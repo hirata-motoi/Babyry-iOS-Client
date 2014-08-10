@@ -10,7 +10,6 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "MultiUploadViewController.h"
 #import "MBProgressHUD.h"
-#import "ICTutorialOverlay.h"
 
 @interface MultiUploadPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 @property (strong, nonatomic) IBOutlet UICollectionView *albumImageCollectionView;
@@ -36,9 +35,6 @@
 @property NSIndexPath *indexPath;
 
 @property MBProgressHUD *hud;
-
-@property ICTutorialOverlay *overlay;
-@property NSNumber *tutorialStep;
 
 @property AWSServiceConfiguration *configuration;
 

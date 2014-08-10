@@ -105,8 +105,6 @@
     // super
     [super viewWillAppear:animated];
     
-    [_overlay removeFromSuperview];
-    
     [_myTimer invalidate];
 }
 
@@ -146,11 +144,8 @@
         i++;
     }
     
-    // アップロード用の画像を最後にはめる、ただし、
-    // uploader もしくは tutorialStep = 2(アップロードのチュートリアル) の場合かつ、
-    // uploader かつ tutorialStepが4(チューザーのチュートリアル)じゃない場合
-    if (([[FamilyRole selfRole] isEqualToString:@"uploader"] || [_tutorialStep intValue] == 2)
-        && ([[FamilyRole selfRole] isEqualToString:@"uploader"] && [_tutorialStep intValue] != 4)) {
+    // アップロード用の画像を最後にはめる
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         [_childCachedImageArray addObject:[NSString stringWithFormat:@"ForUploadImage"]];
     }
     
@@ -211,10 +206,6 @@
         UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
         uploadGesture.numberOfTapsRequired = 1;
         [cell addGestureRecognizer:uploadGesture];
-        if ([_tutorialStep intValue] == 2) {
-            _plusCellForTutorial = cell;
-            [self setTutorialStep2];
-        }
     } else {
         // ローカルに保存されていたサムネイル画像を貼付け
         NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
@@ -350,16 +341,6 @@
     }
 }
 
--(void)handleTuto3Gesture:(id) sender {
-    NSLog(@"handleTuto3Gesture");
-    
-    _tutorialStep = [NSNumber numberWithInt:4];
-    _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:4];
-    [_currentUser save];
-    
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
-
 -(void)handleUploadGesture:(id) sender {
     if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         [self openPhotoAlbumList];
@@ -380,7 +361,7 @@
     
     // role bbbのみダブルタップ可能
     // チュートリアルStep 4でも可
-    if ([[FamilyRole selfRole] isEqualToString:@"chooser"] || [_tutorialStep intValue] == 4) {
+    if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         
         _bestImageIndex = [[sender view] tag];
         
@@ -441,13 +422,6 @@
         NSData *thumbData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, [[sender view] tag]]];
         UIImage *thumbImage = [UIImage imageWithData:thumbData];
         [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-        
-        // チュートリアル中だったらこれで終わり
-        if ([_tutorialStep intValue] == 4) {
-            _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:5];
-            [_currentUser save];
-            [self dismissViewControllerAnimated:YES completion:NULL];
-        }
     }
 }
 
@@ -578,28 +552,6 @@
     [_pageViewController removeFromParentViewController];
     
     [self viewDidAppear:(BOOL)YES];
-}
-
--(void)setTutorialStep2
-{
-    _overlay = [[ICTutorialOverlay alloc] init];
-    _overlay.hideWhenTapped = NO;
-    _overlay.animated = YES;
-    CGRect frame = _plusCellForTutorial.frame;
-    frame.origin.x += 10;
-    frame.origin.y += 105;
-    frame.size.width -=10;
-    frame.size.height -= 10;
-    [_overlay addHoleWithRect:frame form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-    
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, self.view.frame.size.height/2, 300, 200)];
-    label.backgroundColor = [UIColor clearColor];
-    label.textColor = [UIColor whiteColor];
-    label.numberOfLines = 0;
-    label.text = @"アップロードの方法(Step 2/13)\n\nアップローダーの場合は、今日のパネルをタップするとこの画像アップロード画面が開きます。\nアップロードボタンを押して画像をアップロードしてみましょう。";
-    [_overlay addSubview:label];
-    
-    [_overlay show];
 }
 
 -(void)setupCommentView:(PFObject *) imageInfo;

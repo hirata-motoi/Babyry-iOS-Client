@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
-#import "ICTutorialOverlay.h"
 #import "CommentViewController.h"
 #import "UIViewController+MJPopupViewController.h"
 #import "MultiUploadAlbumTableViewController.h"
@@ -47,9 +46,6 @@
 
 @property int detailedImageIndex;
 
-@property ICTutorialOverlay *overlay;
-@property NSNumber *tutorialStep;
-@property UICollectionViewCell *plusCellForTutorial;
 @property PFUser *currentUser;
 
 @property CommentViewController *commentViewController;

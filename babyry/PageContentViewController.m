@@ -49,15 +49,9 @@
     
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
     
-    _overlay = [[ICTutorialOverlay alloc] init];
-    _overlay.hideWhenTapped = NO;
-    _overlay.animated = YES;
-    _tutoLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 170, 300, 250)];
-    
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     
-    _isNoImageCellForTutorial = nil;
     [self initializeChildImages];
     
     [self createCollectionView];
@@ -85,8 +79,7 @@
 
 -(void)viewWillDisappear:(BOOL)animated
 {
-    [_overlay hide];
-    [_overlay removeFromSuperview];
+    [super viewWillDisappear:animated];
 }
 
 -(void)createCollectionView
@@ -214,105 +207,7 @@
         nameLabel.frame = CGRectMake(0, cellHeight - cellHeight/8, cellWidth, cellHeight/8);
         [cell addSubview:nameLabel];
     }
-    
     cell.tag = indexPath.row + 1;
-    
-    // チュートリアル用
-    if (indexPath.row == 0) {
-        if (!_currentUser[@"tutorialStep"] || [_currentUser[@"tutorialStep"] intValue] < 100) {
-            [_currentUser refresh];
-            NSLog(@"Tutorial Step is %d", [_currentUser[@"tutorialStep"] intValue]);
-            if ([_currentUser[@"tutorialStep"] intValue] == 1
-                || [_currentUser[@"tutorialStep"] intValue] == 4
-                || [_currentUser[@"tutorialStep"] intValue] == 5
-                || [_currentUser[@"tutorialStep"] intValue] == 6
-                || [_currentUser[@"tutorialStep"] intValue] == 7) {
-                if (indexPath.row == 0) {
-                    if ([_currentUser[@"tutorialStep"] intValue] != 5 && [_currentUser[@"tutorialStep"] intValue] != 6) {
-                        // disable all subviews touchevent
-                        for (UIView *view in cell.subviews) {
-                            for (UIGestureRecognizer *recognizer in view.gestureRecognizers) {
-                                //NSLog(@"subviews recognizer in cell %@", view);
-                                [view removeGestureRecognizer:recognizer];
-                            }
-                        }
-                    }
-                    
-                    if ([_currentUser[@"tutorialStep"] intValue] == 1 || [_currentUser[@"tutorialStep"] intValue] == 4) {
-                        [_overlay addHoleWithView:cell padding:-20.0f offset:CGSizeMake(0, 50) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 6) {
-                        [_overlay hide];
-                        _overlay = [[ICTutorialOverlay alloc] init];
-                        _overlay.hideWhenTapped = NO;
-                        _overlay.animated = YES;
-                    }
-                    
-                    [_tutoLabel removeFromSuperview];
-                    _tutoLabel.backgroundColor = [UIColor clearColor];
-                    _tutoLabel.textColor = [UIColor whiteColor];
-                    _tutoLabel.numberOfLines = 0;
-                    if ([_currentUser[@"tutorialStep"] intValue] == 1) {
-                        _tutoLabel.text = @"Babyryの使い方(Step 1/13)\n\nBabyryのチュートリアルを始めます。Babyryはアップローダーとチューザーに分かれて一日のベストショットを残していくアプリです。\nまずは、アップローダーの機能のチュートリアルを始めます。今日のパネルをタップしてみてください。";
-                        CGRect frame = _tutoLabel.frame;
-                        frame.origin.y = cell.frame.origin.y + cell.frame.size.height;
-                        _tutoLabel.frame = frame;
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 4) {
-                        _tutoLabel.text = @"チューザー機能(Step 7/13)\n\nチューザー側に切り替えました。\n今日のパネルをタップしてください。";
-                        CGRect frame = _tutoLabel.frame;
-                        frame.origin.y = cell.frame.origin.y + cell.frame.size.height;
-                        _tutoLabel.frame = frame;
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 5) {
-                        _tutoLabel.text = @"チューザー機能(Step 9/13)\n\nベストショットが反映されました。これでアップローダーとチューザー機能のチュートリアルは完了です。画面をタップして次に進んでください。";
-                        _overlay.tag = 555;
-                        UITapGestureRecognizer *tutoGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-                        tutoGestureRecognizer.numberOfTapsRequired = 1;
-                        [_overlay addGestureRecognizer:tutoGestureRecognizer];
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 6) {
-                        _tutoLabel.text = @"アルバムについて(Step 12/13)\n\n次はアルバムを見てみましょう。";
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 7) {
-                        [_overlay hide];
-                        _overlay = [[ICTutorialOverlay alloc] init];
-                        _overlay.hideWhenTapped = NO;
-                        _overlay.animated = YES;
-                        _tutoLabel.text = @"チュートリアルはこれで終了です。\n画面をタップしてBabyryを開始してください。\n\nHave A Nice Babyry Days!";
-                        _overlay.tag = 777;
-                        UITapGestureRecognizer *tutoGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-                        tutoGestureRecognizer.numberOfTapsRequired = 1;
-                        [_overlay addGestureRecognizer:tutoGestureRecognizer];
-                    }
-                    [_overlay addSubview:_tutoLabel];
-                    [_overlay show];
-                    
-                    /* チュートリアルスキップボタンがうまく動かない。。。
-                    _tutoSkipLabel.userInteractionEnabled = YES;
-                    _tutoSkipLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, 130, 20)];
-                    _tutoSkipLabel.layer.borderColor = [UIColor whiteColor].CGColor;
-                    _tutoSkipLabel.layer.borderWidth = 1;
-                    _tutoSkipLabel.layer.cornerRadius = _tutoSkipLabel.frame.size.height/2;
-                    _tutoSkipLabel.textAlignment = NSTextAlignmentCenter;
-                    _tutoSkipLabel.text = @"チュートリアルをスキップ";
-                    _tutoSkipLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:10];
-                    _tutoSkipLabel.textColor = [UIColor whiteColor];
-                    _tutoSkipLabel.shadowColor = [UIColor blackColor];
-                    _tutoSkipLabel.shadowOffset = CGSizeMake(0.f, 1.f);
-                    _tutoSkipLabel.tag = 777;
-                    UITapGestureRecognizer *tutoSkipGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-                    tutoSkipGesture.numberOfTapsRequired = 1;
-                    [_tutoSkipLabel addGestureRecognizer:tutoSkipGesture];
-                    [_overlay addSubview:_tutoSkipLabel];
-                    */
-                }
-            } else if ([_currentUser[@"tutorialStep"] intValue] == 2) {
-                NSLog(@"今日のパネルのチュートリアルが途中なのでそちらに遷移させる");
-                //[self touchEvent:1];
-            } else if ([_currentUser[@"tutorialStep"] intValue] == 3) {
-                NSLog(@"3で止まっている場合には、すぐに4に遷移させてok");
-                _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:4];
-                [_currentUser save];
-                [_pageContentCollectionView reloadData];
-            }
-        }
-    }
 
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
     if (indexPath.section == 0 && indexPath.row == 1) {
@@ -662,7 +557,7 @@
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *diff = [cal components:NSDayCalendarUnit fromDate:dateTappedImage toDate:dateToday options:0];
     
-    return [diff day] < 7;
+    return [diff day] < 2;
 }
 
 - (BOOL)notChoosedYet: (NSIndexPath *)indexPath
@@ -888,13 +783,11 @@
                 rect.size.height = rect.size.width;
                 backgroundView.frame = rect;
                 [cell addSubview:backgroundView];
-                
-                if(!_isNoImageCellForTutorial){
-                    _isNoImageCellForTutorial = cell;
-                }
             }
         } else {
             // upload待ち
+            
+            // チョイスを促す
             if (indexPath.section == 0 && indexPath.row == 0) {
                 CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
                 CGRect rect = backgroundView.frame;
@@ -909,9 +802,6 @@
                 rect.size.height = cell.frame.size.height;
                 backgroundView.frame = rect;
                 [cell addSubview:backgroundView];
-                if(!_isNoImageCellForTutorial){
-                    _isNoImageCellForTutorial = cell;
-                }
             }
         }
         return;

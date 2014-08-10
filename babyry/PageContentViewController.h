@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ICTutorialOverlay.h"
 #import <Parse/Parse.h>
 #import "DragView.h"
 #import "AWSS3Utils.h"
@@ -18,9 +17,6 @@
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
 @property NSString *childObjectId;
-
-@property ICTutorialOverlay *overlay;
-@property UILabel *tutoLabel;
 
 @property NSString *returnValueOfChildName;
 @property NSString *returnValueOfChildBirthday;
@@ -38,13 +34,9 @@
 @property NSString *selfRole;
 @property NSInteger dragCount;
 
-@property NSNumber *tutorialStep;
-
 @property PFUser *currentUser;
 
 @property int isFirstLoad;
-
-@property UICollectionViewCell *isNoImageCellForTutorial;
 
 @property UILabel *tutoSkipLabel;
 @property BOOL isLoading;
