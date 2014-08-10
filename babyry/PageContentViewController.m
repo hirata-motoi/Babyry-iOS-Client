@@ -790,7 +790,7 @@
             // それ以外 : アップアイコン
             
             if([self withinTwoDay:indexPath] && ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:0]] || [[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:-1]])) {
-                // チョイス催促
+                // チョイス催促をいれてもいいけど、いまは UP PHOTO アイコンをはめている
                 if (indexPath.section == 0 && indexPath.row == 0) {
                     CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
                     CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
@@ -847,17 +847,24 @@
                     [cell addGestureRecognizer:giveMePhotoGesture];
                 } else {
                     // チョイス促進アイコン貼る
+                    NSNumber *uploadedNum = [totalImageNum objectAtIndex:indexPath.row];
                     if (indexPath.section == 0 && indexPath.row == 0) {
                         CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
                         backgroundView.iconView.frame = rect;
+                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 10, backgroundView.upCountLabel.frame.size.height);
+                        backgroundView.upCountLabel.frame = rect;
+                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
                         [cell addSubview:backgroundView];
                     } else {
                         CellBackgroundViewToEncourageChoose *backgroundView = [CellBackgroundViewToEncourageChoose view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
                         backgroundView.iconView.frame = rect;
+                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 5, backgroundView.upCountLabel.frame.size.height);
+                        backgroundView.upCountLabel.frame = rect;
+                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
                         [cell addSubview:backgroundView];
                     }
                 }
