@@ -8,6 +8,7 @@
 
 #import "IntroChildNameViewController.h"
 #import "Navigation.h"
+#import "Sharding.h"
 
 @interface IntroChildNameViewController ()
 
@@ -189,6 +190,7 @@
                 [child setObject:user forKey:@"createdBy"];
                 child[@"name"] = childName;
                 child[@"familyId"] = user[@"familyId"];
+                child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
                 [child save];
             }
             

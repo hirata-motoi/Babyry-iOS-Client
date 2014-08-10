@@ -45,6 +45,7 @@
 
 - (void)setupDataSource
 {
+    
     _imageList = [[NSMutableArray alloc]init];
     NSInteger sectionIndex = 0;
     for (NSDictionary *sectionInfo in _childImages) {
@@ -52,7 +53,6 @@
             _currentIndex = _imageList.count + _currentRow;
         }
        
-        //NSLog(@"sectionInfo : %@", sectionInfo);
         NSArray *images = [sectionInfo objectForKey:@"images"];
         [_imageList addObjectsFromArray:images];
         sectionIndex += 1;
@@ -75,6 +75,7 @@
     uploadViewController.date = ymd;
     uploadViewController.tagAlbumPageIndex = index;
     uploadViewController.holdedBy = @"TagAlbumPageViewController";
+    uploadViewController.child = _child;
     
     // Cacheからはりつけ
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
@@ -85,8 +86,13 @@
         uploadViewController.uploadedImage = [UIImage imageNamed:@"NoImage"];
     }
     uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-  
-    uploadViewController.promptText = [NSString stringWithFormat:@"%ld/%ld", index + 1, _childImages.count];
+
+    if (_showPageNavigation) {
+        NSInteger imagesCount = (_imagesCountDic && _imagesCountDic[@"imagesCountNumber"])
+            ? [_imagesCountDic[@"imagesCountNumber"] integerValue]
+            : _imageList.count;
+        uploadViewController.promptText = [NSString stringWithFormat:@"%ld/%ld", index + 1, imagesCount];
+    }
     
     return uploadViewController;
 }
@@ -123,6 +129,12 @@
     index++;
     return [self viewControllerAtIndex:index];
 }
+
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
+{
+    // TODO 必要に応じてparseから画像データを取得
+}
+
 
 /*
 #pragma mark - Navigation

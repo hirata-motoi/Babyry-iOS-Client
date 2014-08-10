@@ -17,5 +17,8 @@
 @property NSString *name;
 @property NSMutableArray *imageList;
 @property NSInteger currentIndex;
+@property BOOL showPageNavigation; // headerのsubtitleに何枚中何枚目を出すかどうか
+@property NSMutableDictionary *imagesCountDic;
+@property NSMutableDictionary *child;
 
 @end

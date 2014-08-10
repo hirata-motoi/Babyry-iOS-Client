@@ -322,7 +322,7 @@
     _uploadProgressView.hidden = NO;
     
     // Parseから画像をとる
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
@@ -363,8 +363,8 @@
             NSLog(@"本画像が上がっている場合 S3から取る");
             NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
             NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                if (!task.error && task.result) {
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                if (!task.error && task.result) {                                                                           
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                     [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
@@ -493,8 +493,8 @@
         }
         
         // update Parse
-        PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-        childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+        PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
         [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
         [childImageQuery orderByAscending:@"createdAt"];
@@ -610,6 +610,7 @@
     multiUploadPickerViewController.childObjectId = _childObjectId;
     multiUploadPickerViewController.date = _date;
     multiUploadPickerViewController.currentCachedImageNum = [_childImageArray count];
+    multiUploadPickerViewController.child = _child;
     if ([_tutorialStep intValue] == 2) {
         multiUploadPickerViewController.tutorialStep = [NSNumber numberWithInt:2];
     }
@@ -656,8 +657,8 @@
     // まずはS3に接続
     NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
     NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (!task.error && task.result) {
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (!task.error && task.result) {                                                                           
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             // 本画像を上にのせる
             UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:getResult.body]];

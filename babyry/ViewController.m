@@ -375,6 +375,7 @@
         } else {
             [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
         }
+        childSubDic[@"childImageShardIndex"] = c[@"childImageShardIndex"];
         [_childProperties addObject:childSubDic];
     }
 }

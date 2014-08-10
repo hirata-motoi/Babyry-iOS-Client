@@ -50,8 +50,8 @@
     _scrollView.delegate = self;
     
     // Parseからちゃんとしたサイズの画像を取得
-    PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-    originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+    PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+    originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
     [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
     [originalImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
@@ -59,8 +59,8 @@
         if ([objects count] > 0) {
             PFObject * object = [objects objectAtIndex:0];
             // まずはS3に接続
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                if (!task.error && task.result) {
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                if (!task.error && task.result) {                                                                           
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     _uploadedImageView.image = [UIImage imageWithData:getResult.body];
                     _imageInfo = object;
@@ -164,6 +164,7 @@
     _operationViewController.holdedBy = _holdedBy;
     _operationViewController.imageInfo = _imageInfo;
     _operationViewController.isPreload = isPreload;
+    _operationViewController.child = _child;
     
     [self addChildViewController:_operationViewController];
     [_operationViewController didMoveToParentViewController:self];

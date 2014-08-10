@@ -36,6 +36,7 @@
 @property BOOL dragViewZoomed;
 @property NSString *selfRole;
 @property NSInteger dragCount;
+@property NSMutableDictionary *imagesCountDic;
 
 @property NSNumber *tutorialStep;
 

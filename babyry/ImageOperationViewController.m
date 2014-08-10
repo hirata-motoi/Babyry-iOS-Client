@@ -159,7 +159,7 @@
     //PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
     
     // Parseに既に画像があるかどうかを確認
-    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [imageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
     [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -177,7 +177,7 @@
             if (succeeded) {
                 NSLog(@"save to s3");
                 [[AWSS3Utils putObject:
-                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], tmpImageObject.objectId]
+                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId]
                              imageData:imageData
                              imageType:imageType] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (task.error) {
@@ -189,7 +189,7 @@
         }];
     // 一つもないなら新たに追加
     } else {
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
         //childImage[@"imageFile"] = imageFile;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
@@ -199,7 +199,7 @@
             if (succeeded) {
                 NSLog(@"save to s3");
                 [[AWSS3Utils putObject:
-                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId]
+                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], childImage.objectId]
                              imageData:imageData
                              imageType:imageType] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (task.error) {

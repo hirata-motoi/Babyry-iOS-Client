@@ -56,8 +56,8 @@
     _currentUser = [PFUser currentUser];
     
     _isNoImageCellForTutorial = nil;
+    [self setupImagesCount];
     [self initializeChildImages];
-    
     [self createCollectionView];
     [self showChildImages];
     
@@ -336,6 +336,7 @@
         multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
         multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
         multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        multiUploadViewController.child = _childArray[_pageIndex];
         if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
             //[self presentViewController:multiUploadViewController animated:YES completion:NULL];
             [self.navigationController pushViewController:multiUploadViewController animated:YES];
@@ -344,12 +345,16 @@
         }
         return;
     }
-    
+   
     ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
-    pageViewController.childImages = _childImages;
+    pageViewController.childImages = [self screenSavedChildImages];
     pageViewController.currentSection = indexPath.section;
-    pageViewController.currentRow = indexPath.row;
+    pageViewController.currentRow = [self currentIndexRowInSavedChildImages:indexPath];
+    pageViewController.showPageNavigation = YES; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
+    pageViewController.imagesCountDic = _imagesCountDic;
+    NSLog(@"pageViewController.imagesCountDic : %@", _imagesCountDic);
+    pageViewController.child = _childArray[_pageIndex];
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
 }
@@ -427,9 +432,12 @@
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
     _isLoading = YES;
-    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
+    // TODO
+    PFObject *child = _childArray[_pageIndex];
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", (long)year, (long)month]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
@@ -646,35 +654,22 @@
 
 - (void)initializeChildImages
 {
+    NSMutableDictionary *child = _childArray[_pageIndex];
     // 現在日時と子供の誕生日の間のオブジェクトをとりあえず全部作る
     
-    // 誕生日
-    NSDate *birthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
-    NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
-    if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
-        birthday = [NSDate date];
-    }
     NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *birthdayComps = [cal components:
-        NSYearCalendarUnit  |
-        NSMonthCalendarUnit |
-        NSDayCalendarUnit   |
-        NSHourCalendarUnit
-    fromDate:birthday];
-   
-    // 誕生日の1年前
-    NSDateComponents *lowerLimitDayComps = [self addDateComps:birthdayComps withUnit:@"year" withValue:-1];
+    // 誕生日
+    NSDate *birthday = [self getCompensatedBirthday];
     
-    // 現在日時
-    NSDateComponents *todayComps = [self dateComps];
+    NSLog(@"birthday : %@", birthday);
+    
     // 現在
+    NSDateComponents *todayComps = [self dateComps];
     NSDate *today = [NSDate date];
-    
-    // 誕生日の1年前
-    NSDate *firstday = [cal dateFromComponents:lowerLimitDayComps];
+    NSLog(@"today : %@", today);
     
     NSMutableDictionary *childImagesDic = [[NSMutableDictionary alloc]init];
-    while ([today compare:firstday] == NSOrderedDescending) {
+    while ([today compare:birthday] == NSOrderedDescending) {
         NSDateComponents *c = [cal components:
             NSYearCalendarUnit  |
             NSMonthCalendarUnit |
@@ -697,17 +692,17 @@
             [section setObject:month forKey:@"month"];
             [childImagesDic setObject:section forKey:ym];
         }
-        
-        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day]];
+       
+        // TODO
+        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day];
         [[section objectForKey:@"images"] addObject:childImage];
-        [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInt: c.weekday]];
+        [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInteger: c.weekday]];
        
         todayComps = [self addDateComps:todayComps withUnit:@"day" withValue:-1];
         today = [cal dateFromComponents:todayComps];
     }
     
-    // needMergeがtrueの時は、mergeConfに従ってsectionをmergeする
     [self setObjectsToChildImages:childImagesDic];
     
     // scroll位置と表示月の関係
@@ -886,6 +881,76 @@
         [[yearMonthMap objectForKey:year] addObject:month];
     }
     return yearMonthMap;
+}
+
+- (NSMutableArray *)screenSavedChildImages
+{
+    NSMutableArray *savedChildImages = [[NSMutableArray alloc]init];
+    for (NSMutableDictionary *section in _childImages) {
+        NSMutableDictionary *newSection = [[NSMutableDictionary alloc]init];
+        newSection[@"year"] = section[@"year"];
+        newSection[@"month"] = section[@"month"];
+        newSection[@"images"] = [[NSMutableArray alloc]init];
+        [savedChildImages addObject:newSection];
+        
+        for (PFObject *childImage in section[@"images"]) {
+            // 実際にParse上に画像が保存されているPFObjectかどうかを
+            // imageFileカラムの値があるかで判定
+            if (childImage[@"imageFile"]) {
+                [newSection[@"images"] addObject:childImage];
+            }
+        }
+    }
+    return savedChildImages;
+}
+
+- (NSInteger)currentIndexRowInSavedChildImages:(NSIndexPath *)indexPath
+{
+    NSMutableArray *targetChildImageList = _childImages[indexPath.section][@"images"];
+    
+    NSInteger indexInSavedChildImages = -1;
+    for (NSInteger i = 0; i < targetChildImageList.count; i++) {
+        PFObject *childImage = targetChildImageList[i];
+        if (childImage[@"imageFile"]) {
+            indexInSavedChildImages++;
+        }
+        if (i == indexPath.row) {
+            return indexInSavedChildImages;
+        }
+    }
+    return 0;
+}
+
+// birthdayがなかった場合はcreatedAtを誕生日とする
+- (NSDate *)getCompensatedBirthday
+{
+    PFObject *child = _childArray[_pageIndex];
+    NSDate *birthday = child[@"birthday"];
+    NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
+    if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
+        birthday = [DateUtils setSystemTimezone:child.createdAt];
+    }
+    return birthday;
+}
+
+- (void)setupImagesCount
+{
+    _imagesCountDic = [[NSMutableDictionary alloc]init];
+    NSMutableDictionary *child = _childArray[_pageIndex];
+    NSLog(@"childImageShardIndex : %ld", [child[@"childImageShardIndex"] integerValue]);
+    NSString *className = [NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]];
+    NSLog(@"className : %@", className);
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"imageOf" equalTo:_childObjectId];
+    NSLog(@"childObjectId : %@", _childObjectId);
+    [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    
+    [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        if (!error) {
+            NSLog(@"images count : %d", number);
+            [_imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
+        }
+    }];
 }
 
 /*
