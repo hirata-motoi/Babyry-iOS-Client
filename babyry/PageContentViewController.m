@@ -193,22 +193,7 @@
     [calLabelView.calLabelBack addSubview:calDateLabel];
 
     [cell addSubview:calLabelView];
-     
-    // 今日のcellには子供名を表示
-    if (indexPath.section == 0 && indexPath.row == 0) {
-        UILabel *nameLabel = [[UILabel alloc] init];
-        if (_returnValueOfChildName) {
-            nameLabel.text = _returnValueOfChildName;
-        } else {
-            nameLabel.text = [NSString stringWithFormat:@"%@", [[_childArray objectAtIndex:_pageIndex] objectForKey:@"name"]];
-        }                                                       
-        nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/8];
-        nameLabel.textAlignment = NSTextAlignmentLeft;
-        nameLabel.textColor = [UIColor whiteColor];
-        nameLabel.shadowColor = [UIColor blackColor];
-        nameLabel.frame = CGRectMake(0, cellHeight - cellHeight/8, cellWidth, cellHeight/8);
-        [cell addSubview:nameLabel];
-    }
+    
     cell.tag = indexPath.row + 1;
 
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
