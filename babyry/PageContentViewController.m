@@ -170,14 +170,14 @@
     calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
     
     if ([weekdayString isEqualToString:@"SUN"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor redColor];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor redColor];
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
     } else if ([weekdayString isEqualToString:@"SAT"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor blueColor];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor blueColor];
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
     } else {
-        calLabelView.calLabelTop.backgroundColor = [UIColor orangeColor];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor orangeColor];
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
     }
     
     // カレンダーweekラベル
