@@ -8,20 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
-#import <AssetsLibrary/AssetsLibrary.h>
 #import "ICTutorialOverlay.h"
 #import "CommentViewController.h"
 #import "UIViewController+MJPopupViewController.h"
+#import "MultiUploadAlbumTableViewController.h"
 
-@interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate>
 
 //- (IBAction)multiUploadViewBackButton:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
-
-@property (strong, nonatomic) IBOutlet UIView *uploadProgressView;
-@property (strong, nonatomic) IBOutlet UIProgressView *uploadPregressBar;
 @property (strong, nonatomic) IBOutlet UILabel *explainLabel;
 
 @property NSString *childObjectId;
@@ -38,12 +35,6 @@
 @property UIImageView *bestShotLabelView;
 
 @property int bestImageIndex;
-
-@property ALAssetsLibrary *library;
-@property NSMutableArray *albumListArray;
-@property NSMutableDictionary *albumImageDic;
-
-@property UITableView *albumTableView;
 
 @property int indexForCache;
 

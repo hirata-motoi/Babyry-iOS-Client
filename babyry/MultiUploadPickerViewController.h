@@ -32,8 +32,8 @@
 @property NSString *month;
 @property NSString *childObjectId;
 @property NSString *date;
-
-@property int currentCachedImageNum;
+@property NSMutableArray *totalImageNum;
+@property NSIndexPath *indexPath;
 
 @property MBProgressHUD *hud;
 

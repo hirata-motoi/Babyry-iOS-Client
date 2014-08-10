@@ -10,6 +10,7 @@
 #import "ViewController.h"
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
+#import "MultiUploadAlbumTableViewController.h"
 #import "ImageTrimming.h"
 #import "ImageCache.h"
 #import "FamilyRole.h"
@@ -331,17 +332,31 @@
     // uploader
     //    +ボタンがないパターン
     if ([self shouldShowMultiUploadView:indexPath]) {
-        MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
-        multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-        multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-        multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
-        multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-            //[self presentViewController:multiUploadViewController animated:YES completion:NULL];
-            [self.navigationController pushViewController:multiUploadViewController animated:YES];
+        if ([self isNoImage:indexPath]) {
+            MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
+            multiUploadAlbumTableViewController.childObjectId = _childObjectId;
+            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];;
+            multiUploadAlbumTableViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            
+            // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
+            NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+            NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+            multiUploadAlbumTableViewController.totalImageNum = totalImageNum;
+            multiUploadAlbumTableViewController.indexPath = indexPath;
+            
+            [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
         } else {
-            // TODO インターネット接続がありません的なメッセージいるかも
+            MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
+            multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
+            multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+            multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+            multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
+                [self.navigationController pushViewController:multiUploadViewController animated:YES];
+            } else {
+                // TODO インターネット接続がありません的なメッセージいるかも
+            }
         }
         return;
     }
@@ -436,6 +451,7 @@
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
             NSMutableDictionary *section = [_childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];
+            NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
             
             NSMutableDictionary *childImageDic = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
             
@@ -447,7 +463,22 @@
                 if ([childImageDic objectForKey:ymdWithPrefix]) {
                     PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
                     [images replaceObjectAtIndex:i withObject:childImage];
+                    [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:1]];
                     [cacheSetQueueArray addObject:childImage];
+                } else {
+                    NSLog(@"No Choosed Image %@", ymdWithPrefix);
+                    // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
+                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
+                    [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
+                    [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
+                    [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                        //NSLog(@"There is %d unchoosed image : %@", [objects count], ymdWithPrefix);
+                        if ([objects count] > 0) {
+                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[objects count]]];
+                        } else {
+                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
+                        }
+                    }];
                 }
             }
             [self setImageCache:cacheSetQueueArray withReload:reload];
@@ -576,7 +607,6 @@
     [comps setMonth:month];
     NSDate *date = [cal dateFromComponents:comps];
     
-    
     // inUnit:で指定した単位（月）の中で、rangeOfUnit:で指定した単位（日）が取り得る範囲
     NSRange range = [cal rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:date];
     
@@ -602,10 +632,23 @@
 // 今週じゃない かつ 候補写真がある かつ 未choosed
 - (BOOL)shouldShowMultiUploadView:(NSIndexPath *)indexPath
 {
-    return [self withinOneWeek:indexPath] || [self notChoosedYet:indexPath];
+    // 2日間はMultiUploadViewController
+    return [self withinTwoDay:indexPath];
 }
 
-- (BOOL)withinOneWeek: (NSIndexPath *)indexPath
+- (BOOL)isNoImage:(NSIndexPath *)indexPath
+{
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    if ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:0]]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)withinTwoDay: (NSIndexPath *)indexPath
 {
     PFObject *chilImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     NSString *ymd = [chilImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
@@ -613,7 +656,7 @@
   
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
 	[inputDateFormatter setDateFormat:@"yyyyMMdd"];
-	NSDate *dateToday = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:[NSString stringWithFormat:@"%ld%02ld%02ld", compToday.year, compToday.month, compToday.day]]];
+	NSDate *dateToday = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:[NSString stringWithFormat:@"%ld%02ld%02ld", (long)compToday.year, (long)compToday.month, (long)compToday.day]]];
 	NSDate *dateTappedImage = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:ymd]];
   
     NSCalendar *cal = [NSCalendar currentCalendar];
@@ -624,11 +667,14 @@
 
 - (BOOL)notChoosedYet: (NSIndexPath *)indexPath
 {
-    // これどうやって判定すんねん
-    // 最初にchoosedだけでなく全imageの情報を持ってきておかないといけない
-    // 最初に取得した時にunchoosedしかない場合は、ちゃんとthumbnailの情報を保持 or cacheしておく
-    // unchoosedしかない場合はその旨のflgを持っておく。 → chooseStatus enum("choosed", "unuploaded", "unchoosed")
-    return NO;
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    if([totalImageNum isEqual:[NSNumber numberWithInt:-1]]) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (void)setupScrollBarView
@@ -639,14 +685,13 @@
     _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 70, _dragViewUpperLimitOffset, 70, 60)];
     _dragView.userInteractionEnabled = YES;
     _dragView.delegate = self;
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", _dateComp.year, _dateComp.month];
+    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", (long)_dateComp.year, (long)_dateComp.month];
     _dragView.dragViewLowerLimitOffset = _dragViewLowerLimitOffset;
     _dragView.dragViewUpperLimitOffset = _dragViewUpperLimitOffset;
     
     [self.view addSubview:_dragView];
 }
 
-//- (void)dragView:(UIPanGestureRecognizer *)sender
 - (void)drag:(DragView *)targetView
 {
     _dragging = YES;
@@ -709,6 +754,7 @@
         } else {     
             section = [[NSMutableDictionary alloc]init];
             [section setObject:[[NSMutableArray alloc]init] forKey:@"images"];
+            [section setObject:[[NSMutableArray alloc]init] forKey:@"totalImageNum"];
             [section setObject:[[NSMutableArray alloc]init] forKey:@"weekdays"];
             NSString *year = [NSString stringWithFormat:@"%ld", (long)c.year];
             [section setObject:year forKey:@"year"];
@@ -720,6 +766,7 @@
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day]];
         childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day];
         [[section objectForKey:@"images"] addObject:childImage];
+        [[section objectForKey:@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
         [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInt: c.weekday]];
        
         todayComps = [self addDateComps:todayComps withUnit:@"day" withValue:-1];
@@ -731,7 +778,6 @@
     
     // scroll位置と表示月の関係
     [self setupScrollPositionData];
-    
 }
 
 - (void)setObjectsToChildImages:(NSMutableDictionary *)childImagesDic
@@ -750,7 +796,7 @@
     _childImagesIndexMap = [[NSMutableDictionary alloc] init];
     int n = 0;
     for (NSMutableDictionary *section in _childImages) {
-        NSString *ym = [NSString stringWithFormat:@"%@%02ld", [section objectForKey:@"year"], [[section objectForKey:@"month"] integerValue]];
+        NSString *ym = [NSString stringWithFormat:@"%@%02ld", [section objectForKey:@"year"], (long)[[section objectForKey:@"month"] integerValue]];
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
     }

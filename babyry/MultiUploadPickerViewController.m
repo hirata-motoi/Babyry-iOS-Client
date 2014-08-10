@@ -281,12 +281,7 @@
         [_uploadImageDataTypeArray addObject:imageType];
 
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-        
-        ///// 適当な小さいtxtファイルであげておく (あとから大きな画像は非同期で送る)
-        ///// NSData *tmpData = [@"a" dataUsingEncoding:NSUTF8StringEncoding];
-        
-        /////childImage[@"imageFile"] = [PFFile fileWithName:@"NowUploading.txt" data:tmpData];
-        
+
         // tmpData = @"TRUE" にセットしておく画像はあとからあげる
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
@@ -299,6 +294,9 @@
                 [_overlay hide];
                 [_overlay removeFromSuperview];
                 [_hud hide:YES];
+                if (_totalImageNum) {
+                    [_totalImageNum replaceObjectAtIndex:_indexPath.row withObject:[NSNumber numberWithInt:saveCount]];
+                }
                 [self saveToParseInBackground];
                 [self dismissViewControllerAnimated:YES completion:NULL];
                 
@@ -323,7 +321,6 @@
 {
     // _uploadImageDataArray に上げる画像が入っている
     // これが count 0になるまで再起実行
-    
     if ([_uploadImageDataArray count] != 0){
         // isTmpDataがついているレコードを探す
         PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
