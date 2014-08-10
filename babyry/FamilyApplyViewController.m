@@ -36,7 +36,7 @@
     [self showSelfUserId];
     
     [self setupSearchForm];
-    [Navigation setTitle:self.navigationItem withTitle:@"パートナー検索" withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:@"パートナー検索" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
     // set navigator
     // view押したらキーボードを隠す

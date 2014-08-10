@@ -63,7 +63,7 @@
         _childNameField1.hidden = YES;
     }
     
-    [Navigation setTitle:self.navigationItem withTitle:@"こどもを追加" withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:@"こどもを追加" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning

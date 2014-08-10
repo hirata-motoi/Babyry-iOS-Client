@@ -24,7 +24,6 @@
 @property UploadViewController *uploadViewController;
 
 @property (strong, nonatomic) IBOutlet UIView *operationView;
-@property (weak, nonatomic) IBOutlet UIButton *openPhotoLibraryButton;
 @property (weak, nonatomic) IBOutlet UINavigationBar *navbar;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navbarItem;
 @property (weak, nonatomic) IBOutlet UIView *statusBarCoverView;

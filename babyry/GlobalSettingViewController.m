@@ -47,7 +47,7 @@
     [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self setupChildList];
     [self setupPartnerInfo];
-    [Navigation setTitle:self.navigationItem withTitle:@"設定" withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning

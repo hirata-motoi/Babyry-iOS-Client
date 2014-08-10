@@ -40,7 +40,7 @@
     self.familyApplyList.dataSource = self;
     
     [self showFamilyApplyList];
-    [Navigation setTitle:self.navigationItem withTitle:@"パートナーからの申請" withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:@"パートナーからの申請" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
 

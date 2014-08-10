@@ -39,10 +39,6 @@
     
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
     
-    [self.openPhotoLibraryButton addTarget:self action:@selector(openPhotoLibrary) forControlEvents:UIControlEventTouchUpInside];
-
-    [self setStyle];
-    
     // タップでoperationViewを非表示にする
     UITapGestureRecognizer *hideOperationViewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideOperationView:)];
     hideOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
@@ -128,12 +124,6 @@
     _commentView.frame = CGRectMake(self.view.frame.size.width - 50, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
     [self addChildViewController:commentViewController];
     [self.view addSubview:_commentView];
-}
-
-- (void)setStyle
-{
-    _openPhotoLibraryButton.layer.cornerRadius = 20;
-    _openPhotoLibraryButton.clipsToBounds = YES;
 }
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -260,17 +250,26 @@
 - (void)setupNavigation
 {
     [self setColorForNavigation];
-    
+   
+    // back button
     UIButton *backButton = [UIButton buttonWithType:101];
     [backButton addTarget:self action:@selector(doBack) forControlEvents:UIControlEventTouchUpInside]; [backButton setTitle:@"戻る" forState:UIControlStateNormal];
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     _navbarItem.leftBarButtonItem = backItem;
-    
+                                                 
+    // 写真変更ボタン
+    UIButton *openPhotoLibraryButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    [openPhotoLibraryButton setBackgroundImage:[UIImage imageNamed:@"imageIcon"] forState:UIControlStateNormal];
+    [openPhotoLibraryButton addTarget:self action:@selector(openPhotoLibrary) forControlEvents:UIControlEventTouchUpInside];
+    NSLog(@"openPhotoLibraryButton %@", openPhotoLibraryButton);
+    _navbarItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openPhotoLibraryButton];
+   
+    // title
     NSString *yyyy =  [_date substringWithRange:NSMakeRange(0, 4)];
     NSString *mm   =  [_date substringWithRange:NSMakeRange(4, 2)];
     NSString *dd   =  [_date substringWithRange:NSMakeRange(6, 2)];
     
-    [Navigation setTitle:_navbarItem withTitle:[NSString stringWithFormat:@"%@/%@/%@", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:_navbarItem withTitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withSubtitle:_uploadViewController.promptText withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)setColorForNavigation
