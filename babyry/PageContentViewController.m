@@ -25,7 +25,9 @@
 #import "CellBackgroundViewToEncourageChooseLarge.h"
 #import "CellBackgroundViewToWaitUpload.h"
 #import "CellBackgroundViewToWaitUploadLarge.h"
+#import "CellBackgroundViewNoImage.h"
 #import "CalenderLabel.h"
+#import "PushNotification.h"
 
 @interface PageContentViewController ()
 
@@ -220,6 +222,15 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    // チェックの人がアップ催促する時だけここは何の処理もしない
+    if ([_selfRole isEqualToString:@"chooser"]) {
+        NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+        if ([[totalImageNum objectAtIndex:indexPath.row] compare:[NSNumber numberWithInt:1]] == NSOrderedAscending) {
+            return;
+        }
+    }
+    
     PFObject *tappedChildImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     // chooser
     //    upload待ち
@@ -361,17 +372,21 @@
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:1]];
                     [cacheSetQueueArray addObject:childImage];
                 } else {
-                    NSLog(@"No Choosed Image %@", ymdWithPrefix);
+                    //NSLog(@"No Choosed Image %@", ymdWithPrefix);
                     // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
                     PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
                     [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
                     [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
                     [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                        //NSLog(@"There is %d unchoosed image : %@", [objects count], ymdWithPrefix);
+                        //NSLog(@"There is %d unchoosed image : %@ %d %d %d", [objects count], ymdWithPrefix, index, i, [images count]);
                         if ([objects count] > 0) {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[objects count]]];
                         } else {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
+                        }
+                        // 昨日と今日のパネルを即入れ替えるため
+                        if (index == 0 && i < 2) {
+                            [_pageContentCollectionView reloadData];
                         }
                     }];
                 }
@@ -766,57 +781,96 @@
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     NSString *role = _selfRole;
     
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     if (!imageCacheData) {
         if ([role isEqualToString:@"uploader"]) {
-            // uploadを促す
-            if (indexPath.section == 0 && indexPath.row == 0) {
-                CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = cell.frame.size.width;
-                rect.size.height = cell.frame.size.height;
-                backgroundView.frame = rect;
-                [cell addSubview:backgroundView];
+            // アップの出し分け
+            // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
+            // それ以外 : アップアイコン
+            
+            if([self withinTwoDay:indexPath] && ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:0]] || [[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:-1]])) {
+                // チョイス催促
+                if (indexPath.section == 0 && indexPath.row == 0) {
+                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
+                } else {
+                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
+                }
             } else {
-                CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = self.view.frame.size.width / 3;
-                rect.size.height = rect.size.width;
-                backgroundView.frame = rect;
-                [cell addSubview:backgroundView];
+                // アップアイコン
+                if (indexPath.section == 0 && indexPath.row == 0) {
+                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
+                } else {
+                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
+                }
             }
         } else {
-            // upload待ち
-            
-            // チョイスを促す
-            if (indexPath.section == 0 && indexPath.row == 0) {
-                CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = cell.frame.size.width;
-                rect.size.height = cell.frame.size.height;
-                backgroundView.frame = rect;
-                [cell addSubview:backgroundView];
+            // チョイスの出し分け
+            // 今日 or 昨日
+            //// アップ済み : チョイス催促、　未アップ : アップ催促
+            // ２日以上たったらNoImage
+            if ([self withinTwoDay:indexPath]) {
+                // アップ催促
+                if ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:0]] || [[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:-1]]) {
+                    if (indexPath.section == 0 && indexPath.row == 0) {
+                        CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        [cell addSubview:backgroundView];
+                    } else {
+                        CellBackgroundViewToWaitUpload *backgroundView = [CellBackgroundViewToWaitUpload view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        [cell addSubview:backgroundView];
+                    }
+                    // ダブルタップでプッシュ通知
+                    UITapGestureRecognizer *giveMePhotoGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(giveMePhoto)];
+                    giveMePhotoGesture.numberOfTapsRequired = 2;
+                    [cell addGestureRecognizer:giveMePhotoGesture];
+                } else {
+                    // チョイス促進アイコン貼る
+                    if (indexPath.section == 0 && indexPath.row == 0) {
+                        CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        [cell addSubview:backgroundView];
+                    } else {
+                        CellBackgroundViewToEncourageChoose *backgroundView = [CellBackgroundViewToEncourageChoose view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        [cell addSubview:backgroundView];
+                    }
+                }
             } else {
-                CellBackgroundViewToWaitUpload *backgroundView = [CellBackgroundViewToWaitUpload view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = cell.frame.size.width;
-                rect.size.height = cell.frame.size.height;
+                CellBackgroundViewNoImage *backgroundView = [CellBackgroundViewNoImage view];
+                CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                 backgroundView.frame = rect;
+                backgroundView.iconView.frame = rect;
                 [cell addSubview:backgroundView];
             }
         }
         return;
     }
-    
-    // TODO best shot未選択時の分岐
-//    if (uploader) {
-//        if (今週) {
-//            // 今週の場合はuploadを促す + choose待ち表記
-//        } else {
-//            // 今週より前の場合はuploadを促す
-//        }
-//    } else {
-//        // chooseをうながす
-//    }
     
     // best shotが既に選択済の場合は普通に写真を表示
     if (indexPath.section == 0 && indexPath.row == 0) {
@@ -841,6 +895,11 @@
         [[yearMonthMap objectForKey:year] addObject:month];
     }
     return yearMonthMap;
+}
+
+- (void) giveMePhoto
+{
+    [PushNotification sendInBackground:@"requestPhoto" withOptions:nil];
 }
 
 /*

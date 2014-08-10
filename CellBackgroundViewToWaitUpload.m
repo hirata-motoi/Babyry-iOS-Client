@@ -22,9 +22,6 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    
-    // 初期化
-    _iconView.image = [UIImage imageNamed:@"imageIcon"];
 }
 
 + (instancetype)view
