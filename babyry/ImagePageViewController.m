@@ -30,7 +30,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.dataSource = self;
-   
+  
     [self setupDataSource];
     [self showInitialImage];
 }
@@ -43,7 +43,6 @@
 
 - (void)setupDataSource
 {
-    
     _imageList = [[NSMutableArray alloc]init];
     NSInteger sectionIndex = 0;
     for (NSDictionary *sectionInfo in _childImages) {
@@ -132,7 +131,6 @@
 //- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
 - (void)laodMoreImages:(NSInteger)index
 {
-    NSLog(@"pageViewController loadMoreImages");
     // TODO 必要に応じてparseから画像データを取得
     // 総枚数
     // 現在のimage数
@@ -145,7 +143,6 @@
     //     現在の月はpreviousviewControllers.monthで取得可能
     
     if (!_imagesCountDic || !_imagesCountDic[@"imagesCountNumber"]) {
-        NSLog(@"return because imagesCountDic does not exist");
         return;
     }
     if (_imageList.count >= [_imagesCountDic[@"imagesCountNumber"] integerValue]) {
@@ -161,7 +158,10 @@
 
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month
 {
-    NSLog(@"getChildImagesWithYear");
+    if (_isLoading) {
+        return;
+    }
+    _isLoading = YES;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
         [self getChildImagesRecursive:year withMonth:month];
         dispatch_sync(dispatch_get_main_queue(), ^{
@@ -171,8 +171,6 @@
 
 - (void)getChildImagesRecursive:(NSInteger)year withMonth:(NSInteger)month
 {
-    NSLog(@"getChildImagesRecursive year:%ld month:%02ld", year, month);
-    
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *comps = [[NSDateComponents alloc]init];
     comps.year = year;
@@ -206,7 +204,7 @@
         [query whereKey:@"bestFlag" equalTo:@"choosed"];
         [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", c.year, c.month]];
         NSArray *objects = [query findObjects];
-        
+  
         if (objects && objects.count > 0) {
             [_imageList addObjectsFromArray:objects];
             for (PFObject *childImage in objects) {
@@ -218,6 +216,7 @@
         comps = [DateUtils addDateComps:comps withUnit:@"month" withValue:-1];
         date = [cal dateFromComponents:comps];
     }
+    _isLoading = NO;
 }
 
 - (void)cacheThumbnail:(PFObject *)childImage
@@ -226,8 +225,9 @@
     NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
     
     // まずはS3に接続
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (!task.error && task.result) {
+    AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], childImage.objectId] configuration:configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (!task.error && task.result) {                                                                                                 
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
             // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
