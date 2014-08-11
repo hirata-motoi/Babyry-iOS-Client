@@ -36,6 +36,11 @@
 {
     [super viewDidLoad];
     
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@""
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil
+                                             action:nil];
     _settingTableView.delegate = self;
     _settingTableView.dataSource = self;
     

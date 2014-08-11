@@ -100,11 +100,12 @@
     [self setColorForNavigation];
    
     // back button
-    UIButton *backButton = [UIButton buttonWithType:101];
-    [backButton addTarget:self action:@selector(doBack) forControlEvents:UIControlEventTouchUpInside]; [backButton setTitle:@"戻る" forState:UIControlStateNormal];
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-    _navbarItem.leftBarButtonItem = backItem;
-                                                 
+    UIButton *backButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 6, 44, 32)];
+    [backButton setBackgroundImage:[UIImage imageNamed:@"angleLeftReverse"] forState:UIControlStateNormal];
+    UITapGestureRecognizer *back = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doBack)];
+    [backButton addGestureRecognizer:back];
+    [_navbar addSubview:backButton];
+    
     // 写真変更ボタン
     UIButton *openPhotoLibraryButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
     [openPhotoLibraryButton setBackgroundImage:[UIImage imageNamed:@"imageIcon"] forState:UIControlStateNormal];

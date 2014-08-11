@@ -23,6 +23,7 @@
 #import "ImageEdit.h"
 #import "TagAlbumOperationViewController.h"
 #import "ArrayUtils.h"
+#import "Navigation.h"
 
 @interface ViewController ()
 
@@ -52,7 +53,13 @@
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
     [view addSubview:titleview];
     self.navigationItem.titleView = view;
-    self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"EEEEEE" alpha:0.6]; // TODO 外だし
+    self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0f];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@""
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil
+                                             action:nil];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -379,9 +386,10 @@
 
     // global setting
     UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
+    [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"listReverse"] forState:UIControlStateNormal];
     [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
 }
 
 -(void)setNotVerifiedPage
