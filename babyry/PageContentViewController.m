@@ -139,61 +139,14 @@
 
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     
-    NSMutableArray *weekdayArray = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"weekdays"];
-    NSString *weekdayString = [[NSString alloc] init];
-    weekdayString = [DateUtils getWeekStringFromNum:[[weekdayArray objectAtIndex:indexPath.row] intValue]];
-    
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-    NSString *dd = [ymd substringWithRange:NSMakeRange(6, 2)];
     
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
     [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
     
-    float cellWidth = cell.frame.size.width;
-    float cellHeight = cell.frame.size.height;
-    
-    // カレンダーラベル
-    CalenderLabel *calLabelView = [CalenderLabel view];
-    if (indexPath.row == 0 && indexPath.section == 0) {
-        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/6, cellHeight/6);
-    } else {
-        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/4, cellHeight/4);
-    }
-    calLabelView.calLabelBack.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height);
-    calLabelView.calLabelBack.layer.cornerRadius = calLabelView.calLabelBack.frame.size.width/20;
-    calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height/3);
-    calLabelView.calLabelTop.layer.cornerRadius = calLabelView.frame.size.width/20;
-    calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
-    
-    if ([weekdayString isEqualToString:@"SUN"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
-    } else if ([weekdayString isEqualToString:@"SAT"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
-    } else {
-        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
-    }
-    
-    // カレンダーweekラベル
-    UILabel *calWeekLabel = [[UILabel alloc] initWithFrame:calLabelView.calLabelTop.frame];
-    calWeekLabel.textColor = [UIColor whiteColor];
-    calWeekLabel.text = weekdayString;
-    calWeekLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height*0.8];
-    calWeekLabel.textAlignment = NSTextAlignmentCenter;
-    [calLabelView.calLabelTop addSubview:calWeekLabel];
-    
-    // 日付ラベル
-    UILabel *calDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, calLabelView.frame.size.height/3, calLabelView.frame.size.width, calLabelView.frame.size.height*2/3)];
-    calDateLabel.textColor = [UIColor blackColor];
-    calDateLabel.text = dd;
-    calDateLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height];
-    calDateLabel.textAlignment = NSTextAlignmentCenter;
-    [calLabelView.calLabelBack addSubview:calDateLabel];
-
-    [cell addSubview:calLabelView];
+    // カレンダーラベル付ける
+    [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
      
     cell.tag = indexPath.row + 1;
 
@@ -304,6 +257,59 @@
     return headerView;
 }
 
+- (UIView *) makeCalenderLabel:(NSIndexPath *)indexPath cellFrame:(CGRect)cellFrame
+{
+    // 下準備
+    float cellWidth = cellFrame.size.width;
+    float cellHeight = cellFrame.size.height;
+    NSMutableArray *weekdayArray = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"weekdays"];
+    NSString *weekdayString = [[NSString alloc] init];
+    weekdayString = [DateUtils getWeekStringFromNum:[[weekdayArray objectAtIndex:indexPath.row] intValue]];
+    PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
+    NSString *dd = [childImage[@"date"] substringWithRange:NSMakeRange(7, 2)];
+
+    // カレンダーラベル組み立て
+    CalenderLabel *calLabelView = [CalenderLabel view];
+    if (indexPath.row == 0 && indexPath.section == 0) {
+        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/6, cellHeight/6);
+    } else {
+        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/4, cellHeight/4);
+    }
+    calLabelView.calLabelBack.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height);
+    calLabelView.calLabelBack.layer.cornerRadius = calLabelView.calLabelBack.frame.size.width/20;
+    calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height/3);
+    calLabelView.calLabelTop.layer.cornerRadius = calLabelView.frame.size.width/20;
+    calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
+    
+    if ([weekdayString isEqualToString:@"SUN"]) {
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
+    } else if ([weekdayString isEqualToString:@"SAT"]) {
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
+    } else {
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
+    }
+    
+    // カレンダーweekラベル
+    UILabel *calWeekLabel = [[UILabel alloc] initWithFrame:calLabelView.calLabelTop.frame];
+    calWeekLabel.textColor = [UIColor whiteColor];
+    calWeekLabel.text = weekdayString;
+    calWeekLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height*0.8];
+    calWeekLabel.textAlignment = NSTextAlignmentCenter;
+    [calLabelView.calLabelTop addSubview:calWeekLabel];
+    
+    // 日付ラベル
+    UILabel *calDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, calLabelView.frame.size.height/3, calLabelView.frame.size.width, calLabelView.frame.size.height*2/3)];
+    calDateLabel.textColor = [UIColor blackColor];
+    calDateLabel.text = dd;
+    calDateLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height];
+    calDateLabel.textAlignment = NSTextAlignmentCenter;
+    [calLabelView.calLabelBack addSubview:calDateLabel];
+    
+    return calLabelView;
+}
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
