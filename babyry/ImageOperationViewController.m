@@ -17,6 +17,7 @@
 #import "PushNotification.h"
 #import "Navigation.h"
 #import "UploadPickerViewController.h"
+#import "ImageToolbarViewController.h"
 
 @interface ImageOperationViewController ()
 
@@ -50,6 +51,9 @@
         [self setupCommentView];
     }
     [self setupNavigation];
+    
+    // 画像削除、保存、コメントは全部toolbar経由にする
+    [self setupToolbar];
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,7 +88,7 @@
     commentViewController.imageInfo = _imageInfo;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
-    _commentView.frame = CGRectMake(self.view.frame.size.width - 50, self.view.frame.size.height - 50, self.view.frame.size.width, self.view.frame.size.height -44 -20);
+    _commentView.frame = CGRectMake(self.view.frame.size.width, self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height -44 -20 -44);
     [self addChildViewController:commentViewController];
     [self.view addSubview:_commentView];
 }
@@ -113,6 +117,18 @@
     NSString *dd   =  [_date substringWithRange:NSMakeRange(6, 2)];
     
     [Navigation setTitle:_navbarItem withTitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withSubtitle:_uploadViewController.promptText withFont:nil withFontSize:0 withColor:nil];
+}
+
+- (void)setupToolbar
+{
+    ImageToolbarViewController *imageToolbarViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImageToolbarViewController"];
+    imageToolbarViewController.commentView = _commentView;
+    _toolbarView = imageToolbarViewController.view;
+    _toolbarView.hidden = NO;
+    CGRect frame = CGRectMake(0, self.view.frame.size.height - imageToolbarViewController.view.frame.size.height, imageToolbarViewController.view.frame.size.width, imageToolbarViewController.view.frame.size.height);
+    _toolbarView.frame = frame;
+    [self addChildViewController:imageToolbarViewController];
+    [self.view addSubview:_toolbarView];
 }
 
 - (void)setColorForNavigation

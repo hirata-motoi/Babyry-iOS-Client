@@ -317,6 +317,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				88CFF4F61998CED800B56481 /* ToolbarItem */,
 				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
 				8814A9981945469B0010F516 /* ImageCache.h */,
 				8814A9991945469B0010F516 /* ImageCache.m */,
@@ -527,6 +528,29 @@
 				F2305218198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib */,
 				88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */,
 				F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		88CFF4F61998CED800B56481 /* ToolbarItem */ = {
+			isa = PBXGroup;
+			children = (
+				88CFF4F81998CEF000B56481 /* Xib */,
+				88CFF4F71998CEEA00B56481 /* Class */,
+			);
+			name = ToolbarItem;
+			sourceTree = "<group>";
+		};
+		88CFF4F71998CEEA00B56481 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
+		88CFF4F81998CEF000B56481 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = Xib;
 			sourceTree = "<group>";
