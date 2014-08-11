@@ -258,7 +258,6 @@
     UIButton *openPhotoLibraryButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
     [openPhotoLibraryButton setBackgroundImage:[UIImage imageNamed:@"imageIcon"] forState:UIControlStateNormal];
     [openPhotoLibraryButton addTarget:self action:@selector(openPhotoLibrary) forControlEvents:UIControlEventTouchUpInside];
-    NSLog(@"openPhotoLibraryButton %@", openPhotoLibraryButton);
     _navbarItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openPhotoLibraryButton];
    
     // title
