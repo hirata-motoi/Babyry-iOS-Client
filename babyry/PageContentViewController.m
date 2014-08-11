@@ -54,8 +54,8 @@
     
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
+    _imagesCountDic = [[NSMutableDictionary alloc]init];
     
-    [self setupImagesCount];
     [self initializeChildImages];
     [self createCollectionView];
     [self showChildImages];
@@ -77,7 +77,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+    [self setupImagesCount];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -262,7 +262,8 @@
         NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
         uploadPickerViewController.totalImageNum = totalImageNum;
         uploadPickerViewController.indexPath = indexPath;
-        
+        uploadPickerViewController.section = section;
+        uploadPickerViewController.child = _childArray[_pageIndex];
         [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         return;
     }
@@ -416,7 +417,6 @@
 - (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
 {
     if ([cacheSetQueueArray count] > 0) {
-        NSLog(@"get image cache queue remain %d", [cacheSetQueueArray count]);
         // キャッシュ取り出し
         PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
         [cacheSetQueueArray removeObjectAtIndex:0];
@@ -426,8 +426,9 @@
         
         AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
         getRequest.bucket = @"babyrydev-images";
-        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId];
-        // no-cache必須
+        
+        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_childArray[_pageIndex][@"childImageShardIndex"] integerValue]], childImage.objectId];
+        // no-cache必須                                                                                     
         getRequest.responseCacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
         
@@ -947,8 +948,6 @@
 {
     // TODO 誕生日以前のデータは無視する
     // ChildImage.dateの型をNumberにしたら対応する
-    
-    _imagesCountDic = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *child = _childArray[_pageIndex];
     NSString *className = [NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]];
     PFQuery *query = [PFQuery queryWithClassName:className];
@@ -961,6 +960,22 @@
         }
     }];
 }
+
+- (NSMutableDictionary *)getYearMonthMap
+{
+NSMutableDictionary *yearMonthMap = [[NSMutableDictionary alloc]init];
+for (NSMutableDictionary *section in _childImages) {
+        NSString *year = [section objectForKey:@"year"];
+        NSString *month = [section objectForKey:@"month"];
+
+        if (![yearMonthMap objectForKey:year]) {
+            [yearMonthMap setObject: [[NSMutableArray alloc]init] forKey:year];
+        }
+        [[yearMonthMap objectForKey:year] addObject:month];
+    }
+    return yearMonthMap;
+}
+
 
 - (void) giveMePhoto
 {
