@@ -47,7 +47,7 @@
     
     // navigation controller
     CGRect rect = CGRectMake(0, 0, 130, 38);
-    UIImageView *titleview = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"babyryTitle"]];
+    UIImageView *titleview = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"babyryTitleReverse"]];
     titleview.frame = rect;
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
     [view addSubview:titleview];
