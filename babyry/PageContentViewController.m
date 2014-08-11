@@ -55,7 +55,6 @@
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     
-    _isNoImageCellForTutorial = nil;
     [self setupImagesCount];
     [self initializeChildImages];
     [self createCollectionView];
@@ -267,7 +266,7 @@
         [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         return;
     }
-    
+   
     ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
     pageViewController.childImages = [self screenSavedChildImages];
     pageViewController.currentSection = indexPath.section;
@@ -275,7 +274,6 @@
     pageViewController.showPageNavigation = YES; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
-    NSLog(@"pageViewController.imagesCountDic : %@", _imagesCountDic);
     pageViewController.child = _childArray[_pageIndex];
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
@@ -650,12 +648,9 @@
     // 誕生日
     NSDate *birthday = [self getCompensatedBirthday];
     
-    NSLog(@"birthday : %@", birthday);
-    
     // 現在
     NSDateComponents *todayComps = [self dateComps];
     NSDate *today = [NSDate date];
-    NSLog(@"today : %@", today);
     
     NSMutableDictionary *childImagesDic = [[NSMutableDictionary alloc]init];
     while ([today compare:birthday] == NSOrderedDescending) {
@@ -898,22 +893,6 @@
     cell.isChoosed = YES;
 }
 
-- (NSMutableDictionary *)getYearMonthMap
-{
-    NSMutableDictionary *yearMonthMap = [[NSMutableDictionary alloc]init];
-    for (NSMutableDictionary *section in _childImages) {
-        NSString *year = [section objectForKey:@"year"];
-        NSString *month = [section objectForKey:@"month"];
-        
-        if (![yearMonthMap objectForKey:year]) {
-            [yearMonthMap setObject: [[NSMutableArray alloc]init] forKey:year];
-        }
-        
-        [[yearMonthMap objectForKey:year] addObject:month];
-    }
-    return yearMonthMap;
-}
-
 - (NSMutableArray *)screenSavedChildImages
 {
     NSMutableArray *savedChildImages = [[NSMutableArray alloc]init];
@@ -926,8 +905,8 @@
         
         for (PFObject *childImage in section[@"images"]) {
             // 実際にParse上に画像が保存されているPFObjectかどうかを
-            // imageFileカラムの値があるかで判定
-            if (childImage[@"imageFile"]) {
+            // objectIdがあるかで判定
+            if (childImage.objectId) {
                 [newSection[@"images"] addObject:childImage];
             }
         }
@@ -942,7 +921,7 @@
     NSInteger indexInSavedChildImages = -1;
     for (NSInteger i = 0; i < targetChildImageList.count; i++) {
         PFObject *childImage = targetChildImageList[i];
-        if (childImage[@"imageFile"]) {
+        if (childImage.objectId) {
             indexInSavedChildImages++;
         }
         if (i == indexPath.row) {
@@ -966,19 +945,18 @@
 
 - (void)setupImagesCount
 {
+    // TODO 誕生日以前のデータは無視する
+    // ChildImage.dateの型をNumberにしたら対応する
+    
     _imagesCountDic = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *child = _childArray[_pageIndex];
-    NSLog(@"childImageShardIndex : %ld", [child[@"childImageShardIndex"] integerValue]);
     NSString *className = [NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]];
-    NSLog(@"className : %@", className);
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
-    NSLog(@"childObjectId : %@", _childObjectId);
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
     
     [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
-            NSLog(@"images count : %d", number);
             [_imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
         }
     }];
