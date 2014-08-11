@@ -76,4 +76,36 @@
     return @"";
 }
 
++ (NSDateComponents *)addDateComps:(NSDateComponents *)comps withUnit:(NSString *)unit withValue:(NSInteger)value
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDate *base = [calendar dateFromComponents:comps];
+   
+    NSDateComponents *addComps = [[NSDateComponents alloc]init];
+    
+    if ([unit isEqualToString:@"year"]) {
+        [addComps setYear:value];
+    } else if ([unit isEqualToString:@"month"]) {
+        [addComps setMonth:value];
+    } else if ([unit isEqualToString:@"day"]) {
+        [addComps setDay:value];
+    } else if ([unit isEqualToString:@"hour"]) {
+        [addComps setHour:value];
+    } else if ([unit isEqualToString:@"minute"]) {
+        [addComps setMinute:value];
+    } else {
+        [addComps setSecond:value];
+    }
+    NSDate *date = [calendar dateByAddingComponents:addComps toDate:base options:0];
+
+    NSDateComponents *result = [calendar components:
+        NSYearCalendarUnit  |
+        NSMonthCalendarUnit |
+        NSDayCalendarUnit   |
+        NSHourCalendarUnit
+    fromDate:date];
+   
+    return result;
+}
+
 @end
