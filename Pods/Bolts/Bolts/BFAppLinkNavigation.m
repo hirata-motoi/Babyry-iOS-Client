@@ -153,8 +153,7 @@ static id<BFAppLinkResolving> defaultResolver;
                              resolver:(id<BFAppLinkResolving>)resolver {
     BFTask *resolutionTask =[self resolveAppLinkInBackground:destination
                                                     resolver:resolver];
-    return [resolutionTask continueWithExecutor:[BFExecutor mainThreadExecutor]
-                               withSuccessBlock:^id(BFTask *task) {
+    return [resolutionTask continueWithSuccessBlock:^id(BFTask *task) {
                                    NSError *error = nil;
                                    BFAppLinkNavigationType result = [self navigateToAppLink:task.result
                                                                                       error:&error];

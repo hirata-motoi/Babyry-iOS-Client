@@ -10,8 +10,9 @@
 #import "ViewController.h"
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
-#import "AlbumViewController.h"
+#import "MultiUploadAlbumTableViewController.h"
 #import "ImageTrimming.h"
+#import "ImageCache.h"
 #import "FamilyRole.h"
 #import "ImagePageViewController.h"
 #import "ArrayUtils.h"
@@ -24,8 +25,10 @@
 #import "CellBackgroundViewToEncourageChooseLarge.h"
 #import "CellBackgroundViewToWaitUpload.h"
 #import "CellBackgroundViewToWaitUploadLarge.h"
-#import "AWSS3Utils.h"
+#import "CellBackgroundViewNoImage.h"
 #import "CalenderLabel.h"
+#import "PushNotification.h"
+#import "UploadPickerViewController.h"
 
 @interface PageContentViewController ()
 
@@ -47,10 +50,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _overlay = [[ICTutorialOverlay alloc] init];
-    _overlay.hideWhenTapped = NO;
-    _overlay.animated = YES;
-    _tutoLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 170, 300, 250)];
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
     
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
@@ -83,8 +83,7 @@
 
 -(void)viewWillDisappear:(BOOL)animated
 {
-    [_overlay hide];
-    [_overlay removeFromSuperview];
+    [super viewWillDisappear:animated];
 }
 
 -(void)createCollectionView
@@ -169,14 +168,14 @@
     calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
     
     if ([weekdayString isEqualToString:@"SUN"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor redColor];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor redColor];
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
     } else if ([weekdayString isEqualToString:@"SAT"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor blueColor];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor blueColor];
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
     } else {
-        calLabelView.calLabelTop.backgroundColor = [UIColor orangeColor];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor orangeColor];
+        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
+        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
     }
     
     // カレンダーweekラベル
@@ -197,120 +196,7 @@
 
     [cell addSubview:calLabelView];
      
-    // 今日のcellには子供名を表示
-    if (indexPath.section == 0 && indexPath.row == 0) {
-        UILabel *nameLabel = [[UILabel alloc] init];
-        if (_returnValueOfChildName) {
-            nameLabel.text = _returnValueOfChildName;
-        } else {
-            nameLabel.text = [NSString stringWithFormat:@"%@", [[_childArray objectAtIndex:_pageIndex] objectForKey:@"name"]];
-        }                                                       
-        nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:cellHeight/8];
-        nameLabel.textAlignment = NSTextAlignmentLeft;
-        nameLabel.textColor = [UIColor whiteColor];
-        nameLabel.shadowColor = [UIColor blackColor];
-        nameLabel.frame = CGRectMake(0, cellHeight - cellHeight/8, cellWidth, cellHeight/8);
-        [cell addSubview:nameLabel];
-    }
-    
     cell.tag = indexPath.row + 1;
-    
-    // チュートリアル用
-    if (indexPath.row == 0) {
-        if (!_currentUser[@"tutorialStep"] || [_currentUser[@"tutorialStep"] intValue] < 100) {
-            [_currentUser refresh];
-            NSLog(@"Tutorial Step is %d", [_currentUser[@"tutorialStep"] intValue]);
-            if ([_currentUser[@"tutorialStep"] intValue] == 1
-                || [_currentUser[@"tutorialStep"] intValue] == 4
-                || [_currentUser[@"tutorialStep"] intValue] == 5
-                || [_currentUser[@"tutorialStep"] intValue] == 6
-                || [_currentUser[@"tutorialStep"] intValue] == 7) {
-                if (indexPath.row == 0) {
-                    if ([_currentUser[@"tutorialStep"] intValue] != 5 && [_currentUser[@"tutorialStep"] intValue] != 6) {
-                        // disable all subviews touchevent
-                        for (UIView *view in cell.subviews) {
-                            for (UIGestureRecognizer *recognizer in view.gestureRecognizers) {
-                                //NSLog(@"subviews recognizer in cell %@", view);
-                                [view removeGestureRecognizer:recognizer];
-                            }
-                        }
-                    }
-                    
-                    if ([_currentUser[@"tutorialStep"] intValue] == 1 || [_currentUser[@"tutorialStep"] intValue] == 4) {
-                        [_overlay addHoleWithView:cell padding:-20.0f offset:CGSizeMake(0, 50) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 6) {
-                        [_overlay hide];
-                        _overlay = [[ICTutorialOverlay alloc] init];
-                        _overlay.hideWhenTapped = NO;
-                        _overlay.animated = YES;
-                    }
-                    
-                    [_tutoLabel removeFromSuperview];
-                    _tutoLabel.backgroundColor = [UIColor clearColor];
-                    _tutoLabel.textColor = [UIColor whiteColor];
-                    _tutoLabel.numberOfLines = 0;
-                    if ([_currentUser[@"tutorialStep"] intValue] == 1) {
-                        _tutoLabel.text = @"Babyryの使い方(Step 1/13)\n\nBabyryのチュートリアルを始めます。Babyryはアップローダーとチューザーに分かれて一日のベストショットを残していくアプリです。\nまずは、アップローダーの機能のチュートリアルを始めます。今日のパネルをタップしてみてください。";
-                        CGRect frame = _tutoLabel.frame;
-                        frame.origin.y = cell.frame.origin.y + cell.frame.size.height;
-                        _tutoLabel.frame = frame;
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 4) {
-                        _tutoLabel.text = @"チューザー機能(Step 7/13)\n\nチューザー側に切り替えました。\n今日のパネルをタップしてください。";
-                        CGRect frame = _tutoLabel.frame;
-                        frame.origin.y = cell.frame.origin.y + cell.frame.size.height;
-                        _tutoLabel.frame = frame;
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 5) {
-                        _tutoLabel.text = @"チューザー機能(Step 9/13)\n\nベストショットが反映されました。これでアップローダーとチューザー機能のチュートリアルは完了です。画面をタップして次に進んでください。";
-                        _overlay.tag = 555;
-                        UITapGestureRecognizer *tutoGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-                        tutoGestureRecognizer.numberOfTapsRequired = 1;
-                        [_overlay addGestureRecognizer:tutoGestureRecognizer];
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 6) {
-                        _tutoLabel.text = @"アルバムについて(Step 12/13)\n\n次はアルバムを見てみましょう。";
-                    } else if ([_currentUser[@"tutorialStep"] intValue] == 7) {
-                        [_overlay hide];
-                        _overlay = [[ICTutorialOverlay alloc] init];
-                        _overlay.hideWhenTapped = NO;
-                        _overlay.animated = YES;
-                        _tutoLabel.text = @"チュートリアルはこれで終了です。\n画面をタップしてBabyryを開始してください。\n\nHave A Nice Babyry Days!";
-                        _overlay.tag = 777;
-                        UITapGestureRecognizer *tutoGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-                        tutoGestureRecognizer.numberOfTapsRequired = 1;
-                        [_overlay addGestureRecognizer:tutoGestureRecognizer];
-                    }
-                    [_overlay addSubview:_tutoLabel];
-                    [_overlay show];
-                    
-                    /* チュートリアルスキップボタンがうまく動かない。。。
-                    _tutoSkipLabel.userInteractionEnabled = YES;
-                    _tutoSkipLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, 130, 20)];
-                    _tutoSkipLabel.layer.borderColor = [UIColor whiteColor].CGColor;
-                    _tutoSkipLabel.layer.borderWidth = 1;
-                    _tutoSkipLabel.layer.cornerRadius = _tutoSkipLabel.frame.size.height/2;
-                    _tutoSkipLabel.textAlignment = NSTextAlignmentCenter;
-                    _tutoSkipLabel.text = @"チュートリアルをスキップ";
-                    _tutoSkipLabel.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:10];
-                    _tutoSkipLabel.textColor = [UIColor whiteColor];
-                    _tutoSkipLabel.shadowColor = [UIColor blackColor];
-                    _tutoSkipLabel.shadowOffset = CGSizeMake(0.f, 1.f);
-                    _tutoSkipLabel.tag = 777;
-                    UITapGestureRecognizer *tutoSkipGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-                    tutoSkipGesture.numberOfTapsRequired = 1;
-                    [_tutoSkipLabel addGestureRecognizer:tutoSkipGesture];
-                    [_overlay addSubview:_tutoSkipLabel];
-                    */
-                }
-            } else if ([_currentUser[@"tutorialStep"] intValue] == 2) {
-                NSLog(@"今日のパネルのチュートリアルが途中なのでそちらに遷移させる");
-                //[self touchEvent:1];
-            } else if ([_currentUser[@"tutorialStep"] intValue] == 3) {
-                NSLog(@"3で止まっている場合には、すぐに4に遷移させてok");
-                _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:4];
-                [_currentUser save];
-                [_pageContentCollectionView reloadData];
-            }
-        }
-    }
 
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
     if (indexPath.section == 0 && indexPath.row == 1) {
@@ -323,6 +209,13 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    // チェックの人がアップ催促する時だけここは何の処理もしない
+    if ([_selfRole isEqualToString:@"chooser"] && [self withinTwoDay:indexPath]) {
+        if ([self isNoImage:indexPath]) {
+            return;
+        }
+    }
+    
     PFObject *tappedChildImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     // chooser
     //    upload待ち
@@ -330,22 +223,51 @@
     // uploader
     //    +ボタンがないパターン
     if ([self shouldShowMultiUploadView:indexPath]) {
-        MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
-        multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-        multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
-        multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-        multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
-        multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        multiUploadViewController.child = _childArray[_pageIndex];
-        if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-            //[self presentViewController:multiUploadViewController animated:YES completion:NULL];
-            [self.navigationController pushViewController:multiUploadViewController animated:YES];
+        if ([self isNoImage:indexPath]) {
+            MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
+            multiUploadAlbumTableViewController.childObjectId = _childObjectId;
+            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+            multiUploadAlbumTableViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            
+            // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
+            NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+            NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+            multiUploadAlbumTableViewController.totalImageNum = totalImageNum;
+            multiUploadAlbumTableViewController.indexPath = indexPath;
+            
+            [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
         } else {
-            // TODO インターネット接続がありません的なメッセージいるかも
+            MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
+            multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
+            multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+            multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+            multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
+                [self.navigationController pushViewController:multiUploadViewController animated:YES];
+            } else {
+                // TODO インターネット接続がありません的なメッセージいるかも
+            }
         }
         return;
     }
-   
+    
+    if (![self isBEstImageFixed:indexPath]) {
+        // ベストショット決まってなければ即Pickerを開く
+        UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
+        uploadPickerViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+        uploadPickerViewController.childObjectId = _childObjectId;
+        uploadPickerViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+        
+        NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+        uploadPickerViewController.totalImageNum = totalImageNum;
+        uploadPickerViewController.indexPath = indexPath;
+        
+        [self.navigationController pushViewController:uploadPickerViewController animated:YES];
+        return;
+    }
+    
     ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
     pageViewController.childImages = [self screenSavedChildImages];
     pageViewController.currentSection = indexPath.section;
@@ -441,22 +363,44 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
-            NSString *keyString = [NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month];
             NSMutableDictionary *section = [_childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];
+            NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
             
             NSMutableDictionary *childImageDic = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
             
+            NSMutableArray *cacheSetQueueArray = [[NSMutableArray alloc] init];
             for (int i = 0; i < [images count]; i++) {
                 PFObject *childImage = [images objectAtIndex:i];
                 NSString *ymdWithPrefix = childImage[@"date"];
                 
                 if ([childImageDic objectForKey:ymdWithPrefix]) {
                     PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
-                    [self cacheThumbnail:childImage];
                     [images replaceObjectAtIndex:i withObject:childImage];
+                    // bestshot決まっている時は9999入れる(あり得ないくらい大きな数字)
+                    [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:9999]];
+                    [cacheSetQueueArray addObject:childImage];
+                } else {
+                    //NSLog(@"No Choosed Image %@", ymdWithPrefix);
+                    // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
+                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
+                    [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
+                    [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
+                    [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                        //NSLog(@"There is %d unchoosed image : %@ %d %d %d", [objects count], ymdWithPrefix, index, i, [images count]);
+                        if ([objects count] > 0) {
+                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[objects count]]];
+                        } else {
+                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
+                        }
+                        // 昨日と今日のパネルを即入れ替えるため
+                        if (index == 0 && i < 2) {
+                            [_pageContentCollectionView reloadData];
+                        }
+                    }];
                 }
             }
+            [self setImageCache:cacheSetQueueArray withReload:reload];
           
             if (reload) {
                 [_pageContentCollectionView reloadData];
@@ -471,38 +415,57 @@
     }];
 }
 
-- (void)cacheThumbnail:(PFObject *)childImage
+- (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
 {
-    NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-    
-    // まずはS3に接続
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (!task.error && task.result) {
-            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-            // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
-            if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                
-                NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
-            }
-        } else {
-            // S3になければParseに
-            [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+    if ([cacheSetQueueArray count] > 0) {
+        NSLog(@"get image cache queue remain %d", [cacheSetQueueArray count]);
+        // キャッシュ取り出し
+        PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
+        [cacheSetQueueArray removeObjectAtIndex:0];
+        
+        NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+        NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
+        
+        AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+        getRequest.bucket = @"babyrydev-images";
+        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId];
+        // no-cache必須
+        getRequest.responseCacheControl = @"no-cache";
+        AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+        
+        [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+            if (!task.error && task.result) {
+                AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                 NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
-                if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-    
+                // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
+                if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                    
                     NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                     [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
                 }
-            }];
-        }
-        return nil;
-    }];
+            } else {
+                [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                    NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                    // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
+                    if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                        
+                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                    }
+                }];
+            }
+            if (reload) {
+                // このタイミングでreloadしたいけどするとtopページが一瞬かくっとなるので微妙
+                //[_pageContentCollectionView reloadData];
+            }
+            [self setImageCache:cacheSetQueueArray withReload:reload];
+            return nil;
+        }];
+    } else {
+        NSLog(@"get image cache queue end!");
+    }
 }
 
 - (NSDateComponents *)dateComps
@@ -565,7 +528,6 @@
     [comps setMonth:month];
     NSDate *date = [cal dateFromComponents:comps];
     
-    
     // inUnit:で指定した単位（月）の中で、rangeOfUnit:で指定した単位（日）が取り得る範囲
     NSRange range = [cal rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:date];
     
@@ -591,10 +553,35 @@
 // 今週じゃない かつ 候補写真がある かつ 未choosed
 - (BOOL)shouldShowMultiUploadView:(NSIndexPath *)indexPath
 {
-    return [self withinOneWeek:indexPath] || [self notChoosedYet:indexPath];
+    // 2日間はMultiUploadViewController
+    return [self withinTwoDay:indexPath];
 }
 
-- (BOOL)withinOneWeek: (NSIndexPath *)indexPath
+- (BOOL)isNoImage:(NSIndexPath *)indexPath
+{
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    if ([[totalImageNum objectAtIndex:indexPath.row] compare:[NSNumber numberWithInt:1]] == NSOrderedAscending) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isBEstImageFixed:(NSIndexPath *)indexPath
+{
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    if ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:9999]]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)withinTwoDay: (NSIndexPath *)indexPath
 {
     PFObject *chilImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     NSString *ymd = [chilImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
@@ -602,22 +589,25 @@
   
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
 	[inputDateFormatter setDateFormat:@"yyyyMMdd"];
-	NSDate *dateToday = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:[NSString stringWithFormat:@"%ld%02ld%02ld", compToday.year, compToday.month, compToday.day]]];
+	NSDate *dateToday = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:[NSString stringWithFormat:@"%ld%02ld%02ld", (long)compToday.year, (long)compToday.month, (long)compToday.day]]];
 	NSDate *dateTappedImage = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:ymd]];
   
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *diff = [cal components:NSDayCalendarUnit fromDate:dateTappedImage toDate:dateToday options:0];
     
-    return [diff day] < 7;
+    return [diff day] < 2;
 }
 
 - (BOOL)notChoosedYet: (NSIndexPath *)indexPath
 {
-    // これどうやって判定すんねん
-    // 最初にchoosedだけでなく全imageの情報を持ってきておかないといけない
-    // 最初に取得した時にunchoosedしかない場合は、ちゃんとthumbnailの情報を保持 or cacheしておく
-    // unchoosedしかない場合はその旨のflgを持っておく。 → chooseStatus enum("choosed", "unuploaded", "unchoosed")
-    return NO;
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    if([totalImageNum isEqual:[NSNumber numberWithInt:-1]]) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (void)setupScrollBarView
@@ -628,14 +618,13 @@
     _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 70, _dragViewUpperLimitOffset, 70, 60)];
     _dragView.userInteractionEnabled = YES;
     _dragView.delegate = self;
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", _dateComp.year, _dateComp.month];
+    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", (long)_dateComp.year, (long)_dateComp.month];
     _dragView.dragViewLowerLimitOffset = _dragViewLowerLimitOffset;
     _dragView.dragViewUpperLimitOffset = _dragViewUpperLimitOffset;
     
     [self.view addSubview:_dragView];
 }
 
-//- (void)dragView:(UIPanGestureRecognizer *)sender
 - (void)drag:(DragView *)targetView
 {
     _dragging = YES;
@@ -685,6 +674,7 @@
         } else {     
             section = [[NSMutableDictionary alloc]init];
             [section setObject:[[NSMutableArray alloc]init] forKey:@"images"];
+            [section setObject:[[NSMutableArray alloc]init] forKey:@"totalImageNum"];
             [section setObject:[[NSMutableArray alloc]init] forKey:@"weekdays"];
             NSString *year = [NSString stringWithFormat:@"%ld", (long)c.year];
             [section setObject:year forKey:@"year"];
@@ -697,7 +687,8 @@
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day];
         [[section objectForKey:@"images"] addObject:childImage];
-        [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInteger: c.weekday]];
+        [[section objectForKey:@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
+        [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInt: c.weekday]];
        
         todayComps = [self addDateComps:todayComps withUnit:@"day" withValue:-1];
         today = [cal dateFromComponents:todayComps];
@@ -707,7 +698,6 @@
     
     // scroll位置と表示月の関係
     [self setupScrollPositionData];
-    
 }
 
 - (void)setObjectsToChildImages:(NSMutableDictionary *)childImagesDic
@@ -726,7 +716,7 @@
     _childImagesIndexMap = [[NSMutableDictionary alloc] init];
     int n = 0;
     for (NSMutableDictionary *section in _childImages) {
-        NSString *ym = [NSString stringWithFormat:@"%@%02ld", [section objectForKey:@"year"], [[section objectForKey:@"month"] integerValue]];
+        NSString *ym = [NSString stringWithFormat:@"%@%02ld", [section objectForKey:@"year"], (long)[[section objectForKey:@"month"] integerValue]];
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
     }
@@ -801,62 +791,103 @@
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     NSString *role = _selfRole;
     
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     if (!imageCacheData) {
         if ([role isEqualToString:@"uploader"]) {
-            // uploadを促す
-            if (indexPath.section == 0 && indexPath.row == 0) {
-                CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = cell.frame.size.width;
-                rect.size.height = cell.frame.size.height;
-                backgroundView.frame = rect;
-                [cell addSubview:backgroundView];
+            // アップの出し分け
+            // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
+            // それ以外 : アップアイコン
+            
+            if([self withinTwoDay:indexPath] && [self isNoImage:indexPath]) {
+                // チョイス催促をいれてもいいけど、いまは UP PHOTO アイコンをはめている
+                if (indexPath.section == 0 && indexPath.row == 0) {
+                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
+                } else {
+                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
+                }
             } else {
-                CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = self.view.frame.size.width / 3;
-                rect.size.height = rect.size.width;
-                backgroundView.frame = rect;
-                [cell addSubview:backgroundView];
-                
-                if(!_isNoImageCellForTutorial){
-                    _isNoImageCellForTutorial = cell;
+                // アップアイコン
+                if (indexPath.section == 0 && indexPath.row == 0) {
+                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
+                } else {
+                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
+                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                    backgroundView.frame = rect;
+                    backgroundView.iconView.frame = rect;
+                    [cell addSubview:backgroundView];
                 }
             }
         } else {
-            // upload待ち
-            if (indexPath.section == 0 && indexPath.row == 0) {
-                CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = cell.frame.size.width;
-                rect.size.height = cell.frame.size.height;
-                backgroundView.frame = rect;
-                [cell addSubview:backgroundView];
-            } else {
-                CellBackgroundViewToWaitUpload *backgroundView = [CellBackgroundViewToWaitUpload view];
-                CGRect rect = backgroundView.frame;
-                rect.size.width = cell.frame.size.width;
-                rect.size.height = cell.frame.size.height;
-                backgroundView.frame = rect;
-                [cell addSubview:backgroundView];
-                if(!_isNoImageCellForTutorial){
-                    _isNoImageCellForTutorial = cell;
+            // チョイスの出し分け
+            // 今日 or 昨日
+            //// アップ済み : チョイス催促、　未アップ : アップ催促
+            // ２日以上たったらNoImage
+            if ([self withinTwoDay:indexPath]) {
+                // アップ催促
+                if ([self isNoImage:indexPath]) {
+                    if (indexPath.section == 0 && indexPath.row == 0) {
+                        CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        [cell addSubview:backgroundView];
+                    } else {
+                        CellBackgroundViewToWaitUpload *backgroundView = [CellBackgroundViewToWaitUpload view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        [cell addSubview:backgroundView];
+                    }
+                    // ダブルタップでプッシュ通知
+                    UITapGestureRecognizer *giveMePhotoGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(giveMePhoto)];
+                    giveMePhotoGesture.numberOfTapsRequired = 2;
+                    [cell addGestureRecognizer:giveMePhotoGesture];
+                } else {
+                    // チョイス促進アイコン貼る
+                    NSNumber *uploadedNum = [totalImageNum objectAtIndex:indexPath.row];
+                    if (indexPath.section == 0 && indexPath.row == 0) {
+                        CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 10, backgroundView.upCountLabel.frame.size.height);
+                        backgroundView.upCountLabel.frame = rect;
+                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
+                        [cell addSubview:backgroundView];
+                    } else {
+                        CellBackgroundViewToEncourageChoose *backgroundView = [CellBackgroundViewToEncourageChoose view];
+                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                        backgroundView.frame = rect;
+                        backgroundView.iconView.frame = rect;
+                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 5, backgroundView.upCountLabel.frame.size.height);
+                        backgroundView.upCountLabel.frame = rect;
+                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
+                        [cell addSubview:backgroundView];
+                    }
                 }
+            } else {
+                CellBackgroundViewNoImage *backgroundView = [CellBackgroundViewNoImage view];
+                CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+                backgroundView.frame = rect;
+                backgroundView.iconView.frame = rect;
+                [cell addSubview:backgroundView];
             }
         }
         return;
     }
-    
-    // TODO best shot未選択時の分岐
-//    if (uploader) {
-//        if (今週) {
-//            // 今週の場合はuploadを促す + choose待ち表記
-//        } else {
-//            // 今週より前の場合はuploadを促す
-//        }
-//    } else {
-//        // chooseをうながす
-//    }
     
     // best shotが既に選択済の場合は普通に写真を表示
     if (indexPath.section == 0 && indexPath.row == 0) {
@@ -951,6 +982,11 @@
             [_imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
         }
     }];
+}
+
+- (void) giveMePhoto
+{
+    [PushNotification sendInBackground:@"requestPhoto" withOptions:nil];
 }
 
 /*

@@ -32,6 +32,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    
     _albumImageCollectionView.delegate = self;
     _albumImageCollectionView.dataSource = self;
     [_albumImageCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"MultiUploadPickerViewControllerCell"];
@@ -61,24 +63,6 @@
     _sendImageLabel.layer.cornerRadius = 10;
     _sendImageLabel.layer.borderColor = [UIColor whiteColor].CGColor;
     _sendImageLabel.layer.borderWidth = 2;
-    
-    if ([_tutorialStep intValue] == 2){
-        _overlay = [[ICTutorialOverlay alloc] init];
-        _overlay.hideWhenTapped = NO;
-        _overlay.animated = YES;
-        [_overlay addHoleWithView:_albumImageCollectionView padding:-5.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-        
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 170, 300, 150)];
-        label.backgroundColor = [UIColor clearColor];
-        label.textColor = [UIColor whiteColor];
-        label.shadowColor = [UIColor blackColor];
-        label.shadowOffset = CGSizeMake(0.f, 1.f);
-        label.numberOfLines = 0;
-        label.text = @"アップロードの方法(Step 4/13)\n\n子供の画像を一つ選びましょう。";
-        [_overlay addSubview:label];
-        
-        [_overlay show];
-    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -215,23 +199,6 @@
         if (item > 1) {
             [_selectedImageCollectionView scrollToItemAtIndexPath:lastIndexPath atScrollPosition:UICollectionViewScrollPositionRight animated:NO];
         }
-        if ([_tutorialStep intValue] == 2) {
-            [_overlay hide];
-            [_overlay removeFromSuperview];
-            _overlay = [[ICTutorialOverlay alloc] init];
-            _overlay.hideWhenTapped = NO;
-            _overlay.animated = YES;
-            [_overlay addHoleWithView:_sendImageLabel padding:-5.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-            
-            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 170, 300, 150)];
-            label.backgroundColor = [UIColor clearColor];
-            label.textColor = [UIColor whiteColor];
-            label.numberOfLines = 0;
-            label.text = @"アップロードの方法(Step 5/13)\n\nアップロードの準備ができました。送信ボタンを押してアップロードしてください。";
-            [_overlay addSubview:label];
-            
-            [_overlay show];
-        }
     } else if (collectionView.tag == 2) {
         NSLog(@"selected %d", indexPath.row);
     }
@@ -279,12 +246,6 @@
         [_uploadImageDataTypeArray addObject:imageType];
 
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
-        
-        ///// 適当な小さいtxtファイルであげておく (あとから大きな画像は非同期で送る)
-        ///// NSData *tmpData = [@"a" dataUsingEncoding:NSUTF8StringEncoding];
-        
-        /////childImage[@"imageFile"] = [PFFile fileWithName:@"NowUploading.txt" data:tmpData];
-        
         // tmpData = @"TRUE" にセットしておく画像はあとからあげる
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
@@ -294,19 +255,12 @@
             saveCount++;
             NSLog(@"saved %d", saveCount);
             if ([_checkedImageArray count] == saveCount) {
-                [_overlay hide];
-                [_overlay removeFromSuperview];
                 [_hud hide:YES];
+                if (_totalImageNum) {
+                    [_totalImageNum replaceObjectAtIndex:_indexPath.row withObject:[NSNumber numberWithInt:saveCount]];
+                }
                 [self saveToParseInBackground];
                 [self dismissViewControllerAnimated:YES completion:NULL];
-                
-                if ([_tutorialStep intValue] == 2) {
-                    PFUser *user = [PFUser currentUser];
-                    user[@"tutorialStep"] = [NSNumber numberWithInt:3];
-                    [user saveInBackground];
-                    MultiUploadViewController *view = (MultiUploadViewController *)[self presentingViewController];
-                    view.tutorialStep = [NSNumber numberWithInt:3];
-                }
                 
                 //アルバム表示のViewも消す
                 UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
@@ -333,7 +287,8 @@
                 [[AWSS3Utils putObject:
                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]
                             imageData:[_uploadImageDataArray objectAtIndex:0]
-                             imageType:[_uploadImageDataTypeArray objectAtIndex:0]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                             imageType:[_uploadImageDataTypeArray objectAtIndex:0]
+                         configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                     if (!task.error) {
                         // エラーがなければisTmpDataを更新
                         object[@"isTmpData"] = @"FALSE";
@@ -363,7 +318,8 @@
                     [[AWSS3Utils putObject:
                       [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], childImage.objectId]
                                  imageData:[_uploadImageDataArray objectAtIndex:0]
-                                 imageType:[_uploadImageDataTypeArray objectAtIndex:0]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                                 imageType:[_uploadImageDataTypeArray objectAtIndex:0]
+                             configuration:_configuration] continueWithBlock:^id(BFTask *task) {
                         if (!task.error) {
                             // エラーがなければisTmpDataを更新
                             [_uploadImageDataArray removeObjectAtIndex:0];

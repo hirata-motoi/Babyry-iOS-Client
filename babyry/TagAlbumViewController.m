@@ -238,19 +238,21 @@
                 for (PFObject *object in objects) {
                     NSString *date = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
                     NSString *cacheImageName = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, date];
+                    // ここはTagAlbumが使われるようになったらS3を再起的に呼ぶように変更する
                     // まずはS3に接続
-                    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                        if (!task.error && task.result) {
-                            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                            
-                            // サムネイル用UIImageを再度dataに変換
-                            [ImageCache setCache:[NSString stringWithFormat:@"%@", cacheImageName] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                            index++;
-                            if (index == [objects count]) {
-                                [_collectionView reloadData];
-                            }
-                        } else {
+//                    AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
+//                    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId] configuration:configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+//                        if (!task.error && task.result) {
+//                            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+//                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+//                            
+//                            // サムネイル用UIImageを再度dataに変換
+//                            [ImageCache setCache:[NSString stringWithFormat:@"%@", cacheImageName] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+//                            index++;
+//                            if (index == [objects count]) {
+//                                [_collectionView reloadData];
+//                            }
+//                        } else {
                             // S3になければParseに取りにいく
                             [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                                 if(!error) {
@@ -265,9 +267,9 @@
                                     }
                                 }
                             }];
-                        }
-                        return nil;
-                    }];
+//                        }
+//                        return nil;
+//                    }];
                 }
             }
         }];

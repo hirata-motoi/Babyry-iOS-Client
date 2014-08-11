@@ -142,8 +142,7 @@ static NSString *const BFWebViewAppLinkResolverShouldFallbackKey = @"should_fall
 }
 
 - (BFTask *)appLinkFromURLInBackground:(NSURL *)url {
-    return [[self followRedirects:url] continueWithExecutor:[BFExecutor mainThreadExecutor]
-                                           withSuccessBlock:^id(BFTask *task) {
+    return [[self followRedirects:url] continueWithSuccessBlock:^id(BFTask *task) {
                                                NSData *responseData = task.result[@"data"];
                                                NSHTTPURLResponse *response = task.result[@"response"];
                                                BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];

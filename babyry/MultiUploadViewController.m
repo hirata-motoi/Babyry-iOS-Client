@@ -10,7 +10,6 @@
 #import "ImageTrimming.h"
 #import "ViewController.h"
 #import "ImageCache.h"
-#import "MultiUploadPickerViewController.h"
 #import "FamilyRole.h"
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
@@ -37,29 +36,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    
     _currentUser = [PFUser currentUser];
     
     NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
-    
-    // フォトアルバムからリスト取得しておく
-    NSLog(@"get from photo album.");
-    _albumListArray = [[NSMutableArray alloc] init];
-    _albumImageDic = [[NSMutableDictionary alloc] init];
-    //NSMutableArray *assetsArray = [[NSMutableArray alloc] init];
-    _library = [[ALAssetsLibrary alloc] init];
-    [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-        if (group) {
-            [_albumListArray addObject:group];
-            NSMutableArray *albumImageArray = [[NSMutableArray alloc] init];
-            ALAssetsGroupEnumerationResultsBlock assetsEnumerationBlock = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                if (result) {
-                    [albumImageArray addObject:result];
-                }
-            };
-            [group enumerateAssetsUsingBlock:assetsEnumerationBlock];
-            [_albumImageDic setObject:albumImageArray forKey:[group valueForProperty:ALAssetsGroupPropertyName]];
-        }
-    } failureBlock:nil];
     
     // Draw collectionView
     [self createCollectionView];
@@ -81,34 +62,15 @@
     // best shot asset
     _bestShotLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
     
-    _uploadProgressView.hidden = YES;
-    _uploadPregressBar.progress = 0.0f;
-    
     _bestImageIndex = -1;
     
     // role で出し分けるものたち
-    // チュートリアルの場合は両方やってもらう
-    if (![_currentUser objectForKey:@"tutorialStep"] || [[_currentUser objectForKey:@"tutorialStep"] intValue] < 100) {
-        [_currentUser refresh];
-        if ([[_currentUser objectForKey:@"tutorialStep"] intValue] <= 2) {
-            NSLog(@"%@ is under tutorialStep %@", _currentUser[@"userId"], _currentUser[@"tutorialStep"]);
-            _tutorialStep = [NSNumber numberWithInt:2];
-            _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:2];
-            [_currentUser saveInBackground];
-            _explainLabel.text = @"";
-        } else if ([[_currentUser objectForKey:@"tutorialStep"] intValue] == 4) {
-            NSLog(@"%@ is under tutorialStep %@", _currentUser[@"userId"], _currentUser[@"tutorialStep"]);
-            _tutorialStep = [NSNumber numberWithInt:4];
-            _explainLabel.text = @"";
-        }
-    } else {
-        if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
-            _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
-        } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
-            _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
-        }
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        _explainLabel.text = @"あなたは写真をアップロードする人です(ベストショットは選べません)";
+    } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
+        _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
     }
-    
+
     if ([_childImageArray count] > 0) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
         [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
@@ -124,40 +86,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    // tutorial用
-    if ([_tutorialStep intValue] == 3) {
-        _overlay = [[ICTutorialOverlay alloc] init];
-        _overlay.hideWhenTapped = NO;
-        _overlay.animated = YES;
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 170, 300, 200)];
-        label.backgroundColor = [UIColor clearColor];
-        label.textColor = [UIColor whiteColor];
-        label.numberOfLines = 0;
-        label.text = @"アップロードの方法(Step 6/13)\n\nアップロードが完了しました。\nこれでアップローダーのチュートリアルは終わりです。\n次は、チューザー機能のチュートリアルになります。画面をタップしてください。";
-        [_overlay addSubview:label];
-        [_overlay show];
-        
-        UITapGestureRecognizer *tuto3gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTuto3Gesture:)];
-        tuto3gesture.numberOfTapsRequired = 1;
-        [_overlay addGestureRecognizer:tuto3gesture];
-    } else if ([_tutorialStep intValue] == 4) {
-        // チューザーのチュートリアル
-        _overlay = [[ICTutorialOverlay alloc] init];
-        _overlay.hideWhenTapped = NO;
-        _overlay.animated = YES;
-        [_overlay addHoleWithView:_multiUploadedImages padding:-10.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-        
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, 300, 150)];
-        label.backgroundColor = [UIColor clearColor];
-        label.textColor = [UIColor whiteColor];
-        label.shadowColor = [UIColor blackColor];
-        label.shadowOffset = CGSizeMake(0.f, 1.f);
-        label.numberOfLines = 0;
-        label.text = @"チューザー機能(Step 8/13)\n\nベストショットと思う画像をダブルタップしてください。";
-        [_overlay addSubview:label];
-        [_overlay show];
-    }
+    NSLog(@"viewDidAppear");
     
     _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
                                                 target:self
@@ -175,8 +104,6 @@
 {
     // super
     [super viewWillAppear:animated];
-    
-    [_overlay removeFromSuperview];
     
     [_myTimer invalidate];
 }
@@ -217,11 +144,8 @@
         i++;
     }
     
-    // アップロード用の画像を最後にはめる、ただし、
-    // uploader もしくは tutorialStep = 2(アップロードのチュートリアル) の場合かつ、
-    // uploader かつ tutorialStepが4(チューザーのチュートリアル)じゃない場合
-    if (([[FamilyRole selfRole] isEqualToString:@"uploader"] || [_tutorialStep intValue] == 2)
-        && ([[FamilyRole selfRole] isEqualToString:@"uploader"] && [_tutorialStep intValue] != 4)) {
+    // アップロード用の画像を最後にはめる
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         [_childCachedImageArray addObject:[NSString stringWithFormat:@"ForUploadImage"]];
     }
     
@@ -260,7 +184,7 @@
 // 指定された場所のセルを作るメソッド
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    //NSLog(@"cellForItemAtIndexPath");
+    NSLog(@"cellForItemAtIndexPath %d", indexPath.row);
     //セルを再利用 or 再生成
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MultiUploadViewControllerCell" forIndexPath:indexPath];
     for (UIView *view in [cell subviews]) {
@@ -282,10 +206,6 @@
         UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
         uploadGesture.numberOfTapsRequired = 1;
         [cell addGestureRecognizer:uploadGesture];
-        if ([_tutorialStep intValue] == 2) {
-            _plusCellForTutorial = cell;
-            [self setTutorialStep2];
-        }
     } else {
         // ローカルに保存されていたサムネイル画像を貼付け
         NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
@@ -304,6 +224,7 @@
             [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
             [cell addGestureRecognizer:singleTapGestureRecognizer];
         } else {
+            NSLog(@"クルクル表示させる");
             // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
             cell.backgroundColor = [UIColor blackColor];
             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
@@ -319,7 +240,6 @@
 -(void)updateImagesFromParse
 {
     //NSLog(@"updateImagesFromParse");
-    _uploadProgressView.hidden = NO;
     
     // Parseから画像をとる
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
@@ -344,6 +264,7 @@
 
 -(void)setCacheOfParseImage:(NSMutableArray *)objects
 {
+    NSLog(@"setCacheOfParseImage %d", [objects count]);
     if ([objects count] > 0) {
         PFObject *object = [objects objectAtIndex:0];
         if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
@@ -357,21 +278,25 @@
             
             _indexForCache++;
             [objects removeObjectAtIndex:0];
-            _uploadPregressBar.progress = (float)_indexForCache/ (float)([_childCachedImageArray count] + 1);
             [self setCacheOfParseImage:objects];
         } else {
             NSLog(@"本画像が上がっている場合 S3から取る");
             NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
             NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                if (!task.error && task.result) {                                                                           
+            
+            
+            AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+            getRequest.bucket = @"babyrydev-images";
+            getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId];
+            AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+            [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                if (!task.error && task.result) {
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                     [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                     
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
-                    _uploadPregressBar.progress = (float)_indexForCache/ (float)([_childCachedImageArray count] + 1);
                     [self setCacheOfParseImage:objects];
                 } else {
                     NSLog(@"S3にないならParseから");
@@ -382,7 +307,6 @@
                             
                             _indexForCache++;
                             [objects removeObjectAtIndex:0];
-                            _uploadPregressBar.progress = (float)_indexForCache/ (float)([_childCachedImageArray count] + 1);
                             [self setCacheOfParseImage:objects];
                         }
                     }];
@@ -399,7 +323,6 @@
                 [ImageCache removeCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
             }
         }
-        _uploadPregressBar.progress = 1.0f;
         NSLog(@"reloadData!");
         [self showCacheImages];
         
@@ -408,58 +331,29 @@
             [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
         }
         
-        _uploadProgressView.hidden = YES;
-        
         NSLog(@"_tmpCacheCount %d", _tmpCacheCount);
         if (_tmpCacheCount == 0){
             _needTimer = NO;
+            [_myTimer invalidate];
         }
         
         _isTimperExecuting = NO;
     }
 }
 
--(void)handleTuto3Gesture:(id) sender {
-    NSLog(@"handleTuto3Gesture");
-    
-    _tutorialStep = [NSNumber numberWithInt:4];
-    _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:4];
-    [_currentUser save];
-    
-    [self dismissViewControllerAnimated:YES completion:NULL];
+-(void)handleUploadGesture:(id) sender {
+    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        [self openPhotoAlbumList];
+    }
 }
 
--(void)handleUploadGesture:(id) sender {
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"] || [_tutorialStep intValue] == 2) {
-        [_overlay hide];
-        [_overlay removeFromSuperview];
-        _albumTableView = [[UITableView alloc] init];
-        _albumTableView.delegate = self;
-        _albumTableView.dataSource = self;
-        _albumTableView.backgroundColor = [UIColor whiteColor];
-        CGRect frame = self.view.frame;
-        frame.origin.y += 64;
-        frame.size.height -= 64;
-        _albumTableView.frame = frame;
-        UIViewController *albumTableViewController = [[UIViewController alloc] init];
-        albumTableViewController.view = _albumTableView;
-        [self.navigationController pushViewController:albumTableViewController animated:YES];
-
-        if ([_tutorialStep intValue] == 2) {
-            _overlay = [[ICTutorialOverlay alloc] init];
-            _overlay.hideWhenTapped = NO;
-            _overlay.animated = YES;
-            [_overlay addHoleWithView:_albumTableView padding:-10.0f offset:CGSizeMake(0, 0) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-        
-            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(40, self.view.frame.size.height/2, 240, 150)];
-            label.backgroundColor = [UIColor clearColor];
-            label.textColor = [UIColor blackColor];
-            label.numberOfLines = 0;
-            label.text = @"アップロードの方法(Step 3/13)\n\nアルバムを選択してください。";
-            [_overlay addSubview:label];
-            [_overlay show];
-        }
-    }
+-(void)openPhotoAlbumList
+{
+    MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
+    multiUploadAlbumTableViewController.childObjectId = _childObjectId;
+    multiUploadAlbumTableViewController.date = _date;
+    multiUploadAlbumTableViewController.month = _month;
+    [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
 -(void)handleDoubleTap:(id) sender {
@@ -467,7 +361,7 @@
     
     // role bbbのみダブルタップ可能
     // チュートリアルStep 4でも可
-    if ([[FamilyRole selfRole] isEqualToString:@"chooser"] || [_tutorialStep intValue] == 4) {
+    if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         
         _bestImageIndex = [[sender view] tag];
         
@@ -528,13 +422,6 @@
         NSData *thumbData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, [[sender view] tag]]];
         UIImage *thumbImage = [UIImage imageWithData:thumbData];
         [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-        
-        // チュートリアル中だったらこれで終わり
-        if ([_tutorialStep intValue] == 4) {
-            _currentUser[@"tutorialStep"] = [NSNumber numberWithInt:5];
-            [_currentUser save];
-            [self dismissViewControllerAnimated:YES completion:NULL];
-        }
     }
 }
 
@@ -560,6 +447,7 @@
     }
 }
 
+<<<<<<< HEAD
 /////////////////////////////////////////////////////////////////
 // アルバム一覧のtableviewようのメソッド
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -617,6 +505,8 @@
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
 
+=======
+>>>>>>> 16d35570b6f235b52e6481decb8cb97c3daf9bae
 -(void)openModalImageView
 {
     UIViewController *detailViewController = [[UIViewController alloc] init];
@@ -657,8 +547,8 @@
     // まずはS3に接続
     NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
     NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (!task.error && task.result) {                                                                           
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId] configuration:_configuration] continueWithBlock:^id(BFTask *task) {
+        if (!task.error && task.result) {
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             // 本画像を上にのせる
             UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:getResult.body]];
@@ -722,28 +612,6 @@
     [_pageViewController removeFromParentViewController];
     
     [self viewDidAppear:(BOOL)YES];
-}
-
--(void)setTutorialStep2
-{
-    _overlay = [[ICTutorialOverlay alloc] init];
-    _overlay.hideWhenTapped = NO;
-    _overlay.animated = YES;
-    CGRect frame = _plusCellForTutorial.frame;
-    frame.origin.x += 10;
-    frame.origin.y += 105;
-    frame.size.width -=10;
-    frame.size.height -= 10;
-    [_overlay addHoleWithRect:frame form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-    
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, self.view.frame.size.height/2, 300, 200)];
-    label.backgroundColor = [UIColor clearColor];
-    label.textColor = [UIColor whiteColor];
-    label.numberOfLines = 0;
-    label.text = @"アップロードの方法(Step 2/13)\n\nアップローダーの場合は、今日のパネルをタップするとこの画像アップロード画面が開きます。\nアップロードボタンを押して画像をアップロードしてみましょう。";
-    [_overlay addSubview:label];
-    
-    [_overlay show];
 }
 
 -(void)setupCommentView:(PFObject *) imageInfo;

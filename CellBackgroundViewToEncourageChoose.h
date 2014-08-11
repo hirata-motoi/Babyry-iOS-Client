@@ -9,9 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface CellBackgroundViewToEncourageChoose : UIView
-@property (weak, nonatomic) IBOutlet UILabel *messageLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
-@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
+@property (strong, nonatomic) IBOutlet UILabel *upCountLabel;
 
 + (instancetype)view;
 @end

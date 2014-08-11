@@ -10,7 +10,6 @@
 
 @interface CellBackgroundViewToWaitUpload : UIView
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
-@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
 + (instancetype)view;
 @end

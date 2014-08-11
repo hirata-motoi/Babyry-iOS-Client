@@ -11,8 +11,9 @@
 #import <AWSiOSSDKv2/S3.h>
 
 @interface AWSS3Utils : NSObject
-
-+ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType;
-+ (BFTask *) getObject:(NSString *)key;
+typedef void (^CompletionBlock)(void);
++ (AWSServiceConfiguration *) getAWSServiceConfiguration;
++ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType configuration:(AWSServiceConfiguration *)configuration;
++ (BFTask *) getObject:(NSString *)key configuration:(AWSServiceConfiguration *)configuration;
 
 @end

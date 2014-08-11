@@ -11,10 +11,8 @@
 
 @implementation AWSS3Utils
 
-+ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType
++ (AWSServiceConfiguration *) getAWSServiceConfiguration
 {
-    // AWS cognite
-    // これは適当に共通化した方が良さげ
     AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
                                                           credentialsWithRegionType:AWSRegionUSEast1
                                                           accountId:[SecretConfig getAWSAccountId]
@@ -24,31 +22,32 @@
     AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
     
+    return configuration;
+}
+
++ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType configuration:(AWSServiceConfiguration *)configuration
+{
     AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
     putRequest.bucket = @"babyrydev-images";
     putRequest.key = key;
     putRequest.body = imageData;
-    putRequest.contentLength = [NSNumber numberWithInt:[imageData length]];
+    putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
     putRequest.contentType = imageType;
+    putRequest.cacheControl = @"no-cache";
     
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
     return [awsS3 putObject:putRequest];
 }
 
-+ (BFTask *) getObject:(NSString *)key
+// 単発でgetする時にはこれを使う
+// 1月分とかとるのであれば再起的に呼び出す必要があるのでこれは使わない
++ (BFTask *) getObject:(NSString *)key configuration:(AWSServiceConfiguration *)configuration
 {
-    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
-                                                          credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:[SecretConfig getAWSAccountId]
-                                                          identityPoolId:[SecretConfig getAWSCognitoIdentityPoolId]
-                                                          unauthRoleArn:[SecretConfig getAWSCognitoUnauthRoleArn]
-                                                          authRoleArn:nil];
-    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
-    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-    
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = @"babyrydev-images";
     getRequest.key = key;
+    // no-cacheにしないと反映が遅い
+    getRequest.responseCacheControl = @"no-cache";
     
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
     

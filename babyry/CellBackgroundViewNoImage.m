@@ -1,14 +1,14 @@
 //
-//  CellBackgroundViewToEncourageChooseLarge.m
+//  CellBackgroundViewNoImage.m
 //  babyry
 //
-//  Created by hirata.motoi on 2014/08/05.
+//  Created by Kenji Suzuki on 2014/08/10.
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
-#import "CellBackgroundViewToEncourageChooseLarge.h"
+#import "CellBackgroundViewNoImage.h"
 
-@implementation CellBackgroundViewToEncourageChooseLarge
+@implementation CellBackgroundViewNoImage
 
 - (id)initWithFrame:(CGRect)frame
 {

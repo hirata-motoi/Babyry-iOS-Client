@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ICTutorialOverlay.h"
 #import <Parse/Parse.h>
 #import "DragView.h"
+#import "AWSS3Utils.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -17,9 +17,6 @@
 @property NSUInteger pageIndex;
 @property (strong, nonatomic) NSArray *childArray;
 @property NSString *childObjectId;
-
-@property ICTutorialOverlay *overlay;
-@property UILabel *tutoLabel;
 
 @property NSString *returnValueOfChildName;
 @property NSString *returnValueOfChildBirthday;
@@ -38,13 +35,9 @@
 @property NSInteger dragCount;
 @property NSMutableDictionary *imagesCountDic;
 
-@property NSNumber *tutorialStep;
-
 @property PFUser *currentUser;
 
 @property int isFirstLoad;
-
-@property UICollectionViewCell *isNoImageCellForTutorial;
 
 @property UILabel *tutoSkipLabel;
 @property BOOL isLoading;
@@ -52,5 +45,7 @@
 
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
+
+@property AWSServiceConfiguration *configuration;
 
 @end

@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "ICTutorialOverlay.h"
 #import "ImageOperationViewController.h"
 
 @interface UploadViewController : UIViewController<UIScrollViewDelegate>
@@ -35,11 +34,10 @@
 @property NSString *holdedBy; //このインスタンスを保持しているオブジェクトのクラス名
 @property NSMutableDictionary *child;
 
-@property ICTutorialOverlay *overlay;
-
 // ImageOperationView使い回すため
 @property UIView *operationView;
 @property ImageOperationViewController *operationViewController;
 
+@property AWSServiceConfiguration *configuration;
 
 @end

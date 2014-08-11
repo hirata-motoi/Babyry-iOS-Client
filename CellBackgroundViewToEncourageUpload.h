@@ -9,9 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface CellBackgroundViewToEncourageUpload : UIView
-@property (weak, nonatomic) IBOutlet UILabel *messageLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
-@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 
 + (instancetype)view;
 @end

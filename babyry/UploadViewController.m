@@ -36,6 +36,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    
     _defaultImageViewFrame = _uploadedImageView.frame;
     
     _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
@@ -58,26 +60,29 @@
     [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if ([objects count] > 0) {
             PFObject * object = [objects objectAtIndex:0];
+<<<<<<< HEAD
             // まずはS3に接続
             [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {                                                                           
+=======
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                if (!task.error && task.result) {
+>>>>>>> 16d35570b6f235b52e6481decb8cb97c3daf9bae
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     _uploadedImageView.image = [UIImage imageWithData:getResult.body];
-                    _imageInfo = object;
                 } else {
-                    // なければParseに取りにいく
                     [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                         if(!error){
                             _uploadedImageView.image = [UIImage imageWithData:data];
                         }
                     }];
-                    _imageInfo = object;
                 }
                 return nil;
             }];
+            _imageInfo = object;
+            isPreload = NO;
+            [self setupOperationView:isPreload];
         }
-        isPreload = NO;
-        [self setupOperationView:isPreload];
     }];
 }
 
@@ -100,35 +105,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if ([[PFUser currentUser][@"tutorialStep"] intValue] == 5) {
-        _overlay = [[ICTutorialOverlay alloc] init];
-        _overlay.hideWhenTapped = NO;
-        _overlay.animated = YES;
-    
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 170, 300, 150)];
-        label.backgroundColor = [UIColor clearColor];
-        label.textColor = [UIColor whiteColor];
-        label.numberOfLines = 0;
-        label.text = @"過去の画像について(Step 11/13)\n\n過去の画像に関しては、画像の変更、コメントの追加、タグの付与が出来ます。\n画面タップで戻ってください。";
-        [_overlay addSubview:label];
-        [_overlay show];
-        
-        UITapGestureRecognizer *overlayGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeTuto:)];
-        overlayGR.numberOfTapsRequired = 1;
-        [_overlay addGestureRecognizer:overlayGR];
-        
-        PFUser *user = [PFUser currentUser];
-        user[@"tutorialStep"] = [NSNumber numberWithInt:6];
-        [user save];
-    }
-}
-
-- (void)closeTuto:(id)sender
-{
-    NSLog(@"closeTuto");
-    [_overlay hide];
-    [_overlay removeFromSuperview];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [super viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

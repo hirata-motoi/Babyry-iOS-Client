@@ -16,7 +16,7 @@
 #import "ImageTrimming.h"
 #import "PushNotification.h"
 #import "Navigation.h"
-#import "AWSS3Utils.h"
+#import "UploadPickerViewController.h"
 
 @interface ImageOperationViewController ()
 
@@ -58,51 +58,15 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)closeUploadViewController
-{
-    if (_holdedBy.length < 1) {
-        // トップページから開かれている場合
-        [self dismissViewControllerAnimated:YES completion:nil];
-    } else if ([_holdedBy isEqualToString:@"TagAlbumPageViewController"] || [_holdedBy isEqualToString:@"AlbumPageViewController"]) {
-        // TagAlbum or Albumから開かれている場合
-        UIView *uploadViewControllerView = self.view.superview;
-        CGRect rect = uploadViewControllerView.frame;
-        [UIView animateWithDuration:0.3
-            delay:0.0
-            options: UIViewAnimationOptionCurveEaseInOut
-            animations:^{
-                self.view.superview.frame = CGRectMake(rect.origin.x + rect.size.width, rect.origin.y, rect.size.width, rect.size.height);
-            }
-            completion:^(BOOL finished){
-                // viewを消す
-                [self.view.superview.superview.superview.superview removeFromSuperview];
-                // viewcontrollerを消す(PageViewControllerごと)
-                [self.parentViewController.parentViewController removeFromParentViewController];
-            }];
-    } else {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-}
-
 - (void)openPhotoLibrary
 {
-    //[self hideTagView];
-    
-    // インタフェース使用可能なら
-	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
-	{
-        // UIImageControllerの初期化
-		UIImagePickerController *imagePickerController = [[UIImagePickerController alloc]init];
-		[imagePickerController setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-		[imagePickerController setAllowsEditing:NO];
-		[imagePickerController setDelegate:self];
-		
-        [self presentViewController:imagePickerController animated:YES completion: nil];
-	}
-	else
-	{
-		NSLog(@"photo library invalid.");
-	}
+    UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
+    uploadPickerViewController.month = _month;
+    uploadPickerViewController.childObjectId = _childObjectId;
+    uploadPickerViewController.date = _date;
+    uploadPickerViewController.uploadViewController = _uploadViewController;
+    [self.navigationController pushViewController:uploadPickerViewController animated:YES];
+    return;
 }
 
 - (void)hideOperationView:(id)sender
@@ -112,6 +76,7 @@
 
 - (void)setupCommentView
 {
+    NSLog(@"setupCommentView");
     CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
     commentViewController.childObjectId = _childObjectId;
     commentViewController.name = _name;
@@ -289,92 +254,5 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-/*
-- (void) saveToS3InBackground:(NSString *)key imageData:(NSData *)imageData
-{
-    AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-    putRequest.bucket = @"babyrydev-images";
-    putRequest.key = key;
-    putRequest.body = imageData;
-    putRequest.contentLength = [NSNumber numberWithInt:[imageData length]];
-    
-    // AWS cognite
-    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
-                                                          credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:@"424568627207"
-                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
-                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
-                                                          authRoleArn:nil];
-    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
-    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-    
-    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-    [[[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task){
-        if (task.error) {
-            NSLog(@"S3 get error: %@", [task.error description]);
-        }
-        return nil;
-    }] waitUntilFinished];
-    
- 
- 
- 
-    NSLog(@"aaaaaaaaa %@", imageURL);
-    _uploadRequest = [AWSS3TransferManagerUploadRequest new];
-    _uploadRequest.bucket = @"babyrydev-images";
-    _uploadRequest.key = key;
-    _uploadRequest.body = imageURL;
-    
-    AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
-    
-    [[transferManager upload:_uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (task.error != nil) {
-            NSLog(@"no such???? %@", imageURL);
-            if( task.error.code != AWSS3TransferManagerErrorCancelled && task.error.code != AWSS3TransferManagerErrorPaused ) {
-                NSLog(@"Upload Failed! %d", task.error.code);
-                NSLog(@"Upload Failed! %@", task.error);
-            }
-        } else {
-            //_uploadRequest = nil;
-        }
-        return nil;
-    }];
-    
-    // AWS cognite
-    AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
-                                                          credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:@"424568627207"
-                                                          identityPoolId:@"us-east-1:7c7b2ce0-0dee-4516-93a7-63f9a51f216c"
-                                                          unauthRoleArn:@"arn:aws:iam::424568627207:role/babyry-cognito-role"
-                                                          authRoleArn:nil];
-    AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
-    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-    
-    AWSS3GetObjectRequest *awsS3GetObjectRequest = [AWSS3GetObjectRequest new];
-    awsS3GetObjectRequest.key = @"20121028125656.jpg";
-    awsS3GetObjectRequest.bucket = @"babyrydev-images";
-    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-    [[[awsS3 getObject:awsS3GetObjectRequest] continueWithBlock:^id(BFTask *task)
-      {
-          if (task.error)
-          {
-              NSLog(@"S3 get error: %@", [task.error description]);
-          }
-          else
-          {
-              NSLog(@"S3 file size: %@", ((AWSS3GetObjectOutput *)task.result).contentLength);
-          }
-          return nil;
-      }] waitUntilFinished];
-    [awsS3 putObject:(AWSS3PutObjectRequest *)]
-    [[[awsS3 putObject:_uploadRequest] continueWithBlock:^id(BFTask *task){
-        if (task.error) {
-            NSLog(@"S3 get error: %@", [task.error description]);
-        }
-        return nil;
-    }] waitUntilFinished];
-}
- */
 
 @end
