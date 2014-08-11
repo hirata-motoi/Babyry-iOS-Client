@@ -9,10 +9,9 @@
 #import "ImagePageViewController.h"
 #import "UploadViewController.h"
 #import "ImageCache.h"
+#import "AWSS3Utils.h"
+#import "DateUtils.h"
 
-@interface ImagePageViewController ()
-
-@end
 
 @implementation ImagePageViewController
 
@@ -31,7 +30,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.dataSource = self;
-    self.delegate = self;
    
     [self setupDataSource];
     [self showInitialImage];
@@ -94,6 +92,7 @@
         uploadViewController.promptText = [NSString stringWithFormat:@"%ld/%ld", index + 1, imagesCount];
     }
     
+    [self laodMoreImages:index];
     return uploadViewController;
 }
 
@@ -130,9 +129,129 @@
     return [self viewControllerAtIndex:index];
 }
 
-- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
+//- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
+- (void)laodMoreImages:(NSInteger)index
 {
+    NSLog(@"pageViewController loadMoreImages");
     // TODO 必要に応じてparseから画像データを取得
+    // 総枚数
+    // 現在のimage数
+    // 後10枚になったら次の月のデータを読み込む
+    // 必要な値
+    //   総枚数  imagesCountDicがあれば採用、なければreturn
+    //   現在のimage数(_childImages.count)
+    //   次の月
+    //     データがなければさらに次の月を再帰的にとりにいく
+    //     現在の月はpreviousviewControllers.monthで取得可能
+    
+    if (!_imagesCountDic || !_imagesCountDic[@"imagesCountNumber"]) {
+        NSLog(@"return because imagesCountDic does not exist");
+        return;
+    }
+    if (_imageList.count >= [_imagesCountDic[@"imagesCountNumber"] integerValue]) {
+        return;
+    }
+    if (_imageList.count - 10 <= index) {
+        PFObject *lastChildImage = _imageList[ _imageList.count - 1 ];
+        NSString *year = [lastChildImage[@"date"] substringWithRange:NSMakeRange(1, 4)];
+        NSString *month = [lastChildImage[@"date"] substringWithRange:NSMakeRange(5, 2)];
+        [self getChildImagesWithYear:[year integerValue] withMonth:[month integerValue]];
+    }
+}                          
+
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month
+{
+    NSLog(@"getChildImagesWithYear");
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
+        [self getChildImagesRecursive:year withMonth:month];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+        });
+    });
+}
+
+- (void)getChildImagesRecursive:(NSInteger)year withMonth:(NSInteger)month
+{
+    NSLog(@"getChildImagesRecursive year:%ld month:%02ld", year, month);
+    
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *comps = [[NSDateComponents alloc]init];
+    comps.year = year;
+    comps.month = month;
+    comps.day = 1;
+    comps = [DateUtils addDateComps:comps withUnit:@"month" withValue:-1];
+    NSDate *date = [cal dateFromComponents:comps];
+    
+    // 画像が取得できるまで処理する
+    // 誕生日に達したら終了(誕生日がなければ2010年1月まで)
+    // 画像が取得できたら終了
+    
+    // 誕生月
+    NSDate *birthday = _child[@"birthday"];
+    if (!birthday) {
+        NSDateComponents *tmpComps = [[NSDateComponents alloc]init];
+        tmpComps.year = 2014;
+        tmpComps.month = 1;
+        tmpComps.day = 1;
+        birthday = [cal dateFromComponents:tmpComps];
+    }
+    NSDateComponents *birthmonthComps = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:birthday];
+    birthmonthComps.day = 1;
+    NSDate *birthmonth = [cal dateFromComponents:birthmonthComps];
+   
+    while ([date compare:birthmonth] != NSOrderedAscending) {
+        NSDateComponents *c = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:date];
+        
+        PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        [query whereKey:@"imageOf" equalTo:_childObjectId];
+        [query whereKey:@"bestFlag" equalTo:@"choosed"];
+        [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", c.year, c.month]];
+        NSArray *objects = [query findObjects];
+        
+        if (objects && objects.count > 0) {
+            [_imageList addObjectsFromArray:objects];
+            for (PFObject *childImage in objects) {
+                [self cacheThumbnail:childImage];
+            }
+            break;
+        }
+        
+        comps = [DateUtils addDateComps:comps withUnit:@"month" withValue:-1];
+        date = [cal dateFromComponents:comps];
+    }
+}
+
+- (void)cacheThumbnail:(PFObject *)childImage
+{
+    NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
+    
+    // まずはS3に接続
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (!task.error && task.result) {
+            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+            // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
+            if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                
+                NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+            }
+        } else {
+            // S3になければParseに
+            [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
+                if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+    
+                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                }
+            }];
+        }
+        return nil;
+    }];
 }
 
 
