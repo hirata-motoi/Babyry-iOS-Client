@@ -60,26 +60,23 @@
     [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if ([objects count] > 0) {
             PFObject * object = [objects objectAtIndex:0];
-            // まずはS3に接続
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithBlock:^id(BFTask *task) {
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     _uploadedImageView.image = [UIImage imageWithData:getResult.body];
-                    _imageInfo = object;
                 } else {
-                    // なければParseに取りにいく
                     [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                         if(!error){
                             _uploadedImageView.image = [UIImage imageWithData:data];
                         }
                     }];
-                    _imageInfo = object;
                 }
                 return nil;
             }];
+            _imageInfo = object;
+            isPreload = NO;
+            [self setupOperationView:isPreload];
         }
-        isPreload = NO;
-        [self setupOperationView:isPreload];
     }];
 }
 

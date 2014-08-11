@@ -28,6 +28,7 @@
 #import "CellBackgroundViewNoImage.h"
 #import "CalenderLabel.h"
 #import "PushNotification.h"
+#import "UploadPickerViewController.h"
 
 @interface PageContentViewController ()
 
@@ -193,7 +194,7 @@
     [calLabelView.calLabelBack addSubview:calDateLabel];
 
     [cell addSubview:calLabelView];
-    
+     
     cell.tag = indexPath.row + 1;
 
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
@@ -208,10 +209,8 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // チェックの人がアップ催促する時だけここは何の処理もしない
-    if ([_selfRole isEqualToString:@"chooser"]) {
-        NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
-        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-        if ([[totalImageNum objectAtIndex:indexPath.row] compare:[NSNumber numberWithInt:1]] == NSOrderedAscending) {
+    if ([_selfRole isEqualToString:@"chooser"] && [self withinTwoDay:indexPath]) {
+        if ([self isNoImage:indexPath]) {
             return;
         }
     }
@@ -226,7 +225,7 @@
         if ([self isNoImage:indexPath]) {
             MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
             multiUploadAlbumTableViewController.childObjectId = _childObjectId;
-            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];;
+            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
             multiUploadAlbumTableViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
@@ -249,6 +248,22 @@
                 // TODO インターネット接続がありません的なメッセージいるかも
             }
         }
+        return;
+    }
+    
+    if (![self isBEstImageFixed:indexPath]) {
+        // ベストショット決まってなければ即Pickerを開く
+        UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
+        uploadPickerViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+        uploadPickerViewController.childObjectId = _childObjectId;
+        uploadPickerViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+        
+        NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+        uploadPickerViewController.totalImageNum = totalImageNum;
+        uploadPickerViewController.indexPath = indexPath;
+        
+        [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         return;
     }
     
@@ -354,7 +369,8 @@
                 if ([childImageDic objectForKey:ymdWithPrefix]) {
                     PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
                     [images replaceObjectAtIndex:i withObject:childImage];
-                    [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:1]];
+                    // bestshot決まっている時は9999入れる(あり得ないくらい大きな数字)
+                    [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:9999]];
                     [cacheSetQueueArray addObject:childImage];
                 } else {
                     //NSLog(@"No Choosed Image %@", ymdWithPrefix);
@@ -405,6 +421,8 @@
         AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
         getRequest.bucket = @"babyrydev-images";
         getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId];
+        // no-cache必須
+        getRequest.responseCacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
         
         [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
@@ -536,7 +554,19 @@
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     
-    if ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:0]]) {
+    if ([[totalImageNum objectAtIndex:indexPath.row] compare:[NSNumber numberWithInt:1]] == NSOrderedAscending) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isBEstImageFixed:(NSIndexPath *)indexPath
+{
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    if ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:9999]]) {
         return YES;
     } else {
         return NO;
@@ -774,7 +804,7 @@
             // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
             // それ以外 : アップアイコン
             
-            if([self withinTwoDay:indexPath] && ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:0]] || [[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:-1]])) {
+            if([self withinTwoDay:indexPath] && [self isNoImage:indexPath]) {
                 // チョイス催促をいれてもいいけど、いまは UP PHOTO アイコンをはめている
                 if (indexPath.section == 0 && indexPath.row == 0) {
                     CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
@@ -812,7 +842,7 @@
             // ２日以上たったらNoImage
             if ([self withinTwoDay:indexPath]) {
                 // アップ催促
-                if ([[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:0]] || [[totalImageNum objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:-1]]) {
+                if ([self isNoImage:indexPath]) {
                     if (indexPath.section == 0 && indexPath.row == 0) {
                         CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);

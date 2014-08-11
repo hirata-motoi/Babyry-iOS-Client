@@ -38,4 +38,6 @@
 
 @property AWSServiceConfiguration *configuration;
 
+@property BOOL directOpenLibrary;
+
 @end

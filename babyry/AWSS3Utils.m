@@ -33,6 +33,7 @@
     putRequest.body = imageData;
     putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
     putRequest.contentType = imageType;
+    putRequest.cacheControl = @"no-cache";
     
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
     return [awsS3 putObject:putRequest];
@@ -45,6 +46,8 @@
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = @"babyrydev-images";
     getRequest.key = key;
+    // no-cacheにしないと反映が遅い
+    getRequest.responseCacheControl = @"no-cache";
     
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
     
