@@ -62,7 +62,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
     
     // TagViewを設置
-    NSLog(@"set tagview %@", _imageInfo);
     if (_imageInfo) {
         TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
         tagEditViewController.imageInfo = _imageInfo;
@@ -307,7 +306,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 -(void)hideKeyBoard
 {
-    NSLog(@"hideKeyBoard");
     if ([_commentArray count] > 0) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
         [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
@@ -431,7 +429,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 - (IBAction)commentViewTopButton:(id)sender {
     CGRect currentFrame = self.view.frame;
     if (currentFrame.origin.y <= 20 + 44) {
-        NSLog(@"hide commentView");
         currentFrame.origin.y = self.parentViewController.view.frame.size.height - 50;
         currentFrame.origin.x = self.view.frame.size.width - 50;
         [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
@@ -447,7 +444,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                             _commentNumIcon.hidden = NO;
                          }];
     } else {
-        NSLog(@"open commentView");
         currentFrame.origin.y = 20 + 44;
         currentFrame.origin.x = 0;
         [_commentViewTopButton setTitle:@"コメントを隠す" forState:UIControlStateNormal];

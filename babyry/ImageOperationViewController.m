@@ -76,7 +76,6 @@
 
 - (void)setupCommentView
 {
-    NSLog(@"setupCommentView");
     CommentViewController *commentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
     commentViewController.childObjectId = _childObjectId;
     commentViewController.name = _name;
