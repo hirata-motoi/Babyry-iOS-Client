@@ -447,7 +447,6 @@
     }
 }
 
-<<<<<<< HEAD
 /////////////////////////////////////////////////////////////////
 // アルバム一覧のtableviewようのメソッド
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -505,8 +504,6 @@
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
 
-=======
->>>>>>> 16d35570b6f235b52e6481decb8cb97c3daf9bae
 -(void)openModalImageView
 {
     UIViewController *detailViewController = [[UIViewController alloc] init];

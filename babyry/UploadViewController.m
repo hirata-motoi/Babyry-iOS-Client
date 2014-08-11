@@ -60,14 +60,8 @@
     [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if ([objects count] > 0) {
             PFObject * object = [objects objectAtIndex:0];
-<<<<<<< HEAD
-            // まずはS3に接続
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                if (!task.error && task.result) {                                                                           
-=======
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {
->>>>>>> 16d35570b6f235b52e6481decb8cb97c3daf9bae
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     _uploadedImageView.image = [UIImage imageWithData:getResult.body];
                 } else {
