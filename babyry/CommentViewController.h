@@ -17,10 +17,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *commentSubmitButton;
 @property (weak, nonatomic) IBOutlet UIView *commentTableContainer;
 @property (strong, nonatomic) IBOutlet UIView *commentViewContainer;
-- (IBAction)commentViewTopButton:(id)sender;
-@property (strong, nonatomic) IBOutlet UIButton *commentViewTopButton;
-@property (strong, nonatomic) IBOutlet UIImageView *commentIconImageView;
-@property (strong, nonatomic) IBOutlet UILabel *commentNumIcon;
 
 @property NSString *name;
 @property NSString *date;

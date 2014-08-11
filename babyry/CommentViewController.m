@@ -36,7 +36,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0];
+    _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
     
     _commentTableView.dataSource = self;
     _commentTableView.delegate = self;
@@ -59,20 +59,18 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentSubmitButton.hidden = NO;
     [_commentTableContainer addSubview:_commentSubmitButton];
     
-    [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
-    
-    // TagViewを設置
-    NSLog(@"set tagview %@", _imageInfo);
-    if (_imageInfo) {
-        TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
-        tagEditViewController.imageInfo = _imageInfo;
-        _tagViewOnCommentView = tagEditViewController.view;
-        _tagViewOnCommentView.hidden = NO;
-        _tagViewOnCommentView.frame = CGRectMake(0, 50, self.view.frame.size.width, 60);
-        _tagViewOnCommentView.userInteractionEnabled = YES;
-        [self addChildViewController:tagEditViewController];
-        [_commentTableContainer addSubview:_tagViewOnCommentView];
-    }
+//    // TagViewを設置
+//    NSLog(@"set tagview %@", _imageInfo);
+//    if (_imageInfo) {
+//        TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
+//        tagEditViewController.imageInfo = _imageInfo;
+//        _tagViewOnCommentView = tagEditViewController.view;
+//        _tagViewOnCommentView.hidden = NO;
+//        _tagViewOnCommentView.frame = CGRectMake(0, 50, self.view.frame.size.width, 60);
+//        _tagViewOnCommentView.userInteractionEnabled = YES;
+//        [self addChildViewController:tagEditViewController];
+//        [_commentTableContainer addSubview:_tagViewOnCommentView];
+//    }
     
     [self getCommentFromParse];
     
@@ -149,14 +147,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                 [self reloadData];
                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_commentArray count]-1 inSection:0];
                [_commentTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-                
-                // コメントのバッヂの数字更新
-                // 99以上は99で！
-                if ([_commentArray count] < 100) {
-                    _commentNumIcon.text = [NSString stringWithFormat:@"%d", [_commentArray count]];
-                } else {
-                    _commentNumIcon.text = @"99";
-                }
             } else {
                 [self reloadData];
             }
@@ -260,7 +250,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     CGRect keyboardFrame;
     keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     keyboardFrame = [self.view.superview convertRect:keyboardFrame fromView:nil];
-    float originY = self.view.frame.size.height - keyboardFrame.size.height - _commentTableContainer.frame.size.height;
+    float originY = self.view.frame.size.height - keyboardFrame.size.height - _commentTableContainer.frame.size.height +44;
     
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -416,52 +406,4 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     return pastTimeString;
 }
 
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
-- (IBAction)commentViewTopButton:(id)sender {
-    CGRect currentFrame = self.view.frame;
-    if (currentFrame.origin.y <= 20 + 44) {
-        NSLog(@"hide commentView");
-        currentFrame.origin.y = self.parentViewController.view.frame.size.height - 50;
-        currentFrame.origin.x = self.view.frame.size.width - 50;
-        [_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
-        [UIView animateWithDuration:0.3
-                              delay:0.0
-                            options: UIViewAnimationOptionCurveEaseInOut
-                         animations:^{
-                             self.view.frame = currentFrame;
-                         }
-                         completion:^(BOOL finished){
-                            _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0];
-                            _commentIconImageView.hidden = NO;
-                            _commentNumIcon.hidden = NO;
-                         }];
-    } else {
-        NSLog(@"open commentView");
-        currentFrame.origin.y = 20 + 44;
-        currentFrame.origin.x = 0;
-        [_commentViewTopButton setTitle:@"コメントを隠す" forState:UIControlStateNormal];
-        _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
-        _commentIconImageView.hidden = YES;
-        _commentNumIcon.hidden = YES;
-        [UIView animateWithDuration:0.3
-                              delay:0.0
-                            options: UIViewAnimationOptionCurveEaseInOut
-                         animations:^{
-                             self.view.frame = currentFrame;
-                         }
-                         completion:^(BOOL finished){
-                         }];
-    }
-}
 @end

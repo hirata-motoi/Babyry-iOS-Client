@@ -31,6 +31,7 @@
 @property UIView *commentView;
 @property UIView *tagEditView;
 @property NSString *holdedBy;
+@property UIView *toolbarView;
 
 @property PFObject *imageInfo;
 // isPreloadの場合キャッシュのサムネイルを表示するだけなのでコメントViewは表示させない
