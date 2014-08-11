@@ -88,11 +88,39 @@
     // 大きくなるようなら別Classに移動
     NSLog(@"imageSave");
     
-    UIImage *saveImage = _uploadViewController.uploadedImage;
-    UIImageWriteToSavedPhotosAlbum(saveImage, self, @selector(savingImageIsFinished:didFinishSavingWithError:contextInfo:), nil);
-    
-    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud = [MBProgressHUD showHUDAddedTo:_uploadViewController.view animated:YES];
     _hud.labelText = @"画像保存中...";
+    
+    AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
+    
+    AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+    getRequest.bucket = @"babyrydev-images";
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _uploadViewController.month], _uploadViewController.imageInfo.objectId];
+    // no-cache必須
+    getRequest.responseCacheControl = @"no-cache";
+    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+    
+    [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if(!task.error && task.result) {
+            NSLog(@"s3 get success");
+            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+            NSData *saveData = getResult.body;
+            UIImage *saveImage = [UIImage imageWithData:saveData];
+            UIImageWriteToSavedPhotosAlbum(saveImage, self, @selector(savingImageIsFinished:didFinishSavingWithError:contextInfo:), nil);
+        } else {
+            NSLog(@"failed get image from s3 : %@", task.error);
+            [_hud hide:YES];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー"
+                                                            message:@"画像の保存に失敗しました。"
+                                                           delegate:nil
+                                                  cancelButtonTitle:nil
+                                                  otherButtonTitles:@"OK", nil
+                                  ];
+            
+            [alert show];
+        }
+        return nil;
+    }];
 }
 
 - (void)imageComment
@@ -139,15 +167,16 @@
         case 1:
             // imageInfo更新
             NSLog(@"Remove Execute");
+            PFObject *imageObject = _uploadViewController.imageInfo;
             PFACL *removeACL = [PFACL ACL];
             [removeACL setPublicReadAccess:NO];
             [removeACL setPublicWriteAccess:NO];
-            [_imageInfo setACL:removeACL];
-            _imageInfo[@"bestFlag"] = @"removed";
-            [_imageInfo saveInBackground];
+            [imageObject setACL:removeACL];
+            imageObject[@"bestFlag"] = @"removed";
+            [imageObject saveInBackground];
             
             // キャッシュから消す (${childId}${ymd}thumb)
-            [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date]];
+            [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _uploadViewController.childObjectId, _uploadViewController.date]];
             
             // 画像有る無しのカウントを0にする
             [_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
@@ -163,6 +192,7 @@
 - (void) savingImageIsFinished:(UIImage *)_image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     [_hud hide:YES];
+    
     if(error){
         NSLog(@"画像保存エラー");
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー"

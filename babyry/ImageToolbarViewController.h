@@ -21,9 +21,6 @@
 @property UploadViewController *uploadViewController;
 
 @property UIView *commentView;
-@property PFObject *imageInfo;
-@property NSString *childObjectId;
-@property NSString *date;
 
 @property MBProgressHUD *hud;
 

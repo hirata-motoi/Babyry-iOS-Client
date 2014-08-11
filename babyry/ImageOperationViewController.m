@@ -126,11 +126,6 @@
 {
     ImageToolbarViewController *imageToolbarViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImageToolbarViewController"];
     imageToolbarViewController.commentView = _commentView;
-    imageToolbarViewController.imageInfo = _imageInfo;
-    imageToolbarViewController.childObjectId = _childObjectId;
-    imageToolbarViewController.date = _date;
-    
-    // _childImagesを反映するためにリファレンス渡している
     imageToolbarViewController.uploadViewController = _uploadViewController;
     
     _toolbarView = imageToolbarViewController.view;

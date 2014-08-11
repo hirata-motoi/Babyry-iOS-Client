@@ -170,7 +170,9 @@
     
     // チェック側、2日より前の時にも何もしない(No Image)
     if ([_selfRole isEqualToString:@"chooser"] && ![self withinTwoDay:indexPath]) {
+        if ([self isNoImage:indexPath]) {
             return;
+        }
     }
     
     PFObject *tappedChildImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
