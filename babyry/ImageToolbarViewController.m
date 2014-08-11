@@ -7,6 +7,9 @@
 //
 
 #import "ImageToolbarViewController.h"
+#import "ImageToolbarTrashIcon.h"
+#import "ImageToolbarSaveIcon.h"
+#import "ImageToolbarCommentIcon.h"
 
 @interface ImageToolbarViewController ()
 
@@ -35,14 +38,20 @@
     commentViewContainerTap.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:commentViewContainerTap];
     
+    ImageToolbarTrashIcon *trashView = [ImageToolbarTrashIcon view];
+    _imageTrashView.customView = trashView;
     UITapGestureRecognizer *imageTrashViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTrash)];
     imageTrashViewTap.numberOfTapsRequired = 1;
     [_imageTrashView.customView addGestureRecognizer:imageTrashViewTap];
     
+    ImageToolbarSaveIcon *saveView = [ImageToolbarSaveIcon view];
+    _imageSaveView.customView = saveView;
     UITapGestureRecognizer *imageSaveViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageSave)];
     imageSaveViewTap.numberOfTapsRequired = 1;
     [_imageSaveView.customView addGestureRecognizer:imageSaveViewTap];
     
+    ImageToolbarCommentIcon *commentView = [ImageToolbarCommentIcon view];
+    _imageCommentView.customView = commentView;
     UITapGestureRecognizer *imageCommentViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageComment)];
     imageCommentViewTap.numberOfTapsRequired = 1;
     [_imageCommentView.customView addGestureRecognizer:imageCommentViewTap];
@@ -61,23 +70,41 @@
 
 - (void)imageTrash
 {
+    // 大きくなるようなら別Classに移動
+    // 実際には消さずに、ACLで誰にも見れない設定にする & キャッシュ消す & bestFlagをとりあえずremovedにしておいてみる
     NSLog(@"imageTrash");
+    
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:@"確認"
+                          message:@"削除してもよろしいですか？"
+                          delegate:self
+                          cancelButtonTitle:@"いいえ"
+                          otherButtonTitles:@"はい", nil];
+    [alert show];
 }
 
 - (void)imageSave
 {
+    // 大きくなるようなら別Classに移動
     NSLog(@"imageSave");
+    
+    UIImage *saveImage = _uploadViewController.uploadedImage;
+    UIImageWriteToSavedPhotosAlbum(saveImage, self, @selector(savingImageIsFinished:didFinishSavingWithError:contextInfo:), nil);
+    
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.labelText = @"画像保存中...";
 }
 
 - (void)imageComment
 {
+    // コメントViewの出し入れだけここでやる。表示とかは別Class
     NSLog(@"imageComment");
     CGRect currentFrame = _commentView.frame;
     if (currentFrame.origin.y <= 20 + 44) {
         NSLog(@"hide commentView");
         currentFrame.origin.y = self.parentViewController.view.frame.size.height;
         currentFrame.origin.x = self.view.frame.size.width;
-        //[_commentViewTopButton setTitle:@"コメントを表示" forState:UIControlStateNormal];
+
         [UIView animateWithDuration:0.3
                               delay:0.0
                             options: UIViewAnimationOptionCurveEaseInOut
@@ -85,18 +112,11 @@
                              _commentView.frame = currentFrame;
                          }
                          completion:^(BOOL finished){
-//                             _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0];
-//                             _commentIconImageView.hidden = NO;
-//                             _commentNumIcon.hidden = NO;
                          }];
     } else {
         NSLog(@"open commentView");
         currentFrame.origin.y = 20 + 44;
         currentFrame.origin.x = 0;
-//        [_commentViewTopButton setTitle:@"コメントを隠す" forState:UIControlStateNormal];
-//        _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
-//        _commentIconImageView.hidden = YES;
-//        _commentNumIcon.hidden = YES;
         [UIView animateWithDuration:0.3
                               delay:0.0
                             options: UIViewAnimationOptionCurveEaseInOut
@@ -107,6 +127,62 @@
                          }];
     }
     
+}
+
+// 画像削除確認後に呼ばれる
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    switch (buttonIndex) {
+        case 0:
+            //１番目のボタンが押されたときの処理を記述する
+            break;
+        case 1:
+            // imageInfo更新
+            NSLog(@"Remove Execute");
+            PFACL *removeACL = [PFACL ACL];
+            [removeACL setPublicReadAccess:NO];
+            [removeACL setPublicWriteAccess:NO];
+            [_imageInfo setACL:removeACL];
+            _imageInfo[@"bestFlag"] = @"removed";
+            [_imageInfo saveInBackground];
+            
+            // キャッシュから消す (${childId}${ymd}thumb)
+            [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date]];
+            
+            // 画像有る無しのカウントを0にする
+            [_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
+            
+            [self.navigationController popViewControllerAnimated:YES];
+            
+            break;
+    }
+    
+}
+
+// 画像保存完了
+- (void) savingImageIsFinished:(UIImage *)_image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
+    [_hud hide:YES];
+    if(error){
+        NSLog(@"画像保存エラー");
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー"
+                                                        message:@"画像の保存に失敗しました。"
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        
+        [alert show];
+    }else{
+        NSLog(@"画像保存完了");
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
+                                                        message:@"画像の保存が完了しました"
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        [alert show];
+    }
 }
 
 /*

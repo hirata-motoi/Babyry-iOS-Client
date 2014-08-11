@@ -61,6 +61,12 @@
 		88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */; };
 		88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */; };
 		88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */; };
+		88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */; };
+		88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4FF1999312100B56481 /* ImageToolbarTrashIcon.m */; };
+		88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF501199934C300B56481 /* ImageToolbarSaveIcon.xib */; };
+		88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5041999354800B56481 /* ImageToolbarSaveIcon.m */; };
+		88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF5061999361D00B56481 /* ImageToolbarCommentIcon.xib */; };
+		88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		D79AFBEA8B9F4207B47E8CAD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB30DD347E5C4D729656DE8C /* libPods.a */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
@@ -205,6 +211,15 @@
 		88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPickerViewController.m; sourceTree = "<group>"; };
 		88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarViewController.h; sourceTree = "<group>"; };
 		88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarViewController.m; sourceTree = "<group>"; };
+		88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageToolbarTrashIcon.xib; sourceTree = "<group>"; };
+		88CFF4FE1999312100B56481 /* ImageToolbarTrashIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarTrashIcon.h; sourceTree = "<group>"; };
+		88CFF4FF1999312100B56481 /* ImageToolbarTrashIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarTrashIcon.m; sourceTree = "<group>"; };
+		88CFF501199934C300B56481 /* ImageToolbarSaveIcon.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageToolbarSaveIcon.xib; sourceTree = "<group>"; };
+		88CFF5031999354800B56481 /* ImageToolbarSaveIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarSaveIcon.h; sourceTree = "<group>"; };
+		88CFF5041999354800B56481 /* ImageToolbarSaveIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarSaveIcon.m; sourceTree = "<group>"; };
+		88CFF5061999361D00B56481 /* ImageToolbarCommentIcon.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageToolbarCommentIcon.xib; sourceTree = "<group>"; };
+		88CFF5081999367F00B56481 /* ImageToolbarCommentIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarCommentIcon.h; sourceTree = "<group>"; };
+		88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarCommentIcon.m; sourceTree = "<group>"; };
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB30DD347E5C4D729656DE8C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
@@ -539,6 +554,12 @@
 		88CFF4F71998CEEA00B56481 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				88CFF4FE1999312100B56481 /* ImageToolbarTrashIcon.h */,
+				88CFF4FF1999312100B56481 /* ImageToolbarTrashIcon.m */,
+				88CFF5031999354800B56481 /* ImageToolbarSaveIcon.h */,
+				88CFF5041999354800B56481 /* ImageToolbarSaveIcon.m */,
+				88CFF5081999367F00B56481 /* ImageToolbarCommentIcon.h */,
+				88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -546,6 +567,9 @@
 		88CFF4F81998CEF000B56481 /* Xib */ = {
 			isa = PBXGroup;
 			children = (
+				88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */,
+				88CFF501199934C300B56481 /* ImageToolbarSaveIcon.xib */,
+				88CFF5061999361D00B56481 /* ImageToolbarCommentIcon.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -763,12 +787,15 @@
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
+				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
+				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
+				88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -825,6 +852,8 @@
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
 				F2310C22198F43DF00E01DA3 /* DragView.m in Sources */,
 				F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */,
+				88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */,
+				88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
 				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
@@ -870,6 +899,7 @@
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
+				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,

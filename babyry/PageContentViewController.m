@@ -161,11 +161,16 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    // チェックの人がアップ催促する時だけここは何の処理もしない
+    // チェックの人がアップ催促する時は何の処理もしない
     if ([_selfRole isEqualToString:@"chooser"] && [self withinTwoDay:indexPath]) {
         if ([self isNoImage:indexPath]) {
             return;
         }
+    }
+    
+    // チェック側、2日より前の時にも何もしない(No Image)
+    if ([_selfRole isEqualToString:@"chooser"] && ![self withinTwoDay:indexPath]) {
+            return;
     }
     
     PFObject *tappedChildImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
@@ -211,6 +216,7 @@
         uploadPickerViewController.childObjectId = _childObjectId;
         uploadPickerViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
         
+        // _childImage更新用
         NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
         NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
         uploadPickerViewController.totalImageNum = totalImageNum;

@@ -39,4 +39,7 @@
 
 @property AWSServiceConfiguration *configuration;
 
+@property NSMutableArray *totalImageNum;
+@property NSInteger currentRow;
+
 @end
