@@ -92,6 +92,12 @@
     }
     
     [self laodMoreImages:index];
+    // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す
+    NSMutableDictionary *section = [_childImages objectAtIndex:_currentSection];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    uploadViewController.totalImageNum = totalImageNum;
+    uploadViewController.currentRow = _currentRow;
+    
     return uploadViewController;
 }
 

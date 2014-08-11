@@ -49,11 +49,12 @@
     // プリロード(サムネイルだけで本画像ではない)時もコメントは出さない(出せない)
     if (_imageInfo && !_isPreload) {
         [self setupCommentView];
+        
+        // 画像削除、保存、コメントは全部toolbar経由にする
+        // 画像をいじるので、これも_imageInfo必須
+        [self setupToolbar];
     }
     [self setupNavigation];
-    
-    // 画像削除、保存、コメントは全部toolbar経由にする
-    [self setupToolbar];
 }
 
 - (void)didReceiveMemoryWarning
@@ -124,6 +125,8 @@
 {
     ImageToolbarViewController *imageToolbarViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImageToolbarViewController"];
     imageToolbarViewController.commentView = _commentView;
+    imageToolbarViewController.uploadViewController = _uploadViewController;
+    
     _toolbarView = imageToolbarViewController.view;
     _toolbarView.hidden = NO;
     CGRect frame = CGRectMake(0, self.view.frame.size.height - imageToolbarViewController.view.frame.size.height, imageToolbarViewController.view.frame.size.width, imageToolbarViewController.view.frame.size.height);

@@ -7,6 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Parse/Parse.h>
+#import "ImageCache.h"
+#import "UploadViewController.h"
+#import "MBProgressHUD.h"
 
 @interface ImageToolbarViewController : UIViewController
 
@@ -14,6 +18,10 @@
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *imageSaveView;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *imageCommentView;
 
+@property UploadViewController *uploadViewController;
+
 @property UIView *commentView;
+
+@property MBProgressHUD *hud;
 
 @end
