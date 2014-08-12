@@ -13,7 +13,7 @@ typedef void (^NotificationHistoryBlock)(NSMutableDictionary *history);
 
 @interface NotificationHistory : NSObject
 
-+ (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withDate:(NSString *)dateString;
++ (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withDate:(NSInteger)date;
 + (void)getNotificationHistoryInBackground: userId withType:(NSString *)type withBlock:(NotificationHistoryBlock)block;
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object;
 

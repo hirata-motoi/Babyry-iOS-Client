@@ -422,7 +422,7 @@
                 PFObject *partner = [Partner partnerUser];
                 if (partner != nil) {
                     [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:[[NSMutableDictionary alloc]initWithObjects:@[partner[@"nickName"]] forKeys:@[@"formatArgs"]]];
-                    [self createNotificationHistory:@"bestShotChange"];
+                    [self createNotificationHistory:@"bestShotChanged"];
                 }
                 
             } else {

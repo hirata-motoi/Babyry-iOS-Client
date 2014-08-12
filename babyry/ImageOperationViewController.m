@@ -126,6 +126,7 @@
     ImageToolbarViewController *imageToolbarViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImageToolbarViewController"];
     imageToolbarViewController.commentView = _commentView;
     imageToolbarViewController.uploadViewController = _uploadViewController;
+    imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
     
     _toolbarView = imageToolbarViewController.view;
     _toolbarView.hidden = NO;

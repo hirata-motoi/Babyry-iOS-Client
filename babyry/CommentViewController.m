@@ -9,6 +9,8 @@
 #import "CommentViewController.h"
 #import "PageContentViewController.h"
 #import "CommentTableViewCell.h"
+#import "NotificationHistory.h"
+#import "Partner.h"
 
 @interface CommentViewController ()
 
@@ -327,6 +329,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
             if (error) {
                 [_commentArray removeObject:dailyComment];
                 [self reloadData];
+            } else {
+                [self createNotificationHistory];
             }
         }];
         _commentTextView.text = @"";
@@ -403,6 +407,12 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         pastTimeString = [NSString stringWithFormat:@"%d年前", year];
     }
     return pastTimeString;
+}
+
+- (void)createNotificationHistory
+{
+    PFObject *partner = [Partner partnerUser];
+    [NotificationHistory createNotificationHistoryWithType:@"commentPosted" withTo:partner[@"userId"] withDate:[_date integerValue]];
 }
 
 @end

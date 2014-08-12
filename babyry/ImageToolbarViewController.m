@@ -10,6 +10,8 @@
 #import "ImageToolbarTrashIcon.h"
 #import "ImageToolbarSaveIcon.h"
 #import "ImageToolbarCommentIcon.h"
+#import "Badge.h"
+#import "NotificationHistory.h"
 
 @interface ImageToolbarViewController ()
 
@@ -55,6 +57,11 @@
     UITapGestureRecognizer *imageCommentViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageComment)];
     imageCommentViewTap.numberOfTapsRequired = 1;
     [_imageCommentView.customView addGestureRecognizer:imageCommentViewTap];
+    // commentアイコンにbadgeをつける  TODO methodきりだし
+    if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
+        NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
+        [self showCommentBadge:count];
+    }                    
 }
 
 - (void)didReceiveMemoryWarning
@@ -214,6 +221,22 @@
                               ];
         [alert show];
     }
+}
+
+- (void)showCommentBadge:(NSInteger)count
+{
+    UIImageView *commentBadge = [Badge badgeViewWithType:nil withCount:count];
+    CGRect rect = commentBadge.frame;
+    rect.origin.x = _imageCommentView.customView.frame.size.width - rect.size.width/2;
+    rect.origin.y = rect.size.height/2 * -1;
+    commentBadge.frame = rect;
+    [_imageCommentView.customView addSubview:commentBadge];
+    
+    // 消す
+    for (PFObject *row in _notificationHistoryByDay[@"commentPosted"]) {
+        [NotificationHistory disableDisplayedNotificationsWithObject:row];
+    }
+    [_notificationHistoryByDay[@"commentPosted"] removeAllObjects];
 }
 
 /*

@@ -41,5 +41,6 @@
 @property AWSServiceConfiguration *configuration;
 
 @property BOOL directOpenLibrary;
+@property NSMutableDictionary *notificationHistoryByDay;
 
 @end

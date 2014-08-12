@@ -74,6 +74,10 @@
     uploadViewController.holdedBy = @"TagAlbumPageViewController";
     uploadViewController.child = _child;
     
+    if (_notificationHistory[ymd]) {
+        uploadViewController.notificationHistoryByDay = _notificationHistory[ymd];
+    }
+    
     // Cacheからはりつけ
     NSString *imageCachePath = [[NSString alloc] init];
     if (!_fromMultiUpload) {

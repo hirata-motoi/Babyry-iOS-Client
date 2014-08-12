@@ -13,19 +13,19 @@
 
 NSString *const className = @"NotificationHistory";
 
-+ (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withDate:(NSString *)dateString
++ (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withDate:(NSInteger )date
 {
-    NSLog(@"createNotificationHistoryWithType type:%@ userId:%@ date:%@", type, userId, dateString);
+    NSLog(@"createNotificationHistoryWithType type:%@ userId:%@ date:%ld", type, userId, date);
    
     // default値
-    if (type == nil) {
-        type = @"bestShotChage";
+    if (type.length < 1 || userId.length < 1 || !date) {
+        return;
     }
     
     PFObject *nh = [PFObject objectWithClassName:className];
     nh[@"type"] = type;
     nh[@"toUserId"] = userId;
-    nh[@"dateString"] = [NSString stringWithFormat:@"D%@", dateString];
+    nh[@"date"] = [NSNumber numberWithInteger:date];
     nh[@"status"] = @"ready";
     [nh saveInBackground];
 }
@@ -35,23 +35,36 @@ NSString *const className = @"NotificationHistory";
     NSMutableDictionary *history = [[NSMutableDictionary alloc]init];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"toUserId" equalTo:userId];
+    query.limit = 1000; // max
     if (type != nil) {
         [query whereKey:@"type" equalTo:type];
     }
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             for (PFObject *object in objects) {
-                NSString *ymd = [object[@"dateString"] substringWithRange:NSMakeRange(1, 8)];
+                //NSString *ymd = [object[@"dateString"] substringWithRange:NSMakeRange(1, 8)];
+                NSNumber *dateNumber = object[@"date"];
+                NSString *dateString = [dateNumber stringValue];
+                NSString *year  = [dateString substringWithRange:NSMakeRange(0, 4)];
+                NSString *month = [dateString substringWithRange:NSMakeRange(4, 2)];
+                NSString *day   = [dateString substringWithRange:NSMakeRange(6, 2)];
+                
+                NSString *ymd = [NSString stringWithFormat:@"%@%@%@", year, month, day];
                
-                NSMutableArray *historiesByYMD = [history objectForKey:ymd];
-                if (!historiesByYMD) {
-                    historiesByYMD = [[NSMutableArray alloc]init];
+                NSMutableDictionary *historiesByYMD = [history objectForKey:ymd];
+                if (!historiesByYMD) {                
+                    historiesByYMD = [[NSMutableDictionary alloc]init];
                     [history setObject:historiesByYMD forKey:ymd];
                 }
                 
-                [historiesByYMD addObject:object];
+                NSMutableArray *objectsByType = historiesByYMD[object[@"type"]];
+                if (!objectsByType) {
+                    objectsByType = [[NSMutableArray alloc]init];
+                    [historiesByYMD setObject:objectsByType forKey:object[@"type"]];
+                }                             
+                
+                [objectsByType addObject:object];
             }
-            NSLog(@"history : %@", history);
             block(history);
         }
     }];

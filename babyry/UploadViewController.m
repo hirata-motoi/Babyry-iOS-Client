@@ -156,6 +156,7 @@
     _operationViewController.imageInfo = _imageInfo;
     _operationViewController.isPreload = isPreload;
     _operationViewController.child = _child;
+    _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
     
     [self addChildViewController:_operationViewController];
     [_operationViewController didMoveToParentViewController:self];

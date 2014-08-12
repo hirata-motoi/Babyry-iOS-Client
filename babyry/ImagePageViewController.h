@@ -23,5 +23,6 @@
 @property BOOL isLoading;
 @property id pageContentViewController;
 @property BOOL fromMultiUpload;
+@property NSMutableDictionary *notificationHistory;
 
 @end

@@ -32,6 +32,7 @@
 #import "AWSS3Utils.h"
 #import "NotificationHistory.h"
 #import "ColorUtils.h"
+#import "Badge.h"
 
 @interface PageContentViewController ()
 
@@ -193,6 +194,7 @@
             multiUploadAlbumTableViewController.childObjectId = _childObjectId;
             multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
             multiUploadAlbumTableViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            multiUploadAlbumTableViewController.child = _childArray[_pageIndex];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -208,6 +210,8 @@
             multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
             multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
             multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            multiUploadViewController.child = _childArray[_pageIndex];
+            multiUploadViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)]];
             if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
                 [self.navigationController pushViewController:multiUploadViewController animated:YES];
             } else {
@@ -243,6 +247,7 @@
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
     pageViewController.child = _childArray[_pageIndex];
+    pageViewController.notificationHistory = _notificationHistory;
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
 }
@@ -400,13 +405,11 @@
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:9999]];
                     [cacheSetQueueArray addObject:childImage];
                 } else {
-                    //NSLog(@"No Choosed Image %@", ymdWithPrefix);
                     // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
-                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
+                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_childArray[_pageIndex][@"childImageShardIndex"] integerValue]]];
                     [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
                     [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
                     [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                        //NSLog(@"There is %d unchoosed image : %@ %d %d %d", [objects count], ymdWithPrefix, index, i, [images count]);
                         if ([objects count] > 0) {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[objects count]]];
                         } else {
@@ -1002,56 +1005,66 @@ for (NSMutableDictionary *section in _childImages) {
     [PushNotification sendInBackground:@"requestPhoto" withOptions:nil];
 }
 
+
+// コメントはコメントアイコン、それ以外はいわゆるbadgeを表示する
 - (void)setBadgeToCell:(TagAlbumCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
 {
-    int cellWidth = 60;
-    int cellHeight = 15;
-    CGRect rect;
-    if (indexPath.section == 0 && indexPath.row == 0) {
-        rect = CGRectMake(cell.frame.size.width - cellWidth - 5, cell.frame.size.height - cellHeight - 5, cellWidth, cellHeight);
-    } else {                                                                             
-        rect = CGRectMake(cell.frame.size.width - cellWidth - 5, cell.frame.size.height - cellHeight - 5, cellWidth, cellHeight);
-    }                                             
-    
-    NSInteger notificationCount = [[_notificationHistory objectForKey:ymd] count];
-    
-    if (notificationCount == 0) {
+    NSMutableDictionary *histories = _notificationHistory[ymd];
+    if (!histories) {
         return;
     }
     
-    UIView *badge = [[UIView alloc]initWithFrame:rect];
-    badge.backgroundColor = [UIColor redColor];
-    UILabel *countLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, rect.size.width, rect.size.height)];
-    [badge addSubview:countLabel];
-    // 角を丸める
-    badge.layer.cornerRadius = cellHeight / 3;
-    badge.clipsToBounds = YES;
+    NSMutableArray *badges = [[NSMutableArray alloc]init];
     
-    countLabel.text = ([_selfRole isEqualToString:@"uploader"]) ? @"BestShot変更" : @"Nice BestShot";
-    countLabel.textAlignment = UITextAlignmentCenter;
-    countLabel.font = [UIFont systemFontOfSize:9];
-    countLabel.textColor = [UIColor whiteColor];
-    // 貼る
-    [cell addSubview:badge];
-    
-    // 消す
-    for (PFObject *object in [_notificationHistory objectForKey:ymd]) {
-        [NotificationHistory disableDisplayedNotificationsWithObject:object];
+    // コメント
+    NSMutableArray *commentNotifications = histories[@"commentPosted"];
+    if (commentNotifications && commentNotifications.count > 0) {
+        // コメントアイコン内に数字をいれる
+        UIImageView *commentBadge = [Badge badgeViewWithType:@"commentPosted" withCount:commentNotifications.count];
+        [badges addObject:commentBadge];
     }
-    [_notificationHistory removeObjectForKey:ymd];
+   
+    // bestShotChanged・bestShotReply・imageUPloadedを取得
+    NSMutableArray *bestShotChangeNotifications = histories[@"bestShotChanged"];
+    if (!bestShotChangeNotifications) {
+        bestShotChangeNotifications = [[NSMutableArray alloc]init];
+    }
+    NSMutableArray *bestShotReplyNotifications = histories[@"bestShotReply"];
+    if (!bestShotReplyNotifications) {
+        bestShotReplyNotifications = [[NSMutableArray alloc]init];
+    }
+    NSMutableArray *imageUploadedNotifications = histories[@"imageUploaded"];
+    if (!imageUploadedNotifications) {
+        imageUploadedNotifications = [[NSMutableArray alloc]init];
+    }
+    if (bestShotChangeNotifications.count > 0 || bestShotReplyNotifications.count > 0 || imageUploadedNotifications.count > 0) {
+        // badgeをつける
+        NSInteger count = bestShotChangeNotifications.count + bestShotReplyNotifications.count + imageUploadedNotifications.count;
+        UIView *badge = [Badge badgeViewWithType:nil withCount:count];
+        [badges addObject:badge];
+    }
+   
+    // badgeをcell右下に配置
+    NSInteger c = 0;
+    for (UIView *badge in badges) {
+        CGRect rect = badge.frame;
+        rect.origin.y = cell.frame.size.height - rect.size.height - 5; // 5:余白
+        rect.origin.x = cell.frame.size.width - (rect.size.width + 5) * (c + 1);
+        badge.frame = rect;
+        [cell addSubview:badge];
+        c++;
+    }
 }
 
 - (void)setupNotificationHistory
 {
-    NSString *type = ([_selfRole isEqualToString:@"uploader"]) ? @"bestShotChange" : @"bestShotReply";
-    NSLog(@"userId : %@", [PFUser currentUser][@"userId"]);
     _notificationHistory = [[NSMutableDictionary alloc]init];
-    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:type withBlock:^(NSMutableDictionary *history){
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
         for (NSString *ymd in history) {
-            [_notificationHistory setObject: [NSArray arrayWithArray:[history objectForKey:ymd]] forKey:ymd];
+            [_notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
         }
-        NSLog(@"notificationHistory : %@", _notificationHistory);
+        [_pageContentCollectionView reloadData];
     }];
     
 }

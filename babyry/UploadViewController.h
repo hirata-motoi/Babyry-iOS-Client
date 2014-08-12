@@ -42,5 +42,6 @@
 
 @property NSMutableArray *totalImageNum;
 @property NSInteger currentRow;
+@property NSMutableDictionary *notificationHistoryByDay;
 
 @end

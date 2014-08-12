@@ -37,7 +37,7 @@ static bool isLoading = NO;
     if (self) {
         PFQuery *query = [PFQuery queryWithClassName:@"_User"];
         [query whereKey:@"familyId" equalTo:user[@"familyId"]];
-        [query whereKey:@"userId" equalTo:user[@"userId"]];
+        [query whereKey:@"userId" notEqualTo:user[@"userId"]];
         NSArray *objects = [query findObjects];
         if (objects.count == 1) {
             ret = objects[0];
