@@ -57,7 +57,7 @@
     UITapGestureRecognizer *imageCommentViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageComment)];
     imageCommentViewTap.numberOfTapsRequired = 1;
     [_imageCommentView.customView addGestureRecognizer:imageCommentViewTap];
-    // commentアイコンにbadgeをつける  TODO methodきりだし
+    // commentアイコンにbadgeをつける
     if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
         NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
         [self showCommentBadge:count];
@@ -133,10 +133,8 @@
 - (void)imageComment
 {
     // コメントViewの出し入れだけここでやる。表示とかは別Class
-    NSLog(@"imageComment");
     CGRect currentFrame = _commentView.frame;
     if (currentFrame.origin.y <= 20 + 44) {
-        NSLog(@"hide commentView");
         currentFrame.origin.y = self.parentViewController.view.frame.size.height;
         currentFrame.origin.x = self.view.frame.size.width;
 
@@ -149,7 +147,6 @@
                          completion:^(BOOL finished){
                          }];
     } else {
-        NSLog(@"open commentView");
         currentFrame.origin.y = 20 + 44;
         currentFrame.origin.x = 0;
         [UIView animateWithDuration:0.3
@@ -159,6 +156,16 @@
                              _commentView.frame = currentFrame;
                          }
                          completion:^(BOOL finished){
+                             // 未読commentのバッヂを消す
+                             if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
+                                 for (PFObject *notification in _notificationHistoryByDay[@"commentPosted"]) {
+                                     [NotificationHistory disableDisplayedNotificationsWithObject:notification];
+                                 }
+                                 //[_notificationHistoryByDay[@"commentPosted"] removeAllObjects];
+                                 PFObject *obj = [[PFObject alloc]initWithClassName:@"NotificationHistory"];
+                                 [_notificationHistoryByDay[@"commentPosted"] addObject:obj];
+                                 [_commentBadge removeFromSuperview];
+                             }
                          }];
     }
     
@@ -225,18 +232,12 @@
 
 - (void)showCommentBadge:(NSInteger)count
 {
-    UIImageView *commentBadge = [Badge badgeViewWithType:nil withCount:count];
-    CGRect rect = commentBadge.frame;
+    _commentBadge = [Badge badgeViewWithType:nil withCount:count];
+    CGRect rect = _commentBadge.frame;
     rect.origin.x = _imageCommentView.customView.frame.size.width - rect.size.width/2;
     rect.origin.y = rect.size.height/2 * -1;
-    commentBadge.frame = rect;
-    [_imageCommentView.customView addSubview:commentBadge];
-    
-    // 消す
-    for (PFObject *row in _notificationHistoryByDay[@"commentPosted"]) {
-        [NotificationHistory disableDisplayedNotificationsWithObject:row];
-    }
-    [_notificationHistoryByDay[@"commentPosted"] removeAllObjects];
+    _commentBadge.frame = rect;
+    [_imageCommentView.customView addSubview:_commentBadge];
 }
 
 /*

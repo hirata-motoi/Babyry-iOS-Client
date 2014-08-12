@@ -22,5 +22,6 @@
 @property UIView *commentView;
 @property MBProgressHUD *hud;
 @property NSMutableDictionary *notificationHistoryByDay;
+@property UIImageView *commentBadge;
 
 @end

@@ -79,6 +79,8 @@
         [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
     
+    [self disableNotificationHistory];
+    
     // for test
     [self setupThanksButton];
 }
@@ -361,6 +363,7 @@
     multiUploadAlbumTableViewController.childObjectId = _childObjectId;
     multiUploadAlbumTableViewController.date = _date;
     multiUploadAlbumTableViewController.month = _month;
+    multiUploadAlbumTableViewController.child = _child;
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
@@ -394,6 +397,7 @@
         }
         
         // update Parse
+        NSLog(@"multi upload view controller child:%@", _child);
         PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
         childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
         [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
@@ -625,7 +629,7 @@
     NSString *type = [param objectForKey:@"type"];
     NSLog(@"executeNotificationHistory type:%@", type);
     PFObject *partner = [Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:_date];
+    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:[_date integerValue]];
 }
 
 - (void)setupThanksButton
@@ -645,6 +649,21 @@
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     [options setObject:[[NSArray alloc]initWithObjects:[PFUser currentUser][@"nickName"], nil] forKey:@"formatArgs"];
     [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
+}
+
+// imageUploaded, bestShotChanged, bestShotReplyはページを開いた時点で無効にする
+- (void)disableNotificationHistory
+{
+    NSArray *targetTypes = [NSArray arrayWithObjects:@"imageUploaded", @"bestShotChanged", @"bestShotReply", nil];
+    
+    for (NSString *type in targetTypes) {
+        if (_notificationHistoryByDay && _notificationHistoryByDay[type]) {
+            for (PFObject *notificationHistory in _notificationHistoryByDay[type]) {
+                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+            }
+            [_notificationHistoryByDay[type] removeAllObjects];
+        }
+    }
 }
     
 @end

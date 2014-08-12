@@ -10,6 +10,8 @@
 #import "ImageTrimming.h"
 #import "ImageCache.h"
 #import "PushNotification.h"
+#import "Partner.h"
+#import "NotificationHistory.h"
 
 @interface UploadPickerViewController ()
 
@@ -165,6 +167,8 @@
     [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
     
     [PushNotification sendInBackground:@"imageUpload" withOptions:nil];
+    PFObject *partner = [Partner partnerUser];
+    [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
     NSLog(@"saved");
     
     [self.navigationController popViewControllerAnimated:YES];

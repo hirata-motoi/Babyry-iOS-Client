@@ -11,6 +11,8 @@
 #import "ImageCache.h"
 #import "ImageTrimming.h"
 #import "AWSS3Utils.h"
+#import "NotificationHistory.h"
+#import "Partner.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -265,6 +267,10 @@
                 //アルバム表示のViewも消す
                 UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
                 [naviController popViewControllerAnimated:YES];
+                
+                // NotificationHistoryに登録
+                PFObject *partner = [Partner partnerUser];
+                [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
             }
         }];
     }

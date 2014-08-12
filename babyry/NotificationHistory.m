@@ -35,6 +35,7 @@ NSString *const className = @"NotificationHistory";
     NSMutableDictionary *history = [[NSMutableDictionary alloc]init];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"toUserId" equalTo:userId];
+    [query whereKey:@"status" equalTo:@"ready"];
     query.limit = 1000; // max
     if (type != nil) {
         [query whereKey:@"type" equalTo:type];

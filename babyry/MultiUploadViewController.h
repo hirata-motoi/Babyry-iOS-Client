@@ -55,5 +55,6 @@
 @property int uploadUppeLimit;
 
 @property AWSServiceConfiguration *configuration;
+@property NSMutableDictionary *notificationHistoryByDay;
 
 @end

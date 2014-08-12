@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <Parse/Parse.h>
 
 @interface MultiUploadAlbumTableViewController : UIViewController<UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 
@@ -22,5 +23,6 @@
 @property NSString *date;
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
+@property PFObject *child;
 
 @end
