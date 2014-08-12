@@ -17,6 +17,7 @@
 #import "AWSS3Utils.h"
 #import "NotificationHistory.h"
 #import "Partner.h"
+#import "ImagePageViewController.h"
 
 @interface MultiUploadViewController ()
 
@@ -73,8 +74,8 @@
         _explainLabel.text = @"あなたはベストショットを決める人です(アップロードは出来ません)";
     }
 
-    if ([_childImageArray count] > 0) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
+    if ([_childCachedImageArray count] > 0) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childCachedImageArray count]-1 inSection:0];
         [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
     
@@ -154,8 +155,6 @@
         [_childCachedImageArray addObject:[NSString stringWithFormat:@"ForUploadImage"]];
     }
     
-    _childImageArray = _childCachedImageArray;
-    
     [_multiUploadedImages reloadData];
 }
 
@@ -178,7 +177,11 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [_childImageArray count];
+    if ([_childCachedImageArray count] > [_childImageArray count]) {
+        return [_childCachedImageArray count];
+    } else {
+        return [_childImageArray count];
+    }
 }
 
 // セルの大きさを指定するメソッド
@@ -207,7 +210,7 @@
     }
     if ([[_childCachedImageArray objectAtIndex:cell.tag] isEqualToString:@"ForUploadImage"]) {
         _uploadUppeLimit = indexPath.row;
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UploadImageLabel"]];
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellNoPhoto"]];
         UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
         uploadGesture.numberOfTapsRequired = 1;
         [cell addGestureRecognizer:uploadGesture];
@@ -435,125 +438,148 @@
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
-    _detailedImageIndex = [[sender view] tag];
-    [self openModalImageView];
+    _detailImageIndex = [[sender view] tag];
+    [self openImagePageView:_detailImageIndex];
 }
 
--(void)handleSingleTapInModalView:(UIGestureRecognizer *) sender {
-    // モーダルViewをクリックされたら次の画像に移る。最後まで言ったら消える
-    _detailedImageIndex = [[sender view] tag] + 1;
-    [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
-    
-    // アップの場合にはアップロードボタン分だけ少なくなるので
-    if (_uploadUppeLimit) {
-        if (_uploadUppeLimit > _detailedImageIndex) {
-            [self openModalImageView];
-        }
-    } else {
-        if ([_childImageArray count] > _detailedImageIndex) {
-            [self openModalImageView];
-        }
-    }
-}
-
--(void)openModalImageView
+- (void) openImagePageView:(int)detailImageIndex
 {
-    UIViewController *detailViewController = [[UIViewController alloc] init];
-    detailViewController.view.frame = CGRectMake(20, 60, self.view.frame.size.width - 40, self.view.frame.size.height - 80);
-    detailViewController.view.backgroundColor = [UIColor whiteColor];
-    
-    UIImageView *detailImageView = [[UIImageView alloc] init];
-    // ローカルに保存されていたサムネイル画像を貼付け
-    NSData *cacheImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _detailedImageIndex]];
-    detailImageView.backgroundColor = [UIColor blackColor];
-    UIImage *cacheImage = [UIImage imageWithData:cacheImageData];
-    detailImageView.image = cacheImage;
-    
-    float imageViewAspect = detailViewController.view.frame.size.width/detailViewController.view.frame.size.height;
-    float imageAspect = cacheImage.size.width/cacheImage.size.height;
-    
-    // 横長バージョン
-    // 枠より、画像の方が横長、枠の縦を縮める
-    CGRect frame = detailViewController.view.frame;
-    if (imageAspect >= imageViewAspect){
-        frame.size.height = frame.size.width/imageAspect;
-        // 縦長バージョン
-        // 枠より、画像の方が縦長、枠の横を縮める
-    } else {
-        frame.size.width = frame.size.height*imageAspect;
+    NSLog(@"tapped image %d", [_childImageArray count]);
+    if ([_childImageArray count] > 0) {
+        NSLog(@"childImagesを組み立てる");
+        NSMutableArray *childImages = [[NSMutableArray alloc] init];
+        NSMutableDictionary *section = [[NSMutableDictionary alloc] init];
+        NSArray *images = [[NSArray alloc] initWithArray:_childImageArray];
+        [section setObject:images forKey:@"images"];
+        [childImages addObject:[[NSDictionary alloc] initWithDictionary:section]];
+        
+        NSLog(@"ImagePageViewController表示");
+        ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
+        pageViewController.childImages = childImages;
+        pageViewController.currentSection = 0;
+        pageViewController.currentRow = detailImageIndex;
+        pageViewController.childObjectId = _childObjectId;
+        pageViewController.fromMultiUpload = YES;
+        [self.navigationController setNavigationBarHidden:YES];
+        [self.navigationController pushViewController:pageViewController animated:YES];
     }
-    
-    frame.origin.x = (detailViewController.view.frame.size.width - frame.size.width)/2;
-    frame.origin.y = (detailViewController.view.frame.size.height - frame.size.height)/2;
-    
-    detailViewController.view.frame = frame;
-    frame.origin = CGPointMake(0, 0);
-    detailImageView.frame = frame;
-    [detailViewController.view addSubview:detailImageView];
-    [self presentPopupViewController:detailViewController animationType:MJPopupViewAnimationFade];
-    
-    PFObject *object = [_childDetailImageArray objectAtIndex:_detailedImageIndex];
-    // まずはS3に接続
-    NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
-    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId] configuration:_configuration] continueWithBlock:^id(BFTask *task) {
-        if (!task.error && task.result) {
-            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-            // 本画像を上にのせる
-            UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:getResult.body]];
-            orgImageView.frame = frame;
-            
-            // ベストショットラベル付ける
-            if (_bestImageIndex == _detailedImageIndex) {
-                CGRect extraFrame = frame;
-                extraFrame.origin = CGPointMake(0, 0);
-                extraFrame.size.height = frame.size.width;
-                UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
-                bestShotExtraLabelView.frame = extraFrame;
-                [orgImageView addSubview:bestShotExtraLabelView];
-            }
-            
-            [detailViewController.view addSubview:orgImageView];
-        } else {
-            // S3になければParseに (そのうち消す)
-            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                if (data) {
-                    // 本画像を上にのせる
-                    UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
-                    orgImageView.frame = frame;
-            
-                    // ベストショットラベル付ける
-                    if (_bestImageIndex == _detailedImageIndex) {
-                        CGRect extraFrame = frame;
-                        extraFrame.origin = CGPointMake(0, 0);
-                        extraFrame.size.height = frame.size.width;
-                        UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
-                        bestShotExtraLabelView.frame = extraFrame;
-                        [orgImageView addSubview:bestShotExtraLabelView];
-                    }
-            
-                    [detailViewController.view addSubview:orgImageView];
-                } else {
-                    NSLog(@"error %@", error);
-                }
-            }];
-        }
-        return nil;
-    }];
-    
-    detailViewController.view.userInteractionEnabled = YES;
-    
-    UITapGestureRecognizer *detailImageDoubleTGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-    detailViewController.view.tag = _detailedImageIndex;
-    detailImageDoubleTGR.numberOfTapsRequired = 2;
-    [detailViewController.view addGestureRecognizer:detailImageDoubleTGR];
-    
-    UITapGestureRecognizer *detailImageSingleTGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapInModalView:)];
-    detailImageSingleTGR.numberOfTapsRequired = 1;
-    // ダブルタップに失敗した時だけシングルタップとする
-    [detailImageSingleTGR requireGestureRecognizerToFail:detailImageDoubleTGR];
-    [detailViewController.view addGestureRecognizer:detailImageSingleTGR];
 }
+
+//-(void)handleSingleTapInModalView:(UIGestureRecognizer *) sender {
+//    // モーダルViewをクリックされたら次の画像に移る。最後まで言ったら消える
+//    _detailedImageIndex = [[sender view] tag] + 1;
+//    [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
+//    
+//    // アップの場合にはアップロードボタン分だけ少なくなるので
+//    if (_uploadUppeLimit) {
+//        if (_uploadUppeLimit > _detailedImageIndex) {
+//            [self openModalImageView];
+//        }
+//    } else {
+//        if ([_childImageArray count] > _detailedImageIndex) {
+//            [self openModalImageView];
+//        }
+//    }
+//}
+
+//-(void)openModalImageView
+//{
+//    UIViewController *detailViewController = [[UIViewController alloc] init];
+//    detailViewController.view.frame = CGRectMake(20, 60, self.view.frame.size.width - 40, self.view.frame.size.height - 80);
+//    detailViewController.view.backgroundColor = [UIColor whiteColor];
+//    
+//    UIImageView *detailImageView = [[UIImageView alloc] init];
+//    // ローカルに保存されていたサムネイル画像を貼付け
+//    NSData *cacheImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _detailedImageIndex]];
+//    detailImageView.backgroundColor = [UIColor blackColor];
+//    UIImage *cacheImage = [UIImage imageWithData:cacheImageData];
+//    detailImageView.image = cacheImage;
+//    
+//    float imageViewAspect = detailViewController.view.frame.size.width/detailViewController.view.frame.size.height;
+//    float imageAspect = cacheImage.size.width/cacheImage.size.height;
+//    
+//    // 横長バージョン
+//    // 枠より、画像の方が横長、枠の縦を縮める
+//    CGRect frame = detailViewController.view.frame;
+//    if (imageAspect >= imageViewAspect){
+//        frame.size.height = frame.size.width/imageAspect;
+//        // 縦長バージョン
+//        // 枠より、画像の方が縦長、枠の横を縮める
+//    } else {
+//        frame.size.width = frame.size.height*imageAspect;
+//    }
+//    
+//    frame.origin.x = (detailViewController.view.frame.size.width - frame.size.width)/2;
+//    frame.origin.y = (detailViewController.view.frame.size.height - frame.size.height)/2;
+//    
+//    detailViewController.view.frame = frame;
+//    frame.origin = CGPointMake(0, 0);
+//    detailImageView.frame = frame;
+//    [detailViewController.view addSubview:detailImageView];
+//    [self presentPopupViewController:detailViewController animationType:MJPopupViewAnimationFade];
+//    
+//    PFObject *object = [_childDetailImageArray objectAtIndex:_detailedImageIndex];
+//    // まずはS3に接続
+//    NSString *ymd = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
+//    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
+//    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId] configuration:_configuration] continueWithBlock:^id(BFTask *task) {
+//        if (!task.error && task.result) {
+//            AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+//            // 本画像を上にのせる
+//            UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:getResult.body]];
+//            orgImageView.frame = frame;
+//            
+//            // ベストショットラベル付ける
+//            if (_bestImageIndex == _detailedImageIndex) {
+//                CGRect extraFrame = frame;
+//                extraFrame.origin = CGPointMake(0, 0);
+//                extraFrame.size.height = frame.size.width;
+//                UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
+//                bestShotExtraLabelView.frame = extraFrame;
+//                [orgImageView addSubview:bestShotExtraLabelView];
+//            }
+//            
+//            [detailViewController.view addSubview:orgImageView];
+//        } else {
+//            // S3になければParseに (そのうち消す)
+//            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+//                if (data) {
+//                    // 本画像を上にのせる
+//                    UIImageView *orgImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithData:data]];
+//                    orgImageView.frame = frame;
+//            
+//                    // ベストショットラベル付ける
+//                    if (_bestImageIndex == _detailedImageIndex) {
+//                        CGRect extraFrame = frame;
+//                        extraFrame.origin = CGPointMake(0, 0);
+//                        extraFrame.size.height = frame.size.width;
+//                        UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
+//                        bestShotExtraLabelView.frame = extraFrame;
+//                        [orgImageView addSubview:bestShotExtraLabelView];
+//                    }
+//            
+//                    [detailViewController.view addSubview:orgImageView];
+//                } else {
+//                    NSLog(@"error %@", error);
+//                }
+//            }];
+//        }
+//        return nil;
+//    }];
+//    
+//    detailViewController.view.userInteractionEnabled = YES;
+//    
+//    UITapGestureRecognizer *detailImageDoubleTGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+//    detailViewController.view.tag = _detailedImageIndex;
+//    detailImageDoubleTGR.numberOfTapsRequired = 2;
+//    [detailViewController.view addGestureRecognizer:detailImageDoubleTGR];
+//    
+//    UITapGestureRecognizer *detailImageSingleTGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapInModalView:)];
+//    detailImageSingleTGR.numberOfTapsRequired = 1;
+//    // ダブルタップに失敗した時だけシングルタップとする
+//    [detailImageSingleTGR requireGestureRecognizerToFail:detailImageDoubleTGR];
+//    [detailViewController.view addGestureRecognizer:detailImageSingleTGR];
+//}
 
 -(void)backFromDetailImage:(id) sender
 {

@@ -75,7 +75,12 @@
     uploadViewController.child = _child;
     
     // Cacheからはりつけ
-    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+    NSString *imageCachePath = [[NSString alloc] init];
+    if (!_fromMultiUpload) {
+        imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+    } else {
+        imageCachePath = [NSString stringWithFormat:@"%@%@-%d", _childObjectId, ymd, index];
+    }
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];
@@ -92,11 +97,14 @@
     }
     
     [self laodMoreImages:index];
-    // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す
-    NSMutableDictionary *section = [_childImages objectAtIndex:_currentSection];
-    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-    uploadViewController.totalImageNum = totalImageNum;
-    uploadViewController.currentRow = _currentRow;
+
+    // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す (MultiUploadの場合はひとまず除外)
+    if (!_fromMultiUpload) {
+        NSMutableDictionary *section = [_childImages objectAtIndex:_currentSection];
+        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+        uploadViewController.totalImageNum = totalImageNum;
+        uploadViewController.currentRow = _currentRow;
+    }
     
     return uploadViewController;
 }

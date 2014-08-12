@@ -45,7 +45,7 @@
 
 @property UIPageViewController *pageViewController;
 
-@property int detailedImageIndex;
+@property int detailImageIndex;
 
 @property PFUser *currentUser;
 

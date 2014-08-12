@@ -31,6 +31,7 @@
 #import "UploadPickerViewController.h"
 #import "AWSS3Utils.h"
 #import "NotificationHistory.h"
+#import "ColorUtils.h"
 
 @interface PageContentViewController ()
 
@@ -299,14 +300,14 @@
     calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
     
     if ([weekdayString isEqualToString:@"SUN"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:1.0 green:0.396 blue:0.047 alpha:1.0];
+        calLabelView.calLabelTop.backgroundColor = [ColorUtils getSunDayCalColor];
+        calLabelView.calLabelTopBehind.backgroundColor = [ColorUtils getSunDayCalColor];
     } else if ([weekdayString isEqualToString:@"SAT"]) {
-        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.510 green:0.635 blue:0.773 alpha:1.0];
+        calLabelView.calLabelTop.backgroundColor = [ColorUtils getSatDayCalColor];
+        calLabelView.calLabelTopBehind.backgroundColor = [ColorUtils getSatDayCalColor];
     } else {
-        calLabelView.calLabelTop.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
-        calLabelView.calLabelTopBehind.backgroundColor = [UIColor colorWithRed:0.941 green:0.702 blue:0.216 alpha:1.0];
+        calLabelView.calLabelTop.backgroundColor = [ColorUtils getWeekDayCalColor];
+        calLabelView.calLabelTopBehind.backgroundColor = [ColorUtils getWeekDayCalColor];
     }
     
     // カレンダーweekラベル

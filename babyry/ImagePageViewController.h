@@ -22,5 +22,6 @@
 @property NSMutableDictionary *child;
 @property BOOL isLoading;
 @property id pageContentViewController;
+@property BOOL fromMultiUpload;
 
 @end
