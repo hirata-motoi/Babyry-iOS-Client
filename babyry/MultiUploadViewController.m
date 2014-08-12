@@ -15,6 +15,8 @@
 #import "PushNotification.h"
 #import "Navigation.h"
 #import "AWSS3Utils.h"
+#import "NotificationHistory.h"
+#import "Partner.h"
 
 @interface MultiUploadViewController ()
 
@@ -75,6 +77,9 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
         [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
+    
+    // for test
+    [self setupThanksButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -359,7 +364,6 @@
 -(void)handleDoubleTap:(id) sender {
     NSLog(@"double tap %d", [[sender view] tag]);
     
-    // role bbbのみダブルタップ可能
     // チュートリアルStep 4でも可
     if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         
@@ -412,7 +416,12 @@
                     }
                     index++;
                 }
-                [PushNotification sendInBackground:@"bestshotChosen" withOptions:nil];
+                PFObject *partner = [Partner partnerUser];
+                if (partner != nil) {
+                    [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:[[NSMutableDictionary alloc]initWithObjects:@[partner[@"nickName"]] forKeys:@[@"formatArgs"]]];
+                    [self createNotificationHistory:@"bestShotChange"];
+                }
+                
             } else {
                 NSLog(@"error at double tap %@", error);
             }
@@ -577,6 +586,39 @@
     _commentView.frame = defFrame;
     [self addChildViewController:_commentViewController];
     [self.view addSubview:_commentView];
+}
+
+- (void)createNotificationHistory:(NSString *)type
+{
+    [NSThread detachNewThreadSelector:@selector(executeNotificationHistory:) toTarget:self withObject:[[NSMutableDictionary alloc]initWithObjects:@[type] forKeys:@[@"type"]]];
+    
+}
+
+- (void)executeNotificationHistory:(id)param
+{
+    NSString *type = [param objectForKey:@"type"];
+    NSLog(@"executeNotificationHistory type:%@", type);
+    PFObject *partner = [Partner partnerUser];
+    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:_date];
+}
+
+- (void)setupThanksButton
+{
+    if (![[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        return;
+    }
+    UIButton *thanksButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [thanksButton setBackgroundImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
+    [thanksButton addTarget:self action:@selector(sendThanks) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:thanksButton];
+}
+
+- (void)sendThanks
+{
+    [self createNotificationHistory:@"bestShotReply"];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    [options setObject:[[NSArray alloc]initWithObjects:[PFUser currentUser][@"nickName"], nil] forKey:@"formatArgs"];
+    [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
 }
     
 @end

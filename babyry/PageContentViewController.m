@@ -29,6 +29,8 @@
 #import "CalenderLabel.h"
 #import "PushNotification.h"
 #import "UploadPickerViewController.h"
+#import "AWSS3Utils.h"
+#import "NotificationHistory.h"
 
 @interface PageContentViewController ()
 
@@ -73,6 +75,7 @@
 {
     _selfRole = [FamilyRole selfRole];
     [_pageContentCollectionView reloadData];
+    [self setupNotificationHistory];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -149,7 +152,9 @@
     [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
      
     cell.tag = indexPath.row + 1;
-
+    // for test
+    [self setBadgeToCell:cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd];
+    
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
     if (indexPath.section == 0 && indexPath.row == 1) {
         CGRect rect = cell.frame;
@@ -994,6 +999,60 @@ for (NSMutableDictionary *section in _childImages) {
 - (void) giveMePhoto
 {
     [PushNotification sendInBackground:@"requestPhoto" withOptions:nil];
+}
+
+- (void)setBadgeToCell:(TagAlbumCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
+{
+    int cellWidth = 60;
+    int cellHeight = 15;
+    CGRect rect;
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        rect = CGRectMake(cell.frame.size.width - cellWidth - 5, cell.frame.size.height - cellHeight - 5, cellWidth, cellHeight);
+    } else {                                                                             
+        rect = CGRectMake(cell.frame.size.width - cellWidth - 5, cell.frame.size.height - cellHeight - 5, cellWidth, cellHeight);
+    }                                             
+    
+    NSInteger notificationCount = [[_notificationHistory objectForKey:ymd] count];
+    
+    if (notificationCount == 0) {
+        return;
+    }
+    
+    UIView *badge = [[UIView alloc]initWithFrame:rect];
+    badge.backgroundColor = [UIColor redColor];
+    UILabel *countLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, rect.size.width, rect.size.height)];
+    [badge addSubview:countLabel];
+    // 角を丸める
+    badge.layer.cornerRadius = cellHeight / 3;
+    badge.clipsToBounds = YES;
+    
+    countLabel.text = ([_selfRole isEqualToString:@"uploader"]) ? @"BestShot変更" : @"Nice BestShot";
+    countLabel.textAlignment = UITextAlignmentCenter;
+    countLabel.font = [UIFont systemFontOfSize:9];
+    countLabel.textColor = [UIColor whiteColor];
+    // 貼る
+    [cell addSubview:badge];
+    
+    // 消す
+    for (PFObject *object in [_notificationHistory objectForKey:ymd]) {
+        [NotificationHistory disableDisplayedNotificationsWithObject:object];
+    }
+    [_notificationHistory removeObjectForKey:ymd];
+}
+
+- (void)setupNotificationHistory
+{
+    NSString *type = ([_selfRole isEqualToString:@"uploader"]) ? @"bestShotChange" : @"bestShotReply";
+    NSLog(@"userId : %@", [PFUser currentUser][@"userId"]);
+    _notificationHistory = [[NSMutableDictionary alloc]init];
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:type withBlock:^(NSMutableDictionary *history){
+        // ポインタを渡しておいて、そこに情報をセットさせる
+        for (NSString *ymd in history) {
+            [_notificationHistory setObject: [NSArray arrayWithArray:[history objectForKey:ymd]] forKey:ymd];
+        }
+        NSLog(@"notificationHistory : %@", _notificationHistory);
+    }];
+    
 }
 
 /*
