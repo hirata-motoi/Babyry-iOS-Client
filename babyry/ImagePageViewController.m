@@ -77,7 +77,12 @@
     uploadViewController.holdedBy = @"TagAlbumPageViewController";
     
     // Cacheからはりつけ
-    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+    NSString *imageCachePath = [[NSString alloc] init];
+    if (!_fromMultiUpload) {
+        imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+    } else {
+        imageCachePath = [NSString stringWithFormat:@"%@%@-%d", _childObjectId, ymd, index];
+    }
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {
         uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];
@@ -86,13 +91,17 @@
     }
     uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
   
-    uploadViewController.promptText = [NSString stringWithFormat:@"%ld/%ld", index + 1, _childImages.count];
+    uploadViewController.promptText = [NSString stringWithFormat:@"%d/%ld", index + 1, (unsigned long)_childImages.count];
     
-    // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す
-    NSMutableDictionary *section = [_childImages objectAtIndex:_currentSection];
-    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-    uploadViewController.totalImageNum = totalImageNum;
-    uploadViewController.currentRow = _currentRow;
+    uploadViewController.imageInfo = imageInfo;
+    
+    // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す (MultiUploadの場合はひとまず除外)
+    if (!_fromMultiUpload) {
+        NSMutableDictionary *section = [_childImages objectAtIndex:_currentSection];
+        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+        uploadViewController.totalImageNum = totalImageNum;
+        uploadViewController.currentRow = _currentRow;
+    }
     
     return uploadViewController;
 }

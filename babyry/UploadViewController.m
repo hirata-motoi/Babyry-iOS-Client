@@ -52,32 +52,52 @@
     _scrollView.delegate = self;
     
     // Parseからちゃんとしたサイズの画像を取得
-    PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-    originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
-    [originalImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
-    [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if ([objects count] > 0) {
-            PFObject * object = [objects objectAtIndex:0];
-            [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                if (!task.error && task.result) {
-                    AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                    _uploadedImageView.image = [UIImage imageWithData:getResult.body];
-                } else {
-                    [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                        if(!error){
-                            _uploadedImageView.image = [UIImage imageWithData:data];
-                        }
-                    }];
-                }
-                return nil;
-            }];
-            _imageInfo = object;
-            isPreload = NO;
-            [self setupOperationView:isPreload];
-        }
-    }];
+    // ImagePageViewControllerからimageInfoをもらう
+    // 万が一imageInfoが空だった時のことを考えて、一応、位置から組み立てるロジックも入れておくが、ImagePageViewController側でNoImageを省くようになったら不要になる(TODO)。
+    if (_imageInfo) {
+        [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], _imageInfo.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+            if (!task.error && task.result) {
+                AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+                _uploadedImageView.image = [UIImage imageWithData:getResult.body];
+            } else {
+                [_imageInfo[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                    if(!error){
+                        _uploadedImageView.image = [UIImage imageWithData:data];
+                    }
+                }];
+            }
+            return nil;
+        }];
+        isPreload = NO;
+        [self setupOperationView:isPreload];
+    } else {
+        PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+        [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+        [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
+        [originalImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+        [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if ([objects count] > 0) {
+                PFObject * object = [objects objectAtIndex:0];
+                [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                    if (!task.error && task.result) {
+                        AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+                        _uploadedImageView.image = [UIImage imageWithData:getResult.body];
+                    } else {
+                        [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                            if(!error){
+                                _uploadedImageView.image = [UIImage imageWithData:data];
+                            }
+                        }];
+                    }
+                    return nil;
+                }];
+                _imageInfo = object;
+                isPreload = NO;
+                [self setupOperationView:isPreload];
+            }
+        }];
+    }
 }
 
 - (void)openOperationView:(id)sender

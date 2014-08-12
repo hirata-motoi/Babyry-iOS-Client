@@ -181,6 +181,7 @@
             // 画像有る無しのカウントを0にする
             [_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
             
+            [self.navigationController setNavigationBarHidden:NO];
             [self.navigationController popViewControllerAnimated:YES];
             
             break;

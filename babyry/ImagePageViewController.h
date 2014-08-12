@@ -17,5 +17,6 @@
 @property NSString *name;
 @property NSMutableArray *imageList;
 @property NSInteger currentIndex;
+@property BOOL fromMultiUpload;
 
 @end
