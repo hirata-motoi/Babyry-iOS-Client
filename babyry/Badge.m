@@ -31,14 +31,16 @@
 + (UIImageView *)badgeForComment:(NSInteger)count
 {
     NSInteger badgeHeight = 15;
-    UIImageView *commentBadge = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, badgeHeight, badgeHeight)];
-    commentBadge.image = [UIImage imageNamed:@"CommentGray"];
+    NSInteger badgeWidth  = 18;
+    UIImageView *commentBadge = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, badgeWidth, badgeHeight)];
+    commentBadge.image = [UIImage imageNamed:@"CommentGreen"];
     
     UILabel *commentCountLabel = [[UILabel alloc]initWithFrame:commentBadge.frame];
     NSInteger limitedCount = (count >= 99) ? 99 : count;
     commentCountLabel.text = [NSString stringWithFormat:@"%ld", limitedCount];
     commentCountLabel.font = [self commonFontForBadge];
     commentCountLabel.textAlignment = UITextAlignmentCenter;
+    commentCountLabel.textColor = [UIColor whiteColor];
     [commentBadge addSubview:commentCountLabel];
     return commentBadge;
 }
@@ -54,6 +56,7 @@
     label.text = [NSString stringWithFormat:@"%ld", limitedCount];
     label.font = [self commonFontForBadge];
     label.textAlignment = UITextAlignmentCenter;
+    label.textColor = [UIColor whiteColor];
     [badge addSubview:label];
     return badge;
 }
