@@ -67,6 +67,7 @@
 		88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5041999354800B56481 /* ImageToolbarSaveIcon.m */; };
 		88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF5061999361D00B56481 /* ImageToolbarCommentIcon.xib */; };
 		88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */; };
+		88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF50C1999FA1F00B56481 /* ColorUtils.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		D79AFBEA8B9F4207B47E8CAD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB30DD347E5C4D729656DE8C /* libPods.a */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
@@ -223,6 +224,8 @@
 		88CFF5061999361D00B56481 /* ImageToolbarCommentIcon.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageToolbarCommentIcon.xib; sourceTree = "<group>"; };
 		88CFF5081999367F00B56481 /* ImageToolbarCommentIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarCommentIcon.h; sourceTree = "<group>"; };
 		88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarCommentIcon.m; sourceTree = "<group>"; };
+		88CFF50B1999FA1F00B56481 /* ColorUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorUtils.h; sourceTree = "<group>"; };
+		88CFF50C1999FA1F00B56481 /* ColorUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtils.m; sourceTree = "<group>"; };
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB30DD347E5C4D729656DE8C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
@@ -386,6 +389,8 @@
 				F2AC1A4A19937FF500DBFE91 /* NotificationHistory.m */,
 				F2AC1A4C19947CC900DBFE91 /* Partner.h */,
 				F2AC1A4D19947CC900DBFE91 /* Partner.m */,
+				88CFF50B1999FA1F00B56481 /* ColorUtils.h */,
+				88CFF50C1999FA1F00B56481 /* ColorUtils.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -906,6 +911,7 @@
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
+				88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */,
 				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
