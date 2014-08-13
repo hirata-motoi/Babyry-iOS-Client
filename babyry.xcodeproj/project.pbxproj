@@ -101,6 +101,8 @@
 		F2310C22198F43DF00E01DA3 /* DragView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2310C21198F43DF00E01DA3 /* DragView.m */; };
 		F25D29D2199B228D00CD50D7 /* AcceptableUsePolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */; };
 		F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */; };
+		F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F25D29DD199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib */; };
+		F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = F25D29E2199B3E9800CD50D7 /* CollectionViewSectionHeader.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -287,6 +289,9 @@
 		F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcceptableUsePolicyViewController.m; sourceTree = "<group>"; };
 		F25D29D9199B2D4200CD50D7 /* PrivacyPolicyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacyPolicyViewController.h; sourceTree = "<group>"; };
 		F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivacyPolicyViewController.m; sourceTree = "<group>"; };
+		F25D29DD199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CollectionViewSectionHeader.xib; sourceTree = "<group>"; };
+		F25D29E1199B3E9800CD50D7 /* CollectionViewSectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewSectionHeader.h; sourceTree = "<group>"; };
+		F25D29E2199B3E9800CD50D7 /* CollectionViewSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewSectionHeader.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -350,12 +355,13 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
+				88CFF4F61998CED800B56481 /* ToolbarItem */,
+				F25D29DC199B3DB400CD50D7 /* SectionHeader */,
 				F25D29D9199B2D4200CD50D7 /* PrivacyPolicyViewController.h */,
 				F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */,
 				F25D29D0199B228D00CD50D7 /* AcceptableUsePolicyViewController.h */,
 				F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */,
-				88CFF4F61998CED800B56481 /* ToolbarItem */,
-				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
 				8814A9981945469B0010F516 /* ImageCache.h */,
 				8814A9991945469B0010F516 /* ImageCache.m */,
 				F210670D196E805A00187119 /* TagView.h */,
@@ -720,6 +726,32 @@
 			name = CellBackgroundView;
 			sourceTree = "<group>";
 		};
+		F25D29DC199B3DB400CD50D7 /* SectionHeader */ = {
+			isa = PBXGroup;
+			children = (
+				F25D29E0199B3E7000CD50D7 /* Class */,
+				F25D29DF199B3E5D00CD50D7 /* Xib */,
+			);
+			name = SectionHeader;
+			sourceTree = "<group>";
+		};
+		F25D29DF199B3E5D00CD50D7 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				F25D29DD199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		F25D29E0199B3E7000CD50D7 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				F25D29E1199B3E9800CD50D7 /* CollectionViewSectionHeader.h */,
+				F25D29E2199B3E9800CD50D7 /* CollectionViewSectionHeader.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
 		F2694B001983A17B008239F6 /* PageView */ = {
 			isa = PBXGroup;
 			children = (
@@ -827,6 +859,7 @@
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
+				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
@@ -943,6 +976,7 @@
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
+				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
 				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
