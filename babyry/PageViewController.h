@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TagAlbumOperationViewController.h"
 #import "PageContentViewController.h"
 
-@interface PageViewController : UIPageViewController<TagAlbumOperationViewControllerDelegate>
+@interface PageViewController : UIPageViewController<UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property NSMutableArray *childArray;
 @property UIView *tagAlbumOperationView;
