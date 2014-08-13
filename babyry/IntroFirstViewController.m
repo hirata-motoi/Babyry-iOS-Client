@@ -10,6 +10,7 @@
 #import "UIViewController+MJPopupViewController.h"
 #import "FamilyApplyViewController.h"
 #import "FamilyApplyListViewController.h"
+#import "IdIssue.h"
 
 @interface IntroFirstViewController ()
 
@@ -31,7 +32,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _applyCheckingFlag = 0;
+//    _applyCheckingFlag = 0;
     
     _introPageIndex = 0;
     // PageViewController追加
@@ -39,7 +40,7 @@
     _pageViewController.dataSource = self;
     
     CGRect frame = _pageViewController.view.frame;
-    frame.size.height = self.view.frame.size.height*2/3;
+    frame.size.height = self.view.frame.size.height - 70; // 50は magic number!
     _pageViewController.view.frame = frame;
     
     NSLog(@"0ページ目を表示");
@@ -51,29 +52,29 @@
     [self.view addSubview:_pageViewController.view];
     [_pageViewController didMoveToParentViewController:self];
     
-    // Add Listener
-    _inviteLabel.tag = 1;
-    UITapGestureRecognizer *singleTapGestureRecognizer1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    singleTapGestureRecognizer1.numberOfTapsRequired = 1;
-    [_inviteLabel addGestureRecognizer:singleTapGestureRecognizer1];
-    
-    
-    _invitedLabel.tag = 2;
-    UITapGestureRecognizer *singleTapGestureRecognizer2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    singleTapGestureRecognizer2.numberOfTapsRequired = 1;
-    [_invitedLabel addGestureRecognizer:singleTapGestureRecognizer2];
-    
-    _logout.layer.cornerRadius = _logout.frame.size.width/2;
-    _logout.tag = 99;
-    UITapGestureRecognizer *singleTapGestureRecognizer99 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    singleTapGestureRecognizer99.numberOfTapsRequired = 1;
-    [_logout addGestureRecognizer:singleTapGestureRecognizer99];
+//    // Add Listener
+//    _inviteLabel.tag = 1;
+//    UITapGestureRecognizer *singleTapGestureRecognizer1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+//    singleTapGestureRecognizer1.numberOfTapsRequired = 1;
+//    [_inviteLabel addGestureRecognizer:singleTapGestureRecognizer1];
+//    
+//    
+//    _invitedLabel.tag = 2;
+//    UITapGestureRecognizer *singleTapGestureRecognizer2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+//    singleTapGestureRecognizer2.numberOfTapsRequired = 1;
+//    [_invitedLabel addGestureRecognizer:singleTapGestureRecognizer2];
+//    
+//    _logout.layer.cornerRadius = _logout.frame.size.width/2;
+//    _logout.tag = 99;
+//    UITapGestureRecognizer *singleTapGestureRecognizer99 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+//    singleTapGestureRecognizer99.numberOfTapsRequired = 1;
+//    [_logout addGestureRecognizer:singleTapGestureRecognizer99];
     
     // add gesture on self.view
-    UITapGestureRecognizer *singleTapGestureRecognizer0 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    singleTapGestureRecognizer0.numberOfTapsRequired = 1;
-    [self.view addGestureRecognizer:singleTapGestureRecognizer0];
-    [self.navigationController setNavigationBarHidden:YES];
+//    UITapGestureRecognizer *singleTapGestureRecognizer0 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+//    singleTapGestureRecognizer0.numberOfTapsRequired = 1;
+//    [self.view addGestureRecognizer:singleTapGestureRecognizer0];
+//    [self.navigationController setNavigationBarHidden:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,26 +85,17 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"viewDidAppear");
+    NSLog(@"viewDidAppear in IntroFirstViewController");
     [super viewDidAppear:animated];
-    // check this acount has family Id or not
-    [self.navigationController setNavigationBarHidden:YES];
     
-    if ([PFUser currentUser][@"familyId"] && ![[PFUser currentUser][@"familyId"] isEqualToString:@""]) {
-        [self.navigationController setNavigationBarHidden:NO];
-        [self.navigationController popViewControllerAnimated:YES];
-    }
-    
-    if (!_tm || ![_tm isValid]) {
-        NSLog(@"timer fire");
-        _tm = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(checkFamilyApply:) userInfo:nil repeats:YES];
-        [_tm fire];
+    if ([PFUser currentUser]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
 - (void) viewDidDisappear:(BOOL)animated
 {
-    [_tm invalidate];
+    [super viewDidDisappear:animated];
 }
 
 /*
@@ -116,73 +108,6 @@
     // Pass the selected object to the new view controller.
 }
 */
-
--(void)handleSingleTap:(id) sender
-{
-    int tag = [[sender view] tag];
-    NSLog(@"%d", tag);
-    if (tag == 1) {
-        UIViewController *inviteViewController = [[UIViewController alloc] init];
-        float x = (self.view.frame.size.width - 200)/2;
-        inviteViewController.view.frame = CGRectMake(x, 50.0f, 200.0f, 200.0f);
-        inviteViewController.view.backgroundColor = [UIColor whiteColor];
-        [self presentPopupViewController:inviteViewController animationType:MJPopupViewAnimationFade];
-        
-        // ラベル付ける
-        UILabel *inviteByLineLabel = [[UILabel alloc] init];
-        inviteByLineLabel.frame = CGRectMake(25, 40, 150, 40);
-        inviteByLineLabel.backgroundColor = [UIColor colorWithRed:0.4 green:1.0 blue:0.4 alpha:1.0];
-        inviteByLineLabel.text = @"LINEで招待";
-        inviteByLineLabel.textColor = [UIColor whiteColor];
-        inviteByLineLabel.textAlignment = NSTextAlignmentCenter;
-        inviteByLineLabel.tag = 3;
-        inviteByLineLabel.userInteractionEnabled = YES;
-        UITapGestureRecognizer *singleTapGestureRecognizer3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-        singleTapGestureRecognizer3.numberOfTapsRequired = 1;
-        [inviteByLineLabel addGestureRecognizer:singleTapGestureRecognizer3];
-        [inviteViewController.view addSubview:inviteByLineLabel];
-        
-        UILabel *inviteByMailLabel = [[UILabel alloc] init];
-        inviteByMailLabel.frame = CGRectMake(25, 120, 150, 40);
-        inviteByMailLabel.backgroundColor = [UIColor colorWithRed:0.4 green:0.4 blue:1.0 alpha:1.0];
-        inviteByMailLabel.text = @"メールで招待";
-        inviteByMailLabel.textColor = [UIColor whiteColor];
-        inviteByMailLabel.textAlignment = NSTextAlignmentCenter;
-        inviteByMailLabel.tag = 4;
-        inviteByMailLabel.userInteractionEnabled = YES;
-        UITapGestureRecognizer *singleTapGestureRecognizer4 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-        singleTapGestureRecognizer4.numberOfTapsRequired = 1;
-        [inviteByMailLabel addGestureRecognizer:singleTapGestureRecognizer4];
-        [inviteViewController.view addSubview:inviteByMailLabel];
-    } else if (tag == 2) {
-        FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-        [self.navigationController setNavigationBarHidden:NO];
-        [self.navigationController pushViewController:familyApplyViewController animated:YES];
-    } else if (tag == 3 || tag == 4) {
-        NSString *plainTitle = @"Babyryへようこそ";
-        NSString *escapedUrlTitle = [plainTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-        NSString *plainText = [NSString stringWithFormat:
-                               @"Babyryへようこそ。\nあなたのパートナーからBabyryへの招待が届いています。\n以下のURLからアプリをインストール後、パートナーのユーザーID %@ を検索してください。\nhttps://app.store/id=3333",     [PFUser currentUser][@"userId"]];
-        NSString *escapedUrlText = [plainText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSLog(@"%@", escapedUrlText);
-        if (tag == 3) {
-            NSLog(@"tap LINE invite");
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", escapedUrlText]]];
-            [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
-        } else {
-            NSLog(@"tap Mail invite");
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", escapedUrlTitle, escapedUrlText]]];
-            [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
-        }
-    } else if (tag == 99) {
-        [PFUser logOut];
-        [self.navigationController setNavigationBarHidden:NO];
-        [self.navigationController popToRootViewControllerAnimated:YES];
-    } else {
-        [self.view endEditing:YES];
-    }
-}
 
 ///////////////////////////////////////
 // pageViewController用のメソッド
@@ -255,24 +180,295 @@
 }
 ///////////////////////////////////////
 
-- (void) checkFamilyApply:(NSTimer*)timer
+- (IBAction)registerAction:(id)sender {
+    [self openLoginView];
+}
+
+- (void)openLoginView
 {
-    // 排他処理
-    if (_applyCheckingFlag == 1) {
-        return;
-    } else {
-        _applyCheckingFlag = 1;
+    // Create the log in view controller
+    PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
+    [logInViewController setDelegate:self]; // Set ourselves as the delegate
+    [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"public_profile", @"email", nil]];
+    [logInViewController setFields:
+     PFLogInFieldsFacebook |
+     PFLogInFieldsUsernameAndPassword |
+     PFLogInFieldsPasswordForgotten |
+     PFLogInFieldsLogInButton |
+     PFLogInFieldsSignUpButton |
+     PFLogInFieldsDismissButton
+     ];
+    
+    
+    logInViewController.logInView.usernameField.placeholder = @"メールアドレス";
+    logInViewController.logInView.usernameField.keyboardType = UIKeyboardTypeASCIICapable;
+    logInViewController.logInView.passwordField.placeholder = @"パスワード";
+    logInViewController.logInView.passwordField.keyboardType = UIKeyboardTypeASCIICapable;
+    
+    
+    //UIView *fieldsBackground2 = [[logInViewController.logInView subviews] objectAtIndex:0];
+    // for example move down
+    //[fieldsBackground2 setFrame:CGRectOffset(fieldsBackground2.frame,0,80.0f)];
+    
+    //[logInViewController.logInView setBackgroundColor:[UIColor whiteColor]];
+    [logInViewController.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
+    
+    // これ反映されない！困る！！！
+    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateNormal];
+    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.usernameField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
+    //[logInViewController.logInView.passwordField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
+    
+    //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateNormal];
+    //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_down.png"] forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook.png"] forState:UIControlStateNormal];
+    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateNormal];
+    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateHighlighted];
+    
+    //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateNormal];
+    //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter.png"] forState:UIControlStateNormal];
+    //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_down.png"] forState:UIControlStateHighlighted];
+    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateNormal];
+    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateHighlighted];
+    
+    //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup.png"] forState:UIControlStateNormal];
+    //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_down.png"] forState:UIControlStateHighlighted];
+    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateNormal];
+    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateHighlighted];
+    
+    [logInViewController.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"ForgetPasswordLabel"] forState:UIControlStateNormal];
+    
+    // Add login field background
+    UIImageView *fieldsBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
+    fieldsBackground.frame = self.view.frame;
+    [logInViewController.logInView insertSubview:fieldsBackground atIndex:0];
+    
+    // Remove text shadow
+    CALayer *layer = logInViewController.logInView.usernameField.layer;
+    layer.shadowOpacity = 0.0;
+    layer = logInViewController.logInView.passwordField.layer;
+    layer.shadowOpacity = 0.0;
+    layer = logInViewController.logInView.externalLogInLabel.layer;
+    layer.shadowOpacity = 0.0;
+    
+
+    
+    // Set field text color
+    //[logInViewController.logInView.usernameField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
+    //[logInViewController.logInView.passwordField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
+    
+    
+    logInViewController.logInView.externalLogInLabel.text = @"ソーシャルアカウントでログイン";
+    logInViewController.logInView.signUpLabel.text = @"";
+    
+    // Create the sign up view controller
+    PFSignUpViewController *signUpViewController = [self makeSignUpView];
+    [signUpViewController setDelegate:self]; // Set ourselves as the delegate
+    
+    [signUpViewController.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
+    UIImageView *fieldsBackground2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
+    fieldsBackground2.frame = self.view.frame;
+    [signUpViewController.signUpView insertSubview:fieldsBackground2 atIndex:0];
+    
+    // Assign our sign up controller to be displayed from the login controller
+    [logInViewController setSignUpController:signUpViewController];
+    
+    // Present the log in view controller
+    [self presentViewController:logInViewController animated:YES completion:NULL];
+}
+
+///////////////////////////////////////////////////////
+// PFLogInViewControllerのmethodたち
+// Sent to the delegate to determine whether the log in request should be submitted to the server.
+// クライアントでvalidateを入れる。むだにParseと通信しない(お金発生しない)
+- (BOOL)logInViewController:(PFLogInViewController *)logInController shouldBeginLogInWithUsername:(NSString *)username password:(NSString *)password {
+    // Check if both fields are completed
+    if (username && password && username.length != 0 && password.length != 0) {
+        return YES; // Begin login process
     }
-    PFQuery *familyApplyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
-    [familyApplyQuery whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
-    [familyApplyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if(objects && [objects count] > 0){
-            [self.navigationController setNavigationBarHidden:NO];
-            FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-            [self.navigationController pushViewController:familyApplyListViewController animated:YES];
+    
+    [[[UIAlertView alloc] initWithTitle:@"入力されていない項目があります"
+                                message:@"全ての項目を埋めてください"
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
+    return NO; // Interrupt login process
+}
+
+// Sent to the delegate when a PFUser is logged in.
+// ログイン後の処理
+- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+    // facebook, twitterでの登録時にはuserIdが発行されないのでココで発行する
+    NSLog(@"Login!!!");
+
+    if (user[@"userId"] == nil) {
+        user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+        [user save];
+    }
+    
+    if (!user[@"email"] || ![user[@"email"] isEqualToString:@""]) {
+        [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+            if (!error && [result objectForKey:@"email"]) {
+                user[@"email"] = [result objectForKey:@"email"];
+                [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                    if (error) {
+                        NSLog(@"error %@", error);
+                        // メアドが保存できないのは、ネットワークのせいかduplicate entryのせい
+                        // なのでアラートをだしてログアウトさせる
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                        message:@"facebookで利用している\nメールアドレスで既にBabyryに\n登録している場合は\nfacebookアカウントでの\nログインは出来ません。\nそうでない場合は、\nネットワークエラーの可能性が\nありますので\nしばらくしてからお試しください。"
+                                                                       delegate:nil
+                                                              cancelButtonTitle:nil
+                                                              otherButtonTitles:@"OK", nil
+                                              ];
+                        [alert show];
+                        [PFUser logOut];
+                        [self dismissViewControllerAnimated:YES completion:nil];
+                    }
+                }];
+            } else {
+                NSLog(@"%@", error);
+            }
+        }];
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+// Sent to the delegate when the log in attempt fails.
+// ログインが失敗したら
+- (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
+    //NSLog(@"Failed to log in...");
+}
+
+// Sent to the delegate when the log in screen is dismissed.
+// ログインviewのばつが押されたら
+- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+///////////////////////////////////////////////
+
+
+- (PFSignUpViewController *) makeSignUpView{
+    // Create the sign up view controller
+    PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
+    [signUpViewController setDelegate:self]; // Set ourselves as the delegate
+    [signUpViewController setFields:
+     PFSignUpFieldsUsernameAndPassword |
+     PFSignUpFieldsAdditional |
+     PFLogInFieldsFacebook |
+     PFLogInFieldsTwitter |
+     PFSignUpFieldsDismissButton |
+     PFSignUpFieldsSignUpButton
+     ];
+
+    signUpViewController.signUpView.usernameField.placeholder = @"メールアドレス";
+    signUpViewController.signUpView.usernameField.keyboardType = UIKeyboardTypeASCIICapable;
+    
+    signUpViewController.signUpView.passwordField.placeholder = @"パスワード";
+    signUpViewController.signUpView.passwordField.keyboardType = UIKeyboardTypeASCIICapable;
+    
+    signUpViewController.signUpView.additionalField.placeholder = @"パスワード(確認)";
+    signUpViewController.signUpView.additionalField.keyboardType = UIKeyboardTypeASCIICapable;
+    signUpViewController.signUpView.additionalField.secureTextEntry = YES;
+    
+    [signUpViewController.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
+    UIImageView *fieldsBackground2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
+    fieldsBackground2.frame = self.view.frame;
+    [signUpViewController.signUpView insertSubview:fieldsBackground2 atIndex:0];
+
+    return signUpViewController;
+}
+
+///////////////////////////////////////////////////////
+// PFSignUpViewControllerのmethodたち
+// Sent to the delegate to determine whether the sign up request should be submitted to the server.
+// 以下のメソッドはLogin系と同じ
+- (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
+    BOOL informationComplete = YES;
+    NSString *errorMessage = @"";
+    
+    NSString *password = [[NSString alloc] init];
+    NSString *passwordConfirm = [[NSString alloc] init];
+    
+    for (id key in info) {
+        NSString *field = [info objectForKey:key];
+        if (!field || field.length == 0) { // check completion
+            errorMessage = @"入力が完了していない項目があります";
+            break;
         }
-        _applyCheckingFlag = 0;
-    }];
+        if ([key isEqualToString:@"password"]){
+            if(![field canBeConvertedToEncoding:NSASCIIStringEncoding]) {
+                errorMessage = @"パスワードに全角文字は使用できません";
+                break;
+            } else if ([field length] < 8) {
+                errorMessage = @"パスワードは8文字以上を設定してください";
+                break;
+            }
+            password = field;
+        } else if ([key isEqualToString:@"additional"]) {
+            passwordConfirm = field;
+        } else if ([key isEqualToString:@"username"]) {
+            if (![self validateEmailWithString:field]) {
+                errorMessage = @"メールアドレスを正しく入力してください";
+                break;
+            }
+        }
+    }
+    
+    if (![password isEqualToString:passwordConfirm]) {
+        if ([errorMessage isEqualToString:@""]) {
+            errorMessage = @"確認用パスワードが一致しません";
+        }
+    }
+    
+    // Display an alert if a field wasn't completed
+    if (![errorMessage isEqualToString:@""]) {
+        informationComplete = NO;
+        [[[UIAlertView alloc] initWithTitle:@""
+                                    message:errorMessage
+                                   delegate:nil
+                          cancelButtonTitle:@"ok"
+                          otherButtonTitles:nil] show];
+    }
+    
+    return informationComplete;
+}
+
+// Sent to the delegate when a PFUser is signed up.
+- (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
+    // 確認用パスワードは平文で格納されちゃうので消す
+    user[@"additional"] = @"";
+    
+    // authDataがなければ(Babyry専用ユーザーなら)
+    if (!user[@"authData"]) {
+        user[@"email"] = user[@"username"];
+    }
+    
+    // user_idを発行して保存
+    user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+    [user save];
+    
+    [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
+}
+
+// Sent to the delegate when the sign up attempt fails.
+- (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
+    //NSLog(@"Failed to sign up...");
+}
+
+// Sent to the delegate when the sign up screen is dismissed.
+- (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
+    //NSLog(@"User dismissed the signUpViewController");
+}
+
+- (BOOL)validateEmailWithString:(NSString*)email
+{
+    NSString *emailRegex = @"[\\S]+@[A-Za-z0-9.-]+\\.[A-Za-z]{1,10}";
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    return [emailTest evaluateWithObject:email];
 }
 
 @end

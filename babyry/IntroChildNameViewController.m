@@ -181,6 +181,10 @@
         } else {
             NSLog(@"update child names");
             
+            // 移行の処理がforegrandなのでこれ表示されない。。。
+            _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            _hud.labelText = @"データ更新";
+            
             // 念のためrefresh
             PFObject *user = [PFUser currentUser];
             [user refresh];
@@ -191,6 +195,8 @@
                 child[@"familyId"] = user[@"familyId"];
                 [child save];
             }
+            
+            [_hud hide:YES];
             
             if ([self.navigationController isViewLoaded]) {
                 [self.navigationController popToRootViewControllerAnimated:YES];

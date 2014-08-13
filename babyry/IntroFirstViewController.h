@@ -9,18 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 
-@interface IntroFirstViewController : UIViewController <UIPageViewControllerDataSource>
-@property (strong, nonatomic) IBOutlet UILabel *inviteLabel;
-@property (strong, nonatomic) IBOutlet UILabel *invitedLabel;
-@property (strong, nonatomic) IBOutlet UILabel *logout;
+@interface IntroFirstViewController : UIViewController <UIPageViewControllerDataSource, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate>
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
-//@property (strong, nonatomic) UIViewController *introViewController;
-
 @property int introPageIndex;
-
-@property NSTimer *tm;
-
-@property int applyCheckingFlag;
+@property (strong, nonatomic) IBOutlet UIButton *registerButton;
+- (IBAction)registerAction:(id)sender;
 
 @end

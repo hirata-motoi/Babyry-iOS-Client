@@ -9,14 +9,14 @@
 #import "FamilyApplyViewController.h"
 #import "IdIssue.h"
 #import "Navigation.h"
+#import "ColorUtils.h"
+#import "FamilyApplyListViewController.h"
 
 @interface FamilyApplyViewController ()
 
 @end
 
 @implementation FamilyApplyViewController
-@synthesize searchedUserObject;
-@synthesize searchForm;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -29,26 +29,127 @@
 
 - (void)viewDidLoad
 {
+    NSLog(@"viewDidLoad in FamilyApplyViewController");
     [super viewDidLoad];
+    
+    _searchingStep = @"";
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    _searchBackContainerView.backgroundColor = [ColorUtils getBackgroundColor];
+    _searchBackContainerView.layer.cornerRadius = 10;
+    
 	// Do any additional setup after loading the view.
     self.searchContainerView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
     self.selfUserIdContainer.backgroundColor = [UIColor whiteColor];
-    [self showSelfUserId];
+    [self showSelfUserEmail];
     
     [self setupSearchForm];
     [Navigation setTitle:self.navigationItem withTitle:@"パートナー検索" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
-    // set navigator
+    NSLog(@"set navigator for keyboard");
     // view押したらキーボードを隠す
     UITapGestureRecognizer *hideKeyboradGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard:)];
     hideKeyboradGesture.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:hideKeyboradGesture];
+    
+    _messageButton = [[UIButton alloc] init];
+    _messageButton.frame = _searchContainerView.frame;
+    _messageButton.backgroundColor = [ColorUtils getSunDayCalColor];
+    [_searchBackContainerView addSubview:_messageButton];
+    _messageButton.hidden = YES;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // 最初のデータ確認だけはクルクル出す
+    _stasusHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _stasusHud.labelText = @"パートナーデータ確認";
+    
+    if (!_tm || ![_tm isValid]) {
+        NSLog(@"timer fire");
+        _tm = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(checkFamilyApply) userInfo:nil repeats:YES];
+        [_tm fire];
+    }
+}
+
+- (void) checkFamilyApply
+{
+    // 既にFamilyひも付け完了している、申請済み、リクエストが来ている、を確認する。
+    PFUser *user = [PFUser currentUser];
+    
+    if (user[@"familyId"]) {
+        NSLog(@"familyIdがある場合は、ひも付け完了しているか、リクエスト済み");
+        PFQuery * roleQuery = [PFQuery queryWithClassName:@"FamilyRole"];
+        [roleQuery whereKey:@"familyId" equalTo:user[@"familyId"]];
+        [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if (!error){
+                if ([objects count] > 0) {
+                    NSLog(@"ひも付け済み");
+                    _familyObject = [objects objectAtIndex:0];
+                    [self showMessage:@"forFamily"];
+                } else {
+                    NSLog(@"ひも付け未完、申請確認");
+                    PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
+                    [applyQuery whereKey:@"userId" equalTo:user[@"userId"]];
+                    [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                        if (!error){
+                            if ([objects count] > 0) {
+                                NSLog(@"申請中、相手待ち");
+                                _applyObject = [objects objectAtIndex:0];
+                                [self showMessage:@"forInviter"];
+                            }
+                        }
+                        [_stasusHud hide:YES];
+                    }];
+                }
+            }
+            [_stasusHud hide:YES];
+        }];
+    } else {
+        NSLog(@"familyIdがない場合、申請を受けているかだけ見る");
+        PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
+        [applyQuery whereKey:@"inviteeUserId" equalTo:user[@"userId"]];
+        [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if (!error){
+                if ([objects count] > 0) {
+                    NSLog(@"申請が来ています");
+                    [self showMessage:@"forInvitee"];
+                }
+            }
+            [_stasusHud hide:YES];
+        }];
+    }
+}
+
+-(void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [_tm invalidate];
+}
+
+-(void) showMessage:(NSString *)type
+{
+    if ([type isEqualToString:@"forInvitee"]) {
+        NSLog(@"申請メッセージ表示");
+        [_messageButton setTitle:@"申請が来ています(タップで確認)" forState:UIControlStateNormal];
+        [_messageButton addTarget:self action:@selector(checkApply) forControlEvents:UIControlEventTouchDown];
+    } else if ([type isEqualToString:@"forInviter"]) {
+        NSLog(@"申請メッセージ表示");
+        [_messageButton setTitle:@"申請済みです(タップで取り消し)" forState:UIControlStateNormal];
+        [_messageButton addTarget:self action:@selector(removeApply) forControlEvents:UIControlEventTouchDown];
+    } else if ([type isEqualToString:@"forFamily"]) {
+        NSLog(@"申請メッセージ表示");
+        [_messageButton setTitle:@"パートナー登録は完了しています" forState:UIControlStateNormal];
+    }
+    _messageButton.hidden = NO;
 }
 
 -(void)hideKeyboard:(id) sender
@@ -61,103 +162,117 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)showSelfUserId
+- (void)showSelfUserEmail
 {
-    self.selfUserId.text = [PFUser currentUser][@"userId"];
+    PFUser *user = [PFUser currentUser];
+    [user refresh];
+    _selfUserEmail.text = user[@"email"];
 }
 
 - (void)executeSearch
 {
-    NSString * inputtedUserId = [searchForm.text mutableCopy];
-    // search用APIを叩いてユーザを検索
-    PFQuery * query = [PFQuery queryWithClassName:@"_User"];
-    
-    [query whereKey:@"userId" equalTo:inputtedUserId];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error){
-            [self deleteSearchResult];
-            if (objects.count < 1) {
-                [self showSearchNoResult];
+    NSString * inputtedUserEmail = [_searchForm.text mutableCopy];
+    if (inputtedUserEmail && ![inputtedUserEmail isEqualToString:@""]) {
+        
+        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        _hud.labelText = @"検索中...";
+        
+        // search用APIを叩いてユーザを検索
+        PFQuery * query = [PFQuery queryWithClassName:@"_User"];
+        
+        [query whereKey:@"email" equalTo:inputtedUserEmail];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if (!error){
+                NSLog(@"aaaa %d %@", objects.count, objects);
+                if (objects.count < 1) {
+                    NSLog(@"検索0件");
+                    [self showSearchNoResult];
+                } else {
+                    // すでにFamilyIdがある人だった場合は表示しない
+                    // セキュリティ的に、既にパートナーがいますってのも出さない方が良い
+                    _searchedUserObject = [objects objectAtIndex:0];
+                    if(_searchedUserObject[@"familyId"] && ![_searchedUserObject[@"familyId"] isEqualToString:@""]) {
+                        NSLog(@"このユーザーはすでにパートナーいます %@", _searchedUserObject[@"familyId"]);
+                        [self showSearchNoResult];
+                    } else {
+                        NSLog(@"OK");
+                        [self showSearchResult];
+                    }
+                }
             } else {
-                [self showSearchResult:[objects objectAtIndex:0]];
+                NSLog(@"error occured %@", error);
             }
-        } else {
-            NSLog(@"error occured %@", error);
-        }
-    }];
-    [self.view endEditing:YES];
+            [_hud hide:YES];
+        }];
+        [self.view endEditing:YES];
+    }
 }
 
 - (void)showSearchNoResult
 {
-    UIView *result = [[UIView alloc]initWithFrame:CGRectMake(0, 10, 250, 60)];
-    UILabel * labelNoResult = [[UILabel alloc]initWithFrame:CGRectMake(10, 10, 230, 40)];
-    labelNoResult.text = @"ユーザがみつかりません";
-    labelNoResult.textAlignment = NSTextAlignmentCenter;
-    [result addSubview:labelNoResult];
-    [self.searchResultContainer addSubview:result];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"一致するユーザーが見つかりませんでした"
+                                                    message:@"メールアドレスを確認してください"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
 }
 
-- (void)showSearchResult:(PFObject *)searchedUser
+- (void)showSearchResult
 {
-    UIView *result = [[UIView alloc]initWithFrame:CGRectMake(0, 10, 250, 60)];
-    
-    // 結果を表示 user_nameと申請ボタンを表示する
-    // image
-    UIImage *userImage = [UIImage imageNamed:@"NoImage"];
-    UIImageView *userImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 60, 60)];
-    userImageView.image = userImage;
-    
-    // username
-    UILabel * label = [[UILabel alloc]initWithFrame:CGRectMake(70, 10, 140, 60)];
-    label.text = searchedUser[@"username"];
-
-    
-    // 対象ユーザのPFObjectを保持
-    searchedUserObject = searchedUser;
-
-    [result addSubview:userImageView];
-    [result addSubview:label];
-    
-    // button
-    // 自分あるいは相手がfamilyIdを既に持ってたら申請はできない
-    if (searchedUser[@"familyId"] == nil && [PFUser currentUser][@"familyid"] == nil) {
-        // button
-        UIButton * button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        button.frame = CGRectMake(220, 25, 30, 25);
-        [button setTitle:@"申請" forState:UIControlStateNormal];
-        // ボタンを押したときのイベント
-        [button addTarget:self action:@selector(apply) forControlEvents:UIControlEventTouchUpInside];
-        [result addSubview:button];
-    }
-    
-    [self.searchResultContainer addSubview:result];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"パートナー申請しますか？"
+                                                    message:_searchedUserObject[@"email"]
+                                                   delegate:self
+                                          cancelButtonTitle:@"戻る"
+                                          otherButtonTitles:@"申請", nil
+                          ];
+    [alert show];
 }
 
-// family申請を出す
-- (void)apply
-{
-    // 相手が既にfamilyになっているかを確認
-    PFQuery *query = [PFQuery queryWithClassName:@"_User"];
-    [query whereKey:@"userId" equalTo:searchedUserObject[@"userId"]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error){
-            if (objects.count < 1) {
-                NSLog(@"ユーザがいないよ");
-            } else if ([objects objectAtIndex:0][@"familyId"] == NULL) {
-                // familyになっていないので申請を送ってOK
-                [self sendApply];
-            } else {
-                NSLog(@"すでにfamilyIdをもってるので申請できない");
-                // 既にfamilyになっているので申請をおくっちゃダメ
-                [self showErrorMessage:@"このユーザに申請を送ることはできません"];
-            }
-        } else {
-            // 何らかのエラーが出たので、「エラーですぞ！」とユーザに教えてあげる
-            NSLog(@"error occured %@", error);
-            [self showErrorMessage:@"エラーが発生しました"];
+// 画像削除確認後に呼ばれる
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    switch (buttonIndex) {
+        case 0:
+        {
+            //１番目のボタンが押されたときの処理を記述する
+            // Stepリセット
+            _searchingStep = @"";
         }
-    }];
+            break;
+        case 1:
+        {
+            if ([_searchingStep isEqualToString:@""]) {
+                NSLog(@"ユーザー見つかったのでパートを決める");
+                _searchingStep = @"applying";
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"あなたのパートを決めてください"
+                                                                message:@"パートは後から変更可能です"
+                                                               delegate:self
+                                                      cancelButtonTitle:@"戻る"
+                                                      otherButtonTitles:@"こどもの写真を『アップ』する", @"ベストショットを『チョイス』する", nil
+                                      ];
+                [alert show];
+            } else if ([_searchingStep isEqualToString:@"applying"]) {
+                NSLog(@"アップで申請");
+                _searchingStep = @"";
+                [self sendApply:@"uploader"];
+            } else if ([_searchingStep isEqualToString:@"removeApply"]) {
+                NSLog(@"申請取り消し");
+                _searchingStep = @"";
+                [_applyObject delete];
+                [_applyObject save];
+                _messageButton.hidden = YES;
+            }
+        }
+            break;
+        case 2:
+        {
+            NSLog(@"チョイスで申請");
+            _searchingStep = @"";
+            [self sendApply:@"chooser"];
+        }
+    }
 }
 
 - (NSString*) createFamilyId
@@ -166,10 +281,10 @@
     return [idIssue issue:@"family"];
 }
 
-- (void)sendApply
+- (void)sendApply:(NSString *)role
 {
     NSString *familyId = [self createFamilyId];
-    searchedUserObject[@"familyId"] = familyId;
+//    _searchedUserObject[@"familyId"] = familyId;
     
     PFObject *currentUser = [PFUser currentUser];
     // userテーブルの自分のレコードを更新
@@ -179,9 +294,9 @@
     // OKだったらfamilyApplyへinesrt
     PFObject *familyApply = [PFObject objectWithClassName:@"FamilyApply"];
     familyApply[@"userId"] = currentUser[@"userId"];
-    familyApply[@"inviteeUserId"] = searchedUserObject[@"userId"];
+    familyApply[@"inviteeUserId"] = _searchedUserObject[@"userId"];
     familyApply[@"status"] = @"applying"; // 申請中
-    familyApply[@"role"] = [self getSelectedRole];
+    familyApply[@"role"] = role;
     
     [familyApply save];
     // そのうちpush通知送る
@@ -189,13 +304,9 @@
     [self closeFamilyApply];
 }
 
-- (void)showErrorMessage:(NSString*)message
-{
-    // 受け取ったmessageを表示する
-}
-
 - (void)setupSearchForm
 {
+    NSLog(@"setupSearchForm");
     UIImage *formImage = [UIImage imageNamed:@"FormRounded.png"];
     UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 10, 250, 30)];
     imageView.image = formImage;
@@ -209,38 +320,32 @@
     [self.searchContainerView addSubview:searchSubmitButton];
     
     // 透明のform
-    searchForm = [[UITextField alloc]initWithFrame:CGRectMake(12, 10, 215, 30)];
-    searchForm.clearButtonMode = UITextFieldViewModeAlways;
-    searchForm.placeholder = @"パートナーのIDを入力";
-    searchForm.keyboardType = UIKeyboardTypeASCIICapable;
-    searchForm.opaque = NO;
-    searchForm.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
-    [self.searchContainerView addSubview:searchForm];
+    _searchForm = [[UITextField alloc]initWithFrame:CGRectMake(12, 10, 215, 30)];
+    _searchForm.clearButtonMode = UITextFieldViewModeAlways;
+    _searchForm.placeholder = @"メールアドレスを入力";
+    _searchForm.keyboardType = UIKeyboardTypeASCIICapable;
+    _searchForm.opaque = NO;
+    _searchForm.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
+    [self.searchContainerView addSubview:_searchForm];
 }
 
-- (void)deleteSearchResult
+- (void) removeApply
 {
-    for (UIView *view in [self.searchResultContainer subviews]) {
-        [view removeFromSuperview];
-    }
+    NSLog(@"remove!");
+    _searchingStep = @"removeApply";
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"申請ととりけしますか？"
+                                                    message:@""
+                                                   delegate:self
+                                          cancelButtonTitle:@"戻る"
+                                          otherButtonTitles:@"取り消し", nil
+                          ];
+    [alert show];
 }
 
-- (NSString *)getSelectedRole
+- (void) checkApply
 {
-    NSString *role;
-    switch(self.roleControl.selectedSegmentIndex) {
-        case 0:
-            // uploader
-            role = @"uploader";
-            break;
-        case 1:
-            role = @"chooser";
-            break;
-        default:
-            role = @"uploader";
-            break;
-    }
-    return role;
+    FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
+    [self.navigationController pushViewController:familyApplyListViewController animated:YES];
 }
 
 @end
