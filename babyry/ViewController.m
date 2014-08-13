@@ -76,7 +76,6 @@
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
-        NSLog(@"User Not Logged In");
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
@@ -374,6 +373,7 @@
             [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
         }
         childSubDic[@"childImageShardIndex"] = c[@"childImageShardIndex"];
+        childSubDic[@"createdAt"] = c.createdAt;
         [_childProperties addObject:childSubDic];
     }
 }
