@@ -245,7 +245,7 @@
     pageViewController.childImages = [self screenSavedChildImages];
     pageViewController.currentSection = indexPath.section;
     pageViewController.currentRow = [self currentIndexRowInSavedChildImages:indexPath];
-    pageViewController.showPageNavigation = YES; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
+    pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
     pageViewController.child = _childArray[_pageIndex];

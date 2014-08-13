@@ -16,9 +16,9 @@
 
 //- (IBAction)multiUploadViewBackButton:(id)sender;
 
-@property (weak, nonatomic) IBOutlet UILabel *multiUploadLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
-@property (strong, nonatomic) IBOutlet UILabel *explainLabel;
+
+@property NSString *myRole;
 
 @property NSString *childObjectId;
 @property NSMutableDictionary *child;
@@ -32,7 +32,7 @@
 @property float cellWidth;
 @property float cellHeight;
 
-@property UIImageView *bestShotLabelView;
+@property UIImageView *selectedBestshotView;
 
 @property int bestImageIndex;
 
@@ -56,5 +56,7 @@
 
 @property AWSServiceConfiguration *configuration;
 @property NSMutableDictionary *notificationHistoryByDay;
+
+@property BOOL imageLoadComplete;
 
 @end

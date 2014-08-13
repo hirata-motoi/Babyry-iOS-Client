@@ -23,6 +23,6 @@
 @property NSString *date;
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
-@property PFObject *child;
+@property NSMutableDictionary *child;
 
 @end

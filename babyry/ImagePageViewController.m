@@ -30,6 +30,16 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.dataSource = self;
+    
+    // create bestshot index array
+    _bestImageIndexArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < [_imagesCountDic[@"imagesCountNumber"] integerValue]; i++) {
+        if ([_bestImageIndexNumber intValue] == i) {
+            [_bestImageIndexArray addObject:@"YES"];
+        } else {
+            [_bestImageIndexArray addObject:@"NO"];
+        }
+    }
   
     [self setupDataSource];
     [self showInitialImage];
@@ -61,6 +71,7 @@
     PFObject *imageInfo = [_imageList objectAtIndex:index];
     
     UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
+    uploadViewController.imageInfo = imageInfo;
     uploadViewController.childObjectId = _childObjectId;
     uploadViewController.name = _name;
    
@@ -73,6 +84,11 @@
     uploadViewController.tagAlbumPageIndex = index;
     uploadViewController.holdedBy = @"TagAlbumPageViewController";
     uploadViewController.child = _child;
+    uploadViewController.fromMultiUpload = _fromMultiUpload;
+    if (_fromMultiUpload) {
+        uploadViewController.bestImageIndexArray = _bestImageIndexArray;
+        uploadViewController.pageIndex = index;
+    }
     
     if (_notificationHistory[ymd]) {
         uploadViewController.notificationHistoryByDay = _notificationHistory[ymd];
@@ -97,10 +113,12 @@
         NSInteger imagesCount = (_imagesCountDic && _imagesCountDic[@"imagesCountNumber"])
             ? [_imagesCountDic[@"imagesCountNumber"] integerValue]
             : _imageList.count;
-        uploadViewController.promptText = [NSString stringWithFormat:@"%ld/%ld", index + 1, imagesCount];
+        uploadViewController.promptText = [NSString stringWithFormat:@"%d/%ld", index + 1, (long)imagesCount];
     }
     
-    [self laodMoreImages:index];
+    if (!_fromMultiUpload) {
+        [self laodMoreImages:index];
+    }
 
     // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す (MultiUploadの場合はひとまず除外)
     if (!_fromMultiUpload) {
@@ -217,10 +235,10 @@
     while ([date compare:birthmonth] != NSOrderedAscending) {
         NSDateComponents *c = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:date];
         
-        PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         [query whereKey:@"imageOf" equalTo:_childObjectId];
         [query whereKey:@"bestFlag" equalTo:@"choosed"];
-        [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", c.year, c.month]];
+        [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", (long)c.year, (long)c.month]];
         NSArray *objects = [query findObjects];
   
         if (objects && objects.count > 0) {
@@ -240,11 +258,10 @@
 - (void)cacheThumbnail:(PFObject *)childImage
 {
     NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-    NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
     
     // まずはS3に接続
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], childImage.objectId] configuration:configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId] configuration:configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
         if (!task.error && task.result) {                                                                                                 
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
