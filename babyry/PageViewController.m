@@ -30,12 +30,12 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.delegate = self;
+    self.dataSource = self;
   
     PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
     NSArray *startingViewControllers = @[startingViewController];
     [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-    
-    //[self setupTagAlbumOperationView];
 }
 
 - (void)didReceiveMemoryWarning

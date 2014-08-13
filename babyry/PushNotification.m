@@ -24,8 +24,7 @@
             NSString *message = eventInfo[@"message"];
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
                 message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
-            }                                                 
-            
+            }
             NSLog(@"message : %@", message);
             
             // 相方の情報を取得
@@ -35,9 +34,6 @@
             queryFamily.cachePolicy = kPFCachePolicyCacheElseNetwork;
             [queryFamily findObjectsInBackgroundWithBlock:^(NSArray *familyObjects, NSError *familyError){
                 if (!error && familyObjects.count > 0) { // familyが自分だけだったら送らない
-                    
-                    NSLog(@"push notification send start");
-                    
                     PFPush *push = [[PFPush alloc]init];
                     
                     // デフォルトのchannels(family)をセット
@@ -46,11 +42,7 @@
                         [familyUserIds addObject:[NSString stringWithFormat:@"userId_%@", user[@"userId"]]];
                     }
                     
-                    NSLog(@"familyUserIds : %@", familyUserIds);
                     [push setChannels:familyUserIds];
-                    
-                    // デフォルトのメッセージをセット
-                    [push setMessage:message];
                     
                     // オプションで指定があればchannelsを上書き
                     if ([options objectForKey:@"channels"]) {
@@ -69,7 +61,14 @@
                     
                     // オプションでdataが指定された場合はセット(eventを元にセットされたメッセージは上書きされる)
                     if ([options objectForKey:@"data"]) {
+                        NSMutableDictionary *data = [options objectForKey:@"data"];
+                        if (!data[@"alert"]) {
+                            data[@"alert"] = message;
+                        }
                         [push setData:[options objectForKey:@"data"]];
+                    } else {
+                        // デフォルトのメッセージをセット
+                        [push setMessage:message];
                     }
                     
                     // 送信

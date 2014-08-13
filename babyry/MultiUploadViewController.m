@@ -441,7 +441,10 @@
                 }
                 PFObject *partner = (PFUser *)[Partner partnerUser];
                 if (partner != nil) {
-                    [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:[[NSMutableDictionary alloc]initWithObjects:@[partner[@"nickName"]] forKeys:@[@"formatArgs"]]];
+                    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+                    options[@"formatArgs"] = partner[@"nickName"];
+                    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+                    [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:options];
                     [self createNotificationHistory:@"bestShotChanged"];
                 }
                 
@@ -527,10 +530,12 @@
 
 - (void)sendThanks
 {
-    [self createNotificationHistory:@"bestShotReply"];
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    [options setObject:[[NSArray alloc]initWithObjects:[PFUser currentUser][@"nickName"], nil] forKey:@"formatArgs"];
+    options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
     [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
+    
+    [self createNotificationHistory:@"bestShotReply"];
 }
 
 // imageUploaded, bestShotChanged, bestShotReplyはページを開いた時点で無効にする

@@ -1007,7 +1007,9 @@ for (NSMutableDictionary *section in _childImages) {
 
 - (void) giveMePhoto
 {
-    [PushNotification sendInBackground:@"requestPhoto" withOptions:nil];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+    [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
 }
 
 
