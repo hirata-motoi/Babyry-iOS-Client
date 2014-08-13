@@ -105,8 +105,12 @@
 		F2694AFC1982618C008239F6 /* Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694AFB1982618C008239F6 /* Navigation.m */; };
 		F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694AFE19827013008239F6 /* UIColor+Hex.m */; };
 		F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694B021983A232008239F6 /* ImagePageViewController.m */; };
+		F271B31B1998CC2200C9952A /* Sharding.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31A1998CC2200C9952A /* Sharding.m */; };
+		F271B31E1999E5E800C9952A /* Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31D1999E5E800C9952A /* Badge.m */; };
 		F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */; };
 		F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ABB122197D295B009E35CB /* CommentTableViewCell.m */; };
+		F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AC1A4A19937FF500DBFE91 /* NotificationHistory.m */; };
+		F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AC1A4D19947CC900DBFE91 /* Partner.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -289,9 +293,17 @@
 		F2694AFE19827013008239F6 /* UIColor+Hex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Hex.m"; sourceTree = "<group>"; };
 		F2694B011983A232008239F6 /* ImagePageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePageViewController.h; sourceTree = "<group>"; };
 		F2694B021983A232008239F6 /* ImagePageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImagePageViewController.m; sourceTree = "<group>"; };
+		F271B3191998CC2200C9952A /* Sharding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sharding.h; sourceTree = "<group>"; };
+		F271B31A1998CC2200C9952A /* Sharding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sharding.m; sourceTree = "<group>"; };
+		F271B31C1999E5E800C9952A /* Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Badge.h; sourceTree = "<group>"; };
+		F271B31D1999E5E800C9952A /* Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Badge.m; sourceTree = "<group>"; };
 		F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CommentTableViewCell.xib; path = ../CommentTableViewCell.xib; sourceTree = "<group>"; };
 		F2ABB121197D295B009E35CB /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
 		F2ABB122197D295B009E35CB /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
+		F2AC1A4919937FF500DBFE91 /* NotificationHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationHistory.h; sourceTree = "<group>"; };
+		F2AC1A4A19937FF500DBFE91 /* NotificationHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationHistory.m; sourceTree = "<group>"; };
+		F2AC1A4C19947CC900DBFE91 /* Partner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Partner.h; sourceTree = "<group>"; };
+		F2AC1A4D19947CC900DBFE91 /* Partner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Partner.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,8 +386,16 @@
 				889002F7198E6FA9005775B5 /* AWSS3Utils.m */,
 				88CFF4DA19938A0600B56481 /* CalenderLabel.h */,
 				88CFF4DB19938A0600B56481 /* CalenderLabel.m */,
+				F271B3191998CC2200C9952A /* Sharding.h */,
+				F271B31A1998CC2200C9952A /* Sharding.m */,
+				F2AC1A4919937FF500DBFE91 /* NotificationHistory.h */,
+				F2AC1A4A19937FF500DBFE91 /* NotificationHistory.m */,
+				F2AC1A4C19947CC900DBFE91 /* Partner.h */,
+				F2AC1A4D19947CC900DBFE91 /* Partner.m */,
 				88CFF50B1999FA1F00B56481 /* ColorUtils.h */,
 				88CFF50C1999FA1F00B56481 /* ColorUtils.m */,
+				F271B31C1999E5E800C9952A /* Badge.h */,
+				F271B31D1999E5E800C9952A /* Badge.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -870,12 +890,14 @@
 				885A224D197D75550039B263 /* SecretConfig.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
+				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
+				F271B31E1999E5E800C9952A /* Badge.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
@@ -889,6 +911,7 @@
 				88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */,
 				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
 				88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */,
+				F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */,
 				F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
@@ -915,6 +938,7 @@
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
 				F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
+				F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */,
 				84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */,
 				F230522C19907927000F5E32 /* PageViewController.m in Sources */,
 			);

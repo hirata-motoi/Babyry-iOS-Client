@@ -19,9 +19,9 @@
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *imageCommentView;
 
 @property UploadViewController *uploadViewController;
-
 @property UIView *commentView;
-
 @property MBProgressHUD *hud;
+@property NSMutableDictionary *notificationHistoryByDay;
+@property UIImageView *commentBadge;
 
 @end

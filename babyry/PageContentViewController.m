@@ -29,7 +29,10 @@
 #import "CalenderLabel.h"
 #import "PushNotification.h"
 #import "UploadPickerViewController.h"
+#import "AWSS3Utils.h"
+#import "NotificationHistory.h"
 #import "ColorUtils.h"
+#import "Badge.h"
 
 @interface PageContentViewController ()
 
@@ -55,9 +58,9 @@
     
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
+    _imagesCountDic = [[NSMutableDictionary alloc]init];
     
     [self initializeChildImages];
-    
     [self createCollectionView];
     [self showChildImages];
     
@@ -74,11 +77,12 @@
 {
     _selfRole = [FamilyRole selfRole];
     [_pageContentCollectionView reloadData];
+    [self setupNotificationHistory];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+    [self setupImagesCount];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -150,7 +154,9 @@
     [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
      
     cell.tag = indexPath.row + 1;
-
+    // for test
+    [self setBadgeToCell:cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd];
+    
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
     if (indexPath.section == 0 && indexPath.row == 1) {
         CGRect rect = cell.frame;
@@ -188,6 +194,7 @@
             multiUploadAlbumTableViewController.childObjectId = _childObjectId;
             multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
             multiUploadAlbumTableViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            multiUploadAlbumTableViewController.child = _childArray[_pageIndex];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -203,6 +210,8 @@
             multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
             multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
             multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            multiUploadViewController.child = _childArray[_pageIndex];
+            multiUploadViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)]];
             if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
                 [self.navigationController pushViewController:multiUploadViewController animated:YES];
             } else {
@@ -224,16 +233,21 @@
         NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
         uploadPickerViewController.totalImageNum = totalImageNum;
         uploadPickerViewController.indexPath = indexPath;
-        
+        uploadPickerViewController.section = section;
+        uploadPickerViewController.child = _childArray[_pageIndex];
         [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         return;
     }
-    
+   
     ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
-    pageViewController.childImages = _childImages;
+    pageViewController.childImages = [self screenSavedChildImages];
     pageViewController.currentSection = indexPath.section;
-    pageViewController.currentRow = indexPath.row;
+    pageViewController.currentRow = [self currentIndexRowInSavedChildImages:indexPath];
+    pageViewController.showPageNavigation = YES; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
+    pageViewController.imagesCountDic = _imagesCountDic;
+    pageViewController.child = _childArray[_pageIndex];
+    pageViewController.notificationHistory = _notificationHistory;
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
 }
@@ -364,9 +378,12 @@
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
     _isLoading = YES;
-    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
+    // TODO
+    PFObject *child = _childArray[_pageIndex];
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", (long)year, (long)month]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
@@ -388,13 +405,11 @@
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:9999]];
                     [cacheSetQueueArray addObject:childImage];
                 } else {
-                    //NSLog(@"No Choosed Image %@", ymdWithPrefix);
                     // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
-                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld", (long)year, (long)month]];
+                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_childArray[_pageIndex][@"childImageShardIndex"] integerValue]]];
                     [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
                     [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
                     [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                        //NSLog(@"There is %d unchoosed image : %@ %d %d %d", [objects count], ymdWithPrefix, index, i, [images count]);
                         if ([objects count] > 0) {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[objects count]]];
                         } else {
@@ -425,7 +440,6 @@
 - (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
 {
     if ([cacheSetQueueArray count] > 0) {
-        NSLog(@"get image cache queue remain %d", [cacheSetQueueArray count]);
         // キャッシュ取り出し
         PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
         [cacheSetQueueArray removeObjectAtIndex:0];
@@ -435,8 +449,9 @@
         
         AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
         getRequest.bucket = @"babyrydev-images";
-        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], childImage.objectId];
-        // no-cache必須
+        
+        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_childArray[_pageIndex][@"childImageShardIndex"] integerValue]], childImage.objectId];
+        // no-cache必須                                                                                     
         getRequest.responseCacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
         
@@ -650,35 +665,19 @@
 
 - (void)initializeChildImages
 {
+    NSMutableDictionary *child = _childArray[_pageIndex];
     // 現在日時と子供の誕生日の間のオブジェクトをとりあえず全部作る
     
-    // 誕生日
-    NSDate *birthday = [_childArray[_pageIndex] objectForKey:@"birthday"];
-    NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
-    if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
-        birthday = [NSDate date];
-    }
     NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *birthdayComps = [cal components:
-        NSYearCalendarUnit  |
-        NSMonthCalendarUnit |
-        NSDayCalendarUnit   |
-        NSHourCalendarUnit
-    fromDate:birthday];
-   
-    // 誕生日の1年前
-    NSDateComponents *lowerLimitDayComps = [self addDateComps:birthdayComps withUnit:@"year" withValue:-1];
+    // 誕生日
+    NSDate *birthday = [self getCompensatedBirthday];
     
-    // 現在日時
-    NSDateComponents *todayComps = [self dateComps];
     // 現在
+    NSDateComponents *todayComps = [self dateComps];
     NSDate *today = [NSDate date];
     
-    // 誕生日の1年前
-    NSDate *firstday = [cal dateFromComponents:lowerLimitDayComps];
-    
     NSMutableDictionary *childImagesDic = [[NSMutableDictionary alloc]init];
-    while ([today compare:firstday] == NSOrderedDescending) {
+    while ([today compare:birthday] == NSOrderedDescending) {
         NSDateComponents *c = [cal components:
             NSYearCalendarUnit  |
             NSMonthCalendarUnit |
@@ -702,8 +701,9 @@
             [section setObject:month forKey:@"month"];
             [childImagesDic setObject:section forKey:ym];
         }
-        
-        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day]];
+       
+        // TODO
+        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day];
         [[section objectForKey:@"images"] addObject:childImage];
         [[section objectForKey:@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
@@ -713,7 +713,6 @@
         today = [cal dateFromComponents:todayComps];
     }
     
-    // needMergeがtrueの時は、mergeConfに従ってsectionをmergeする
     [self setObjectsToChildImages:childImagesDic];
     
     // scroll位置と表示月の関係
@@ -918,25 +917,157 @@
     cell.isChoosed = YES;
 }
 
+- (NSMutableArray *)screenSavedChildImages
+{
+    NSMutableArray *savedChildImages = [[NSMutableArray alloc]init];
+    for (NSMutableDictionary *section in _childImages) {
+        NSMutableDictionary *newSection = [[NSMutableDictionary alloc]init];
+        newSection[@"year"] = section[@"year"];
+        newSection[@"month"] = section[@"month"];
+        newSection[@"images"] = [[NSMutableArray alloc]init];
+        [savedChildImages addObject:newSection];
+        
+        for (PFObject *childImage in section[@"images"]) {
+            // 実際にParse上に画像が保存されているPFObjectかどうかを
+            // objectIdがあるかで判定
+            if (childImage.objectId) {
+                [newSection[@"images"] addObject:childImage];
+            }
+        }
+    }
+    return savedChildImages;
+}
+
+- (NSInteger)currentIndexRowInSavedChildImages:(NSIndexPath *)indexPath
+{
+    NSMutableArray *targetChildImageList = _childImages[indexPath.section][@"images"];
+    
+    NSInteger indexInSavedChildImages = -1;
+    for (NSInteger i = 0; i < targetChildImageList.count; i++) {
+        PFObject *childImage = targetChildImageList[i];
+        if (childImage.objectId) {
+            indexInSavedChildImages++;
+        }
+        if (i == indexPath.row) {
+            return indexInSavedChildImages;
+        }
+    }
+    return 0;
+}
+
+// birthdayがなかった場合はcreatedAtの一週間前を誕生日とする
+- (NSDate *)getCompensatedBirthday
+{
+    NSMutableDictionary *child = _childArray[_pageIndex];
+    NSDate *birthday = child[@"birthday"];
+    NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
+    if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
+        NSDate *oneWeekBeforeBirthday = [NSDate dateWithTimeInterval:-60*60*24*7 sinceDate:child[@"createdAt"]];
+        birthday = [DateUtils setSystemTimezone:oneWeekBeforeBirthday];
+    }
+    return birthday;
+}
+
+- (void)setupImagesCount
+{
+    // TODO 誕生日以前のデータは無視する
+    // ChildImage.dateの型をNumberにしたら対応する
+    NSMutableDictionary *child = _childArray[_pageIndex];
+    NSString *className = [NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]];
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"imageOf" equalTo:_childObjectId];
+    [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    
+    [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+        if (!error) {
+            [_imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
+        }
+    }];
+}
+
 - (NSMutableDictionary *)getYearMonthMap
 {
-    NSMutableDictionary *yearMonthMap = [[NSMutableDictionary alloc]init];
-    for (NSMutableDictionary *section in _childImages) {
+NSMutableDictionary *yearMonthMap = [[NSMutableDictionary alloc]init];
+for (NSMutableDictionary *section in _childImages) {
         NSString *year = [section objectForKey:@"year"];
         NSString *month = [section objectForKey:@"month"];
-        
+
         if (![yearMonthMap objectForKey:year]) {
             [yearMonthMap setObject: [[NSMutableArray alloc]init] forKey:year];
         }
-        
         [[yearMonthMap objectForKey:year] addObject:month];
     }
     return yearMonthMap;
 }
 
+
 - (void) giveMePhoto
 {
     [PushNotification sendInBackground:@"requestPhoto" withOptions:nil];
+}
+
+
+// コメントはコメントアイコン、それ以外はいわゆるbadgeを表示する
+- (void)setBadgeToCell:(TagAlbumCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
+{
+    NSMutableDictionary *histories = _notificationHistory[ymd];
+    if (!histories) {
+        return;
+    }
+    
+    NSMutableArray *badges = [[NSMutableArray alloc]init];
+    
+    // コメント
+    NSMutableArray *commentNotifications = histories[@"commentPosted"];
+    if (commentNotifications && commentNotifications.count > 0) {
+        // コメントアイコン内に数字をいれる
+        UIImageView *commentBadge = [Badge badgeViewWithType:@"commentPosted" withCount:commentNotifications.count];
+        [badges addObject:commentBadge];
+    }
+   
+    // bestShotChanged・bestShotReply・imageUPloadedを取得
+    NSMutableArray *bestShotChangeNotifications = histories[@"bestShotChanged"];
+    if (!bestShotChangeNotifications) {
+        bestShotChangeNotifications = [[NSMutableArray alloc]init];
+    }
+    NSMutableArray *bestShotReplyNotifications = histories[@"bestShotReply"];
+    if (!bestShotReplyNotifications) {
+        bestShotReplyNotifications = [[NSMutableArray alloc]init];
+    }
+    NSMutableArray *imageUploadedNotifications = histories[@"imageUploaded"];
+    if (!imageUploadedNotifications) {
+        imageUploadedNotifications = [[NSMutableArray alloc]init];
+    }
+    if (bestShotChangeNotifications.count > 0 || bestShotReplyNotifications.count > 0 || imageUploadedNotifications.count > 0) {
+        // badgeをつける
+        NSInteger count = bestShotChangeNotifications.count + bestShotReplyNotifications.count + imageUploadedNotifications.count;
+        UIView *badge = [Badge badgeViewWithType:nil withCount:count];
+        [badges addObject:badge];
+    }
+   
+    // badgeをcell右下に配置
+    NSInteger c = 0;
+    for (UIView *badge in badges) {
+        CGRect rect = badge.frame;
+        rect.origin.y = cell.frame.size.height - rect.size.height - 5; // 5:余白
+        rect.origin.x = cell.frame.size.width - (rect.size.width + 5) * (c + 1);
+        badge.frame = rect;
+        [cell addSubview:badge];
+        c++;
+    }
+}
+
+- (void)setupNotificationHistory
+{
+    _notificationHistory = [[NSMutableDictionary alloc]init];
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withBlock:^(NSMutableDictionary *history){
+        // ポインタを渡しておいて、そこに情報をセットさせる
+        for (NSString *ymd in history) {
+            [_notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
+        }
+        [_pageContentCollectionView reloadData];
+    }];
+    
 }
 
 /*

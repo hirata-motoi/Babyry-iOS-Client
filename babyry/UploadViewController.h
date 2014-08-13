@@ -32,6 +32,7 @@
 @property PFObject *imageInfo;
 @property NSInteger tagAlbumPageIndex;
 @property NSString *holdedBy; //このインスタンスを保持しているオブジェクトのクラス名
+@property NSMutableDictionary *child;
 
 // ImageOperationView使い回すため
 @property UIView *operationView;
@@ -41,5 +42,6 @@
 
 @property NSMutableArray *totalImageNum;
 @property NSInteger currentRow;
+@property NSMutableDictionary *notificationHistoryByDay;
 
 @end

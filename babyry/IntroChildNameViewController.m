@@ -8,6 +8,7 @@
 
 #import "IntroChildNameViewController.h"
 #import "Navigation.h"
+#import "Sharding.h"
 
 @interface IntroChildNameViewController ()
 
@@ -64,6 +65,11 @@
     }
     
     [Navigation setTitle:self.navigationItem withTitle:@"こどもを追加" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    _textFieldContainerScrollView.contentSize = CGSizeMake(_textFieldContainerView.frame.size.width, _textFieldContainerView.frame.size.height);
 }
 
 - (void)didReceiveMemoryWarning
@@ -193,6 +199,7 @@
                 [child setObject:user forKey:@"createdBy"];
                 child[@"name"] = childName;
                 child[@"familyId"] = user[@"familyId"];
+                child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
                 [child save];
             }
             

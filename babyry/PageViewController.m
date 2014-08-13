@@ -30,12 +30,12 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-   
+  
     PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
     NSArray *startingViewControllers = @[startingViewController];
     [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
-    [self setupTagAlbumOperationView];
+    //[self setupTagAlbumOperationView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,7 +84,6 @@
 
     pageContentViewController.pageIndex = index;
     pageContentViewController.childArray = _childArray;
-        //pageContentViewController.childImages = [_childImages objectForKey:[[_childArray objectAtIndex:index] objectForKey:@"objectId"]];
     pageContentViewController.childObjectId = [[_childArray objectAtIndex:index] objectForKey:@"objectId"];
     
     _currentPageIndex = index;

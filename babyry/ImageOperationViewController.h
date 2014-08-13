@@ -20,6 +20,7 @@
 @property NSString *date;
 @property UIImage *uploadedImage;
 @property NSString *name;
+@property NSMutableDictionary *child;
 
 @property UploadViewController *uploadViewController;
 
@@ -40,5 +41,6 @@
 @property AWSServiceConfiguration *configuration;
 
 @property BOOL directOpenLibrary;
+@property NSMutableDictionary *notificationHistoryByDay;
 
 @end

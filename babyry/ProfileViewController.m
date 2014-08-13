@@ -31,6 +31,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@""
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil
+                                             action:nil];
     _profileTableView.delegate = self;
     _profileTableView.dataSource = self;
     [Navigation setTitle:self.navigationItem withTitle:@"プロフィール" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];

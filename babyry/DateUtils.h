@@ -14,5 +14,7 @@
 +(NSDate *) setZero:date;
 +(NSDate *) setSystemTimezoneAndZero:date;
 +(NSString *) getWeekStringFromNum:(int)weekDayNum;
++(NSDateComponents *)addDateComps:(NSDateComponents *)comps withUnit:(NSString *)unit withValue:(NSInteger)value;
++ (NSDateComponents *)dateCompsFromDate:(NSDate *)date;
 
 @end

@@ -24,7 +24,7 @@
         fontSize = 20.0; // default
     }
     if (color == nil) {
-        color = [UIColor_Hex colorWithHexString:@"ffbd22" alpha:1.0f];
+        color = [UIColor_Hex colorWithHexString:@"ffffff" alpha:1.0f];
     }
     
     label.font = [UIFont fontWithName:font size:fontSize];
@@ -103,13 +103,15 @@
 + (void)setNavbarColor: (UINavigationBar *)navigationBar withColor:(UIColor *)color withEtcElements:(NSArray *)elements
 {
     if (color == nil) {
-        color = [UIColor_Hex colorWithHexString:@"EEEEEE" alpha:0.6f];
+        color = [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0f];
     }
+    navigationBar.barTintColor = color;
     navigationBar.backgroundColor = color;
     
     for (UIView *element in elements) {
-        element.backgroundColor = color;
-    }
+        UIColor *elemColor = [UIColor colorWithCGColor:color.CGColor];
+        element.backgroundColor = [elemColor colorWithAlphaComponent:0.9];
+    }                             
 }
 
 + (CGSize)immtableLabelSize: (UILabel *)label widhBounds:(CGSize)bounds

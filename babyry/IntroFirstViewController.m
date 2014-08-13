@@ -40,7 +40,7 @@
     _pageViewController.dataSource = self;
     
     CGRect frame = _pageViewController.view.frame;
-    frame.size.height = self.view.frame.size.height - 70; // 50は magic number!
+    frame.size.height = self.view.frame.size.height - 70; // 70は magic number!
     _pageViewController.view.frame = frame;
     
     NSLog(@"0ページ目を表示");

@@ -21,6 +21,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *explainLabel;
 
 @property NSString *childObjectId;
+@property NSMutableDictionary *child;
 @property NSString *name;
 @property NSMutableArray *childImageArray;
 @property NSMutableArray *childCachedImageArray;
@@ -54,5 +55,6 @@
 @property int uploadUppeLimit;
 
 @property AWSServiceConfiguration *configuration;
+@property NSMutableDictionary *notificationHistoryByDay;
 
 @end

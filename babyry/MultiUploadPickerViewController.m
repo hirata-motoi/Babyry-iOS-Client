@@ -11,6 +11,8 @@
 #import "ImageCache.h"
 #import "ImageTrimming.h"
 #import "AWSS3Utils.h"
+#import "NotificationHistory.h"
+#import "Partner.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -245,8 +247,7 @@
         [_uploadImageDataArray addObject:imageData];
         [_uploadImageDataTypeArray addObject:imageType];
 
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
         // tmpData = @"TRUE" にセットしておく画像はあとからあげる
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
@@ -266,6 +267,10 @@
                 //アルバム表示のViewも消す
                 UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
                 [naviController popViewControllerAnimated:YES];
+                
+                // NotificationHistoryに登録
+                PFObject *partner = [Partner partnerUser];
+                [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
             }
         }];
     }
@@ -278,7 +283,7 @@
     // これが count 0になるまで再起実行
     if ([_uploadImageDataArray count] != 0){
         // isTmpDataがついているレコードを探す
-        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
@@ -286,7 +291,7 @@
             if (object) {
                 // S3に上げる
                 [[AWSS3Utils putObject:
-                 [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId]
+                 [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]
                             imageData:[_uploadImageDataArray objectAtIndex:0]
                              imageType:[_uploadImageDataTypeArray objectAtIndex:0]
                          configuration:_configuration] continueWithBlock:^id(BFTask *task) {
@@ -310,14 +315,14 @@
                 }];
             } else {
                 // objectが見つからなければ新たに作成
-                PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+                PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
                 childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
                 childImage[@"imageOf"] = _childObjectId;
                 childImage[@"bestFlag"] = @"unchoosed";
                 [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     // S3に上げる
                     [[AWSS3Utils putObject:
-                      [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], childImage.objectId]
+                      [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], childImage.objectId]
                                  imageData:[_uploadImageDataArray objectAtIndex:0]
                                  imageType:[_uploadImageDataTypeArray objectAtIndex:0]
                              configuration:_configuration] continueWithBlock:^id(BFTask *task) {
@@ -334,7 +339,7 @@
         }];
     } else {
         // もしisTmpData = TRUEが残っていればそれは消す
-        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){

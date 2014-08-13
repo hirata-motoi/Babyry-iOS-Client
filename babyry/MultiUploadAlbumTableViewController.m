@@ -123,6 +123,7 @@
     multiUploadPickerViewController.month = _month;
     multiUploadPickerViewController.childObjectId = _childObjectId;
     multiUploadPickerViewController.date = _date;
+    multiUploadPickerViewController.child = _child;
     if (_totalImageNum){
         multiUploadPickerViewController.totalImageNum = _totalImageNum;
         multiUploadPickerViewController.indexPath = _indexPath;

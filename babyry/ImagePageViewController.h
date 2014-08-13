@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ImagePageViewController : UIPageViewController<UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@interface ImagePageViewController : UIPageViewController<UIPageViewControllerDataSource>
 
 @property NSInteger currentSection;
 @property NSInteger currentRow;
@@ -17,6 +17,12 @@
 @property NSString *name;
 @property NSMutableArray *imageList;
 @property NSInteger currentIndex;
+@property BOOL showPageNavigation; // headerのsubtitleに何枚中何枚目を出すかどうか
+@property NSMutableDictionary *imagesCountDic;
+@property NSMutableDictionary *child;
+@property BOOL isLoading;
+@property id pageContentViewController;
 @property BOOL fromMultiUpload;
+@property NSMutableDictionary *notificationHistory;
 
 @end

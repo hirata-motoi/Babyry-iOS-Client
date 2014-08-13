@@ -18,6 +18,8 @@
 @property (strong, nonatomic) IBOutlet UITextField *childNameField4;
 @property (strong, nonatomic) IBOutlet UITextField *childNameField5;
 @property (strong, nonatomic) IBOutlet UILabel *childNameSendLabel;
+@property (weak, nonatomic) IBOutlet UIScrollView *textFieldContainerScrollView;
+@property (weak, nonatomic) IBOutlet UIView *textFieldContainerView;
 
 @property BOOL keyboradObserving;
 

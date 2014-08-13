@@ -15,6 +15,8 @@
 #import "PushNotification.h"
 #import "Navigation.h"
 #import "AWSS3Utils.h"
+#import "NotificationHistory.h"
+#import "Partner.h"
 #import "ImagePageViewController.h"
 
 @interface MultiUploadViewController ()
@@ -76,6 +78,11 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childCachedImageArray count]-1 inSection:0];
         [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
+    
+    [self disableNotificationHistory];
+    
+    // for test
+    [self setupThanksButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -245,7 +252,7 @@
     //NSLog(@"updateImagesFromParse");
     
     // Parseから画像をとる
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
@@ -290,7 +297,7 @@
             
             AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
             getRequest.bucket = @"babyrydev-images";
-            getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", month], object.objectId];
+            getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId];
             AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
             [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {
@@ -356,13 +363,13 @@
     multiUploadAlbumTableViewController.childObjectId = _childObjectId;
     multiUploadAlbumTableViewController.date = _date;
     multiUploadAlbumTableViewController.month = _month;
+    multiUploadAlbumTableViewController.child = _child;
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
 -(void)handleDoubleTap:(id) sender {
     NSLog(@"double tap %d", [[sender view] tag]);
     
-    // role bbbのみダブルタップ可能
     // チュートリアルStep 4でも可
     if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         
@@ -390,8 +397,9 @@
         }
         
         // update Parse
-        PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
-        childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
+        NSLog(@"multi upload view controller child:%@", _child);
+        PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
         [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
         [childImageQuery orderByAscending:@"createdAt"];
@@ -415,7 +423,12 @@
                     }
                     index++;
                 }
-                [PushNotification sendInBackground:@"bestshotChosen" withOptions:nil];
+                PFObject *partner = [Partner partnerUser];
+                if (partner != nil) {
+                    [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:[[NSMutableDictionary alloc]initWithObjects:@[partner[@"nickName"]] forKeys:@[@"formatArgs"]]];
+                    [self createNotificationHistory:@"bestShotChanged"];
+                }
+                
             } else {
                 NSLog(@"error at double tap %@", error);
             }
@@ -603,6 +616,54 @@
     _commentView.frame = defFrame;
     [self addChildViewController:_commentViewController];
     [self.view addSubview:_commentView];
+}
+
+- (void)createNotificationHistory:(NSString *)type
+{
+    [NSThread detachNewThreadSelector:@selector(executeNotificationHistory:) toTarget:self withObject:[[NSMutableDictionary alloc]initWithObjects:@[type] forKeys:@[@"type"]]];
+    
+}
+
+- (void)executeNotificationHistory:(id)param
+{
+    NSString *type = [param objectForKey:@"type"];
+    NSLog(@"executeNotificationHistory type:%@", type);
+    PFObject *partner = [Partner partnerUser];
+    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:[_date integerValue]];
+}
+
+- (void)setupThanksButton
+{
+    if (![[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        return;
+    }
+    UIButton *thanksButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [thanksButton setBackgroundImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
+    [thanksButton addTarget:self action:@selector(sendThanks) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:thanksButton];
+}
+
+- (void)sendThanks
+{
+    [self createNotificationHistory:@"bestShotReply"];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    [options setObject:[[NSArray alloc]initWithObjects:[PFUser currentUser][@"nickName"], nil] forKey:@"formatArgs"];
+    [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
+}
+
+// imageUploaded, bestShotChanged, bestShotReplyはページを開いた時点で無効にする
+- (void)disableNotificationHistory
+{
+    NSArray *targetTypes = [NSArray arrayWithObjects:@"imageUploaded", @"bestShotChanged", @"bestShotReply", nil];
+    
+    for (NSString *type in targetTypes) {
+        if (_notificationHistoryByDay && _notificationHistoryByDay[type]) {
+            for (PFObject *notificationHistory in _notificationHistoryByDay[type]) {
+                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+            }
+            [_notificationHistoryByDay[type] removeAllObjects];
+        }
+    }
 }
     
 @end
