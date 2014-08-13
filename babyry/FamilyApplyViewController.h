@@ -8,15 +8,25 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+#import "MBProgressHUD.h"
 
 @interface FamilyApplyViewController : UIViewController
-@property (weak, nonatomic) IBOutlet UISegmentedControl *roleControl;
-@property (weak, nonatomic) IBOutlet UIScrollView *searchResultContainer;
+@property (strong, nonatomic) IBOutlet UIView *searchBackContainerView;
 @property (weak, nonatomic) IBOutlet UIView *searchContainerView;
 @property (weak, nonatomic) IBOutlet UIView *selfUserIdContainer;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *closeFamilyApplyButton;
-@property (weak, nonatomic) IBOutlet UILabel *selfUserId;
+@property (strong, nonatomic) IBOutlet UILabel *selfUserEmail;
+
+@property UIButton *messageButton;
 @property (nonatomic) PFObject *searchedUserObject;
 @property (nonatomic) UITextField *searchForm;
+@property NSString *searchingStep;
+
+@property MBProgressHUD *hud;
+@property MBProgressHUD *stasusHud;
+
+@property NSTimer *tm;
+
+@property PFObject *familyObject;
+@property PFObject *applyObject;
 
 @end

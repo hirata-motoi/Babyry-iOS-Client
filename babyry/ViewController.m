@@ -80,7 +80,10 @@
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
         _pageViewController = nil;
-        [self openLoginView];
+        
+        // ログインしてない場合は、イントロ+ログインViewを出す
+        IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
+        [self presentViewController:introFirstViewController animated:YES completion:NULL];
     } else {
         // メンテナンス状態かどうか確認
         // バックグラウンドで行わないと一瞬固まる
@@ -119,22 +122,23 @@
         // falimyIdを取得
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
             NSLog(@"ログインしているけどファミリ- IDがない = 最初のログイン");
-            IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
-            //[self presentViewController:introFirstViewController animated:YES completion:NULL];
-            [self.navigationController pushViewController:introFirstViewController animated:YES];
+            // パートナー検索画面を出す
+            FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+            [self.navigationController pushViewController:familyApplyViewController animated:YES];
             return;
         }
         
-        // nickname確認 なければ入れてもらう
-        // まずはキャッシュから確認
-        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-            //キャッシュがなければフォアグランドで引いても良い。
-            [_currentUser refresh];
-            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-                [self setMyNickNamePage];
-                return;
-            }
-        }
+        // nicknameなくても動くから抜く
+//        // nickname確認 なければ入れてもらう
+//        // まずはキャッシュから確認
+//        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+//            //キャッシュがなければフォアグランドで引いても良い。
+//            [_currentUser refresh];
+//            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+//                [self setMyNickNamePage];
+//                return;
+//            }
+//        }
         
         // roleを更新
         [FamilyRole updateCache];
@@ -174,189 +178,11 @@
     }
 }
 
-///////////////////////////////////////////////////////
-// PFLogInViewControllerのmethodたち
-// Sent to the delegate to determine whether the log in request should be submitted to the server.
-// クライアントでvalidateを入れる。むだにParseと通信しない(お金発生しない)
-- (BOOL)logInViewController:(PFLogInViewController *)logInController shouldBeginLogInWithUsername:(NSString *)username password:(NSString *)password {
-    // Check if both fields are completed
-    if (username && password && username.length != 0 && password.length != 0) {
-        return YES; // Begin login process
-    }
-     
-    [[[UIAlertView alloc] initWithTitle:@"入力されていない項目があります"
-                          message:@"全ての項目を埋めてください"
-                          delegate:nil
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil] show];
-    return NO; // Interrupt login process
-}
-
-// Sent to the delegate when a PFUser is logged in.
-// ログイン後の処理
-- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
-    // facebook, twitterでの登録時にはuserIdが発行されないのでココで発行する
-    if (user[@"userId"] == nil) {
-        user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
-        [user save];
-    }
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
-
-// Sent to the delegate when the log in attempt fails.
-// ログインが失敗したら
-- (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
-    //NSLog(@"Failed to log in...");
-}
- 
-// Sent to the delegate when the log in screen is dismissed.
-// ログインviewのばつが押されたら
-- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-
-///////////////////////////////////////////////////////
-// PFSignUpViewControllerのmethodたち
-// Sent to the delegate to determine whether the sign up request should be submitted to the server.
-// 以下のメソッドはLogin系と同じ
-- (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
-    BOOL informationComplete = YES;
-    
-    // loop through all of the submitted data
-    for (id key in info) {
-        NSString *field = [info objectForKey:key];
-        if (!field || field.length == 0) { // check completion
-            informationComplete = NO;
-            break;
-        }
-    }
-     
-    // Display an alert if a field wasn't completed
-    if (!informationComplete) {
-        [[[UIAlertView alloc] initWithTitle:@"Missing Information"
-                              message:@"Make sure you fill out all of the information!"
-                              delegate:nil
-                              cancelButtonTitle:@"ok"
-                              otherButtonTitles:nil] show];
-    }
-     
-    return informationComplete;
-}
-
-// Sent to the delegate when a PFUser is signed up.
-- (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
-    
-    // user_idを発行して保存
-    user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
-    [user save];
-    
-    [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
-}
- 
-// Sent to the delegate when the sign up attempt fails.
-- (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
-    //NSLog(@"Failed to sign up...");
-}
- 
-// Sent to the delegate when the sign up screen is dismissed.
-- (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
-    //NSLog(@"User dismissed the signUpViewController");
-}
-
-// LoginViewを開く、各カスタムパラメータも設定
-- (void)openLoginView
-{
-    // Create the log in view controller
-    PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
-    [logInViewController setDelegate:self]; // Set ourselves as the delegate
-    [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"public_profile", nil]];
-    [logInViewController setFields:
-        PFLogInFieldsTwitter |
-        PFLogInFieldsFacebook |
-        PFLogInFieldsUsernameAndPassword |
-        PFLogInFieldsPasswordForgotten |
-        PFLogInFieldsLogInButton |
-        PFLogInFieldsSignUpButton
-    ];
-    
-    //UIView *fieldsBackground2 = [[logInViewController.logInView subviews] objectAtIndex:0];
-    // for example move down
-    //[fieldsBackground2 setFrame:CGRectOffset(fieldsBackground2.frame,0,80.0f)];
-
-    //[logInViewController.logInView setBackgroundColor:[UIColor whiteColor]];
-    [logInViewController.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
-    
-    // これ反映されない！困る！！！
-    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateNormal];
-    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.usernameField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
-    //[logInViewController.logInView.passwordField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
-    
-    //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_down.png"] forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateHighlighted];
- 
-    //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateNormal];
-    //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_down.png"] forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateNormal];
-    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateHighlighted];
-     
-    //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_down.png"] forState:UIControlStateHighlighted];
-    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateNormal];
-    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateHighlighted];
-    
-    [logInViewController.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"ForgetPasswordLabel"] forState:UIControlStateNormal];
-    
-    // Add login field background
-    UIImageView *fieldsBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
-    fieldsBackground.frame = self.view.frame;
-    [logInViewController.logInView insertSubview:fieldsBackground atIndex:0];
-     
-    // Remove text shadow
-    CALayer *layer = logInViewController.logInView.usernameField.layer;
-    layer.shadowOpacity = 0.0;
-    layer = logInViewController.logInView.passwordField.layer;
-    layer.shadowOpacity = 0.0;
-    layer = logInViewController.logInView.externalLogInLabel.layer;
-    layer.shadowOpacity = 0.0;
-    
-    logInViewController.logInView.usernameField.placeholder = @"ユーザー名";
-    logInViewController.logInView.passwordField.placeholder = @"パスワード";
-     
-    // Set field text color
-    //[logInViewController.logInView.usernameField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
-    //[logInViewController.logInView.passwordField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
-
-    
-    logInViewController.logInView.externalLogInLabel.text = @"ソーシャルアカウントでログイン";
-    logInViewController.logInView.signUpLabel.text = @"";
-    
-    // Create the sign up view controller
-    PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
-    [signUpViewController setDelegate:self]; // Set ourselves as the delegate
-    
-    [signUpViewController.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
-    UIImageView *fieldsBackground2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
-    fieldsBackground2.frame = self.view.frame;
-    [signUpViewController.signUpView insertSubview:fieldsBackground2 atIndex:0];
-    
-    // Assign our sign up controller to be displayed from the login controller
-    [logInViewController setSignUpController:signUpViewController];
-
-    // Present the log in view controller
-    [self presentViewController:logInViewController animated:YES completion:NULL];
-}
-
 - (void)openGlobalSettingView
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
+    
+    globalSettingViewController.viewController = self;
     [self.navigationController pushViewController:globalSettingViewController animated:YES];
 }
 

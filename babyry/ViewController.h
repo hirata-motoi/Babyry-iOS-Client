@@ -12,7 +12,7 @@
 #import "MBProgressHUD.h"
 #import "PageViewController.h"
 
-@interface ViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UIPageViewControllerDataSource>
+@interface ViewController : UIViewController <UIPageViewControllerDataSource>
 @property (weak, nonatomic) IBOutlet UIButton *openGlobalSettingViewButton;
 
 //- (IBAction)startWalkthrough:(id)sender;
@@ -21,7 +21,6 @@
 @property (strong, nonatomic) PFObject *currentUser;
 @property (strong, nonatomic) PFObject *currentInstallation;
 @property (strong, nonatomic) PageViewController *pageViewController;
-//@property (strong, nonatomic) NSMutableArray *childArray;
 @property NSMutableArray *childProperties;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;

@@ -52,6 +52,8 @@
 
 - (void)showFamilyApplyList
 {
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.labelText = @"申請データ確認";
     familyApplys = [[NSMutableDictionary alloc]init];
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
     [query whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
@@ -71,6 +73,7 @@
             
             [self setupInviterUsers:inviterUserIds];
         }
+        [_hud hide:YES];
     }];
 }
 
@@ -106,7 +109,8 @@
     
     // username
     UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(10, 10, 160, 40)];
-    label.text = self.inviterUsers[indexPath.row][@"username"];
+    label.text = self.inviterUsers[indexPath.row][@"email"];
+    label.font = [UIFont systemFontOfSize:10];
     [cell.contentView addSubview:label];
     
     // 承認ボタン
@@ -138,6 +142,10 @@
 
 - (void)admit: (UIButton *)sender event:(UIEvent *)event
 {
+    // TODO 以下の処理がforegrandなのでくるくるが出ない。。。
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.labelText = @"データ更新";
+    
     UITouch *touch = [[event allTouches] anyObject];
     CGPoint point = [touch locationInView:_familyApplyList];
     NSIndexPath *indexPath = [_familyApplyList indexPathForRowAtPoint:point];
@@ -177,6 +185,7 @@
         PFObject *row = [familyApplyRows objectAtIndex:i];
         [row delete];
     }
+    [_hud hide:YES];
     [self closeFamilyApplyList];
 }
 

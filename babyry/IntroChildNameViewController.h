@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+#import "MBProgressHUD.h"
 
 @interface IntroChildNameViewController : UIViewController
 @property (strong, nonatomic) IBOutlet UIView *editingView;
@@ -25,5 +26,7 @@
 @property BOOL isNotFirstTime;
 @property int currentChildNum;
 @property int addableChildNum;
+
+@property MBProgressHUD *hud;
 
 @end

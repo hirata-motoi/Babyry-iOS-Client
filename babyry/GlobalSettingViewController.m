@@ -100,6 +100,7 @@
     [ImageCache removeAllCache];
     [PushNotification removeSelfUserIdFromChannels:^(){
         [PFUser logOut];
+        [_viewController viewDidAppear:YES];
     }];
 }
 

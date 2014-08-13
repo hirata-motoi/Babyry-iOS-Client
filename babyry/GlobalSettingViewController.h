@@ -18,4 +18,6 @@
 @property PFObject *partnerInfo;
 @property NSArray *childList;
 
+@property UIViewController *viewController;
+
 @end
