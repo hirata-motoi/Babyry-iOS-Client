@@ -18,4 +18,6 @@
 
 +(UIColor *) getBackgroundColor;
 
++(UIColor *) getSectionHeaderColor;
+
 @end
