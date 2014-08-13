@@ -84,13 +84,29 @@
 
 - (void)openPhotoLibrary
 {
-    UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
-    uploadPickerViewController.month = _month;
-    uploadPickerViewController.childObjectId = _childObjectId;
-    uploadPickerViewController.date = _date;
-    uploadPickerViewController.uploadViewController = _uploadViewController;
-    [self.navigationController pushViewController:uploadPickerViewController animated:YES];
-    return;
+    [[[UIAlertView alloc] initWithTitle:@"写真を変更しますか？"
+                                message:@"フォトアルバムから新たに写真を選択し入れ替えることが可能です。ただし、現在保存されている画像は上書き保存されるため閲覧できなくなります。写真変更を行いますか？"
+                               delegate:self
+                      cancelButtonTitle:@"キャンセル"
+                      otherButtonTitles:@"写真変更", nil] show];
+}
+
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    switch (buttonIndex) {
+        case 0:
+            break;
+        case 1:
+        {
+            UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
+            uploadPickerViewController.month = _month;
+            uploadPickerViewController.childObjectId = _childObjectId;
+            uploadPickerViewController.date = _date;
+            uploadPickerViewController.uploadViewController = _uploadViewController;
+            [self.navigationController pushViewController:uploadPickerViewController animated:YES];
+        }
+            break;
+    }
 }
 
 - (void)hideOperationView:(id)sender

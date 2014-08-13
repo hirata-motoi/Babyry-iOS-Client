@@ -96,12 +96,29 @@
 
 - (void)logout
 {
-    [self.navigationController popViewControllerAnimated:YES];
-    [ImageCache removeAllCache];
-    [PushNotification removeSelfUserIdFromChannels:^(){
-        [PFUser logOut];
-        [_viewController viewDidAppear:YES];
-    }];
+    [[[UIAlertView alloc] initWithTitle:@""
+                                message:@"ログアウトします、よろしいですか？"
+                               delegate:self
+                      cancelButtonTitle:@"キャンセル"
+                      otherButtonTitles:@"ログアウト", nil] show];
+}
+
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    switch (buttonIndex) {
+        case 0:
+            break;
+        case 1:
+        {
+            [self.navigationController popViewControllerAnimated:YES];
+            [ImageCache removeAllCache];
+            [PushNotification removeSelfUserIdFromChannels:^(){
+                [PFUser logOut];
+                [_viewController viewDidAppear:YES];
+            }];
+        }
+            break;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -231,7 +248,6 @@
             switch (indexPath.row) {
                 case 0:
                     [self logout];
-                    [self close];
                     break;
                 default:
                     break;
