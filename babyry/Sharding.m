@@ -46,7 +46,7 @@ static NSMutableDictionary *shardConf = nil;
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             for (PFObject *object in objects) {
-                NSString *className = object[@"className"];
+                NSString *className = object[@"targetClassName"];
                 NSMutableArray *rows;
                 if (shardConf[className]) {
                     rows = shardConf[className];

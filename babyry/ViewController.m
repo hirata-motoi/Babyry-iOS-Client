@@ -25,6 +25,7 @@
 #import "ArrayUtils.h"
 #import "Navigation.h"
 #import "Partner.h"
+#import "Sharding.h"
 
 @interface ViewController ()
 
@@ -63,6 +64,9 @@
     
     // partner情報初期化
     [Partner initialize];
+    
+    // sharding conf初期化
+    [Sharding setupShardConf];
 }
 
 - (void)didReceiveMemoryWarning
