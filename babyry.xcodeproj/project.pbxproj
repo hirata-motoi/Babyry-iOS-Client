@@ -99,6 +99,8 @@
 		F230522919906D05000F5E32 /* ImageEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = F230522819906D05000F5E32 /* ImageEdit.m */; };
 		F230522C19907927000F5E32 /* PageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F230522B19907927000F5E32 /* PageViewController.m */; };
 		F2310C22198F43DF00E01DA3 /* DragView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2310C21198F43DF00E01DA3 /* DragView.m */; };
+		F25D29D2199B228D00CD50D7 /* AcceptableUsePolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */; };
+		F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */; };
 		F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A880196418990072BBD2 /* FamilyApplyListViewController.m */; };
 		F261A884196513F60072BBD2 /* IdIssue.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A883196513F60072BBD2 /* IdIssue.m */; };
 		F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */ = {isa = PBXBuildFile; fileRef = F261A887196523110072BBD2 /* NSObject+Retry.m */; };
@@ -281,6 +283,10 @@
 		F230522B19907927000F5E32 /* PageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageViewController.m; sourceTree = "<group>"; };
 		F2310C20198F43DF00E01DA3 /* DragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragView.h; sourceTree = "<group>"; };
 		F2310C21198F43DF00E01DA3 /* DragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DragView.m; sourceTree = "<group>"; };
+		F25D29D0199B228D00CD50D7 /* AcceptableUsePolicyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcceptableUsePolicyViewController.h; sourceTree = "<group>"; };
+		F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcceptableUsePolicyViewController.m; sourceTree = "<group>"; };
+		F25D29D9199B2D4200CD50D7 /* PrivacyPolicyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacyPolicyViewController.h; sourceTree = "<group>"; };
+		F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivacyPolicyViewController.m; sourceTree = "<group>"; };
 		F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyListViewController.h; sourceTree = "<group>"; };
 		F261A880196418990072BBD2 /* FamilyApplyListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyListViewController.m; sourceTree = "<group>"; };
 		F261A882196513F60072BBD2 /* IdIssue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdIssue.h; sourceTree = "<group>"; };
@@ -344,6 +350,10 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F25D29D9199B2D4200CD50D7 /* PrivacyPolicyViewController.h */,
+				F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */,
+				F25D29D0199B228D00CD50D7 /* AcceptableUsePolicyViewController.h */,
+				F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */,
 				88CFF4F61998CED800B56481 /* ToolbarItem */,
 				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
 				8814A9981945469B0010F516 /* ImageCache.h */,
@@ -905,6 +915,7 @@
 				F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
+				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
 				88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */,
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
@@ -914,6 +925,7 @@
 				F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */,
 				F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
+				F25D29D2199B228D00CD50D7 /* AcceptableUsePolicyViewController.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
