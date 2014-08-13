@@ -8,6 +8,7 @@
 
 #import "AcceptableUsePolicyViewController.h"
 #import "Navigation.h"
+#import "UIColor+Hex.h"
 
 @interface AcceptableUsePolicyViewController ()
 
@@ -31,6 +32,17 @@
     [Navigation setTitle:self.navigationItem withTitle:@"利用規約" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     _webView.delegate = self;
     _webView.scalesPageToFit = YES;
+    _webView.backgroundColor = [UIColor_Hex colorWithHexString:@"CCCCCC" alpha:0];
+    self.view.backgroundColor = [UIColor_Hex colorWithHexString:@"CCCCCC" alpha:1];
+    
+    // navigation controller
+    CGRect rect = CGRectMake(0, 0, 130, 38);
+    UIImageView *titleview = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"babyryTitleReverse"]];
+    titleview.frame = rect;
+    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
+    [view addSubview:titleview];
+    self.navigationItem.titleView = view;
+    self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0f];
 
     // loading image
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];

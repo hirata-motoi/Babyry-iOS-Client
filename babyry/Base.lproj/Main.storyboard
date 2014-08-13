@@ -846,56 +846,6 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
             </objects>
             <point key="canvasLocation" x="1314" y="-1938"/>
         </scene>
-        <!--Acceptable Use Policy View Controller-->
-        <scene sceneID="0Ut-Oy-TZY">
-            <objects>
-                <viewController storyboardIdentifier="AcceptableUsePolicyViewController" id="wf7-CO-OD7" customClass="AcceptableUsePolicyViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="gVK-mn-eGn">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <webView contentMode="scaleToFill" id="eQ2-nL-My3">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            </webView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <connections>
-                        <outlet property="webView" destination="eQ2-nL-My3" id="a5d-Y3-RNR"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="g8F-wY-wzu" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="961" y="-1280"/>
-        </scene>
-        <!--Privacy Policy View Controller-->
-        <scene sceneID="8Pl-W7-J82">
-            <objects>
-                <viewController storyboardIdentifier="PrivacyPolicyViewController" id="ooQ-vi-f74" customClass="PrivacyPolicyViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="RaB-eJ-VGJ">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <webView contentMode="scaleToFill" id="zeO-vA-9Ko">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            </webView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <connections>
-                        <outlet property="webView" destination="zeO-vA-9Ko" id="NCG-XB-1BP"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5xN-95-UYE" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1314" y="-1280"/>
-        </scene>
         <!--Intro First View Controller-->
         <scene sceneID="FDt-NI-94Y">
             <objects>
@@ -1362,6 +1312,56 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ojH-j0-ZqQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="414" y="-3272"/>
+        </scene>
+        <!--Acceptable Use Policy View Controller-->
+        <scene sceneID="uNt-lD-FQR">
+            <objects>
+                <viewController storyboardIdentifier="AcceptableUsePolicyViewController" id="OaO-7i-qVI" customClass="AcceptableUsePolicyViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BcP-Gc-8yf">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="V7s-Il-3rY">
+                                <rect key="frame" x="5" y="10" width="310" height="558"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.81525985050000005" green="0.81525985050000005" blue="0.81525985050000005" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <connections>
+                        <outlet property="webView" destination="V7s-Il-3rY" id="2Xu-7e-aZM"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iwb-YO-eGq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="961" y="-1358"/>
+        </scene>
+        <!--Privacy Policy View Controller-->
+        <scene sceneID="c6Q-dr-4jv">
+            <objects>
+                <viewController storyboardIdentifier="PrivacyPolicyViewController" id="z62-WS-juT" customClass="PrivacyPolicyViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="hkA-Q7-Tec">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="tAK-xZ-Uw8">
+                                <rect key="frame" x="5" y="10" width="310" height="558"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.81525985050000005" green="0.81525985050000005" blue="0.81525985050000005" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <connections>
+                        <outlet property="webView" destination="tAK-xZ-Uw8" id="iGM-0G-bdo"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hv1-ro-uCE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1314" y="-1358"/>
         </scene>
     </scenes>
     <resources>

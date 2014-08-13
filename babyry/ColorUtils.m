@@ -7,6 +7,7 @@
 //
 
 #import "ColorUtils.h"
+#import "UIColor+Hex.h"
 
 @implementation ColorUtils
 
@@ -28,6 +29,11 @@
 +(UIColor *) getBackgroundColor
 {
     return [UIColor colorWithRed:0.902 green:0.891 blue:0.836 alpha:1.0];
+}
+
++(UIColor *) getSectionHeaderColor
+{
+    return [UIColor_Hex colorWithHexString:@"8feed0" alpha:1.0];
 }
 
 @end
