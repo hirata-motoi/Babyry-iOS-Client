@@ -166,7 +166,9 @@
     UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
     [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
     
-    [PushNotification sendInBackground:@"imageUpload" withOptions:nil];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+    [PushNotification sendInBackground:@"imageUpload" withOptions:options];
     PFObject *partner = [Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
     NSLog(@"saved");
