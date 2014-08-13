@@ -27,21 +27,19 @@
     
     // table cell上に透明のformを出す
     if ([_editTarget isEqualToString:@"name"]) {
-        NSLog(@"edit name");
         _childNicknameEditTextField.frame = _childNicknameCellRect;
         [_childNicknameEditTextField becomeFirstResponder]; // focusをあてる
         _childNicknameEditTextField.hidden = NO;
         _childBirthdayDatePicker.hidden = YES;
     } else if ([_editTarget isEqualToString:@"birthday"]) {
-        NSLog(@"edit birthday");
         CGRect frame = _childBirthdayDatePickerContainer.frame;
         frame.origin = _childBirthdayCellPoint;
         _childBirthdayDatePickerContainer.frame = frame;
         [_childBirthdayDatePicker becomeFirstResponder];
         _childNicknameEditTextField.hidden = YES;
         _childBirthdayDatePicker.hidden = NO;
-        _childBirthdayDatePicker.date = _childBirthday;
-    }
+        _childBirthdayDatePicker.date = _child[@"birthday"] ? _child[@"birthday"] : [DateUtils setSystemTimezone:_child.createdAt];
+    }                                                         
     
     UIBarButtonItem *saveNameButton = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonItemStylePlain target:self action:@selector(saveChildName)];
     self.parentViewController.navigationItem.rightBarButtonItem = saveNameButton;

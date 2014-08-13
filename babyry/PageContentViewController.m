@@ -665,14 +665,16 @@
     
     NSCalendar *cal = [NSCalendar currentCalendar];
     // 誕生日
-    NSDate *birthday = [self getCompensatedBirthday];
+    //NSDate *birthday = [self getCompensatedBirthday];
+    
+    NSDate *firstDate = [self getCollectionViewFirstDay];
     
     // 現在
     NSDateComponents *todayComps = [self dateComps];
     NSDate *today = [NSDate date];
     
     NSMutableDictionary *childImagesDic = [[NSMutableDictionary alloc]init];
-    while ([today compare:birthday] == NSOrderedDescending) {
+    while ([today compare:firstDate] == NSOrderedDescending) {
         NSDateComponents *c = [cal components:
             NSYearCalendarUnit  |
             NSMonthCalendarUnit |
@@ -950,17 +952,24 @@
     return 0;
 }
 
-// birthdayがなかった場合はcreatedAtの一週間前を誕生日とする
-- (NSDate *)getCompensatedBirthday
+// 誕生日の2ヶ月前からcellを表示する
+// birthdayがなかった場合はcreatedAtを誕生日とする
+- (NSDate *)getCollectionViewFirstDay
 {
     NSMutableDictionary *child = _childArray[_pageIndex];
     NSDate *birthday = child[@"birthday"];
     NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
     if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
-        NSDate *oneWeekBeforeBirthday = [NSDate dateWithTimeInterval:-60*60*24*7 sinceDate:child[@"createdAt"]];
-        birthday = [DateUtils setSystemTimezone:oneWeekBeforeBirthday];
+        birthday = child[@"createdAt"];
     }
-    return birthday;
+    
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *birthdayComps = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:birthday];
+    NSDateComponents *firstDayComps = [DateUtils addDateComps:birthdayComps withUnit:@"month" withValue:-2];
+    
+    NSDate *firstDay = [cal dateFromComponents:firstDayComps];
+    
+    return firstDay;
 }
 
 - (void)setupImagesCount

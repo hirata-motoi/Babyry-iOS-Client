@@ -198,6 +198,7 @@
     ChildProfileViewController *childProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileViewController"];
     PFObject *child = [_childList objectAtIndex:index];
     childProfileViewController.childObjectId = child.objectId;
+    childProfileViewController.child = child;
     
     childProfileViewController.childName = child[@"name"];
     childProfileViewController.childBirthday = child[@"birthday"];

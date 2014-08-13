@@ -161,6 +161,7 @@
     ChildProfileEditViewController *childProfileEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileEditViewController"];
     childProfileEditViewController.delegate = self;
     childProfileEditViewController.childObjectId = _childObjectId;
+    childProfileEditViewController.child = _child;
     CGRect tableViewRect;
     if ([editName isEqualToString:@"name"]) {
         tableViewRect = _childNicknameCell.superview.superview.frame;
