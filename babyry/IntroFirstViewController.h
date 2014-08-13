@@ -13,6 +13,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *inviteLabel;
 @property (strong, nonatomic) IBOutlet UILabel *invitedLabel;
 @property (strong, nonatomic) IBOutlet UILabel *logout;
+@property (weak, nonatomic) IBOutlet UIView *pageViewHeightBaseView;
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 //@property (strong, nonatomic) UIViewController *introViewController;

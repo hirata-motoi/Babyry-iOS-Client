@@ -40,7 +40,9 @@
     
     _defaultImageViewFrame = _uploadedImageView.frame;
     
-    _uploadedImageView.frame = [self getUploadedImageFrame:_uploadedImage];
+    _scrollView.frame = [self getUploadedImageFrame:_uploadedImage];
+    _uploadedImageView.frame = CGRectMake(0, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
+                       
     _uploadedImageView.image = _uploadedImage;
     
     BOOL __block isPreload = YES;
@@ -193,7 +195,7 @@
 
     frame.origin.x = (self.view.frame.size.width - frame.size.width)/2;
     frame.origin.y = (self.view.frame.size.height - frame.size.height)/2;
-
+    
     return frame;
 }
 

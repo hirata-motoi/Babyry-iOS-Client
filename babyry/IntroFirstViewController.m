@@ -39,7 +39,7 @@
     _pageViewController.dataSource = self;
     
     CGRect frame = _pageViewController.view.frame;
-    frame.size.height = self.view.frame.size.height*2/3;
+    frame.size.height = _pageViewHeightBaseView.frame.size.height;
     _pageViewController.view.frame = frame;
     
     NSLog(@"0ページ目を表示");
