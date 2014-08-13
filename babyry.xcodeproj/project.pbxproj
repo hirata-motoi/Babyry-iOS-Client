@@ -350,6 +350,10 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F25D29D9199B2D4200CD50D7 /* PrivacyPolicyViewController.h */,
+				F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */,
+				F25D29D0199B228D00CD50D7 /* AcceptableUsePolicyViewController.h */,
+				F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */,
 				88CFF4F61998CED800B56481 /* ToolbarItem */,
 				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
 				8814A9981945469B0010F516 /* ImageCache.h */,
@@ -500,13 +504,9 @@
 				88B18C85193814CE00ED630C /* AppDelegate.h */,
 				88B18C86193814CE00ED630C /* AppDelegate.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
-				F25D29D0199B228D00CD50D7 /* AcceptableUsePolicyViewController.h */,
-				F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */,
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
 				88B18C8E193814CF00ED630C /* Images.xcassets */,
 				88B18C7D193814CE00ED630C /* Supporting Files */,
-				F25D29D9199B2D4200CD50D7 /* PrivacyPolicyViewController.h */,
-				F25D29DA199B2D4200CD50D7 /* PrivacyPolicyViewController.m */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
