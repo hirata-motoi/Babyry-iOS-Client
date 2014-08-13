@@ -67,6 +67,11 @@
     [Navigation setTitle:self.navigationItem withTitle:@"こどもを追加" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
+- (void)viewDidLayoutSubviews
+{
+    _textFieldContainerScrollView.contentSize = CGSizeMake(_textFieldContainerView.frame.size.width, _textFieldContainerView.frame.size.height);
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
