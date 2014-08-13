@@ -16,6 +16,8 @@
 #import "IntroChildNameViewController.h"
 #import "PushNotification.h"
 #import "Navigation.h"
+#import "AcceptableUsePolicyViewController.h"
+#import "PrivacyPolicyViewController.h"
 
 @interface GlobalSettingViewController ()
 
@@ -128,7 +130,8 @@
         case 1:
             switch (indexPath.row) {
                 case 0:
-                    cell.textLabel.text = @"ログアウト";
+                    cell.textLabel.text = @"こどもを追加";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
                     break;
@@ -137,11 +140,11 @@
         case 2:
             switch (indexPath.row) {
                 case 0:
-                    cell.textLabel.text = @"パートナー検索";
+                    cell.textLabel.text = @"利用規約";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 case 1:
-                    cell.textLabel.text = @"パートナーからの申請";
+                    cell.textLabel.text = @"プライバシーポリシー";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
@@ -151,7 +154,7 @@
         case 3:
             switch (indexPath.row) {
                 case 0:
-                    cell.textLabel.text = @"こどもを追加";
+                    cell.textLabel.text = @"ログアウト";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
@@ -205,8 +208,7 @@
         case 1:
             switch (indexPath.row) {
                 case 0:
-                    [self logout];
-                    [self close];
+                    [self openAddChildAddView];
                     break;
                 default:
                     break;
@@ -215,10 +217,10 @@
         case 2:
             switch (indexPath.row) {
                 case 0:
-                    [self openFamilyApply];
+                    [self openAcceptableUsePolicy];
                     break;
                 case 1:
-                    [self openFamilyApplyList];
+                    [self openPrivacyPolicy];
                     break;
                 default:
                     break;
@@ -227,7 +229,8 @@
         case 3:
             switch (indexPath.row) {
                 case 0:
-                    [self openAddChildAddView];
+                    [self logout];
+                    [self close];
                     break;
                 default:
                     break;
@@ -242,6 +245,35 @@
 {
     return 4;
 }
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    NSString *title;
+    switch (section) {
+        case 0:
+            title = @"アカウント情報";
+            break;
+        case 1:
+            title = @"こども設定";
+            break;
+        case 2:
+            title = @"Babyryについて";
+            break;
+        default:
+            title = @"";
+            break;
+    }
+    return title;
+}
+
+// titleForHeaderInSectionでアルファベットをsection headerに設定すると大文字になってしまう
+// そこでheaderの表示直前に書き換える
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section{
+    if (section == 2) {
+        UITableViewHeaderFooterView *tableViewHeaderFooterView = (UITableViewHeaderFooterView *) view;
+        tableViewHeaderFooterView.textLabel.text = @"Babyryについて";
+    }
+}
+
 
 - (void)openFamilyApply
 {
@@ -378,6 +410,18 @@
             }
         }
     }];
+}
+
+- (void)openAcceptableUsePolicy
+{
+    AcceptableUsePolicyViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"AcceptableUsePolicyViewController"];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)openPrivacyPolicy
+{
+    PrivacyPolicyViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"PrivacyPolicyViewController"];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 /*
