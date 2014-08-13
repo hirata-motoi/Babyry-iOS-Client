@@ -68,6 +68,7 @@
 		88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF5061999361D00B56481 /* ImageToolbarCommentIcon.xib */; };
 		88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */; };
 		88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF50C1999FA1F00B56481 /* ColorUtils.m */; };
+		88CFF52D199B68E400B56481 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF52F199B68E400B56481 /* Localizable.strings */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		D79AFBEA8B9F4207B47E8CAD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB30DD347E5C4D729656DE8C /* libPods.a */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
@@ -229,6 +230,8 @@
 		88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarCommentIcon.m; sourceTree = "<group>"; };
 		88CFF50B1999FA1F00B56481 /* ColorUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorUtils.h; sourceTree = "<group>"; };
 		88CFF50C1999FA1F00B56481 /* ColorUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtils.m; sourceTree = "<group>"; };
+		88CFF52E199B68E400B56481 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		88CFF530199B68F100B56481 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB30DD347E5C4D729656DE8C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
@@ -507,6 +510,7 @@
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
 				88B18C8E193814CF00ED630C /* Images.xcassets */,
 				88B18C7D193814CE00ED630C /* Supporting Files */,
+				88CFF52F199B68E400B56481 /* Localizable.strings */,
 			);
 			path = babyry;
 			sourceTree = "<group>";
@@ -798,6 +802,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 88B18C6A193814CE00ED630C;
 			productRefGroup = 88B18C74193814CE00ED630C /* Products */;
@@ -815,6 +820,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88CFF52D199B68E400B56481 /* Localizable.strings in Resources */,
 				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
 				F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */,
 				F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */,
@@ -997,6 +1003,15 @@
 				88B18C9F193814CF00ED630C /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		88CFF52F199B68E400B56481 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				88CFF52E199B68E400B56481 /* en */,
+				88CFF530199B68F100B56481 /* ja */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
