@@ -40,7 +40,7 @@
     UIImageView *titleview = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"babyryTitleReverse"]];
     titleview.frame = rect;
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
-    PageContentViewController.m[view addSubview:titleview];
+    [view addSubview:titleview];
     self.navigationItem.titleView = view;
     self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0f];
 
