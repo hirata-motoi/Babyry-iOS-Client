@@ -260,7 +260,7 @@
     //[logInViewController.logInView.passwordField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     
     
-    logInViewController.logInView.externalLogInLabel.text = @"ソーシャルアカウントでログイン";
+    logInViewController.logInView.externalLogInLabel.text = @"facebookアカウントでログイン";
     logInViewController.logInView.signUpLabel.text = @"";
     
     // Create the sign up view controller
@@ -456,7 +456,7 @@
 
 // Sent to the delegate when the sign up attempt fails.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
-    //NSLog(@"Failed to sign up...");
+    //NSLog(@"Failed to sign up... %@", error);
 }
 
 // Sent to the delegate when the sign up screen is dismissed.

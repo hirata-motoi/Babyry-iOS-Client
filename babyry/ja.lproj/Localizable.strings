@@ -1,0 +1,146 @@
+/* Account error title in PFLogInViewController */
+"Account Error" = "アカウントエラー";
+
+/* Additional */
+"Additional" = "Additional";
+
+/* No comment provided by engineer. */
+"AFNetworking" = "AFNetworking";
+
+/* Password reset message in PFLogInViewController */
+"An email with reset instructions has been sent to %@." = "パスワードリセット用のメールを %@ に送信しました。";
+
+/* Cancel */
+"Cancel" = "Cancel";
+
+/* Sign up text in PFLogInView */
+"Don't have an account yet?" = "アカウントをお持ちでない場合";
+
+/* Download Error */
+"Download Error" = "ダウンロードエラー";
+
+/* DOWNLOADING */
+"DOWNLOADING" = "ダウンロード中";
+
+/* Email */
+"Email" = "Email";
+
+/* Email request title in PFLogInViewController */
+"Enter Email" = "Enter Email";
+
+/* Error */
+"Error" = "エラー";
+
+/* No comment provided by engineer. */
+"Expected content type %@, got %@" = "Expected content type %1$@, got %2$@";
+
+/* No comment provided by engineer. */
+"Expected status code in (%@), got %d" = "Expected status code in (%1$@), got %2$d";
+
+/* No comment provided by engineer. */
+"Expected URL to be a file URL" = "Expected URL to be a file URL";
+
+/* Facebook */
+"Facebook" = "Facebook";
+
+/* INSTALLED */
+"INSTALLED" = "INSTALLED";
+
+/* Load more... */
+"Load more..." = "Load more...";
+
+/* Loading message in pull to refresh
+ Loading message in the HUD of PFLogInViewController
+ Loading message in the HUD of PFSignUpViewController
+ Loading message of PFQueryTableViewController */
+"Loading..." = "Loading...";
+
+/* Log in */
+"Log in" = "ログイン";
+
+/* Login error title in PFLogInViewController */
+"Login Error" = "ログインエラー";
+
+/* Master */
+"Master" = "Master";
+
+/* Offline Error */
+"Offline Error" = "ネットワークエラー";
+
+/* OK */
+"OK" = "OK";
+
+/* Password */
+"Password" = "Password";
+
+/* Password reset title in PFLogInViewController */
+"Password Reset" = "パスワードリセット";
+
+/* Unregistered email title in PFLogInViewController */
+"Password Reset Failed" = "パスワードのリセットに失敗しました";
+
+/* Accound error message in PFLogInViewController */
+"Please double-check your information and try again." = "アカウント情報をもう一度ご確認ください";
+
+/* Password missing error message in PFSignUpViewController */
+"Please enter a password." = "パスワードを入力してください";
+
+/* Username missing error message in PFSignUpViewController */
+"Please enter a username." = "メールアドレスを入力してください";
+
+/* Email missing error message in PFSignUpViewController */
+"Please enter an email." = "メールアドレスを入力してください";
+
+/* Email request message in PFLogInViewController */
+"Please enter the email address for your account." = "メールアドレスを入力してください";
+
+/* Pull down to refresh status */
+"Pull down to refresh..." = "Pull down to refresh...";
+
+/* Purchase Error */
+"Purchase Error" = "Purchase Error";
+
+/* Release to refresh status */
+"Release to refresh..." = "Release to refresh...";
+
+/* Rock w/Friends */
+"Rock w/Friends" = "Rock w/Friends";
+
+/* Settings */
+"Settings" = "Settings";
+
+/* Sign up */
+"Sign up" = "新規アカウント作成";
+
+/* Sign Up Error */
+"Sign Up Error" = "アカウント作成エラー";
+
+/* Generic error message
+ Login error message in PFLogInViewController
+ Offline message
+ Sign up error message in PFSignUpViewController */
+"Something went wrong. Please try again." = "エラーが発生しました。もう一度試してください。";
+
+/* Unregistered email message in PFLogInViewController */
+"The email address %@ is not registered." = "メールアドレスの登録に失敗しました";
+
+/* Invalid email address error message in PFSignUpViewController */
+"The email address \"%@\" is invalid. Please enter a valid email." = "無効なメールアドレスです。正しいアドレスを確認してください。";
+
+/* Username taken error message in PFSignUpViewController */
+"The username \"%@\" is taken. Please try choosing another username." = "\"%@\" は既に登録されているメールアドレスです。正しいアドレスを確認後、再登録をお願いします。";
+
+/* Twitter */
+"Twitter" = "Twitter";
+
+/* Username */
+"Username" = "Username";
+
+/* Using */
+"Using" = "Using";
+
+/* External login text in PFLogInView */
+"You can also log in with:" = "You can also log in with:";
+
+/* You Rock! */
+"You Rock!" = "You Rock!";
