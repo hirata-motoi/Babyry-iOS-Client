@@ -955,14 +955,15 @@
     return 0;
 }
 
-// birthdayがなかった場合はcreatedAtを誕生日とする
+// birthdayがなかった場合はcreatedAtの一週間前を誕生日とする
 - (NSDate *)getCompensatedBirthday
 {
-    PFObject *child = _childArray[_pageIndex];
+    NSMutableDictionary *child = _childArray[_pageIndex];
     NSDate *birthday = child[@"birthday"];
     NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
     if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
-        birthday = [DateUtils setSystemTimezone:child.createdAt];
+        NSDate *oneWeekBeforeBirthday = [NSDate dateWithTimeInterval:-60*60*24*7 sinceDate:child[@"createdAt"]];
+        birthday = [DateUtils setSystemTimezone:oneWeekBeforeBirthday];
     }
     return birthday;
 }
