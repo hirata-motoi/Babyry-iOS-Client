@@ -26,7 +26,7 @@ static bool isLoading = NO;
 - (id)init
 {
     PFUser *user = [PFUser currentUser];
-    if (!user) {
+    if (!user || !user[@"familyId"]) {
         return nil;
     }
     
