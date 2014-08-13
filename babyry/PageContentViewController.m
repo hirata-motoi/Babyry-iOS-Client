@@ -33,6 +33,8 @@
 #import "NotificationHistory.h"
 #import "ColorUtils.h"
 #import "Badge.h"
+#import "UIColor+Hex.h"
+#import "CollectionViewSectionHeader.h"
 
 @interface PageContentViewController ()
 
@@ -258,24 +260,17 @@
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    
-    CGRect rect = CGRectMake(0, 0, self.view.frame.size.width, 30);
-    
     UICollectionReusableView *headerView = [_pageContentCollectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader" forIndexPath:indexPath];
     
-    UIImageView *headerImageView = [[UIImageView alloc]initWithFrame:rect];
-    UIImage *headerImage = [UIImage imageNamed:@"SectionHeader"];
-    headerImageView.image = headerImage;
-
-    CGRect labelRect = rect;
-    labelRect.origin.x = 20;
-    UILabel *headerLabel = [[UILabel alloc]initWithFrame:labelRect];
+    
+    NSMutableDictionary *child = _childArray[_pageIndex];
     NSString *year = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"year"];
     NSString *month = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"month"];
-    headerLabel.text = [NSString stringWithFormat:@"%@/%@", year, month];
-    [headerImageView addSubview:headerLabel];
     
-    [headerView addSubview:headerImageView];
+    CollectionViewSectionHeader *header = [CollectionViewSectionHeader view];
+    [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue] withName:child[@"name"]];
+   
+    [headerView addSubview:header];
     
     return headerView;
 }
