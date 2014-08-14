@@ -428,52 +428,60 @@
 
 - (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
 {
+    // 並列実行数
+    int concurrency = 3;
+    
     if ([cacheSetQueueArray count] > 0) {
-        // キャッシュ取り出し
-        PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
-        [cacheSetQueueArray removeObjectAtIndex:0];
-        
-        NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-        NSString *month = [ymd substringWithRange:NSMakeRange(0, 6)];
-        
-        AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-        getRequest.bucket = @"babyrydev-images";
-        
-        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childArray[_pageIndex][@"childImageShardIndex"] integerValue]], childImage.objectId];
-        // no-cache必須                                                                                     
-        getRequest.responseCacheControl = @"no-cache";
-        AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
-        
-        [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-            if (!task.error && task.result) {
-                AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
-                if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                    
-                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
-                }
-            } else {
-                [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                    NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                    // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
-                    if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                        
-                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+        for (int i = 0; i < concurrency; i++) {
+            // キャッシュ取り出し
+            if ([cacheSetQueueArray count] > 0) {
+                PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
+                [cacheSetQueueArray removeObjectAtIndex:0];
+                
+                NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+                
+                AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+                getRequest.bucket = @"babyrydev-images";
+                
+                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childArray[_pageIndex][@"childImageShardIndex"] integerValue]], childImage.objectId];
+                // no-cache必須
+                getRequest.responseCacheControl = @"no-cache";
+                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+                
+                [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                    if (!task.error && task.result) {
+                        AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
+                        NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                        // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
+                        if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                            
+                            NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                        }
+                    } else {
+                        [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+                            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                            // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
+                            if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
+                                
+                                NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                            }
+                        }];
                     }
+                    if (reload) {
+                        [_pageContentCollectionView reloadData];
+                        [NSThread sleepForTimeInterval:0.1];
+                    }
+                    if (i == concurrency - 1) {
+                        [self setImageCache:cacheSetQueueArray withReload:reload];
+                    }
+                    return nil;
                 }];
             }
-            if (reload) {
-                [_pageContentCollectionView reloadData];
-                [NSThread sleepForTimeInterval:0.1];
-            }
-            [self setImageCache:cacheSetQueueArray withReload:reload];
-            return nil;
-        }];
+        }
     } else {
         NSLog(@"get image cache queue end!");
     }
