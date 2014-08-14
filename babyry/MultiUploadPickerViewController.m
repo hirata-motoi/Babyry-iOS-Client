@@ -13,6 +13,7 @@
 #import "AWSS3Utils.h"
 #import "NotificationHistory.h"
 #import "Partner.h"
+#import "PushNotification.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -224,6 +225,7 @@
     // backgroundでセットしようとするとセット前の画像が解放されてしまうので
     _uploadImageDataArray = [[NSMutableArray alloc] init];
     _uploadImageDataTypeArray = [[NSMutableArray alloc] init];
+    NSIndexPath *lastIndexPath = _checkedImageArray[_checkedImageArray.count - 1];
     for (NSIndexPath *indexPath in _checkedImageArray) {
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
         ALAssetRepresentation *representation = [asset defaultRepresentation];
@@ -267,10 +269,17 @@
                 //アルバム表示のViewも消す
                 UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
                 [naviController popViewControllerAnimated:YES];
-                
-                // NotificationHistoryに登録
-                PFObject *partner = [Partner partnerUser];
-                [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
+               
+                if (indexPath == lastIndexPath) {
+                    // NotificationHistoryに登録
+                    PFObject *partner = [Partner partnerUser];
+                    [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
+                    
+                    // push通知
+                    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+                    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+                    [PushNotification sendInBackground:@"imageUpload" withOptions:options];
+                }
             }
         }];
     }

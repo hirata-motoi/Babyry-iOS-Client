@@ -47,7 +47,6 @@
     
     // Draw collectionView
     [self createCollectionView];
-    
     [self showCacheImages];
     
     
@@ -78,11 +77,9 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childCachedImageArray count]-1 inSection:0];
         [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
-    
+   
     [self disableNotificationHistory];
-    
-    // for test
-    [self setupThanksButton];
+    [self setupBestShotReply];
 }
 
 - (void)didReceiveMemoryWarning
@@ -368,7 +365,6 @@
 }
 
 -(void)handleDoubleTap:(id) sender {
-    NSLog(@"double tap %d", [[sender view] tag]);
     
     // チュートリアルStep 4でも可
     if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
@@ -451,7 +447,6 @@
 
 - (void) openImagePageView:(int)detailImageIndex
 {
-    NSLog(@"tapped image %d", [_childImageArray count]);
     if ([_childImageArray count] > 0) {
         NSLog(@"childImagesを組み立てる");
         NSMutableArray *childImages = [[NSMutableArray alloc] init];
@@ -630,30 +625,80 @@
 - (void)executeNotificationHistory:(id)param
 {
     NSString *type = [param objectForKey:@"type"];
-    NSLog(@"executeNotificationHistory type:%@", type);
     PFObject *partner = [Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:[_date integerValue]];
 }
 
-- (void)setupThanksButton
+- (void)setupBestShotReply
 {
     if (![[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+        PFQuery *query = [PFQuery queryWithClassName:@"BestShotReply"];
+        [query whereKey:@"toUserId" equalTo:[PFUser currentUser][@"userId"]];
+        [query whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if (!error && objects.count > 0) {
+                // bestShotもらい済
+                [self showReceivedBestShotReply];
+            }
+        }];
+        
         return;
     }
-    UIButton *thanksButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [thanksButton setBackgroundImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
-    [thanksButton addTarget:self action:@selector(sendThanks) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:thanksButton];
+    
+    UIButton *replyButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [replyButton setBackgroundImage:[UIImage imageNamed:@"GoodGray"] forState:UIControlStateNormal];
+    [replyButton addTarget:self action:@selector(sendBestShotReply) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:replyButton];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"BestShotReply"];
+    [query whereKey:@"fromUserId" equalTo:[PFUser currentUser][@"userId"]];
+    [query whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error && objects.count > 0) {
+            // 既にbestShotReply済
+            [self showalreadyReplyedButton];
+        }
+    }];
 }
 
-- (void)sendThanks
+- (void)showalreadyReplyedButton
 {
-    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
-    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
-    [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
+    UIButton *alreadyReplyedIcon = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [alreadyReplyedIcon setBackgroundImage:[UIImage imageNamed:@"GoodBlue"] forState:UIControlStateNormal];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:alreadyReplyedIcon];
+}
+
+- (void)sendBestShotReply
+{
+    // ボタンを押下済のものに変更
+    [self showalreadyReplyedButton];
+   
+    PFObject *partner = [Partner partnerUser];
+    PFObject *obj = [PFObject objectWithClassName:@"BestShotReply"];
+    obj[@"fromUserId"] = [PFUser currentUser][@"userId"];
+    obj[@"toUserId"] = partner[@"userId"];
+    obj[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
+    [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+            options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+            [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
     
-    [self createNotificationHistory:@"bestShotReply"];
+            [self createNotificationHistory:@"bestShotReply"];
+        }
+    }];
+}
+
+- (void)showReceivedBestShotReply
+{
+    // アイコンを画面右上に表示する
+    NSInteger iconWidth = 30;
+    NSInteger iconHeight = 30;
+    CGRect rect = CGRectMake(self.view.frame.size.width - iconWidth - 10, 64 + 7, iconWidth, iconHeight);
+    UIImageView *iv = [[UIImageView alloc]initWithFrame:rect];
+    iv.image = [UIImage imageNamed:@"GoodBlue"];
+    [self.view addSubview:iv];
 }
 
 // imageUploaded, bestShotChanged, bestShotReplyはページを開いた時点で無効にする
