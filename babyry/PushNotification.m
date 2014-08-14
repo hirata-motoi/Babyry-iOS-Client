@@ -59,17 +59,19 @@
                         [push setQuery:pushQuery];
                     }
                     
-                    // オプションでdataが指定された場合はセット(eventを元にセットされたメッセージは上書きされる)
-                    if ([options objectForKey:@"data"]) {
-                        NSMutableDictionary *data = [options objectForKey:@"data"];
-                        if (!data[@"alert"]) {
-                            data[@"alert"] = message;
-                        }
-                        [push setData:[options objectForKey:@"data"]];
-                    } else {
-                        // デフォルトのメッセージをセット
-                        [push setMessage:message];
+                    NSMutableDictionary *data = options[@"data"];
+                    if (!data) {
+                        data = [[NSMutableDictionary alloc]init];
                     }
+                    // オプションでdataが指定された場合はセット(eventを元にセットされたメッセージは上書きされる)
+                    if (!data[@"alert"]) {
+                        data[@"alert"] = message;
+                    }
+                    if (!data[@"sound"]) {
+                        // デフォルトの着信音
+                        data[@"sound"] = @"";
+                    }
+                    [push setData:[options objectForKey:@"data"]];
                     
                     // 送信
                     [push sendPushInBackground];

@@ -44,7 +44,7 @@
     _monthLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
                                                             
     _nameLabel.textColor = [UIColor whiteColor];
-    _nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:17];
+    _nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
                                                            
     self.backgroundColor = [ColorUtils getSectionHeaderColor];
     

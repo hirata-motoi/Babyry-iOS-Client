@@ -64,7 +64,6 @@
     
     [self initializeChildImages];
     [self createCollectionView];
-    [self showChildImages];
     
     //[self setupScrollBarView];
 }
@@ -84,6 +83,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [self showChildImages];
     [self setupImagesCount];
 }
 
