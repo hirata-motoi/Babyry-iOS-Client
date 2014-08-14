@@ -15,6 +15,7 @@
 #import "CommentViewController.h"
 #import "Navigation.h"
 #import "AWSS3Utils.h"
+#import "NotificationHistory.h"
 
 @interface UploadViewController ()
 
@@ -100,6 +101,7 @@
             }
         }];
     }
+    [self disableNotificationHistories];
 }
 
 - (void)openOperationView:(id)sender
@@ -205,6 +207,19 @@
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return _uploadedImageView;
+}
+
+- (void)disableNotificationHistories
+{
+    NSString *type = @"imageUploaded";
+    if (_notificationHistoryByDay[type] && [_notificationHistoryByDay[type] count] > 0) {
+        for (PFObject *notification in _notificationHistoryByDay[type]) {
+            [NotificationHistory disableDisplayedNotificationsWithObject:notification];
+        }
+        //[_notificationHistoryByDay[@"commentPosted"] removeAllObjects];
+        PFObject *obj = [[PFObject alloc]initWithClassName:@"NotificationHistory"];
+        [_notificationHistoryByDay[type] addObject:obj];
+    }
 }
 
 @end
