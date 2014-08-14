@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import "DragView.h"
 #import "AWSS3Utils.h"
+#import "MBProgressHUD.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -48,5 +49,7 @@
 - (NSMutableDictionary *)getYearMonthMap;
 
 @property AWSServiceConfiguration *configuration;
+
+@property MBProgressHUD *hud;
 
 @end

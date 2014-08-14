@@ -83,6 +83,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
     [self showChildImages];
     [self setupImagesCount];
 }
@@ -375,7 +376,7 @@
     _isLoading = YES;
     // TODO
     PFObject *child = _childArray[_pageIndex];
-    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
     [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", (long)year, (long)month]];
@@ -392,6 +393,7 @@
             for (int i = 0; i < [images count]; i++) {
                 PFObject *childImage = [images objectAtIndex:i];
                 NSString *ymdWithPrefix = childImage[@"date"];
+                NSString *ymd = [ymdWithPrefix substringWithRange:NSMakeRange(1, 8)];
                 
                 if ([childImageDic objectForKey:ymdWithPrefix]) {
                     PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
@@ -401,7 +403,7 @@
                     [cacheSetQueueArray addObject:childImage];
                 } else {
                     // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
-                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_childArray[_pageIndex][@"childImageShardIndex"] integerValue]]];
+                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childArray[_pageIndex][@"childImageShardIndex"] integerValue]]];
                     [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
                     [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
                     [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
@@ -410,21 +412,13 @@
                         } else {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
                         }
-                        // 昨日と今日のパネルを即入れ替えるため
-                        if (index == 0 && i < 2) {
-                            [_pageContentCollectionView reloadData];
-                        }
                     }];
+                    // 本画像がないのでローカルにキャッシュがあれば消す。
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd]];
                 }
             }
             [self setImageCache:cacheSetQueueArray withReload:reload];
-          
-            if (reload) {
-                [_pageContentCollectionView reloadData];
-            }
-           
-            // reloadDataは非同期なのでちょっと時間を空ける
-            [NSThread sleepForTimeInterval:0.1];
+            
             _isLoading = NO;
         } else {
             NSLog(@"error occured %@", error);
@@ -445,7 +439,7 @@
         AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
         getRequest.bucket = @"babyrydev-images";
         
-        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_childArray[_pageIndex][@"childImageShardIndex"] integerValue]], childImage.objectId];
+        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childArray[_pageIndex][@"childImageShardIndex"] integerValue]], childImage.objectId];
         // no-cache必須                                                                                     
         getRequest.responseCacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
@@ -474,8 +468,8 @@
                 }];
             }
             if (reload) {
-                // このタイミングでreloadしたいけどするとtopページが一瞬かくっとなるので微妙
-                //[_pageContentCollectionView reloadData];
+                [_pageContentCollectionView reloadData];
+                [NSThread sleepForTimeInterval:0.1];
             }
             [self setImageCache:cacheSetQueueArray withReload:reload];
             return nil;
@@ -556,7 +550,7 @@
 {
     // 今月
     NSDateComponents *comp = [self dateComps];
-    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:NO];
+    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
    
     // 先月
     NSDateComponents *lastComp = [self dateComps];
