@@ -142,12 +142,6 @@
     [backButton addGestureRecognizer:back];
     [_navbar addSubview:backButton];
     
-    // 写真変更ボタン
-    UIButton *openPhotoLibraryButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-    [openPhotoLibraryButton setBackgroundImage:[UIImage imageNamed:@"imageIcon"] forState:UIControlStateNormal];
-    [openPhotoLibraryButton addTarget:self action:@selector(openPhotoLibrary) forControlEvents:UIControlEventTouchUpInside];
-    _navbarItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openPhotoLibraryButton];
-   
     // title
     NSString *yyyy =  [_date substringWithRange:NSMakeRange(0, 4)];
     NSString *mm   =  [_date substringWithRange:NSMakeRange(4, 2)];
@@ -281,7 +275,6 @@
 - (void)executeNotificationHistory:(id)param
 {
     NSString *type = [param objectForKey:@"type"];
-    NSLog(@"executeNotificationHistory type:%@", type);
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:[_date integerValue]];
 }
