@@ -48,7 +48,7 @@
                                                            
     self.backgroundColor = [ColorUtils getSectionHeaderColor];
     
-    NSLog(@"color: %@", [ColorUtils getSectionHeaderColor]);
+    //NSLog(@"color: %@", [ColorUtils getSectionHeaderColor]);
 }
 
 /*

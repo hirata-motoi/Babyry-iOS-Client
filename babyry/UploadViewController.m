@@ -58,7 +58,12 @@
     // ImagePageViewControllerからimageInfoをもらう
     // 万が一imageInfoが空だった時のことを考えて、一応、一から組み立てるロジックも入れておくが、ImagePageViewController側でNoImageを省くようになったら不要になる(TODO)。
     if (_imageInfo) {
-        [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _imageInfo.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+        getRequest.bucket = @"babyrydev-images";
+        getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _imageInfo.objectId];
+        getRequest.responseCacheControl = @"no-cache";
+        AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+        [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
             if (!task.error && task.result) {
                 AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                 _uploadedImageView.image = [UIImage imageWithData:getResult.body];
@@ -82,7 +87,13 @@
         [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count] > 0) {
                 PFObject * object = [objects objectAtIndex:0];
-                [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+
+                AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+                getRequest.bucket = @"babyrydev-images";
+                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
+                getRequest.responseCacheControl = @"no-cache";
+                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+                [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                         _uploadedImageView.image = [UIImage imageWithData:getResult.body];

@@ -357,7 +357,18 @@
             return;
         }
         _dateComp = [self addDateComps:_dateComp withUnit:@"month" withValue:-1];
-        [self getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
+        NSDate *firstDate = [self getCollectionViewFirstDay];
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyyMM"];
+        NSString *firstDateString = [dateFormatter stringFromDate:firstDate];
+        
+        int firstDateInt = [firstDateString intValue];
+        int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
+        
+        if (firstDateInt <= nextLoadInt) {
+            NSLog(@"load next");
+            [self getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
+        }
     }
 }
 
@@ -400,7 +411,12 @@
                     [images replaceObjectAtIndex:i withObject:childImage];
                     // bestshot決まっている時は9999入れる(あり得ないくらい大きな数字)
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:9999]];
-                    [cacheSetQueueArray addObject:childImage];
+                    
+                    // ParseのupdatedAtが新しい時だけ
+                    NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                    if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                        [cacheSetQueueArray addObject:childImage];
+                    }
                 } else {
                     // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
                     PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childArray[_pageIndex][@"childImageShardIndex"] integerValue]]];
@@ -448,6 +464,7 @@
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
                 
+                NSLog(@"Get From S3 %@", ymd);
                 [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
@@ -979,7 +996,7 @@
     // TODO 誕生日以前のデータは無視する
     // ChildImage.dateの型をNumberにしたら対応する
     NSMutableDictionary *child = _childArray[_pageIndex];
-    NSString *className = [NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]];
+    NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
