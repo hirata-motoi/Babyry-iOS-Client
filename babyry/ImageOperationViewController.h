@@ -43,4 +43,12 @@
 @property BOOL directOpenLibrary;
 @property NSMutableDictionary *notificationHistoryByDay;
 
+@property BOOL fromMultiUpload;
+@property CGRect imageFrame;
+@property NSNumber *bestImageIndexNumber;
+@property NSMutableArray *bestImageIndexArray;
+@property NSInteger *pageIndex;
+
+@property UIImageView *selectedBestshotView;
+
 @end

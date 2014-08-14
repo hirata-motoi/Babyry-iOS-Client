@@ -55,9 +55,9 @@
     
     // Parseからちゃんとしたサイズの画像を取得
     // ImagePageViewControllerからimageInfoをもらう
-    // 万が一imageInfoが空だった時のことを考えて、一応、位置から組み立てるロジックも入れておくが、ImagePageViewController側でNoImageを省くようになったら不要になる(TODO)。
+    // 万が一imageInfoが空だった時のことを考えて、一応、一から組み立てるロジックも入れておくが、ImagePageViewController側でNoImageを省くようになったら不要になる(TODO)。
     if (_imageInfo) {
-        [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], _imageInfo.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _imageInfo.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
             if (!task.error && task.result) {
                 AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                 _uploadedImageView.image = [UIImage imageWithData:getResult.body];
@@ -73,7 +73,7 @@
         isPreload = NO;
         [self setupOperationView:isPreload];
     } else {
-        PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%@", _month]];
+        PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
         [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -81,7 +81,7 @@
         [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count] > 0) {
                 PFObject * object = [objects objectAtIndex:0];
-                [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%@", _month], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId] configuration:_configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                         _uploadedImageView.image = [UIImage imageWithData:getResult.body];
@@ -159,6 +159,10 @@
     _operationViewController.isPreload = isPreload;
     _operationViewController.child = _child;
     _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
+    _operationViewController.fromMultiUpload = _fromMultiUpload;
+    _operationViewController.imageFrame = _uploadedImageView.frame;
+    _operationViewController.bestImageIndexArray = _bestImageIndexArray;
+    _operationViewController.pageIndex = _pageIndex;
     
     [self addChildViewController:_operationViewController];
     [_operationViewController didMoveToParentViewController:self];

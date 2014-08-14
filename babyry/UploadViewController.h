@@ -44,4 +44,9 @@
 @property NSInteger currentRow;
 @property NSMutableDictionary *notificationHistoryByDay;
 
+@property BOOL fromMultiUpload;
+@property NSNumber *bestImageIndexNumber;
+@property NSInteger *pageIndex;
+@property NSMutableArray *bestImageIndexArray;
+
 @end

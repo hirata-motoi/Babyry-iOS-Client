@@ -103,7 +103,7 @@
     }
     
     NSLog(@"Parseに既に画像があるかどうかを確認");
-    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [imageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
     [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -121,7 +121,7 @@
             if (succeeded) {
                 NSLog(@"save to s3 %@", tmpImageObject.objectId);
                 [[AWSS3Utils putObject:
-                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId]
+                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId]
                              imageData:imageData
                              imageType:imageType
                          configuration:_configuration] continueWithBlock:^id(BFTask *task) {
@@ -136,7 +136,7 @@
         [_section[@"images"] replaceObjectAtIndex:_indexPath.row withObject:tmpImageObject];
     } else {
         NSLog(@"一つもないなら新たに追加");
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         //childImage[@"imageFile"] = imageFile;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
@@ -146,7 +146,7 @@
             if (succeeded) {
                 NSLog(@"save to s3 %@", childImage.objectId);
                 [[AWSS3Utils putObject:
-                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], childImage.objectId]
+                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId]
                              imageData:imageData
                              imageType:imageType
                          configuration:_configuration] continueWithBlock:^id(BFTask *task) {
@@ -169,7 +169,7 @@
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
     [PushNotification sendInBackground:@"imageUpload" withOptions:options];
-    PFObject *partner = [Partner partnerUser];
+    PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
     NSLog(@"saved");
     

@@ -23,6 +23,8 @@
 @property BOOL isLoading;
 @property id pageContentViewController;
 @property BOOL fromMultiUpload;
+@property NSNumber *bestImageIndexNumber;
+@property NSMutableArray *bestImageIndexArray;
 @property NSMutableDictionary *notificationHistory;
 
 @end

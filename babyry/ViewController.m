@@ -132,17 +132,16 @@
             return;
         }
         
-        // nicknameなくても動くから抜く
-//        // nickname確認 なければ入れてもらう
-//        // まずはキャッシュから確認
-//        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-//            //キャッシュがなければフォアグランドで引いても良い。
-//            [_currentUser refresh];
-//            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-//                [self setMyNickNamePage];
-//                return;
-//            }
-//        }
+        // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
+        // まずはキャッシュから確認
+        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+            //キャッシュがなければフォアグランドで引いても良い。
+            [_currentUser refresh];
+            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+                [self setMyNickNamePage];
+                return;
+            }
+        }
         
         // roleを更新
         [FamilyRole updateCache];
