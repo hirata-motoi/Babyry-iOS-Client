@@ -80,7 +80,8 @@
     
     // ImageViewにセット
     if (_uploadViewController) {
-        _uploadViewController.uploadedImageView.frame = [self getUploadedImageFrame:resizedImage];
+        _uploadViewController.scrollView.frame = [self getUploadedImageFrame:resizedImage];
+        _uploadViewController.uploadedImageView.frame = CGRectMake(0, 0, _uploadViewController.scrollView.frame.size.width, _uploadViewController.scrollView.frame.size.height);
         [_uploadViewController.uploadedImageView setImage:resizedImage];
     }
     

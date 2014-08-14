@@ -23,6 +23,6 @@
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
 @property NSMutableDictionary *section;
-@property PFObject *child;
+@property NSMutableDictionary *child;
 
 @end
