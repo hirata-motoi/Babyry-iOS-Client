@@ -11,6 +11,7 @@
 #import "DragView.h"
 #import "AWSS3Utils.h"
 #import "MBProgressHUD.h"
+#import <AudioToolbox/AudioServices.h>
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;

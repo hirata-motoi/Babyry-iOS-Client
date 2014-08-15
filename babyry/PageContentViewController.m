@@ -120,7 +120,7 @@
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     float width = self.view.frame.size.width;
     if (indexPath.section == 0 && indexPath.row == 0) {
-        return CGSizeMake(width, self.view.frame.size.height - 44 - 20  - width*2/3); // TODO magic number
+        return  CGSizeMake(width, self.view.frame.size.height - 44 - 20  - width*2/3); // TODO magic number
     }
     return CGSizeMake(width/3 - 2, width/3 - 2);
 }
@@ -156,9 +156,7 @@
     
     // カレンダーラベル付ける
     [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
-     
-    cell.tag = indexPath.row + 1;
-    // for test
+    
     [self setBadgeToCell:cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd];
     
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
@@ -380,7 +378,6 @@
 
 -(void)handleSingleTap:(id) sender
 {
-//    [self touchEvent:[[sender view] tag]];
 }
 
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
@@ -888,7 +885,7 @@
                         [cell addSubview:backgroundView];
                     }
                     // ダブルタップでプッシュ通知
-                    UITapGestureRecognizer *giveMePhotoGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(giveMePhoto)];
+                    UITapGestureRecognizer *giveMePhotoGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(giveMePhoto:)];
                     giveMePhotoGesture.numberOfTapsRequired = 2;
                     [cell addGestureRecognizer:giveMePhotoGesture];
                 } else {
@@ -1025,9 +1022,19 @@ for (NSMutableDictionary *section in _childImages) {
 }
 
 
-- (void) giveMePhoto
+- (void) giveMePhoto:(id)sender
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    
+    TagAlbumCollectionViewCell *cell = [sender view];
+    for (id elem in [cell subviews]) {
+        if ([elem isKindOfClass:[CellBackgroundViewToWaitUpload class]] || [elem isKindOfClass:[CellBackgroundViewToWaitUploadLarge class]]) {
+            for (UIImageView *imageView in [elem subviews]) {
+                [self vibrateImageView:imageView];
+            }
+        }
+    }
+    
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
     [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
@@ -1096,6 +1103,47 @@ for (NSMutableDictionary *section in _childImages) {
     }];
     
 }
+
+- (void)vibrateImageView:(UIImageView *)imageView
+{
+    CGRect rect = imageView.frame;
+    
+    CGRect rightRect = rect;
+    rightRect.origin.x += 5;
+    NSValue *rightRectObj = [NSValue valueWithCGRect:rightRect];
+    
+    CGRect leftRect = rect;
+    leftRect.origin.x -= 5;
+    NSValue *leftRectObj = [NSValue valueWithCGRect:leftRect];
+    
+    NSValue *originalRectObj = [NSValue valueWithCGRect:rect];
+    
+    
+    NSMutableArray *posList = [[NSMutableArray alloc]initWithObjects:rightRectObj, leftRectObj, rightRectObj, leftRectObj, originalRectObj , nil];
+    
+    NSMutableDictionary *info = [[NSMutableDictionary alloc]init];
+    info[@"imageView"] = imageView;
+    info[@"posList"] = posList;
+    NSTimer *tm = [NSTimer scheduledTimerWithTimeInterval:0.03f target:self selector:@selector(vibrate:) userInfo:info repeats:YES];
+}
+
+- (void)vibrate:(NSTimer *)timer
+{
+    NSDictionary *info = timer.userInfo;
+    UIImageView *imageView = info[@"imageView"];
+    NSMutableArray *posList = info[@"posList"];
+    
+    if (posList.count < 1) {
+        [timer invalidate];
+        return;
+    }
+    
+    CGRect rect = [posList[0] CGRectValue];
+    [posList removeObjectAtIndex:0];
+    imageView.frame = rect;
+}
+
+
 
 /*
 #pragma mark - Navigation
