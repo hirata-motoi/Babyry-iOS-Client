@@ -165,7 +165,7 @@
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     
     // Cacheからはりつけ
-    NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+    NSString *ymd = [childImage[@"date"] stringValue];
     
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
     [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
@@ -210,8 +210,8 @@
         if ([self isNoImage:indexPath]) {
             MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
             multiUploadAlbumTableViewController.childObjectId = _childObjectId;
-            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-            multiUploadAlbumTableViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] stringValue];
+            multiUploadAlbumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
             multiUploadAlbumTableViewController.child = _childProperty;
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
@@ -225,11 +225,11 @@
             MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
             multiUploadViewController.name = [_childProperty objectForKey:@"name"];
             multiUploadViewController.childObjectId = [_childProperty objectForKey:@"objectId"];
-            multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
-            multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+            multiUploadViewController.date = [tappedChildImage[@"date"] stringValue];
+            multiUploadViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
             multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             multiUploadViewController.child = _childProperty;
-            multiUploadViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)]];
+            multiUploadViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue] ];
             if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
                 [self.navigationController pushViewController:multiUploadViewController animated:YES];
             } else {
@@ -242,9 +242,9 @@
     if (![self isBEstImageFixed:indexPath]) {
         // ベストショット決まってなければ即Pickerを開く
         UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
-        uploadPickerViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
+        uploadPickerViewController.month = [[tappedChildImage[@"date"]  stringValue ] substringWithRange:NSMakeRange(0, 6)];
         uploadPickerViewController.childObjectId = _childObjectId;
-        uploadPickerViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+        uploadPickerViewController.date = [tappedChildImage[@"date"] stringValue];
         
         // _childImage更新用
         NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -300,7 +300,7 @@
     NSString *weekdayString = [[NSString alloc] init];
     weekdayString = [DateUtils getWeekStringFromNum:[[weekdayArray objectAtIndex:indexPath.row] intValue]];
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
-    NSString *dd = [childImage[@"date"] substringWithRange:NSMakeRange(7, 2)];
+    NSString *dd = [[childImage[@"date"] stringValue] substringWithRange:NSMakeRange(6, 2)];
 
     // カレンダーラベル組み立て
     CalenderLabel *calLabelView = [CalenderLabel view];
@@ -404,7 +404,9 @@
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
-    [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", (long)year, (long)month]];
+    [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", year, month, 1] integerValue]]];
+    [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", year, month, 31] integerValue]]];
+    
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
@@ -417,17 +419,17 @@
             NSMutableArray *cacheSetQueueArray = [[NSMutableArray alloc] init];
             for (int i = 0; i < [images count]; i++) {
                 PFObject *childImage = [images objectAtIndex:i];
-                NSString *ymdWithPrefix = childImage[@"date"];
-                NSString *ymd = [ymdWithPrefix substringWithRange:NSMakeRange(1, 8)];
                 
-                if ([childImageDic objectForKey:ymdWithPrefix]) {
-                    PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
+                NSNumber *date = childImage[@"date"];
+                
+                if (childImageDic[date]) {
+                    PFObject *childImage = childImageDic[date][0];
                     [images replaceObjectAtIndex:i withObject:childImage];
                     // bestshot決まっている時は9999入れる(あり得ないくらい大きな数字)
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:9999]];
                     
                     // ParseのupdatedAtが新しい時だけ
-                    NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                    NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, [date stringValue]];
                     if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
                         [cacheSetQueueArray addObject:childImage];
                     }
@@ -435,7 +437,7 @@
                     // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
                     PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]]];
                     [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
-                    [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
+                    [unchoosedQuery whereKey:@"date" equalTo:date];
                     [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                         if ([objects count] > 0) {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[objects count]]];
@@ -444,7 +446,7 @@
                         }
                     }];
                     // 本画像がないのでローカルにキャッシュがあれば消す。
-                    [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd]];
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, [date stringValue]]];
                 }
             }
             [self setImageCache:cacheSetQueueArray withReload:reload];
@@ -468,7 +470,7 @@
                 PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
                 [cacheSetQueueArray removeObjectAtIndex:0];
                 
-                NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+                NSString *ymd = [childImage[@"date"] stringValue];
                 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
                 getRequest.bucket = @"babyrydev-images";
@@ -634,7 +636,7 @@
 - (BOOL)withinTwoDay: (NSIndexPath *)indexPath
 {
     PFObject *chilImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
-    NSString *ymd = [chilImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+    NSString *ymd = [chilImage[@"date"] stringValue];
     NSDateComponents *compToday = [self dateComps];
   
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
@@ -734,7 +736,7 @@
        
         // TODO
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
-        childImage[@"date"] = [NSString stringWithFormat:@"D%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day];
+        childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", c.year, c.month, c.day] integerValue]];
         [[section objectForKey:@"images"] addObject:childImage];
         [[section objectForKey:@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
         [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInt: c.weekday]];

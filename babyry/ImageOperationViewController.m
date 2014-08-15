@@ -122,6 +122,7 @@
     commentViewController.date = _date;
     commentViewController.month = _month;
     commentViewController.imageInfo = _imageInfo;
+    commentViewController.child = _child;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
     _commentView.frame = CGRectMake(self.view.frame.size.width, self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height -44 -20 -44);
@@ -239,7 +240,7 @@
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    [childImageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
     [childImageQuery orderByAscending:@"createdAt"];
     [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if(!error) {

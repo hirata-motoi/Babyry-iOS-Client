@@ -138,9 +138,9 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 -(void)getCommentFromParse
 {
-    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"DailyComment%@", _month]];
+    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", [_child[@"commentShardIndex"] integerValue]]];
     [commentQuery whereKey:@"childId" equalTo:_childObjectId];
-    [commentQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [commentQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
     [commentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if(!error) {
             _commentArray = [[NSMutableArray alloc] initWithArray:objects];
@@ -311,10 +311,10 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     
     if ( _commentTextView && ![_commentTextView.text isEqualToString:@""] ) {
         // Insert To Parse
-        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"DailyComment%@", _month]];
+        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", [_child[@"commentShardIndex"] integerValue]]];
         dailyComment[@"comment"] = _commentTextView.text;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
-        dailyComment[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+        dailyComment[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
         dailyComment[@"childId"] = _childObjectId;
         dailyComment[@"commentBy"] = [PFUser currentUser][@"userId"];
         // Parseに突っ込む前にViewだけ更新
