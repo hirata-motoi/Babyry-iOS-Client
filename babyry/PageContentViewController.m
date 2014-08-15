@@ -35,6 +35,7 @@
 #import "Badge.h"
 #import "UIColor+Hex.h"
 #import "CollectionViewSectionHeader.h"
+#import <AudioToolbox/AudioServices.h>
 
 @interface PageContentViewController ()
 
@@ -1026,6 +1027,7 @@ for (NSMutableDictionary *section in _childImages) {
 
 - (void) giveMePhoto
 {
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
     [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
