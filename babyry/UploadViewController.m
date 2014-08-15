@@ -176,6 +176,7 @@
     _operationViewController.imageFrame = _uploadedImageView.frame;
     _operationViewController.bestImageIndexArray = _bestImageIndexArray;
     _operationViewController.pageIndex = _pageIndex;
+    _operationViewController.myRole = _myRole;
     
     [self addChildViewController:_operationViewController];
     [_operationViewController didMoveToParentViewController:self];

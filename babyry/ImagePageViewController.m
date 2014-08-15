@@ -88,6 +88,7 @@
     if (_fromMultiUpload) {
         uploadViewController.bestImageIndexArray = _bestImageIndexArray;
         uploadViewController.pageIndex = index;
+        uploadViewController.myRole = _myRole;
     }
     
     if (_notificationHistory[ymd]) {
