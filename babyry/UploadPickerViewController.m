@@ -121,11 +121,16 @@
         [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
                 NSLog(@"save to s3 %@", tmpImageObject.objectId);
-                [[AWSS3Utils putObject:
-                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId]
-                             imageData:imageData
-                             imageType:imageType
-                         configuration:_configuration] continueWithBlock:^id(BFTask *task) {
+                AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+                putRequest.bucket = @"babyrydev-images";
+                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
+                putRequest.body = imageData;
+                putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
+                putRequest.contentType = imageType;
+                putRequest.cacheControl = @"no-cache";
+                
+                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+                [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
                         NSLog(@"save error to S3 %@", task.error);
                     }
@@ -146,11 +151,16 @@
         [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
                 NSLog(@"save to s3 %@", childImage.objectId);
-                [[AWSS3Utils putObject:
-                  [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId]
-                             imageData:imageData
-                             imageType:imageType
-                         configuration:_configuration] continueWithBlock:^id(BFTask *task) {
+                AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+                putRequest.bucket = @"babyrydev-images";
+                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+                putRequest.body = imageData;
+                putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
+                putRequest.contentType = imageType;
+                putRequest.cacheControl = @"no-cache";
+                
+                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+                [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
                         NSLog(@"save error to S3 %@", task.error);
                     }
