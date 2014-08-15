@@ -35,6 +35,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    NSLog(@"aaaaaaaaaaaaaaaa %@", _totalImageNum);
+    
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
     
     _albumImageCollectionView.delegate = self;
@@ -249,7 +251,7 @@
         [_uploadImageDataArray addObject:imageData];
         [_uploadImageDataTypeArray addObject:imageType];
 
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         // tmpData = @"TRUE" にセットしておく画像はあとからあげる
         childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
         childImage[@"imageOf"] = _childObjectId;
@@ -272,7 +274,7 @@
                
                 if (indexPath == lastIndexPath) {
                     // NotificationHistoryに登録
-                    PFObject *partner = [Partner partnerUser];
+                    PFObject *partner = (PFObject *)[Partner partnerUser];
                     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
                     
                     // push通知

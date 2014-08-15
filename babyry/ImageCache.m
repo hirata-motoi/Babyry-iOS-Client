@@ -102,6 +102,24 @@
     return [fileManager contentsOfDirectoryAtPath:imageCacheDirPath error:&error];
 }
 
++(void)updateTimeStamp:name
+{
+    NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirPath = [array objectAtIndex:0];
+    NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
+    NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:name];
+    
+    NSDictionary *attrs = @{
+                            NSFileModificationDate: [NSDate date]
+                            };
+    
+    NSFileManager *fs = [NSFileManager defaultManager];
+    [fs setAttributes:attrs ofItemAtPath:imageCacheFilePath error:nil];
+    
+    // 変更後の属性を一覧表示して結果を確認。
+    attrs = [fs attributesOfItemAtPath:imageCacheFilePath error:nil];
+}
+
 // Image以外のキャッシュもあるけどね。。。
 +(void) removeAllCache
 {

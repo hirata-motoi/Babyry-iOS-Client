@@ -12,6 +12,7 @@
 #import "UIViewController+MJPopupViewController.h"
 #import "MultiUploadAlbumTableViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "MBProgressHUD.h"
 
 @interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate>
 
@@ -21,6 +22,7 @@
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (strong, nonatomic) IBOutlet UIButton *bestShotReplyIcon;
 @property (strong, nonatomic) IBOutlet UILabel *bestShotFixLimitLabel;
+@property (strong, nonatomic) IBOutlet UILabel *instructionLabel;
 
 @property NSString *myRole;
 
@@ -62,5 +64,9 @@
 @property NSMutableDictionary *notificationHistoryByDay;
 
 @property BOOL imageLoadComplete;
+
+@property MBProgressHUD *hud;
+
+@property NSMutableArray *totalImageNum;
 
 @end

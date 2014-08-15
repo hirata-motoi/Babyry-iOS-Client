@@ -232,6 +232,10 @@
             multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             multiUploadViewController.child = _childProperty;
             multiUploadViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)]];
+            
+            NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+            NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+            multiUploadViewController.totalImageNum = totalImageNum;
             if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
                 [self.navigationController pushViewController:multiUploadViewController animated:YES];
             } else {
@@ -401,12 +405,14 @@
 
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
+    NSLog(@"getChildImagesWithYear %d", month);
     _isLoading = YES;
     // TODO
-    PFObject *child = _childProperty;
+    NSMutableDictionary *child = _childProperty;
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
+    query.limit = 1000;
     [query whereKey:@"imageOf" equalTo:_childObjectId];
-    [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    //[query whereKey:@"bestFlag" equalTo:@"choosed"];
     [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", (long)year, (long)month]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
@@ -424,28 +430,34 @@
                 NSString *ymd = [ymdWithPrefix substringWithRange:NSMakeRange(1, 8)];
                 
                 if ([childImageDic objectForKey:ymdWithPrefix]) {
-                    PFObject *childImage = [[childImageDic objectForKey:ymdWithPrefix] objectAtIndex:0];
-                    [images replaceObjectAtIndex:i withObject:childImage];
-                    // bestshot決まっている時は9999入れる(あり得ないくらい大きな数字)
-                    [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:9999]];
+                    BOOL bestshotExist = NO;
+                    for (PFObject *childImageYmd in [childImageDic objectForKey:ymdWithPrefix]) {
+                        if ([childImageYmd[@"bestFlag"] isEqualToString:@"choosed"]) {
+                            [images replaceObjectAtIndex:i withObject:childImageYmd];
+                            // ParseのupdatedAtが新しい時だけ
+                            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+                            if ([childImageYmd.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                                [cacheSetQueueArray addObject:childImageYmd];
+                            }
+                            bestshotExist = YES;
+                        }
+                    }
                     
-                    // ParseのupdatedAtが新しい時だけ
-                    NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                    if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                        [cacheSetQueueArray addObject:childImage];
+                    if (index == 0 && (i == 0|| i == 1)) {
+                        // 昨日、今日の場合は単に写真の枚数を突っ込む
+                        [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[[childImageDic objectForKey:ymdWithPrefix] count]]];
+                    } else {
+                        // 二日以上前で、ベストショットが無いのであれば、0を入れてキャッシュ消す
+                        if(!bestshotExist) {
+                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
+                            // 本画像がないのでローカルにキャッシュがあれば消す。
+                            [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd]];
+                        } else {
+                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:1]];
+                        }
                     }
                 } else {
-                    // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
-                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]]];
-                    [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
-                    [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
-                    [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                        if ([objects count] > 0) {
-                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[objects count]]];
-                        } else {
-                            [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
-                        }
-                    }];
+                    [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
                     // 本画像がないのでローカルにキャッシュがあれば消す。
                     [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd]];
                 }
@@ -493,6 +505,8 @@
                             NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                             [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
                         }
+                        // タイムスタンプを現在にする (そうしないとParseよりも常にキャッシュが古いと見なされるので(ベストショットを変更してParseのタイムスタンプが更新された場合))
+                        [ImageCache updateTimeStamp:thumbPath];
                     } else {
                         [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
                             NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
@@ -503,6 +517,8 @@
                                 NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                                 [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
                             }
+                            // タイムスタンプを現在にする (そうしないとParseよりも常にキャッシュが古いと見なされるので(ベストショットを変更してParseのタイムスタンプが更新された場合))
+                            [ImageCache updateTimeStamp:thumbPath];
                         }];
                     }
                     if (reload) {

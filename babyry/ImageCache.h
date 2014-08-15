@@ -17,5 +17,6 @@
 + (NSDate *) returnTimestamp:name;
 +(NSArray *) listCachedImage:(NSString *)dirName;
 +(void) removeAllCache;
++(void)updateTimeStamp:name;
 
 @end

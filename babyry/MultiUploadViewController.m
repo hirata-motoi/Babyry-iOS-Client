@@ -44,13 +44,19 @@
     
     // role で出し分けるものたち
     _myRole = [[NSString alloc] init];
-    NSString *partLabel = @"";
+    _instructionLabel.backgroundColor = [ColorUtils getBackgroundColor];
+    _instructionLabel.textColor = [UIColor whiteColor];
+    _instructionLabel.font = [UIFont systemFontOfSize:14];
     if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
         _myRole = @"uploader";
-        partLabel = [NSString stringWithFormat:@"%@ちゃんの写真をアップしましょう", _name];
+        _instructionLabel.text = @"写真をアップロードしましょう(上限15枚)。\n[ここをタップして画像を選択]";
+        _instructionLabel.userInteractionEnabled = YES;
+        UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
+        uploadGesture.numberOfTapsRequired = 1;
+        [_instructionLabel addGestureRecognizer:uploadGesture];
     } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
         _myRole = @"chooser";
-        partLabel = [NSString stringWithFormat:@"%@ちゃんのベストショットを決めましょう", _name];
+        _instructionLabel.text = @"ベストショットを選択しましょう。\n[写真の星マークをタップして選択できます]";
     }
     
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
@@ -96,6 +102,9 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.labelText = @"データ同期中";
     
     _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
                                                 target:self
@@ -153,11 +162,6 @@
         [_childCachedImageArray addObject:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
         i++;
     }
-
-    // アップロード用の画像を最後にはめる
-    if ([_myRole isEqualToString:@"uploader"]) {
-        [_childCachedImageArray addObject:[NSString stringWithFormat:@"ForUploadImage"]];
-    }
     
     [_multiUploadedImages reloadData];
 }
@@ -204,54 +208,46 @@
     for (UIGestureRecognizer *gesture in [cell gestureRecognizers]) {
         [cell removeGestureRecognizer:gesture];
     }
-    
-    if ([[_childCachedImageArray objectAtIndex:indexPath.row] isEqualToString:@"ForUploadImage"]) {
-        _uploadUppeLimit = indexPath.row;
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"CellNoPhoto"]];
-        UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
-        uploadGesture.numberOfTapsRequired = 1;
-        [cell addGestureRecognizer:uploadGesture];
-    } else {
-        // ローカルに保存されていたサムネイル画像を貼付け
-        NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
-        // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
-        if ([tmpImageData length] > 100) {
-            cell.backgroundColor = [UIColor blackColor];
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
+    // ローカルに保存されていたサムネイル画像を貼付け
+    NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
+    // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
+    if ([tmpImageData length] > 100) {
+        cell.backgroundColor = [UIColor blackColor];
+        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
+        
+        // 小さい画像の時は、、、みたいな分岐がselectedだと面倒そうだったのでここでgestureつける
+        UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+        singleTapGestureRecognizer.numberOfTapsRequired = 1;
+        [cell addGestureRecognizer:singleTapGestureRecognizer];
+        
+        // 以下の処理は一番最後 (gestureが一番上にくるように)
+        CGRect unSelectetFrame = CGRectMake(cell.frame.size.width*2/3, cell.frame.size.height*2/3, cell.frame.size.width/3, cell.frame.size.height/3);
+        // choiceの場合だけunselectedは基本付ける
+        if (![_myRole isEqualToString:@"uploader"]) {
+            UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
+            unSelectedBestshotView.frame = unSelectetFrame;
+            [cell addSubview:unSelectedBestshotView];
             
-            // 小さい画像の時は、、、みたいな分岐がselectedだと面倒そうだったのでここでgestureつける
-            UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-            singleTapGestureRecognizer.numberOfTapsRequired = 1;
-            [cell addGestureRecognizer:singleTapGestureRecognizer];
-            
-            // 以下の処理は一番最後 (gestureが一番上にくるように)
-            CGRect unSelectetFrame = CGRectMake(cell.frame.size.width*2/3, cell.frame.size.height*2/3, cell.frame.size.width/3, cell.frame.size.height/3);
-            // choiceの場合だけunselectedは基本付ける
-            if (![_myRole isEqualToString:@"uploader"]) {
-                UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
-                unSelectedBestshotView.frame = unSelectetFrame;
-                [cell addSubview:unSelectedBestshotView];
-            
-                unSelectedBestshotView.tag = indexPath.row;
-                unSelectedBestshotView.userInteractionEnabled = YES;
-                UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
-                selectBestShotGesture.numberOfTapsRequired = 1;
-                [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
-            }
-            if (_bestImageIndex > -1 && _bestImageIndex == indexPath.row) {
-                _selectedBestshotView.frame = unSelectetFrame;
-                [cell addSubview:_selectedBestshotView];
-            }
-            cell.tag = indexPath.row;
-        } else {
-            // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
-            cell.backgroundColor = [UIColor blackColor];
-            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
-            hud.labelText = @"Uploading...";
-            hud.margin = 0;
-            hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+            unSelectedBestshotView.tag = indexPath.row;
+            unSelectedBestshotView.userInteractionEnabled = YES;
+            UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
+            selectBestShotGesture.numberOfTapsRequired = 1;
+            [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
         }
+        if (_bestImageIndex > -1 && _bestImageIndex == indexPath.row) {
+            _selectedBestshotView.frame = unSelectetFrame;
+            [cell addSubview:_selectedBestshotView];
+        }
+        cell.tag = indexPath.row;
+    } else {
+        // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
+        cell.backgroundColor = [UIColor blackColor];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
+        hud.labelText = @"Uploading...";
+        hud.margin = 0;
+        hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
     }
+    
     return cell;
 }
 
@@ -343,6 +339,8 @@
             [_myTimer invalidate];
         }
         
+        [_hud hide:YES];
+        
         _isTimperExecuting = NO;
     }
 }
@@ -360,6 +358,7 @@
     multiUploadAlbumTableViewController.date = _date;
     multiUploadAlbumTableViewController.month = _month;
     multiUploadAlbumTableViewController.child = _child;
+    multiUploadAlbumTableViewController.totalImageNum = _totalImageNum;
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
@@ -379,16 +378,6 @@
                 }
             }
         }
-        
-//        // 大きく表示された(Cell)以外のパネル。これにもベストラベル付ける
-//        if (![[sender view] isKindOfClass:[UICollectionViewCell class]]) {
-//            CGRect frame = [sender view].frame;
-//            frame.origin = CGPointMake(0, 0);
-//            frame.size.height = frame.size.width;
-//            UIImageView *bestShotExtraLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
-//            bestShotExtraLabelView.frame = frame;
-//            [[sender view] addSubview:bestShotExtraLabelView];
-//        }
         
         // update Parse
         PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
