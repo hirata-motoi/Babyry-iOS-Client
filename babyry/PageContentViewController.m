@@ -93,8 +93,10 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    _hud.labelText = @"データ同期中";
+    if (_isFirstLoad) {
+        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        _hud.labelText = @"データ同期中";
+    }
     
     _selfRole = [FamilyRole selfRole];
     [_pageContentCollectionView reloadData];
@@ -236,6 +238,7 @@
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
             NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
             multiUploadViewController.totalImageNum = totalImageNum;
+            multiUploadViewController.indexPath = indexPath;
             if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
                 [self.navigationController pushViewController:multiUploadViewController animated:YES];
             } else {
@@ -467,6 +470,7 @@
             _isLoading = NO;
             
             [_hud hide:YES];
+            _isFirstLoad = 0;
         } else {
             NSLog(@"error occured %@", error);
             [_hud hide:YES];

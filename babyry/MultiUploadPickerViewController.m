@@ -35,7 +35,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    NSLog(@"aaaaaaaaaaaaaaaa %@", _totalImageNum);
+    int currentNum = [[_totalImageNum objectAtIndex:_indexPath.row] intValue];
+    
+    _picNumLabel.text = [NSString stringWithFormat:@"%d枚アップロード済み、残り%d枚", currentNum, 15 - currentNum];
     
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
     
@@ -212,6 +214,17 @@
 - (IBAction)sendImageButton:(id)sender {
     NSLog(@"send image!");
     
+    if ([_checkedImageArray count] + [[_totalImageNum objectAtIndex:_indexPath.row] intValue] > 15) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限数を超えています"
+                                                        message:[NSString stringWithFormat:@"1日あたりアップロード可能なベストショット候補の写真は15枚です。既に%d枚アップロード済みです。アップロード済みの写真は拡大画面から削除も可能です", [[_totalImageNum objectAtIndex:_indexPath.row] intValue]]
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        [alert show];
+        return;
+    }
+    
     if ([_checkedImageArray count] == 0) {
         return;
     }
@@ -360,7 +373,7 @@
         }];
     } else {
         // もしisTmpData = TRUEが残っていればそれは消す
-        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){

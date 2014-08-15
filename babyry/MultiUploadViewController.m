@@ -261,6 +261,8 @@
     [childImageQuery orderByAscending:@"createdAt"];
     [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(!error) {
+            [_totalImageNum replaceObjectAtIndex:_indexPath.row withObject:[NSNumber numberWithInt:[objects count]]];
+            
             // 注意 : ここは深いコピーをしないとだめ
             _childImageArray = [[NSMutableArray alloc] initWithArray:objects];
             // 詳細画像表示用
@@ -359,6 +361,7 @@
     multiUploadAlbumTableViewController.month = _month;
     multiUploadAlbumTableViewController.child = _child;
     multiUploadAlbumTableViewController.totalImageNum = _totalImageNum;
+    multiUploadAlbumTableViewController.indexPath = _indexPath;
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
@@ -524,7 +527,7 @@
     // ボタンを押下済のものに変更
     [self showalreadyReplyedButton];
    
-    PFObject *partner = [Partner partnerUser];
+    PFObject *partner = (PFObject *)[Partner partnerUser];
     PFObject *obj = [PFObject objectWithClassName:@"BestShotReply"];
     obj[@"fromUserId"] = [PFUser currentUser][@"userId"];
     obj[@"toUserId"] = partner[@"userId"];

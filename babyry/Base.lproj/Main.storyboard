@@ -499,7 +499,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="Pgw-XI-WmA">
-                                <rect key="frame" x="0.0" y="49" width="320" height="454"/>
+                                <rect key="frame" x="0.0" y="58" width="320" height="401"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="2" minimumInteritemSpacing="1" id="s4o-NW-P3E">
@@ -511,7 +511,7 @@
                                 <cells/>
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ZSd-6C-1HC">
-                                <rect key="frame" x="7" y="11" width="74" height="30"/>
+                                <rect key="frame" x="7" y="20" width="74" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="戻る">
@@ -523,7 +523,7 @@
                                 </connections>
                             </button>
                             <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" tag="2" contentMode="scaleToFill" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="KGe-JQ-HBz">
-                                <rect key="frame" x="0.0" y="501" width="244" height="88"/>
+                                <rect key="frame" x="0.0" y="480" width="244" height="88"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="p7L-Zz-30a">
@@ -546,6 +546,14 @@
                                     <action selector="sendImageButton:" destination="hrh-BL-jBh" eventType="touchUpInside" id="Q3o-2J-nng"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3枚アップロード済み、残り12枚" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yuY-lb-x7q">
+                                <rect key="frame" x="8" y="459" width="304" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -553,6 +561,7 @@
                     <connections>
                         <outlet property="albumImageCollectionView" destination="Pgw-XI-WmA" id="CQw-NJ-zvK"/>
                         <outlet property="backLabel" destination="ZSd-6C-1HC" id="uzX-cc-1rp"/>
+                        <outlet property="picNumLabel" destination="yuY-lb-x7q" id="7S5-qx-4Wn"/>
                         <outlet property="selectedImageCollectionView" destination="KGe-JQ-HBz" id="uSs-dt-FsA"/>
                         <outlet property="sendImageLabel" destination="OzK-oW-aOF" id="kKV-ps-T1T"/>
                     </connections>

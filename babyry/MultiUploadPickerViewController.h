@@ -20,6 +20,7 @@
 
 @property (strong, nonatomic) IBOutlet UIButton *backLabel;
 @property (strong, nonatomic) IBOutlet UIButton *sendImageLabel;
+@property (strong, nonatomic) IBOutlet UILabel *picNumLabel;
 
 
 @property NSArray *alAssetsArr;

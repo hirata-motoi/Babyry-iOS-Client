@@ -68,5 +68,6 @@
 @property MBProgressHUD *hud;
 
 @property NSMutableArray *totalImageNum;
+@property NSIndexPath *indexPath;
 
 @end
