@@ -52,7 +52,6 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-    [self setupChildList];
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
@@ -310,8 +309,7 @@
 {
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     icnvc.isNotFirstTime = YES;
-    icnvc.currentChildNum = [[NSNumber numberWithInteger:[_childList count]] intValue];
-    //[self presentViewController:icnvc animated:YES completion:NULL];
+    icnvc.currentChildNum = [[NSNumber numberWithInteger:[_childProperties count]] intValue];
     [self.navigationController pushViewController:icnvc animated:YES];
 }
 
@@ -393,23 +391,9 @@
     
     // リクエストが増えるのは微妙だが事前に情報を取得しておく
     // partnerInfo、childともに基本キャッシュ、ネットワークがない場合はキャッシュを使う
-    profileViewController.childList = _childList;
+    profileViewController.childProperties = _childProperties;
     profileViewController.partnerInfo = _partnerInfo;
     [self.navigationController pushViewController:profileViewController animated:YES];
-}
-
-- (void)setupChildList
-{
-    NSString *familyId = [PFUser currentUser][@"familyId"];
-    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
-    query.cachePolicy = kPFCachePolicyNetworkElseCache;
-    [query whereKey:@"familyId" equalTo:familyId];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (!error) {
-            // TODO createdAtの昇順でsortする
-            _childList = objects;
-        }
-    }];
 }
 
 - (void)setupPartnerInfo

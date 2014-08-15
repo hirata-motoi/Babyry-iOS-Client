@@ -197,7 +197,7 @@
             multiUploadAlbumTableViewController.childObjectId = _childObjectId;
             multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
             multiUploadAlbumTableViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
-            multiUploadAlbumTableViewController.child = _childArray[_pageIndex];
+            multiUploadAlbumTableViewController.child = _childProperty;
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -208,12 +208,12 @@
             [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
         } else {
             MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
-            multiUploadViewController.name = [_childArray[_pageIndex] objectForKey:@"name"];
-            multiUploadViewController.childObjectId = [_childArray[_pageIndex] objectForKey:@"objectId"];
+            multiUploadViewController.name = [_childProperty objectForKey:@"name"];
+            multiUploadViewController.childObjectId = [_childProperty objectForKey:@"objectId"];
             multiUploadViewController.date = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
             multiUploadViewController.month = [tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 6)];
             multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            multiUploadViewController.child = _childArray[_pageIndex];
+            multiUploadViewController.child = _childProperty;
             multiUploadViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] substringWithRange:NSMakeRange(1, 8)]];
             if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
                 [self.navigationController pushViewController:multiUploadViewController animated:YES];
@@ -237,7 +237,7 @@
         uploadPickerViewController.totalImageNum = totalImageNum;
         uploadPickerViewController.indexPath = indexPath;
         uploadPickerViewController.section = section;
-        uploadPickerViewController.child = _childArray[_pageIndex];
+        uploadPickerViewController.child = _childProperty;
         [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         return;
     }
@@ -249,7 +249,7 @@
     pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
-    pageViewController.child = _childArray[_pageIndex];
+    pageViewController.child = _childProperty;
     pageViewController.notificationHistory = _notificationHistory;
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
@@ -264,7 +264,7 @@
     UICollectionReusableView *headerView = [_pageContentCollectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader" forIndexPath:indexPath];
     
     
-    NSMutableDictionary *child = _childArray[_pageIndex];
+    NSMutableDictionary *child = _childProperty;
     NSString *year = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"year"];
     NSString *month = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"month"];
     
@@ -386,7 +386,7 @@
 {
     _isLoading = YES;
     // TODO
-    PFObject *child = _childArray[_pageIndex];
+    PFObject *child = _childProperty;
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -419,7 +419,7 @@
                     }
                 } else {
                     // チョイスされた写真がなければ、そもそも画像が上がっているかどうかを見る
-                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childArray[_pageIndex][@"childImageShardIndex"] integerValue]]];
+                    PFQuery *unchoosedQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]]];
                     [unchoosedQuery whereKey:@"imageOf" equalTo:_childObjectId];
                     [unchoosedQuery whereKey:@"date" equalTo:ymdWithPrefix];
                     [unchoosedQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
@@ -459,7 +459,7 @@
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
                 getRequest.bucket = @"babyrydev-images";
                 
-                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childArray[_pageIndex][@"childImageShardIndex"] integerValue]], childImage.objectId];
+                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 // no-cache必須
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
@@ -679,7 +679,7 @@
 
 - (void)initializeChildImages
 {
-    NSMutableDictionary *child = _childArray[_pageIndex];
+    NSMutableDictionary *child = _childProperty;
     // 現在日時と子供の誕生日の間のオブジェクトをとりあえず全部作る
     
     NSCalendar *cal = [NSCalendar currentCalendar];
@@ -975,7 +975,7 @@
 // birthdayがなかった場合はcreatedAtを誕生日とする
 - (NSDate *)getCollectionViewFirstDay
 {
-    NSMutableDictionary *child = _childArray[_pageIndex];
+    NSMutableDictionary *child = _childProperty;
     NSDate *birthday = child[@"birthday"];
     NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
     if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
@@ -995,7 +995,7 @@
 {
     // TODO 誕生日以前のデータは無視する
     // ChildImage.dateの型をNumberにしたら対応する
-    NSMutableDictionary *child = _childArray[_pageIndex];
+    NSMutableDictionary *child = _childProperty;
     NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:_childObjectId];

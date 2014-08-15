@@ -36,6 +36,7 @@
     // table cell上に透明のformを出す
     _nicknameEditTextField.frame = _nicknameCellRect;
     [_nicknameEditTextField becomeFirstResponder]; // focusをあてる
+    _nicknameEditTextField.text = [PFUser currentUser][@"nickName"];
     
     UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonItemStylePlain target:self action:@selector(saveNickname)];
     self.parentViewController.navigationItem.rightBarButtonItem = button;

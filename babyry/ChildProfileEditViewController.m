@@ -29,6 +29,7 @@
     if ([_editTarget isEqualToString:@"name"]) {
         _childNicknameEditTextField.frame = _childNicknameCellRect;
         [_childNicknameEditTextField becomeFirstResponder]; // focusをあてる
+        _childNicknameEditTextField.text = _child[@"name"];
         _childNicknameEditTextField.hidden = NO;
         _childBirthdayDatePicker.hidden = YES;
     } else if ([_editTarget isEqualToString:@"birthday"]) {
@@ -38,7 +39,7 @@
         [_childBirthdayDatePicker becomeFirstResponder];
         _childNicknameEditTextField.hidden = YES;
         _childBirthdayDatePicker.hidden = NO;
-        _childBirthdayDatePicker.date = _child[@"birthday"] ? _child[@"birthday"] : [DateUtils setSystemTimezone:_child.createdAt];
+        _childBirthdayDatePicker.date = _child[@"birthday"] ? _child[@"birthday"] : [DateUtils setSystemTimezone:_child[@"createdAt"]];
     }                                                         
     
     UIBarButtonItem *saveNameButton = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonItemStylePlain target:self action:@selector(saveChildName)];
@@ -78,6 +79,7 @@
             [object saveInBackground];
         }
     }];
+    _child[@"name"] = _childNicknameEditTextField.text;
     
     [self closeEditing];
 }

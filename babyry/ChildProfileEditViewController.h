@@ -31,7 +31,7 @@
 @property NSString *editTarget;
 @property CGRect childNicknameCellRect;
 @property CGPoint childBirthdayCellPoint;
-@property PFObject *child;
+@property NSMutableDictionary *child;
 
 
 @end

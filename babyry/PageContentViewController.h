@@ -16,7 +16,7 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
 @property NSUInteger pageIndex;
-@property (strong, nonatomic) NSArray *childArray;
+@property NSMutableDictionary *childProperty;
 @property NSString *childObjectId;
 
 @property NSString *returnValueOfChildName;

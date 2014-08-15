@@ -19,5 +19,6 @@
 @property NSArray *childList;
 
 @property UIViewController *viewController;
+@property NSMutableArray *childProperties;
 
 @end

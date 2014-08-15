@@ -20,6 +20,6 @@
 @property NSString *childName;
 @property NSDate *childBirthday;
 @property NSString *childBirthdayString;
-@property PFObject *child;
+@property NSMutableDictionary *child;
 
 @end

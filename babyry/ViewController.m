@@ -62,6 +62,8 @@
                                              target:nil
                                              action:nil];
     
+    // childPropertiesのメモリ領域確保
+    _childProperties = [[NSMutableArray alloc] init];
     // partner情報初期化
     [Partner initialize];
     
@@ -173,6 +175,7 @@
             [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if(!error) {
                     _childArrayFoundFromParse = objects;
+                    [self setupChildProperties];
                     [self initializeChildImages];
                 }
             }];
@@ -184,14 +187,16 @@
 - (void)openGlobalSettingView
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
-    
     globalSettingViewController.viewController = self;
+    globalSettingViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:globalSettingViewController animated:YES];
 }
 
 - (void)setupChildProperties
 {
-    _childProperties = [[NSMutableArray alloc] init];
+    // 初期化
+    [_childProperties removeAllObjects];
+    
     for (PFObject *c in _childArrayFoundFromParse) {
         NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
         [childSubDic setObject:c.objectId forKey:@"objectId"];
@@ -211,7 +216,7 @@
 {
     if (!_pageViewController) {
         _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-        _pageViewController.childArray = _childProperties;
+        _pageViewController.childProperties = _childProperties;
         [self addChildViewController:_pageViewController];
         [self.view addSubview:_pageViewController.view];
     }

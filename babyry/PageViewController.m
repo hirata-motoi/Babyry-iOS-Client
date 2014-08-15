@@ -68,7 +68,7 @@
     }
     
     index++;
-    if (index == [_childArray count]) {
+    if (index == [_childProperties count]) {
         return nil;
     }
     return [self viewControllerAtIndex:index];
@@ -76,15 +76,15 @@
 
 - (PageContentViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    if (([_childArray count] == 0) || (index >= [_childArray count])) {
+    if (([_childProperties count] == 0) || (index >= [_childProperties count])) {
         return nil;
     }
     
     PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
 
     pageContentViewController.pageIndex = index;
-    pageContentViewController.childArray = _childArray;
-    pageContentViewController.childObjectId = [[_childArray objectAtIndex:index] objectForKey:@"objectId"];
+    pageContentViewController.childProperty = _childProperties[index];
+    pageContentViewController.childObjectId = [[_childProperties objectAtIndex:index] objectForKey:@"objectId"];
     
     _currentPageIndex = index;
     _currentDisplayedPageContentViewController = pageContentViewController;
@@ -119,7 +119,7 @@
 
 - (NSString *)getDisplayedChildObjectId
 {
-    return [[_childArray objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
+    return [[_childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
 }
 
 

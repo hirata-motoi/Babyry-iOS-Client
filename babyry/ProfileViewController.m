@@ -49,14 +49,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    // ほんとはprotocolを使うべきだがSettingViewControllerの仕様に合わせる
-    // _returnValueOfChildNameがnullでない場合 == childのnameを変更した場合
-    if (_returnValueOfChildName) {
-        [_childList objectAtIndex:_editedChildIndex][@"name"] = _returnValueOfChildName;
-        [_profileTableView reloadData];
-        _returnValueOfChildName = NULL;
-    }
-
+    [_profileTableView reloadData];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -70,7 +63,7 @@
             numberOfRows = 1;
             break;
         case 2:
-            numberOfRows = [_childList count];
+            numberOfRows = [_childProperties count];
             break;
         default:
             break;
@@ -114,8 +107,7 @@
             break;
         case 2: {
             // indexPath.rowに従って子供の情報をセットする
-            PFObject *child = [_childList objectAtIndex:indexPath.row];
-            cell.textLabel.text = child[@"name"];
+            cell.textLabel.text = _childProperties[indexPath.row][@"name"];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
         }
@@ -196,8 +188,8 @@
 - (void)showChildInfo:(NSInteger)index
 {
     ChildProfileViewController *childProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileViewController"];
-    PFObject *child = [_childList objectAtIndex:index];
-    childProfileViewController.childObjectId = child.objectId;
+    NSMutableDictionary *child = _childProperties[index];
+    childProfileViewController.childObjectId = child[@"objectId"];
     childProfileViewController.child = child;
     
     childProfileViewController.childName = child[@"name"];
