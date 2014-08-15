@@ -67,6 +67,22 @@
     [self createCollectionView];
     
     //[self setupScrollBarView];
+    
+    // Notification登録
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+}
+
+- (void)applicationDidBecomeActive
+{
+    NSLog(@"active!");
+    [self viewDidAppear:YES];
+}
+
+- (void)applicationDidReceiveRemoteNotification
+{
+    NSLog(@"got push");
+    [self viewDidAppear:YES];
 }
 
 - (void)didReceiveMemoryWarning

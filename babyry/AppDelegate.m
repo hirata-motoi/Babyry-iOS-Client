@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
 #import "SecretConfig.h"
+#import "PageContentViewController.h"
 
 @implementation AppDelegate
 
@@ -68,6 +69,9 @@
     [application setApplicationIconBadgeNumber:++badgeNumber];
     NSLog(@"receive remote notification %d", badgeNumber);
     */
+    
+    // 各クラスに通知用
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
