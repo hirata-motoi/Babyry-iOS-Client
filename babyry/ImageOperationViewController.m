@@ -92,7 +92,6 @@
 }
 
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    
     switch (buttonIndex) {
         case 0:
             break;
@@ -103,6 +102,7 @@
             uploadPickerViewController.childObjectId = _childObjectId;
             uploadPickerViewController.date = _date;
             uploadPickerViewController.uploadViewController = _uploadViewController;
+            uploadPickerViewController.child = _child;
             [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         }
             break;

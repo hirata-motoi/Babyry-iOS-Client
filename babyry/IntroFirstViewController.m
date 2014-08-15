@@ -196,7 +196,8 @@
      PFLogInFieldsPasswordForgotten |
      PFLogInFieldsLogInButton |
      PFLogInFieldsSignUpButton |
-     PFLogInFieldsDismissButton
+     PFLogInFieldsDismissButton |
+     PFLogInFieldsTwitter
      ];
     
     
