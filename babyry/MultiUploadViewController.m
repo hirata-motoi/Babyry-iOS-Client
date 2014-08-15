@@ -18,6 +18,9 @@
 #import "NotificationHistory.h"
 #import "Partner.h"
 #import "ImagePageViewController.h"
+#import "DateUtils.h"
+#import "UIColor+Hex.h"
+#import "ColorUtils.h"
 
 @interface MultiUploadViewController ()
 
@@ -51,12 +54,8 @@
     }
     
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
-    
     _imageLoadComplete = NO;
-    
     _currentUser = [PFUser currentUser];
-    
-    NSLog(@"received childObjectId:%@ month:%@ date:%@", _childObjectId, _month, _date);
     
     // Draw collectionView
     [self createCollectionView];
@@ -67,8 +66,8 @@
     NSString *yyyy = [_month substringToIndex:4];
     NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
     NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
-    [Navigation setTitle:self.navigationItem withTitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withSubtitle:partLabel withFont:nil withFontSize:0 withColor:nil];
-    
+    [Navigation setTitle:self.navigationItem withTitle:_child[@"name"] withSubtitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
+                                                                     
     // set cell size
     _cellHeight = 100.0f;
     _cellWidth = 100.0f;
@@ -97,7 +96,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear");
     
     _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
                                                 target:self
@@ -108,7 +106,12 @@
     _isTimperExecuting = NO;
     _needTimer = YES;
     [_myTimer fire];
-    NSLog(@"timer info %hhd, %hhd", [_myTimer isValid], _needTimer);
+    
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self showBestShotFixLimitLabel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -121,11 +124,8 @@
 
 - (void) doTimer:(NSTimer *)timer
 {
-    NSLog(@"DoTimer!!! %hhd", _isTimperExecuting);
     if (!_isTimperExecuting) {
-        NSLog(@"DoingTimer!!! %hhd", _isTimperExecuting);
         _isTimperExecuting = YES;
-        //NSLog(@"timer fire");
         if (_needTimer) {
             [self updateImagesFromParse];
         } else {
@@ -150,7 +150,6 @@
     int i = 0;
     _childCachedImageArray = [[NSMutableArray alloc] init];
     while ([ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]]) {
-        //NSLog(@"found cached image %d", i);
         [_childCachedImageArray addObject:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
         i++;
     }
@@ -169,13 +168,6 @@
     _multiUploadedImages.delegate = self;
     _multiUploadedImages.dataSource = self;
     [_multiUploadedImages registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"MultiUploadViewControllerCell"];
-    
-    CGRect frame = self.view.frame;
-    frame.size.width -=10;
-    frame.size.height -=10;
-    frame.origin.x += 5;
-    frame.origin.y += 5;
-    _multiUploadedImages.frame = frame;
     
     [self.view addSubview:_multiUploadedImages];
 }
@@ -207,7 +199,6 @@
     //セルを再利用 or 再生成
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MultiUploadViewControllerCell" forIndexPath:indexPath];
     for (UIView *view in [cell subviews]) {
-        //NSLog(@"remove cell's child view");
         [view removeFromSuperview];
     }
     for (UIGestureRecognizer *gesture in [cell gestureRecognizers]) {
@@ -234,23 +225,24 @@
             [cell addGestureRecognizer:singleTapGestureRecognizer];
             
             // 以下の処理は一番最後 (gestureが一番上にくるように)
-            // unselectedは基本付ける
             CGRect unSelectetFrame = CGRectMake(cell.frame.size.width*2/3, cell.frame.size.height*2/3, cell.frame.size.width/3, cell.frame.size.height/3);
-            UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
-            unSelectedBestshotView.frame = unSelectetFrame;
-            [cell addSubview:unSelectedBestshotView];
+            // choiceの場合だけunselectedは基本付ける
+            if (![_myRole isEqualToString:@"uploader"]) {
+                UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
+                unSelectedBestshotView.frame = unSelectetFrame;
+                [cell addSubview:unSelectedBestshotView];
             
-            unSelectedBestshotView.tag = indexPath.row;
-            unSelectedBestshotView.userInteractionEnabled = YES;
-            UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
-            selectBestShotGesture.numberOfTapsRequired = 1;
-            [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
-            
-            cell.tag = indexPath.row;
+                unSelectedBestshotView.tag = indexPath.row;
+                unSelectedBestshotView.userInteractionEnabled = YES;
+                UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
+                selectBestShotGesture.numberOfTapsRequired = 1;
+                [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+            }
             if (_bestImageIndex > -1 && _bestImageIndex == indexPath.row) {
                 _selectedBestshotView.frame = unSelectetFrame;
                 [cell addSubview:_selectedBestshotView];
             }
+            cell.tag = indexPath.row;
         } else {
             // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
             cell.backgroundColor = [UIColor blackColor];
@@ -265,8 +257,6 @@
 
 -(void)updateImagesFromParse
 {
-    //NSLog(@"updateImagesFromParse");
-    
     // Parseから画像をとる
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -291,7 +281,6 @@
 
 -(void)setCacheOfParseImage:(NSMutableArray *)objects
 {
-    NSLog(@"setCacheOfParseImage %d", [objects count]);
     if ([objects count] > 0) {
         PFObject *object = [objects objectAtIndex:0];
         if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
@@ -299,7 +288,6 @@
         }
         
         if ([object[@"isTmpData"] isEqualToString:@"TRUE"]) {
-            NSLog(@"本画像が上がってない場合 普通の写真ではあり得ない小さい画像(67byte)をcacheにセット -> あとでcache画像サイズ確認して小さければクルクル出す cacheNO:%d", _tmpCacheCount);
             [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
             _tmpCacheCount++;
             
@@ -307,8 +295,6 @@
             [objects removeObjectAtIndex:0];
             [self setCacheOfParseImage:objects];
         } else {
-            NSLog(@"本画像が上がっている場合 S3から取る");
-            
             AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
             getRequest.bucket = @"babyrydev-images";
             getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
@@ -323,7 +309,6 @@
                     [objects removeObjectAtIndex:0];
                     [self setCacheOfParseImage:objects];
                 } else {
-                    NSLog(@"S3にないならParseから");
                     [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                         if (!error && data) {
                             UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
@@ -339,16 +324,13 @@
             }];
         }
     } else {
-        //NSLog(@"setCacheOfParseImage2 %d", _tmpCacheCount);
         //古いキャッシュは消す
         if ([_childCachedImageArray count] > [_childImageArray count]) {
-            NSLog(@"remove old cache");
             for (int i = [_childImageArray count]; i < [_childCachedImageArray count]; i++){
                 [ImageCache removeCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
             }
         }
         _imageLoadComplete = YES;
-        NSLog(@"reloadData!");
         [self showCacheImages];
         
         if ([_childImageArray count] > 0) {
@@ -356,7 +338,6 @@
             [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
         }
         
-        NSLog(@"_tmpCacheCount %d", _tmpCacheCount);
         if (_tmpCacheCount == 0){
             _needTimer = NO;
             [_myTimer invalidate];
@@ -367,7 +348,7 @@
 }
 
 -(void)handleUploadGesture:(id) sender {
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+    if ([_myRole isEqualToString:@"uploader"]) {
         [self openPhotoAlbumList];
     }
 }
@@ -410,7 +391,6 @@
 //        }
         
         // update Parse
-        NSLog(@"multi upload view controller child:%@", _child);
         PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
         [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
@@ -421,13 +401,11 @@
                 int index = 0;
                 for (PFObject *object in objects) {
                     if (index == [[sender view] tag]) {
-                        NSLog(@"choosed %@", object.objectId);
                         if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
                             object[@"bestFlag"] =  @"choosed";
                             [object saveInBackground];
                         }
                     } else {
-                        NSLog(@"unchoosed %@", object.objectId);
                         if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
                             object[@"bestFlag"] =  @"unchoosed";
                             [object saveInBackground];
@@ -464,14 +442,12 @@
 - (void) openImagePageView:(int)detailImageIndex
 {
     if ([_childImageArray count] > 0) {
-        NSLog(@"childImagesを組み立てる");
         NSMutableArray *childImages = [[NSMutableArray alloc] init];
         NSMutableDictionary *section = [[NSMutableDictionary alloc] init];
         NSArray *images = [[NSArray alloc] initWithArray:_childImageArray];
         [section setObject:images forKey:@"images"];
         [childImages addObject:[[NSDictionary alloc] initWithDictionary:section]];
         
-        NSLog(@"ImagePageViewController表示");
         ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
         pageViewController.childImages = childImages;
         pageViewController.currentSection = 0;
@@ -513,7 +489,7 @@
 
 - (void)setupBestShotReply
 {
-    if (![[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+    if (![_myRole isEqualToString:@"uploader"]) {
         PFQuery *query = [PFQuery queryWithClassName:@"BestShotReply"];
         [query whereKey:@"toUserId" equalTo:[PFUser currentUser][@"userId"]];
         [query whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
@@ -526,11 +502,11 @@
         
         return;
     }
-    
-    UIButton *replyButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [replyButton setBackgroundImage:[UIImage imageNamed:@"GoodGray"] forState:UIControlStateNormal];
-    [replyButton addTarget:self action:@selector(sendBestShotReply) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:replyButton];
+   
+    _bestShotReplyIcon = [[UIButton alloc]init];
+    _bestShotReplyIcon.frame = [self buttonRect];
+    [_bestShotReplyIcon setImage:[UIImage imageNamed:@"GoodGray"] forState:UIControlStateNormal];
+    [_headerView addSubview:_bestShotReplyIcon];
     
     PFQuery *query = [PFQuery queryWithClassName:@"BestShotReply"];
     [query whereKey:@"fromUserId" equalTo:[PFUser currentUser][@"userId"]];
@@ -545,9 +521,12 @@
 
 - (void)showalreadyReplyedButton
 {
-    UIButton *alreadyReplyedIcon = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    UIButton *alreadyReplyedIcon = [[UIButton alloc] initWithFrame:[self buttonRect]];
     [alreadyReplyedIcon setBackgroundImage:[UIImage imageNamed:@"GoodBlue"] forState:UIControlStateNormal];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:alreadyReplyedIcon];
+    [alreadyReplyedIcon setImage:[UIImage imageNamed:@"GoodBlue"] forState:UIControlStateNormal];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:alreadyReplyedIcon];
+    _bestShotReplyIcon = alreadyReplyedIcon;
+    [_headerView addSubview:_bestShotReplyIcon];
 }
 
 - (void)sendBestShotReply
@@ -575,10 +554,7 @@
 - (void)showReceivedBestShotReply
 {
     // アイコンを画面右上に表示する
-    NSInteger iconWidth = 30;
-    NSInteger iconHeight = 30;
-    CGRect rect = CGRectMake(self.view.frame.size.width - iconWidth - 10, 64 + 7, iconWidth, iconHeight);
-    UIImageView *iv = [[UIImageView alloc]initWithFrame:rect];
+    UIImageView *iv = [[UIImageView alloc]initWithFrame:[self buttonRect]];
     iv.image = [UIImage imageNamed:@"GoodBlue"];
     [self.view addSubview:iv];
 }
@@ -597,5 +573,54 @@
         }
     }
 }
+
+// bestShotFixLimitLabelを更新
+// limitの時刻 + 文言
+- (void)showBestShotFixLimitLabel
+{
+    // 帯の色設定
+    _headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
     
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    
+    // limit時刻
+    NSDateComponents *targetDateComps = [[NSDateComponents alloc]init];
+    targetDateComps.year  = [[_date substringWithRange:NSMakeRange(0, 4)] integerValue];
+    targetDateComps.month = [[_date substringWithRange:NSMakeRange(4, 2)] integerValue];
+    targetDateComps.day   = [[_date substringWithRange:NSMakeRange(6, 2)] integerValue];
+    
+    NSDateComponents *limitComps = [DateUtils addDateComps:targetDateComps withUnit:@"day" withValue:2];
+    NSDate *limitDate = [DateUtils setSystemTimezone: [cal dateFromComponents:limitComps]];
+    
+    // 現在時刻
+    NSDate *todayDate = [DateUtils setSystemTimezone:[NSDate date]];
+    
+    if ([limitDate timeIntervalSinceDate:todayDate] > 0) {
+        CGFloat diff = [limitDate timeIntervalSinceDate:todayDate];
+        CGFloat diffHour = floor( diff / (60 * 60) );
+        CGFloat diffMinute = floor( (diff - diffHour * 60 * 60) / 60 ); // 切り捨て必須。10分後と表記して11分後に消えるのはOKだが、逆はアウトなので。
+        
+        NSString *remainedTimeText = (diffHour > 0) ? [NSString stringWithFormat:@"%d時間%d分", (int)diffHour, (int)diffMinute] : [NSString stringWithFormat:@"%d分", (int)diffMinute];
+        NSString * text = [NSString stringWithFormat:@"あと%@", remainedTimeText];
+        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:text];
+        // 色
+        [str addAttribute:NSForegroundColorAttributeName
+                    value: [UIColor_Hex colorWithHexString:@"ff7f7f" alpha:1.0f]
+                    range:NSMakeRange(0, text.length)];
+        // font
+        [str addAttribute:NSFontAttributeName
+                    value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0f]
+                    range:NSMakeRange(0, text.length)];
+                                          
+        [_bestShotFixLimitLabel setAttributedText:str];
+        [self.view addSubview:_bestShotFixLimitLabel];
+    }
+    
+}
+
+- (CGRect)buttonRect
+{
+    return CGRectMake(_headerView.frame.size.width - 30 - 5, (_headerView.frame.size.height - 30) / 2, 30, 30);
+}
+
 @end
