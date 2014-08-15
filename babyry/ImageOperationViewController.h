@@ -44,10 +44,11 @@
 @property NSMutableDictionary *notificationHistoryByDay;
 
 @property BOOL fromMultiUpload;
+@property NSString *myRole;
 @property CGRect imageFrame;
 @property NSNumber *bestImageIndexNumber;
 @property NSMutableArray *bestImageIndexArray;
-@property NSInteger *pageIndex;
+@property NSInteger pageIndex;
 
 @property UIImageView *selectedBestshotView;
 

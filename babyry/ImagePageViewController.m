@@ -88,6 +88,7 @@
     if (_fromMultiUpload) {
         uploadViewController.bestImageIndexArray = _bestImageIndexArray;
         uploadViewController.pageIndex = index;
+        uploadViewController.myRole = _myRole;
     }
     
     if (_notificationHistory[ymd]) {
@@ -261,7 +262,13 @@
     
     // まずはS3に接続
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
-    [[AWSS3Utils getObject:[NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId] configuration:configuration] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+    AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
+    getRequest.bucket = @"babyrydev-images";
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+    getRequest.responseCacheControl = @"no-cache";
+    
+    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+    [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
         if (!task.error && task.result) {                                                                                                 
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];

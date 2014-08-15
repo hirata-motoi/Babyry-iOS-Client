@@ -45,8 +45,9 @@
 @property NSMutableDictionary *notificationHistoryByDay;
 
 @property BOOL fromMultiUpload;
+@property NSString *myRole;
 @property NSNumber *bestImageIndexNumber;
-@property NSInteger *pageIndex;
+@property NSInteger pageIndex;
 @property NSMutableArray *bestImageIndexArray;
 
 @end

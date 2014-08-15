@@ -72,7 +72,7 @@
 
 - (void) viewDidAppear:(BOOL)animated
 {
-    if ([self getBestShotIndex] == (int)_pageIndex) {
+    if ([self getBestShotIndex] == _pageIndex) {
         [self.view addSubview:_selectedBestshotView];
     }
 }
@@ -192,12 +192,18 @@
     _selectedBestshotView.frame = unSelectedBestshotView.frame;
     if ([self getBestShotIndex] == (int)_pageIndex) {
         [self.view addSubview:_selectedBestshotView];
+    } else {
+        if ([_myRole isEqualToString:@"uploader"]) {
+            unSelectedBestshotView.hidden = YES;
+        }
     }
     
-    UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
-    selectBestShotGesture.numberOfTapsRequired = 1;
-    unSelectedBestshotView.userInteractionEnabled = YES;
-    [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+    if ([_myRole isEqualToString:@"chooser"]) {
+        UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
+        selectBestShotGesture.numberOfTapsRequired = 1;
+        unSelectedBestshotView.userInteractionEnabled = YES;
+        [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+    }
 }
 
 - (void) selectBestShot:(id) sender
@@ -219,10 +225,10 @@
     return -1;
 }
 
-- (void)setBestShotIndex:(NSInteger *)index
+- (void)setBestShotIndex:(NSInteger)index
 {
     for (int i = 0; i < [_bestImageIndexArray count]; i++) {
-        if (i == (int)index) {
+        if (i == index) {
             [_bestImageIndexArray replaceObjectAtIndex:i withObject:@"YES"];
         } else {
             [_bestImageIndexArray replaceObjectAtIndex:i withObject:@"NO"];
@@ -239,7 +245,7 @@
         if(!error) {
             int indexOfParse = 0;
             for (PFObject *object in objects) {
-                if ((int)index == indexOfParse) {
+                if (index == indexOfParse) {
                     NSLog(@"choosed %@", object.objectId);
                     if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
                         object[@"bestFlag"] =  @"choosed";

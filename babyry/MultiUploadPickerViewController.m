@@ -292,18 +292,22 @@
     // これが count 0になるまで再起実行
     if ([_uploadImageDataArray count] != 0){
         // isTmpDataがついているレコードを探す
-        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
             // objectが見つかれば上書き
             if (object) {
                 // S3に上げる
-                [[AWSS3Utils putObject:
-                 [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], object.objectId]
-                            imageData:[_uploadImageDataArray objectAtIndex:0]
-                             imageType:[_uploadImageDataTypeArray objectAtIndex:0]
-                         configuration:_configuration] continueWithBlock:^id(BFTask *task) {
+                AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+                putRequest.bucket = @"babyrydev-images";
+                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
+                putRequest.body = [_uploadImageDataArray objectAtIndex:0];
+                putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
+                putRequest.contentType = [_uploadImageDataTypeArray objectAtIndex:0];
+                putRequest.cacheControl = @"no-cache";
+                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+                [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
                     if (!task.error) {
                         // エラーがなければisTmpDataを更新
                         object[@"isTmpData"] = @"FALSE";
@@ -324,25 +328,31 @@
                 }];
             } else {
                 // objectが見つからなければ新たに作成
-                PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]]];
+                PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
                 childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
                 childImage[@"imageOf"] = _childObjectId;
                 childImage[@"bestFlag"] = @"unchoosed";
                 [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    // S3に上げる
-                    [[AWSS3Utils putObject:
-                      [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", [_child[@"childImageShardIndex"] integerValue]], childImage.objectId]
-                                 imageData:[_uploadImageDataArray objectAtIndex:0]
-                                 imageType:[_uploadImageDataTypeArray objectAtIndex:0]
-                             configuration:_configuration] continueWithBlock:^id(BFTask *task) {
-                        if (!task.error) {
-                            // エラーがなければisTmpDataを更新
-                            [_uploadImageDataArray removeObjectAtIndex:0];
-                            [_uploadImageDataTypeArray removeObjectAtIndex:0];
-                            [self saveToParseInBackground];
-                        }
-                        return nil;
-                    }];
+                    if(succeeded) {
+                        // S3に上げる
+                        AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+                        putRequest.bucket = @"babyrydev-images";
+                        putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+                        putRequest.body = [_uploadImageDataArray objectAtIndex:0];
+                        putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
+                        putRequest.contentType = [_uploadImageDataTypeArray objectAtIndex:0];
+                        putRequest.cacheControl = @"no-cache";
+                        AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+                        [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
+                                if (!task.error) {
+                                    // エラーがなければisTmpDataを更新
+                                    [_uploadImageDataArray removeObjectAtIndex:0];
+                                    [_uploadImageDataTypeArray removeObjectAtIndex:0];
+                                    [self saveToParseInBackground];
+                                }
+                                return nil;
+                            }];
+                    }
                 }];
             }
         }];

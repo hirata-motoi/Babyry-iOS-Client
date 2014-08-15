@@ -13,7 +13,7 @@
 @interface AWSS3Utils : NSObject
 typedef void (^CompletionBlock)(void);
 + (AWSServiceConfiguration *) getAWSServiceConfiguration;
-+ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType configuration:(AWSServiceConfiguration *)configuration;
-+ (BFTask *) getObject:(NSString *)key configuration:(AWSServiceConfiguration *)configuration;
+//+ (BFTask *) putObject:(NSString *)key imageData:(NSData *)imageData imageType:(NSString *)imageType configuration:(AWSServiceConfiguration *)configuration;
+//+ (BFTask *) getObject:(NSString *)key configuration:(AWSServiceConfiguration *)configuration;
 
 @end

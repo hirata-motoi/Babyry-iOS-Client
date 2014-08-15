@@ -454,6 +454,7 @@
         pageViewController.currentRow = detailImageIndex;
         pageViewController.childObjectId = _childObjectId;
         pageViewController.fromMultiUpload = YES;
+        pageViewController.myRole = _myRole;
         pageViewController.bestImageIndexNumber = [NSNumber numberWithInt:_bestImageIndex];
         pageViewController.showPageNavigation = YES;
         NSMutableDictionary *imagesCountDic = [[NSMutableDictionary alloc] init];
