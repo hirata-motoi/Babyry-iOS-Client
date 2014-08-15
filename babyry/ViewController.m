@@ -207,6 +207,7 @@
             [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
         }
         childSubDic[@"childImageShardIndex"] = c[@"childImageShardIndex"];
+        childSubDic[@"commentShardIndex"] = c[@"commentShardIndex"];
         childSubDic[@"createdAt"] = c.createdAt;
         [_childProperties addObject:childSubDic];
     }

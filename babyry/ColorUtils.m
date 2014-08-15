@@ -36,4 +36,9 @@
     return [UIColor_Hex colorWithHexString:@"8feed0" alpha:1.0];
 }
 
++(UIColor *) getCellBackgroundDefaultColor
+{
+    return [UIColor_Hex colorWithHexString:@"e7e4d6" alpha:1.0];
+}
+
 @end

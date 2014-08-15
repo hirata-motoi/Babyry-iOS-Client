@@ -253,7 +253,7 @@
 
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         // tmpData = @"TRUE" にセットしておく画像はあとからあげる
-        childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+        childImage[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"unchoosed";
         childImage[@"isTmpData"] = @"TRUE";
@@ -331,7 +331,7 @@
             } else {
                 // objectが見つからなければ新たに作成
                 PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
-                childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+                childImage[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
                 childImage[@"imageOf"] = _childObjectId;
                 childImage[@"bestFlag"] = @"unchoosed";
                 [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){

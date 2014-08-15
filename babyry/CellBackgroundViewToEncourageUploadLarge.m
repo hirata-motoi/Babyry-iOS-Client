@@ -7,6 +7,7 @@
 //
 
 #import "CellBackgroundViewToEncourageUploadLarge.h"
+#import "ColorUtils.h"
 
 @implementation CellBackgroundViewToEncourageUploadLarge
 
@@ -27,7 +28,16 @@
 + (instancetype)view
 {
     NSString *className = NSStringFromClass([self class]);
-    return [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
+    CellBackgroundViewToEncourageUploadLarge *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
+    view.backgroundColor = [ColorUtils getCellBackgroundDefaultColor];
+    return view;
+}
+
+- (void)layoutSubviews
+{
+    CGFloat height = self.frame.size.height;
+    CGFloat width = height;
+    _iconView.frame = CGRectMake((self.frame.size.width - width)/2, (self.frame.size.height - height)/2, width, height);
 }
 
 /*

@@ -7,6 +7,7 @@
 //
 
 #import "CellBackgroundViewToWaitUploadLarge.h"
+#import "ColorUtils.h"
 
 @implementation CellBackgroundViewToWaitUploadLarge
 
@@ -27,24 +28,16 @@
 + (instancetype)view
 {
     NSString *className = NSStringFromClass([self class]);
-    return [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
+    CellBackgroundViewToWaitUploadLarge *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
+    view.backgroundColor = [ColorUtils getCellBackgroundDefaultColor];
+    return view;
 }
 
-
-// TODO 共通classへ切り出し
-- (UIImage *)filterImage:(UIImage *)originImage
+- (void)layoutSubviews
 {
-    CIImage *filteredImage = [[CIImage alloc] initWithCGImage:originImage.CGImage];
-    CIFilter *filter = [CIFilter filterWithName:@"CIMinimumComponent"];
-    [filter setValue:filteredImage forKey:@"inputImage"];
-    filteredImage = filter.outputImage;
-    
-    CIContext *ciContext = [CIContext contextWithOptions:nil];
-    CGImageRef imageRef = [ciContext createCGImage:filteredImage
-                                          fromRect:[filteredImage extent]];
-    UIImage *outputImage  = [UIImage imageWithCGImage:imageRef scale:1.0f orientation:UIImageOrientationUp];
-    CGImageRelease(imageRef);
-    return outputImage;
+    CGFloat height = self.frame.size.height / 2;
+    CGFloat width = height;
+    _iconView.frame = CGRectMake((self.frame.size.width - width)/2, (self.frame.size.height - height)/2, width, height);
 }
 
 

@@ -63,7 +63,7 @@
     UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
     uploadViewController.childObjectId = _childObjectId;
     uploadViewController.name = _name;
-    NSString *ymd   = [imageInfo[@"date"] substringWithRange:NSMakeRange(1, 8)];
+    NSString *ymd   = [imageInfo[@"date"] stringValue];
     NSString *year  = [ymd substringWithRange:NSMakeRange(0, 4)];
     NSString *month = [ymd substringWithRange:NSMakeRange(4, 2)];
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", year, month];

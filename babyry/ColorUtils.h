@@ -20,4 +20,6 @@
 
 +(UIColor *) getSectionHeaderColor;
 
++(UIColor *) getCellBackgroundDefaultColor;
+
 @end

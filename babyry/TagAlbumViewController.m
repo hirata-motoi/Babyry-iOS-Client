@@ -105,7 +105,7 @@
     NSArray *imageObjects = [[sortedChildImages objectAtIndex:indexPath.section] objectForKey:@"images"];
     PFObject *imageObject = [imageObjects objectAtIndex:indexPath.row];
     
-    NSString *yyyymmdd = [imageObject[@"date"] substringWithRange:NSMakeRange(1, 8)]; // D20140710 のような文字列から日付部分だけ切り出す
+    NSString *yyyymmdd = [imageObject[@"date"] stringValue];
     // Cacheからはりつけ
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, yyyymmdd];
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
@@ -236,7 +236,7 @@
                  
                 int __block index = 0;
                 for (PFObject *object in objects) {
-                    NSString *date = [object[@"date"] substringWithRange:NSMakeRange(1, 8)];
+                    NSString *date = [object[@"date"] stringValue];
                     NSString *cacheImageName = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, date];
                     // ここはTagAlbumが使われるようになったらS3を再起的に呼ぶように変更する
                     // まずはS3に接続

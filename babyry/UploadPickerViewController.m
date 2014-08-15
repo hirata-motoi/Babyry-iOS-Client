@@ -106,7 +106,7 @@
     NSLog(@"Parseに既に画像があるかどうかを確認");
     PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    [imageQuery whereKey:@"date" equalTo:[NSString stringWithFormat:@"D%@", _date]];
+    [imageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
     [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
     
     NSArray *imageArray = [imageQuery findObjects];
@@ -145,7 +145,7 @@
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         //childImage[@"imageFile"] = imageFile;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
-        childImage[@"date"] = [NSString stringWithFormat:@"D%@", _date];
+        childImage[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"choosed";
         [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){

@@ -75,7 +75,7 @@
     uploadViewController.childObjectId = _childObjectId;
     uploadViewController.name = _name;
    
-    NSString *ymd   = [imageInfo[@"date"] substringWithRange:NSMakeRange(1, 8)];
+    NSString *ymd   = [imageInfo[@"date"] stringValue];
     NSString *year  = [ymd substringWithRange:NSMakeRange(0, 4)];
     NSString *month = [ymd substringWithRange:NSMakeRange(4, 2)];
     
@@ -187,8 +187,9 @@
     }
     if (_imageList.count - 10 <= index) {
         PFObject *lastChildImage = _imageList[ _imageList.count - 1 ];
-        NSString *year = [lastChildImage[@"date"] substringWithRange:NSMakeRange(1, 4)];
-        NSString *month = [lastChildImage[@"date"] substringWithRange:NSMakeRange(5, 2)];
+        NSString *ymd = [lastChildImage[@"date"] stringValue];
+        NSString *year = [ymd substringWithRange:NSMakeRange(0, 4)];
+        NSString *month = [ymd substringWithRange:NSMakeRange(4, 2)];
         [self getChildImagesWithYear:[year integerValue] withMonth:[month integerValue]];
     }
 }                          
@@ -239,7 +240,9 @@
         PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         [query whereKey:@"imageOf" equalTo:_childObjectId];
         [query whereKey:@"bestFlag" equalTo:@"choosed"];
-        [query whereKey:@"date" hasPrefix:[NSString stringWithFormat:@"D%ld%02ld", (long)c.year, (long)c.month]];
+        
+        [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", c.year, c.month, 1] integerValue]]];
+        [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", c.year, c.month, 31] integerValue]]];
         NSArray *objects = [query findObjects];
   
         if (objects && objects.count > 0) {
@@ -258,7 +261,7 @@
 
 - (void)cacheThumbnail:(PFObject *)childImage
 {
-    NSString *ymd = [childImage[@"date"] substringWithRange:NSMakeRange(1, 8)];
+    NSString *ymd = [childImage[@"date"] stringValue];
     
     // まずはS3に接続
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
