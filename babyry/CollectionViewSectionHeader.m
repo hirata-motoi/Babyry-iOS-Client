@@ -47,8 +47,6 @@
     _nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
                                                            
     self.backgroundColor = [ColorUtils getSectionHeaderColor];
-    
-    NSLog(@"color: %@", [ColorUtils getSectionHeaderColor]);
 }
 
 /*
