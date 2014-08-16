@@ -278,23 +278,13 @@
                 if (_totalImageNum) {
                     [_totalImageNum replaceObjectAtIndex:_indexPath.row withObject:[NSNumber numberWithInt:saveCount]];
                 }
+                _uploadedImageCount = 0; // initialize
                 [self saveToParseInBackground];
                 [self dismissViewControllerAnimated:YES completion:NULL];
                 
                 //アルバム表示のViewも消す
                 UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
                 [naviController popViewControllerAnimated:YES];
-               
-                if (indexPath == lastIndexPath) {
-                    // NotificationHistoryに登録
-                    PFObject *partner = (PFObject *)[Partner partnerUser];
-                    [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
-                    
-                    // push通知
-                    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
-                    [PushNotification sendInBackground:@"imageUpload" withOptions:options];
-                }
             }
         }];
     }
@@ -329,6 +319,7 @@
                         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                             [_uploadImageDataArray removeObjectAtIndex:0];
                             [_uploadImageDataTypeArray removeObjectAtIndex:0];
+                            _uploadedImageCount++;
                             [self saveToParseInBackground];
                         }];
                     } else {
@@ -363,6 +354,7 @@
                                     // エラーがなければisTmpDataを更新
                                     [_uploadImageDataArray removeObjectAtIndex:0];
                                     [_uploadImageDataTypeArray removeObjectAtIndex:0];
+                                    _uploadedImageCount++;
                                     [self saveToParseInBackground];
                                 }
                                 return nil;
@@ -381,6 +373,18 @@
                 [object deleteInBackground];
             }
         }];
+        
+        // 全ての画像の処理が完了 かつ 1枚以上画像がuploadされた場合は通知を送る
+        if (_uploadedImageCount > 0) {
+            // NotificationHistoryに登録
+            PFObject *partner = (PFObject *)[Partner partnerUser];
+            [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
+        
+            // push通知
+            NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+            options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+            [PushNotification sendInBackground:@"imageUpload" withOptions:options];
+        }
     }
 }
 

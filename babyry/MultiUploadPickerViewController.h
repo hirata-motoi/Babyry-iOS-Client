@@ -39,5 +39,6 @@
 @property MBProgressHUD *hud;
 
 @property AWSServiceConfiguration *configuration;
+@property NSInteger uploadedImageCount;
 
 @end
