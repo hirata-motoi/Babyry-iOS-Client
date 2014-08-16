@@ -7,6 +7,7 @@
 //
 
 #import "Badge.h"
+#import "BadgeNotify.h"
 
 @implementation Badge
 
@@ -30,8 +31,8 @@
 
 + (UIImageView *)badgeForComment:(NSInteger)count
 {
-    NSInteger badgeHeight = 15;
-    NSInteger badgeWidth  = 18;
+    NSInteger badgeHeight = 22;
+    NSInteger badgeWidth  = 26;
     UIImageView *commentBadge = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, badgeWidth, badgeHeight)];
     commentBadge.image = [UIImage imageNamed:@"CommentGreen"];
     
@@ -47,23 +48,14 @@
 
 + (UIView *)badgeForBestShot:(NSInteger)count
 {
-    NSInteger badgeHeight = 15;
-    UIView *badge = [[UIView alloc]initWithFrame:CGRectMake(0, 0, badgeHeight, badgeHeight)];
-    badge.backgroundColor = [UIColor redColor]; // 暫定
-    badge.layer.cornerRadius = badgeHeight / 2;
-    UILabel *label = [[UILabel alloc]initWithFrame:badge.frame];
-    NSInteger limitedCount = (count >= 99) ? 99 : count;
-    label.text = [NSString stringWithFormat:@"%ld", limitedCount];
-    label.font = [self commonFontForBadge];
-    label.textAlignment = UITextAlignmentCenter;
-    label.textColor = [UIColor whiteColor];
-    [badge addSubview:label];
+    BadgeNotify *badge = [BadgeNotify view];
+    badge.layer.cornerRadius = badge.frame.size.height/2;
     return badge;
 }
 
 + (UIFont *)commonFontForBadge
 {
-    UIFont *font = [UIFont fontWithName:@"ArialRoundedMTBold" size:9];
+    UIFont *font = [UIFont fontWithName:@"ArialRoundedMTBold" size:13];
     return font;
 }
 

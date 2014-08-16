@@ -116,6 +116,8 @@
 		F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ABB122197D295B009E35CB /* CommentTableViewCell.m */; };
 		F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AC1A4A19937FF500DBFE91 /* NotificationHistory.m */; };
 		F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AC1A4D19947CC900DBFE91 /* Partner.m */; };
+		F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2AD4F09199F96DF00037C72 /* BadgeNotify.xib */; };
+		F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AD4F0C199F97AC00037C72 /* BadgeNotify.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -318,6 +320,9 @@
 		F2AC1A4A19937FF500DBFE91 /* NotificationHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationHistory.m; sourceTree = "<group>"; };
 		F2AC1A4C19947CC900DBFE91 /* Partner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Partner.h; sourceTree = "<group>"; };
 		F2AC1A4D19947CC900DBFE91 /* Partner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Partner.m; sourceTree = "<group>"; };
+		F2AD4F09199F96DF00037C72 /* BadgeNotify.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BadgeNotify.xib; sourceTree = "<group>"; };
+		F2AD4F0B199F97AC00037C72 /* BadgeNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BadgeNotify.h; sourceTree = "<group>"; };
+		F2AD4F0C199F97AC00037C72 /* BadgeNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BadgeNotify.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -358,6 +363,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2AD4F06199F96A700037C72 /* Badge */,
 				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
 				88CFF4F61998CED800B56481 /* ToolbarItem */,
 				F25D29DC199B3DB400CD50D7 /* SectionHeader */,
@@ -765,6 +771,32 @@
 			name = PageView;
 			sourceTree = "<group>";
 		};
+		F2AD4F06199F96A700037C72 /* Badge */ = {
+			isa = PBXGroup;
+			children = (
+				F2AD4F08199F96B700037C72 /* Class */,
+				F2AD4F07199F96AF00037C72 /* Xib */,
+			);
+			name = Badge;
+			sourceTree = "<group>";
+		};
+		F2AD4F07199F96AF00037C72 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				F2AD4F09199F96DF00037C72 /* BadgeNotify.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		F2AD4F08199F96B700037C72 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				F2AD4F0B199F97AC00037C72 /* BadgeNotify.h */,
+				F2AD4F0C199F97AC00037C72 /* BadgeNotify.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -860,6 +892,7 @@
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
+				F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */,
 				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
@@ -959,6 +992,7 @@
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
 				88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */,
+				F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */,
 				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
 				88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */,
 				F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */,
