@@ -481,7 +481,7 @@
         [imagesCountDic setObject:[NSNumber numberWithInt:[childImageArraySorted count]] forKey:@"imagesCountNumber"];
         pageViewController.imagesCountDic = imagesCountDic;
         pageViewController.child = _child;
-        pageViewController.notificationHistory = _notificationHistoryByDay;
+        pageViewController.notificationHistory = [[NSMutableDictionary alloc]initWithObjects:@[ _notificationHistoryByDay ] forKeys:@[ _date ]];
         [self.navigationController setNavigationBarHidden:YES];
         [self.navigationController pushViewController:pageViewController animated:YES];
     }

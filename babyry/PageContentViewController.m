@@ -76,7 +76,6 @@
 
 - (void)applicationDidBecomeActive
 {
-    NSLog(@"active!");
     [self viewDidAppear:YES];
 }
 
@@ -101,12 +100,12 @@
     
     _selfRole = [FamilyRole selfRole];
     [_pageContentCollectionView reloadData];
-    [self setupNotificationHistory];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    [self setupNotificationHistory];
     [self showChildImages];
     [self setupImagesCount];
 }
