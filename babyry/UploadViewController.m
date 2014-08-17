@@ -41,8 +41,8 @@
     
     _defaultImageViewFrame = _uploadedImageView.frame;
     
-    _scrollView.frame = [self getUploadedImageFrame:_uploadedImage];
-    _uploadedImageView.frame = CGRectMake(0, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
+    CGRect imageRect = [self getUploadedImageFrame:_uploadedImage];
+    _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
                        
     _uploadedImageView.image = _uploadedImage;
     
@@ -51,7 +51,7 @@
     
     // zoom
     _scrollView.minimumZoomScale = 1.0f;
-    _scrollView.maximumZoomScale = 3.0f;
+    _scrollView.maximumZoomScale = 5.0f;
     _scrollView.delegate = self;
     
     // Parseからちゃんとしたサイズの画像を取得
