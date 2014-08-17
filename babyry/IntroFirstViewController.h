@@ -8,12 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+#import "IntroPageRootViewController.h"
 
-@interface IntroFirstViewController : UIViewController <UIPageViewControllerDataSource, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate>
+@interface IntroFirstViewController : UIViewController <UIPageViewControllerDataSource, IntroPageRootViewControllerDelegate,PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate>
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property int introPageIndex;
-@property (strong, nonatomic) IBOutlet UIButton *registerButton;
-- (IBAction)registerAction:(id)sender;
+@property NSInteger currentPageControl;
+
+- (void)openLoginView;
+- (void)skipToLast:(NSInteger)currentIndex;
 
 @end
