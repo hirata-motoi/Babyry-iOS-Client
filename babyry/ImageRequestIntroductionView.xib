@@ -51,6 +51,7 @@
                 <outlet property="backgroundView" destination="dMS-Dt-e9t" id="pVM-kf-cwT"/>
                 <outlet property="closeButton" destination="ZAh-1d-9ma" id="1lB-0h-qwc"/>
                 <outlet property="iconView" destination="heD-xz-3dH" id="MnQ-ch-0ia"/>
+                <outlet property="titleLabel" destination="Vfi-ad-iGC" id="KPA-Uw-oft"/>
             </connections>
         </view>
     </objects>

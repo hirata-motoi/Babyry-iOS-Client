@@ -22,4 +22,6 @@
 
 +(UIColor *) getCellBackgroundDefaultColor;
 
++(UIColor *) getBabyryColor;
+
 @end

@@ -326,15 +326,15 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="369"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="38" sectionHeaderHeight="22" sectionFooterHeight="22" id="dXc-y1-V1W">
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" dataMode="prototypes" style="plain" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="dXc-y1-V1W">
                                         <rect key="frame" x="12" y="14" width="296" height="277"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <color key="separatorColor" red="0.81525985050000005" green="0.81525985050000005" blue="0.81525985050000005" alpha="1" colorSpace="calibratedRGB"/>
                                     </tableView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Z63-j1-0pN">
                                         <rect key="frame" x="278" y="467" width="30" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <state key="normal" title="送信">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -900,18 +900,18 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" id="aRG-6L-cVh">
-                                <rect key="frame" x="0.0" y="243" width="320" height="237"/>
+                                <rect key="frame" x="0.0" y="265" width="320" height="215"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="こどもの名前" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="8PN-lt-XH6">
-                                        <rect key="frame" x="89" y="16" width="142" height="21"/>
+                                        <rect key="frame" x="89" y="26" width="142" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.50468709160000003" blue="0.1113311951" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="Opc-sd-OK3">
-                                        <rect key="frame" x="20" y="38" width="280" height="138"/>
+                                        <rect key="frame" x="20" y="59" width="280" height="83"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" id="7je-xf-d62">
@@ -925,7 +925,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="O52-J5-NgH">
-                                                        <rect key="frame" x="21" y="38" width="239" height="30"/>
+                                                        <rect key="frame" x="21" y="39" width="239" height="30"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
@@ -954,7 +954,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                         </subviews>
                                     </scrollView>
                                     <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="追加" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dt5-R2-WMR">
-                                        <rect key="frame" x="130" y="173" width="60" height="60"/>
+                                        <rect key="frame" x="130" y="154" width="60" height="60"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.50468709160000003" blue="0.1113311951" alpha="1" colorSpace="calibratedRGB"/>
@@ -967,11 +967,11 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                         <color key="backgroundColor" red="0.90329079410000002" green="0.90896739130000004" blue="0.82648851440000004" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
-                        <outlet property="childNameField1" destination="O52-J5-NgH" id="svk-ig-fOq"/>
-                        <outlet property="childNameField2" destination="Osa-C1-n9V" id="VeL-Yz-xhC"/>
-                        <outlet property="childNameField3" destination="YI1-U0-pnR" id="Qd8-mA-3DR"/>
-                        <outlet property="childNameField4" destination="LgR-33-qmp" id="aMB-3c-aW9"/>
-                        <outlet property="childNameField5" destination="RTr-co-T4V" id="dCM-4Z-uyi"/>
+                        <outlet property="childNameField1" destination="Osa-C1-n9V" id="z12-NK-c3A"/>
+                        <outlet property="childNameField2" destination="O52-J5-NgH" id="5ZC-nH-L7T"/>
+                        <outlet property="childNameField3" destination="RTr-co-T4V" id="fH3-27-YAE"/>
+                        <outlet property="childNameField4" destination="LgR-33-qmp" id="u7w-t2-R9H"/>
+                        <outlet property="childNameField5" destination="YI1-U0-pnR" id="cpb-XF-qTr"/>
                         <outlet property="childNameSendLabel" destination="dt5-R2-WMR" id="mnW-L2-fjA"/>
                         <outlet property="editingView" destination="aRG-6L-cVh" id="3SE-Fz-efV"/>
                         <outlet property="textFieldContainerScrollView" destination="Opc-sd-OK3" id="Mgy-k3-X0N"/>

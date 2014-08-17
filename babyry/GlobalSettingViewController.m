@@ -353,6 +353,12 @@
     [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         self.roleControl.enabled = TRUE;
         [FamilyRole updateCache];
+        
+        // push通知
+        NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+        options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+        options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+        [PushNotification sendInBackground:@"partSwitched" withOptions:options];
     }];
 }
                      

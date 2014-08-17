@@ -17,7 +17,6 @@
     PFQuery *query = [PFQuery queryWithClassName:@"PushNotificationEvent"];
     [query whereKey:@"event" equalTo:event];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        NSLog(@"event objects : %@", objects);
         if (!error && objects.count > 0) { // 存在しないイベントの場合は通知を送らない
             PFObject *eventInfo = [objects objectAtIndex:0];
             
@@ -25,7 +24,6 @@
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
                 message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
             }
-            NSLog(@"message : %@", message);
             
             // 相方の情報を取得
             PFQuery *queryFamily = [PFQuery queryWithClassName:@"_User"];

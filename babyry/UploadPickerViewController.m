@@ -181,7 +181,7 @@
     options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
     [PushNotification sendInBackground:@"imageUpload" withOptions:options];
     PFObject *partner = (PFUser *)[Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
+    [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
     NSLog(@"saved");
     
     [self.navigationController popViewControllerAnimated:YES];

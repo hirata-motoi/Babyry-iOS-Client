@@ -11,6 +11,8 @@
 #import "CommentTableViewCell.h"
 #import "NotificationHistory.h"
 #import "Partner.h"
+#import "PushNotification.h"
+#import "UIColor+Hex.h"
 
 @interface CommentViewController ()
 
@@ -45,6 +47,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentTableView.layer.borderColor = [UIColor whiteColor].CGColor;
     _commentTableView.layer.borderWidth = 1;
     _commentTableView.layer.cornerRadius = 5;
+    _commentTableView.separatorColor = [UIColor_Hex colorWithHexString:@"FFFFFF" alpha:0.3];
+    _commentTableView.tableFooterView = [[UIView alloc]init];
     
     // text field
     _commentTextView = [[UIPlaceHolderTextView alloc] init];
@@ -57,7 +61,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentTextView.frame = CGRectMake(10, _commentTableContainer.frame.size.height - 40, 250, 30);
     _commentTextView.hidden = NO;
     [_commentTableContainer addSubview:_commentTextView];
-    _commentSubmitButton.frame = CGRectMake(260, _commentTableContainer.frame.size.height - 40, 30, 20);
+    _commentSubmitButton.frame = CGRectMake(265, _commentTableContainer.frame.size.height - 40, 44, 30);
     _commentSubmitButton.hidden = NO;
     [_commentTableContainer addSubview:_commentSubmitButton];
     
@@ -308,7 +312,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 - (void)submitComment
 {
-    
     if ( _commentTextView && ![_commentTextView.text isEqualToString:@""] ) {
         // Insert To Parse
         PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", [_child[@"commentShardIndex"] integerValue]]];
@@ -331,6 +334,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                 [self reloadData];
             } else {
                 [self createNotificationHistory];
+                [self sendPushNotification:dailyComment];
             }
         }];
         _commentTextView.text = @"";
@@ -412,7 +416,19 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 - (void)createNotificationHistory
 {
     PFObject *partner = [Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:@"commentPosted" withTo:partner[@"userId"] withDate:[_date integerValue]];
+    [NotificationHistory createNotificationHistoryWithType:@"commentPosted" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
+}
+
+- (void)sendPushNotification:(PFObject *)dailyComment
+{
+    // TODO push通知送信用methodで可変長の引数をとれるように対応する
+    NSString *message = [NSString stringWithFormat:@"%@さん\n%@", [PFUser currentUser][@"nickName"], dailyComment[@"comment"]];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
+    options[@"data"] = data;
+    data[@"alert"] = message;
+    data[@"badge"] = @"Increment";
+    [PushNotification sendInBackground:@"commentPosted" withOptions:options];
 }
 
 @end

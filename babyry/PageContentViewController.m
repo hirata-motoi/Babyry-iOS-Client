@@ -1145,7 +1145,7 @@ for (NSMutableDictionary *section in _childImages) {
 - (void)setupNotificationHistory
 {
     _notificationHistory = [[NSMutableDictionary alloc]init];
-    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withBlock:^(NSMutableDictionary *history){
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:_childObjectId withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
         for (NSString *ymd in history) {
             [_notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
@@ -1208,9 +1208,7 @@ for (NSMutableDictionary *section in _childImages) {
         return;
     }
     // 空のファイルを作成する
-    NSDictionary *dic =[NSDictionary dictionaryWithObject:@"hoge" forKey:@"KEY"];
-    NSData *d = [NSKeyedArchiver archivedDataWithRootObject:dic];
-    [fileManager createFileAtPath:filePath contents:d attributes:nil];
+    [fileManager createFileAtPath:filePath contents:[NSData data] attributes:nil];
     [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(addIntrodutionOfImageRequestView:) userInfo:nil repeats:NO];
 }
 
