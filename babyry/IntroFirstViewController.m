@@ -11,6 +11,10 @@
 #import "FamilyApplyViewController.h"
 #import "FamilyApplyListViewController.h"
 #import "IdIssue.h"
+#import <QuartzCore/QuartzCore.h>
+#import "ColorUtils.h"
+#import "MyLogInViewController.h"
+#import "MySignUpViewController.h"
 
 @interface IntroFirstViewController ()
 
@@ -32,8 +36,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-//    _applyCheckingFlag = 0;
-    
     _introPageIndex = 0;
     // PageViewController追加
     _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
@@ -51,30 +53,6 @@
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [_pageViewController didMoveToParentViewController:self];
-    
-//    // Add Listener
-//    _inviteLabel.tag = 1;
-//    UITapGestureRecognizer *singleTapGestureRecognizer1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-//    singleTapGestureRecognizer1.numberOfTapsRequired = 1;
-//    [_inviteLabel addGestureRecognizer:singleTapGestureRecognizer1];
-//    
-//    
-//    _invitedLabel.tag = 2;
-//    UITapGestureRecognizer *singleTapGestureRecognizer2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-//    singleTapGestureRecognizer2.numberOfTapsRequired = 1;
-//    [_invitedLabel addGestureRecognizer:singleTapGestureRecognizer2];
-//    
-//    _logout.layer.cornerRadius = _logout.frame.size.width/2;
-//    _logout.tag = 99;
-//    UITapGestureRecognizer *singleTapGestureRecognizer99 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-//    singleTapGestureRecognizer99.numberOfTapsRequired = 1;
-//    [_logout addGestureRecognizer:singleTapGestureRecognizer99];
-    
-    // add gesture on self.view
-//    UITapGestureRecognizer *singleTapGestureRecognizer0 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-//    singleTapGestureRecognizer0.numberOfTapsRequired = 1;
-//    [self.view addGestureRecognizer:singleTapGestureRecognizer0];
-//    [self.navigationController setNavigationBarHidden:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -186,97 +164,28 @@
 
 - (void)openLoginView
 {
-    // Create the log in view controller
-    PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
-    [logInViewController setDelegate:self]; // Set ourselves as the delegate
-    [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"public_profile", @"email", nil]];
-    [logInViewController setFields:
-     PFLogInFieldsFacebook |
-     PFLogInFieldsUsernameAndPassword |
-     PFLogInFieldsPasswordForgotten |
-     PFLogInFieldsLogInButton |
-     PFLogInFieldsSignUpButton |
-     PFLogInFieldsDismissButton |
-     PFLogInFieldsTwitter
-     ];
+    // Customize the Log In View Controller
+    MyLogInViewController *logInViewController = [[MyLogInViewController alloc] init];
+    logInViewController.delegate = self;
+    logInViewController.facebookPermissions = @[@"friends_about_me"];
+    logInViewController.fields =
+    PFLogInFieldsUsernameAndPassword |
+    PFLogInFieldsLogInButton |
+    PFLogInFieldsPasswordForgotten |
+    PFLogInFieldsFacebook |
+    PFLogInFieldsSignUpButton |
+    PFLogInFieldsDismissButton;
     
+    // Customize the Sign Up View Controller
+    MySignUpViewController *signUpViewController = [[MySignUpViewController alloc] init];
+    signUpViewController.delegate = self;
+    signUpViewController.fields = PFSignUpFieldsUsernameAndPassword |
+    PFSignUpFieldsAdditional |
+    PFSignUpFieldsDismissButton |
+    PFSignUpFieldsSignUpButton;
+    logInViewController.signUpController = signUpViewController;
     
-    logInViewController.logInView.usernameField.placeholder = @"メールアドレス";
-    logInViewController.logInView.usernameField.keyboardType = UIKeyboardTypeASCIICapable;
-    logInViewController.logInView.passwordField.placeholder = @"パスワード";
-    logInViewController.logInView.passwordField.keyboardType = UIKeyboardTypeASCIICapable;
-    
-    
-    //UIView *fieldsBackground2 = [[logInViewController.logInView subviews] objectAtIndex:0];
-    // for example move down
-    //[fieldsBackground2 setFrame:CGRectOffset(fieldsBackground2.frame,0,80.0f)];
-    
-    //[logInViewController.logInView setBackgroundColor:[UIColor whiteColor]];
-    [logInViewController.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
-    
-    // これ反映されない！困る！！！
-    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateNormal];
-    [logInViewController.logInView.logInButton setTitle:@"ログイン" forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.usernameField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
-    //[logInViewController.logInView.passwordField setBackground:[UIImage imageNamed:@"LoginFieldBack"]];
-    
-    //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setImage:nil forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook_down.png"] forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateNormal];
-    //[logInViewController.logInView.facebookButton setTitle:@"ふぇいすぶっく" forState:UIControlStateHighlighted];
-    
-    //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateNormal];
-    //[logInViewController.logInView.twitterButton setImage:nil forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter_down.png"] forState:UIControlStateHighlighted];
-    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateNormal];
-    //[logInViewController.logInView.twitterButton setTitle:@"ついったー" forState:UIControlStateHighlighted];
-    
-    //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup.png"] forState:UIControlStateNormal];
-    //[logInViewController.logInView.signUpButton setBackgroundImage:[UIImage imageNamed:@"signup_down.png"] forState:UIControlStateHighlighted];
-    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateNormal];
-    [logInViewController.logInView.signUpButton setTitle:@"新規アカウント作成" forState:UIControlStateHighlighted];
-    
-    [logInViewController.logInView.passwordForgottenButton setBackgroundImage:[UIImage imageNamed:@"ForgetPasswordLabel"] forState:UIControlStateNormal];
-    
-    // Add login field background
-    UIImageView *fieldsBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
-    fieldsBackground.frame = self.view.frame;
-    [logInViewController.logInView insertSubview:fieldsBackground atIndex:0];
-    
-    // Remove text shadow
-    CALayer *layer = logInViewController.logInView.usernameField.layer;
-    layer.shadowOpacity = 0.0;
-    layer = logInViewController.logInView.passwordField.layer;
-    layer.shadowOpacity = 0.0;
-    layer = logInViewController.logInView.externalLogInLabel.layer;
-    layer.shadowOpacity = 0.0;
-    
-
-    
-    // Set field text color
-    //[logInViewController.logInView.usernameField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
-    //[logInViewController.logInView.passwordField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
-    
-    
-    logInViewController.logInView.externalLogInLabel.text = @"facebookアカウントでログイン";
-    logInViewController.logInView.signUpLabel.text = @"";
-    
-    // Create the sign up view controller
-    PFSignUpViewController *signUpViewController = [self makeSignUpView];
-    [signUpViewController setDelegate:self]; // Set ourselves as the delegate
-    
-    [signUpViewController.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
-    UIImageView *fieldsBackground2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
-    fieldsBackground2.frame = self.view.frame;
-    [signUpViewController.signUpView insertSubview:fieldsBackground2 atIndex:0];
-    
-    // Assign our sign up controller to be displayed from the login controller
-    [logInViewController setSignUpController:signUpViewController];
-    
-    // Present the log in view controller
+    // Present Log In View Controller
     [self presentViewController:logInViewController animated:YES completion:NULL];
 }
 
@@ -342,6 +251,11 @@
 // ログインが失敗したら
 - (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
     //NSLog(@"Failed to log in...");
+    [[[UIAlertView alloc] initWithTitle:@"ログインエラー"
+                                message:@"ログインエラーが発生しました。メールアドレスとパスワードを確認してください。"
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
 }
 
 // Sent to the delegate when the log in screen is dismissed.
@@ -350,38 +264,6 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 ///////////////////////////////////////////////
-
-
-- (PFSignUpViewController *) makeSignUpView{
-    // Create the sign up view controller
-    PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
-    [signUpViewController setDelegate:self]; // Set ourselves as the delegate
-    [signUpViewController setFields:
-     PFSignUpFieldsUsernameAndPassword |
-     PFSignUpFieldsAdditional |
-     PFLogInFieldsFacebook |
-     PFLogInFieldsTwitter |
-     PFSignUpFieldsDismissButton |
-     PFSignUpFieldsSignUpButton
-     ];
-
-    signUpViewController.signUpView.usernameField.placeholder = @"メールアドレス";
-    signUpViewController.signUpView.usernameField.keyboardType = UIKeyboardTypeASCIICapable;
-    
-    signUpViewController.signUpView.passwordField.placeholder = @"パスワード";
-    signUpViewController.signUpView.passwordField.keyboardType = UIKeyboardTypeASCIICapable;
-    
-    signUpViewController.signUpView.additionalField.placeholder = @"パスワード(確認)";
-    signUpViewController.signUpView.additionalField.keyboardType = UIKeyboardTypeASCIICapable;
-    signUpViewController.signUpView.additionalField.secureTextEntry = YES;
-    
-    [signUpViewController.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
-    UIImageView *fieldsBackground2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LoginViewImage"]];
-    fieldsBackground2.frame = self.view.frame;
-    [signUpViewController.signUpView insertSubview:fieldsBackground2 atIndex:0];
-
-    return signUpViewController;
-}
 
 ///////////////////////////////////////////////////////
 // PFSignUpViewControllerのmethodたち
@@ -458,6 +340,11 @@
 // Sent to the delegate when the sign up attempt fails.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
     //NSLog(@"Failed to sign up... %@", error);
+    [[[UIAlertView alloc] initWithTitle:@"登録エラー"
+                                message:@"エラーが発生しました。メールアドレスとパスワードを確認後、もう一度お試しください。"
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
 }
 
 // Sent to the delegate when the sign up screen is dismissed.

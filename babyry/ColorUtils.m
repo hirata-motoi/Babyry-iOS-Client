@@ -46,4 +46,9 @@
     return [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0];
 }
 
++(UIColor *) getLoginViewBackColor
+{
+    return [UIColor colorWithRed:(float)245/256 green:(float)226/256 blue:(float)151/256 alpha:1.0];
+}
+
 @end
