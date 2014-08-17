@@ -12,6 +12,7 @@
 #import "NotificationHistory.h"
 #import "Partner.h"
 #import "PushNotification.h"
+#import "UIColor+Hex.h"
 
 @interface CommentViewController ()
 
@@ -46,6 +47,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentTableView.layer.borderColor = [UIColor whiteColor].CGColor;
     _commentTableView.layer.borderWidth = 1;
     _commentTableView.layer.cornerRadius = 5;
+    _commentTableView.separatorColor = [UIColor_Hex colorWithHexString:@"FFFFFF" alpha:0.3];
+    _commentTableView.tableFooterView = [[UIView alloc]init];
     
     // text field
     _commentTextView = [[UIPlaceHolderTextView alloc] init];
