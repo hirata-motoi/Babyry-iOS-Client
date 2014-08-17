@@ -108,13 +108,23 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    if (_tm || ![_tm isValid]) {
+        _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
+    }
+}
+
+-(void)setImages
+{
     [self showChildImages];
     [self setupImagesCount];
 }
 
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    [_tm invalidate];
 }
 
 -(void)createCollectionView
