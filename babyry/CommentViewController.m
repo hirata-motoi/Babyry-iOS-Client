@@ -61,7 +61,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentTextView.frame = CGRectMake(10, _commentTableContainer.frame.size.height - 40, 250, 30);
     _commentTextView.hidden = NO;
     [_commentTableContainer addSubview:_commentTextView];
-    _commentSubmitButton.frame = CGRectMake(260, _commentTableContainer.frame.size.height - 40, 30, 20);
+    _commentSubmitButton.frame = CGRectMake(265, _commentTableContainer.frame.size.height - 40, 44, 30);
     _commentSubmitButton.hidden = NO;
     [_commentTableContainer addSubview:_commentSubmitButton];
     
@@ -312,7 +312,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 - (void)submitComment
 {
-    
     if ( _commentTextView && ![_commentTextView.text isEqualToString:@""] ) {
         // Insert To Parse
         PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", [_child[@"commentShardIndex"] integerValue]]];
