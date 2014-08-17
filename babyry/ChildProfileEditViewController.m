@@ -39,8 +39,8 @@
         [_childBirthdayDatePicker becomeFirstResponder];
         _childNicknameEditTextField.hidden = YES;
         _childBirthdayDatePicker.hidden = NO;
-        _childBirthdayDatePicker.date = _child[@"birthday"] ? _child[@"birthday"] : [DateUtils setSystemTimezone:_child[@"createdAt"]];
-    }                                                         
+        _childBirthdayDatePicker.date = [_child[@"birthday"] isEqualToDate:[NSDate distantFuture]] ? [DateUtils setSystemTimezone:_child[@"createdAt"]] : _child[@"birthday"];
+    }
     
     UIBarButtonItem *saveNameButton = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonItemStylePlain target:self action:@selector(saveChildName)];
     self.parentViewController.navigationItem.rightBarButtonItem = saveNameButton;

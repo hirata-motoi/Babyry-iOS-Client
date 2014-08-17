@@ -97,8 +97,11 @@
                     cell.textLabel.text = @"誕生日";
                     NSDateFormatter *df = [[NSDateFormatter alloc] init];
                     df.dateFormat = @"yyyy/MM/dd";
-                    cell.detailTextLabel.text = [df stringFromDate:_childBirthday];
-                    
+                    if ([_childBirthday isEqual:[NSDate distantFuture]]) {
+                        cell.detailTextLabel.text = @"";
+                    } else {
+                        cell.detailTextLabel.text = [df stringFromDate:_childBirthday];
+                    }
                     _childBirthdayCell = cell;
                     break;
                 }
@@ -169,7 +172,6 @@
     } else if ([editName isEqualToString:@"birthday"]) {
         tableViewRect = _childBirthdayCell.superview.superview.frame;
         childProfileEditViewController.childBirthdayCellPoint = CGPointMake(tableViewRect.origin.x + _childBirthdayCell.frame.origin.x, tableViewRect.origin.y + self.navigationController.navigationBar.bounds.size.height + [[UIApplication sharedApplication]statusBarFrame].size.height + _childBirthdayCell.frame.origin.y);
-        childProfileEditViewController.childBirthday = _childBirthday;
     }
     childProfileEditViewController.editTarget = editName;
 

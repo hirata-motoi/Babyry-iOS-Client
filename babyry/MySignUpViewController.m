@@ -21,7 +21,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.signUpView setBackgroundColor:[ColorUtils getLoginViewBackColor]];
+    [self.signUpView setBackgroundColor:[ColorUtils getBabyryColor]];
     [self.signUpView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
     
     [self.signUpView.signUpButton setBackgroundColor:[UIColor grayColor]];

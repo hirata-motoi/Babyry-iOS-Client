@@ -21,7 +21,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.logInView setBackgroundColor:[ColorUtils getLoginViewBackColor]];
+    [self.logInView setBackgroundColor:[ColorUtils getBabyryColor]];
     [self.logInView setLogo:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]]];
     
     self.logInView.usernameField.backgroundColor = [ColorUtils getBackgroundColor];

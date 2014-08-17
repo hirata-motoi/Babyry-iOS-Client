@@ -51,7 +51,7 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    [self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+    //[self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
@@ -309,7 +309,7 @@
 {
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     icnvc.isNotFirstTime = YES;
-    icnvc.currentChildNum = [[NSNumber numberWithInteger:[_childProperties count]] intValue];
+    icnvc.childProperties = _childProperties;
     [self.navigationController pushViewController:icnvc animated:YES];
 }
 
