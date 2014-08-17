@@ -24,9 +24,25 @@
 @property BOOL keyboradObserving;
 
 @property BOOL isNotFirstTime;
-@property int currentChildNum;
+//@property int currentChildNum;
 @property int addableChildNum;
 
+@property NSMutableArray *childProperties;
+
 @property MBProgressHUD *hud;
+
+@property UILabel *childLabel1;
+@property UILabel *childLabel2;
+@property UILabel *childLabel3;
+@property UILabel *childLabel4;
+@property UILabel *childLabel5;
+
+@property UIButton *childButton1;
+@property UIButton *childButton2;
+@property UIButton *childButton3;
+@property UIButton *childButton4;
+@property UIButton *childButton5;
+
+@property int removeTarget;
 
 @end

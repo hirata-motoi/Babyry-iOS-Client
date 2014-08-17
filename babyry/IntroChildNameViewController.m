@@ -9,6 +9,7 @@
 #import "IntroChildNameViewController.h"
 #import "Navigation.h"
 #import "Sharding.h"
+#import "ColorUtils.h"
 
 @interface IntroChildNameViewController ()
 
@@ -43,27 +44,6 @@
     stgr2.numberOfTapsRequired = 1;
     [_childNameSendLabel addGestureRecognizer:stgr2];
     
-    NSLog(@"Number of Current Child is %d", _currentChildNum);
-    // Maxが5なので、追加できる子供は 5 - _currentChildNum;
-    _addableChildNum = 5 - _currentChildNum;
-    
-    if (_addableChildNum < 5) {
-        _childNameField5.hidden = YES;
-    }
-    if (_addableChildNum < 4) {
-        _childNameField4.hidden = YES;
-    }
-    if (_addableChildNum < 3) {
-        _childNameField3.hidden = YES;
-    }
-    if (_addableChildNum < 2) {
-        _childNameField2.hidden = YES;
-    }
-    if (_addableChildNum < 1) {
-        // この場合はもう追加できないよってメッセージにするべき
-        _childNameField1.hidden = YES;
-    }
-    
     [Navigation setTitle:self.navigationItem withTitle:@"こどもを追加" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
@@ -82,6 +62,113 @@
 {
     // super
     [super viewWillAppear:animated];
+    
+    NSLog(@"%@", _childProperties);
+    
+    NSLog(@"Number of Current Child is %d", [_childProperties count]);
+    // Maxが5なので、追加できる子供は 5 - _currentChildNum;
+    _addableChildNum = 5 - [_childProperties count];
+    
+    // init
+    _childNameField1.hidden = NO;
+    _childNameField2.hidden = NO;
+    _childNameField3.hidden = NO;
+    _childNameField4.hidden = NO;
+    _childNameField5.hidden = NO;
+    _childLabel1.hidden = YES;
+    _childLabel2.hidden = YES;
+    _childLabel3.hidden = YES;
+    _childLabel4.hidden = YES;
+    _childLabel5.hidden = YES;
+    _childButton1.hidden = YES;
+    _childButton2.hidden = YES;
+    _childButton3.hidden = YES;
+    _childButton4.hidden = YES;
+    _childButton5.hidden = YES;
+    
+    if (_addableChildNum < 5) {
+        _childNameField5.hidden = YES;
+        _childLabel5 = [[UILabel alloc] initWithFrame:_childNameField5.frame];
+        _childLabel5.text = _childProperties[0][@"name"];
+        [_textFieldContainerView addSubview:_childLabel5];
+        
+        if ([_childProperties count] > 1) {
+            CGRect frame = _childNameField5.frame;
+            frame.origin.x += (frame.size.width - frame.size.height*2);
+            frame.size.width = frame.size.height * 2;
+            _childButton5 =[[UIButton alloc] initWithFrame:frame];
+            [_childButton5 setTitle:@"削除" forState:UIControlStateNormal];
+            [_childButton5 setBackgroundColor:[ColorUtils getSunDayCalColor]];
+            [_textFieldContainerView addSubview:_childButton5];
+            _childButton5.tag = 0;
+            [_childButton5 addTarget:self action:@selector(removeChild:) forControlEvents:UIControlEventTouchDown];
+        }
+    }
+    if (_addableChildNum < 4) {
+        _childNameField4.hidden = YES;
+        _childLabel4 = [[UILabel alloc] initWithFrame:_childNameField4.frame];
+        _childLabel4.text = _childProperties[1][@"name"];
+        [_textFieldContainerView addSubview:_childLabel4];
+        
+        CGRect frame = _childNameField4.frame;
+        frame.origin.x += (frame.size.width - frame.size.height*2);
+        frame.size.width = frame.size.height * 2;
+        _childButton4 =[[UIButton alloc] initWithFrame:frame];
+        [_childButton4 setTitle:@"削除" forState:UIControlStateNormal];
+        [_childButton4 setBackgroundColor:[ColorUtils getSunDayCalColor]];
+        [_textFieldContainerView addSubview:_childButton4];
+        _childButton4.tag = 1;
+        [_childButton4 addTarget:self action:@selector(removeChild:) forControlEvents:UIControlEventTouchDown];
+    }
+    if (_addableChildNum < 3) {
+        _childNameField3.hidden = YES;
+        _childLabel3 = [[UILabel alloc] initWithFrame:_childNameField3.frame];
+        _childLabel3.text = _childProperties[2][@"name"];
+        [_textFieldContainerView addSubview:_childLabel3];
+        
+        CGRect frame = _childNameField3.frame;
+        frame.origin.x += (frame.size.width - frame.size.height*2);
+        frame.size.width = frame.size.height * 2;
+        _childButton3 =[[UIButton alloc] initWithFrame:frame];
+        [_childButton3 setTitle:@"削除" forState:UIControlStateNormal];
+        [_childButton3 setBackgroundColor:[ColorUtils getSunDayCalColor]];
+        [_textFieldContainerView addSubview:_childButton3];
+        _childButton3.tag = 2;
+        [_childButton3 addTarget:self action:@selector(removeChild:) forControlEvents:UIControlEventTouchDown];
+    }
+    if (_addableChildNum < 2) {
+        _childNameField2.hidden = YES;
+        _childLabel2 = [[UILabel alloc] initWithFrame:_childNameField2.frame];
+        _childLabel2.text = _childProperties[3][@"name"];
+        [_textFieldContainerView addSubview:_childLabel2];
+        
+        CGRect frame = _childNameField2.frame;
+        frame.origin.x += (frame.size.width - frame.size.height*2);
+        frame.size.width = frame.size.height * 2;
+        _childButton2 =[[UIButton alloc] initWithFrame:frame];
+        [_childButton2 setTitle:@"削除" forState:UIControlStateNormal];
+        [_childButton2 setBackgroundColor:[ColorUtils getSunDayCalColor]];
+        [_textFieldContainerView addSubview:_childButton2];
+        _childButton2.tag = 3;
+        [_childButton2 addTarget:self action:@selector(removeChild:) forControlEvents:UIControlEventTouchDown];
+    }
+    if (_addableChildNum < 1) {
+        // この場合はもう追加できないよってメッセージにするべき
+        _childNameField1.hidden = YES;
+        _childLabel1 = [[UILabel alloc] initWithFrame:_childNameField1.frame];
+        _childLabel1.text = _childProperties[4][@"name"];
+        [_textFieldContainerView addSubview:_childLabel1];
+        
+        CGRect frame = _childNameField1.frame;
+        frame.origin.x += (frame.size.width - frame.size.height*2);
+        frame.size.width = frame.size.height * 2;
+        _childButton1 =[[UIButton alloc] initWithFrame:frame];
+        [_childButton1 setTitle:@"削除" forState:UIControlStateNormal];
+        [_childButton1 setBackgroundColor:[ColorUtils getSunDayCalColor]];
+        [_textFieldContainerView addSubview:_childButton1];
+        _childButton1.tag = 4;
+        [_childButton1 addTarget:self action:@selector(removeChild:) forControlEvents:UIControlEventTouchDown];
+    }
     
     // Start observing
     if (!_keyboradObserving) {
@@ -214,6 +301,47 @@
         }
     } else {
         [self.view endEditing:YES];
+    }
+}
+
+- (void)removeChild:(UIButton *)sender
+{
+    _removeTarget = sender.tag;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"削除しますか？"
+                                                    message:@"一度削除したこどものデータは復旧できません。削除を実行しますか？"
+                                                   delegate:self
+                                          cancelButtonTitle:@"戻る"
+                                          otherButtonTitles:@"削除", nil
+                          ];
+    [alert show];
+}
+
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    switch (buttonIndex) {
+        case 0:
+        {
+            _removeTarget = -1;
+        }
+            break;
+        case 1:
+        {
+            _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            _hud.labelText = @"削除中";
+            PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
+            [childQuery whereKey:@"objectId" equalTo:[[_childProperties objectAtIndex:_removeTarget] objectForKey:@"objectId"]];
+            [childQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+                [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (succeeded) {
+                        [_childProperties removeObjectAtIndex:_removeTarget];
+                        [_hud hide:YES];
+                        [self viewWillAppear:YES];
+                        _removeTarget = -1;
+                    }
+                }];
+            }];
+        }
+            break;
     }
 }
 

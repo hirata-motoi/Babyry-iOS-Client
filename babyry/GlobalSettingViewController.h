@@ -13,7 +13,7 @@
 
 @interface GlobalSettingViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *settingTableView;
-@property (weak, nonatomic) IBOutlet UIButton *closeButton;
+//@property (weak, nonatomic) IBOutlet UIButton *closeButton;
 @property UISegmentedControl *roleControl;
 @property PFObject *partnerInfo;
 @property NSArray *childList;
