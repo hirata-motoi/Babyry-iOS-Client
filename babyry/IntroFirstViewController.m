@@ -185,7 +185,7 @@
     // Customize the Log In View Controller
     MyLogInViewController *logInViewController = [[MyLogInViewController alloc] init];
     logInViewController.delegate = self;
-    logInViewController.facebookPermissions = @[@"friends_about_me"];
+    logInViewController.facebookPermissions = [NSArray arrayWithObjects:@"public_profile", @"email", @"user_birthday", @"user_friends", nil];
     logInViewController.fields =
     PFLogInFieldsUsernameAndPassword |
     PFLogInFieldsLogInButton |

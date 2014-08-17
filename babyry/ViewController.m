@@ -108,22 +108,22 @@
         // プッシュ通知用のデータがなければUserIdを突っ込んでおく
         [PushNotification setupPushNotificationInstallation];
 
-        
-        /*/////////////////////////////いちいちメール確認必要だから開発中はコメント//////////////////////////////////////
-        // emailが確認されているか
+        // facebook連携していない場合、emailが確認されているか
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
-        NSLog(@"currentUserStatus %@", _currentUser);
-        if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-            NSLog(@"Parseにフォアグランドでとりにいく");
-            [_currentUser refresh];
-            NSLog(@"refleshed currentUser %@", _currentUser);
+        // usernameとemailが一致 = facebookじゃないログイン
+        if ([_currentUser[@"username"] isEqualToString:_currentUser[@"email"]]) {
+            NSLog(@"currentUserStatus %@", _currentUser);
             if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-                NSLog(@"mailがまだ確認されていません");
-                [self setNotVerifiedPage];
-                return;
+                NSLog(@"Parseにフォアグランドでとりにいく");
+                [_currentUser refresh];
+                NSLog(@"refleshed currentUser %@", _currentUser);
+                if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
+                    NSLog(@"mailがまだ確認されていません");
+                    [self setNotVerifiedPage];
+                    return;
+                }
             }
         }
-        //////////////////////////////////////////////////////////////////////////////*/
         
         // falimyIdを取得
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
@@ -251,12 +251,37 @@
     stgr.numberOfTapsRequired = 1;
     [reloadLabel addGestureRecognizer:stgr];
     
+    // ログアウトラベル
+    UILabel *logoutLabel = [[UILabel alloc] init];
+    logoutLabel.font = [UIFont systemFontOfSize:12];
+    logoutLabel.userInteractionEnabled = YES;
+    logoutLabel.textAlignment = NSTextAlignmentCenter;
+    logoutLabel.text = @"ログアウト";
+    logoutLabel.textColor = [UIColor orangeColor];
+    logoutLabel.layer.cornerRadius = 5;
+    logoutLabel.layer.borderColor = [UIColor orangeColor].CGColor;
+    logoutLabel.layer.borderWidth = 1.0f;
+    frame = CGRectMake(10, 30, 80, 30);
+    logoutLabel.frame = frame;
+    [emailVerifiedViewController.view addSubview:logoutLabel];
+    
+    UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logOut)];
+    stgr2.numberOfTapsRequired = 1;
+    [logoutLabel addGestureRecognizer:stgr2];
+    
     [self presentViewController:emailVerifiedViewController animated:YES completion:NULL];
 }
 
 -(void)reloadEmailVerifiedView:(id)selector
 {
     [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+-(void)logOut
+{
+    NSLog(@"Logout");
+    [self dismissViewControllerAnimated:YES completion:NULL];
+    [PFUser logOut];
 }
 
 -(void)setMyNickNamePage

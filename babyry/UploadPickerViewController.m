@@ -12,6 +12,7 @@
 #import "PushNotification.h"
 #import "Partner.h"
 #import "NotificationHistory.h"
+#import "Config.h"
 
 @interface UploadPickerViewController ()
 
@@ -122,7 +123,7 @@
             if (succeeded) {
                 NSLog(@"save to s3 %@", tmpImageObject.objectId);
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = @"babyrydev-images";
+                putRequest.bucket = [Config getBucketName];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
@@ -152,7 +153,7 @@
             if (succeeded) {
                 NSLog(@"save to s3 %@", childImage.objectId);
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = @"babyrydev-images";
+                putRequest.bucket = [Config getBucketName];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];

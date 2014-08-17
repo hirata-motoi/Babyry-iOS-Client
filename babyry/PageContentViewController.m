@@ -37,6 +37,7 @@
 #import "CollectionViewSectionHeader.h"
 #import <AudioToolbox/AudioServices.h>
 #import "ImageRequestIntroductionView.h"
+#import "Config.h"
 
 @interface PageContentViewController ()
 
@@ -502,7 +503,7 @@
                 NSString *ymd = [childImage[@"date"] stringValue];
                 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-                getRequest.bucket = @"babyrydev-images";
+                getRequest.bucket = [Config getBucketName];
                 
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 // no-cache必須

@@ -11,6 +11,7 @@
 #import "ImageCache.h"
 #import "AWSS3Utils.h"
 #import "DateUtils.h"
+#import "Config.h"
 
 
 @implementation ImagePageViewController
@@ -267,7 +268,7 @@
     // まずはS3に接続
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-    getRequest.bucket = @"babyrydev-images";
+    getRequest.bucket = [Config getBucketName];
     getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
     getRequest.responseCacheControl = @"no-cache";
     
