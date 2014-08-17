@@ -946,7 +946,6 @@
                         CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
-                        backgroundView.iconView.frame = rect;
                         rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 10, backgroundView.upCountLabel.frame.size.height);
                         backgroundView.upCountLabel.frame = rect;
                         backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
@@ -955,7 +954,6 @@
                         CellBackgroundViewToEncourageChoose *backgroundView = [CellBackgroundViewToEncourageChoose view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
-                        backgroundView.iconView.frame = rect;
                         rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 5, backgroundView.upCountLabel.frame.size.height);
                         backgroundView.upCountLabel.frame = rect;
                         backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
