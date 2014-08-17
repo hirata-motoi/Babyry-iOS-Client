@@ -13,12 +13,10 @@
 
 NSString *const className = @"NotificationHistory";
 
-+ (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withDate:(NSInteger )date
++ (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withChild:(NSString *)childObjectId withDate:(NSInteger )date
 {
-    NSLog(@"createNotificationHistoryWithType type:%@ userId:%@ date:%ld", type, userId, date);
-   
     // default値
-    if (type.length < 1 || userId.length < 1 || !date) {
+    if (type.length < 1 || userId.length < 1 || !date || !childObjectId) {
         return;
     }
     
@@ -26,16 +24,18 @@ NSString *const className = @"NotificationHistory";
     nh[@"type"] = type;
     nh[@"toUserId"] = userId;
     nh[@"date"] = [NSNumber numberWithInteger:date];
+    nh[@"child"] = childObjectId;
     nh[@"status"] = @"ready";
     [nh saveInBackground];
 }
 
-+ (void)getNotificationHistoryInBackground: userId withType:(NSString *)type withBlock:(NotificationHistoryBlock)block
++ (void)getNotificationHistoryInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withBlock:(NotificationHistoryBlock)block
 {
     NSMutableDictionary *history = [[NSMutableDictionary alloc]init];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"toUserId" equalTo:userId];
     [query whereKey:@"status" equalTo:@"ready"];
+    [query whereKey:@"child" equalTo:childObjectId];
     query.limit = 1000; // max
     if (type != nil) {
         [query whereKey:@"type" equalTo:type];

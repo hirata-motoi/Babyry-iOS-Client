@@ -11,6 +11,7 @@
 #import "CommentTableViewCell.h"
 #import "NotificationHistory.h"
 #import "Partner.h"
+#import "PushNotification.h"
 
 @interface CommentViewController ()
 
@@ -331,6 +332,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                 [self reloadData];
             } else {
                 [self createNotificationHistory];
+                [self sendPushNotification:dailyComment];
             }
         }];
         _commentTextView.text = @"";
@@ -412,7 +414,19 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 - (void)createNotificationHistory
 {
     PFObject *partner = [Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:@"commentPosted" withTo:partner[@"userId"] withDate:[_date integerValue]];
+    [NotificationHistory createNotificationHistoryWithType:@"commentPosted" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
+}
+
+- (void)sendPushNotification:(PFObject *)dailyComment
+{
+    // TODO push通知送信用methodで可変長の引数をとれるように対応する
+    NSString *message = [NSString stringWithFormat:@"%@さん\n%@", [PFUser currentUser][@"nickName"], dailyComment[@"comment"]];
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
+    options[@"data"] = data;
+    data[@"alert"] = message;
+    data[@"badge"] = @"Increment";
+    [PushNotification sendInBackground:@"commentPosted" withOptions:options];
 }
 
 @end

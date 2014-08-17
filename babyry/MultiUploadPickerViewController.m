@@ -378,7 +378,7 @@
         if (_uploadedImageCount > 0) {
             // NotificationHistoryに登録
             PFObject *partner = (PFObject *)[Partner partnerUser];
-            [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withDate:[_date integerValue]];
+            [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
         
             // push通知
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];

@@ -287,7 +287,7 @@
 {
     NSString *type = [param objectForKey:@"type"];
     PFObject *partner = (PFUser *)[Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withDate:[_date integerValue]];
+    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
 }
 
 /*
