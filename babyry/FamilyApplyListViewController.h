@@ -9,13 +9,16 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import "MBProgressHUD.h"
+#import "FamilyApplyListCell.h"
 
-@interface FamilyApplyListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>;
+@interface FamilyApplyListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, FamilyApplyListCellDelegate>;
 @property (weak, nonatomic) IBOutlet UITableView *familyApplyList;
 @property (retain, atomic) NSArray *inviterUsers;
 @property (retain, atomic) NSMutableDictionary *familyApplys;
 @property (weak, nonatomic) IBOutlet UIView *noApplyMessageView;
 
 @property MBProgressHUD *hud;
+
+- (void)admit:(NSInteger)index;
 
 @end
