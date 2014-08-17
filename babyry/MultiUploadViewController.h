@@ -40,7 +40,7 @@
 
 @property UIImageView *selectedBestshotView;
 
-@property int bestImageIndex;
+@property NSString *bestImageId;
 
 @property int indexForCache;
 

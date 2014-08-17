@@ -49,5 +49,6 @@
 @property NSNumber *bestImageIndexNumber;
 @property NSInteger pageIndex;
 @property NSMutableArray *bestImageIndexArray;
+@property NSMutableArray *childCachedImageArray;
 
 @end

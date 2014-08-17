@@ -79,15 +79,9 @@
     _cellWidth = 100.0f;
     
     // best shot asset
-    //_bestShotLabelView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BestShotLabel"]];
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
-    _bestImageIndex = -1;
-
-    if ([_childCachedImageArray count] > 0) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childCachedImageArray count]-1 inSection:0];
-        [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
-    }
+    _bestImageId = @"";
    
     [self disableNotificationHistory];
     //[self setupBestShotReply];
@@ -156,13 +150,7 @@
 
 - (void) showCacheImages
 {
-    int i = 0;
-    _childCachedImageArray = [[NSMutableArray alloc] init];
-    while ([ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]]) {
-        [_childCachedImageArray addObject:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
-        i++;
-    }
-    
+    _childCachedImageArray = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date]]];
     [_multiUploadedImages reloadData];
 }
 
@@ -208,10 +196,13 @@
     for (UIGestureRecognizer *gesture in [cell gestureRecognizers]) {
         [cell removeGestureRecognizer:gesture];
     }
-    // ローカルに保存されていたサムネイル画像を貼付け
-    NSData *tmpImageData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, indexPath.row]];
+
     // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
-    if ([tmpImageData length] > 100) {
+    NSArray *splitForTmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
+    NSString *splitForTmp = [splitForTmpArray lastObject];
+    
+    if (![splitForTmp isEqualToString:@"tmp"]) {
+        NSData *tmpImageData = [ImageCache getCache:[_childCachedImageArray objectAtIndex:indexPath.row]];
         cell.backgroundColor = [UIColor blackColor];
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
         
@@ -234,8 +225,10 @@
             selectBestShotGesture.numberOfTapsRequired = 1;
             [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
         }
-        if (_bestImageIndex > -1 && _bestImageIndex == indexPath.row) {
-            _selectedBestshotView.frame = unSelectetFrame;
+        
+        NSArray *tmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
+        _selectedBestshotView.frame = unSelectetFrame;
+        if ([_bestImageId isEqualToString:[tmpArray lastObject]]) {
             [cell addSubview:_selectedBestshotView];
         }
         cell.tag = indexPath.row;
@@ -245,7 +238,7 @@
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
         hud.labelText = @"Uploading...";
         hud.margin = 0;
-        hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+        hud.labelFont = [UIFont systemFontOfSize:12];
     }
     
     return cell;
@@ -263,16 +256,40 @@
         if(!error) {
             [_totalImageNum replaceObjectAtIndex:_indexPath.row withObject:[NSNumber numberWithInt:[objects count]]];
             
+            // objectにあるけどキャッシュに無い = 新しい画像
+            NSMutableArray *newImages = [[NSMutableArray alloc] init];
+            for (PFObject *object in objects) {
+                if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
+                    _bestImageId = object.objectId;
+                }
+                if (![ImageCache getCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId]]) {
+                    NSLog(@"new image %@", object.objectId);
+                    [newImages addObject:object];
+                }
+            }
+            // キャッシュにあるけどobjectにない = 消された画像
+            for (NSString *cache in _childCachedImageArray) {
+                BOOL isExist = NO;
+                for (PFObject *object in objects) {
+                    if ([cache isEqualToString:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId]]) {
+                        isExist = YES;
+                    }
+                }
+                if (!isExist) {
+                    [ImageCache removeCache:cache];
+                    NSLog(@"remove image %@", cache);
+                }
+            }
+            
             // 注意 : ここは深いコピーをしないとだめ
             _childImageArray = [[NSMutableArray alloc] initWithArray:objects];
-            // 詳細画像表示用
-            _childDetailImageArray = [[NSMutableArray alloc] initWithArray:objects];
+
             //再起的にgetDataしてキャッシュを保存する
             _indexForCache = 0;
             _tmpCacheCount = 0;
-
+            
             _imageLoadComplete = NO;
-            [self setCacheOfParseImage:[[NSMutableArray alloc] initWithArray:objects]];
+            [self setCacheOfParseImage:[[NSMutableArray alloc] initWithArray:newImages]];
         }
     }];
 }
@@ -281,12 +298,10 @@
 {
     if ([objects count] > 0) {
         PFObject *object = [objects objectAtIndex:0];
-        if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
-            _bestImageIndex = _indexForCache;
-        }
         
         if ([object[@"isTmpData"] isEqualToString:@"TRUE"]) {
-            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
+            // 本画像がはまるまではtmpを付けておく
+            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%@-tmp", _childObjectId, _date, object.objectId] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
             _tmpCacheCount++;
             
             _indexForCache++;
@@ -301,7 +316,7 @@
                 if (!task.error && task.result) {
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                     
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
@@ -310,7 +325,7 @@
                     [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
                         if (!error && data) {
                             UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, _indexForCache] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                             
                             _indexForCache++;
                             [objects removeObjectAtIndex:0];
@@ -322,19 +337,8 @@
             }];
         }
     } else {
-        //古いキャッシュは消す
-        if ([_childCachedImageArray count] > [_childImageArray count]) {
-            for (int i = [_childImageArray count]; i < [_childCachedImageArray count]; i++){
-                [ImageCache removeCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, i]];
-            }
-        }
         _imageLoadComplete = YES;
         [self showCacheImages];
-        
-        if ([_childImageArray count] > 0) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[_childImageArray count]-1 inSection:0];
-            [_multiUploadedImages scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
-        }
         
         if (_tmpCacheCount == 0){
             _needTimer = NO;
@@ -368,7 +372,6 @@
 -(void)selectBestShot:(id) sender {
     
     if ([_myRole isEqualToString:@"chooser"] && _imageLoadComplete) {
-        _bestImageIndex = [[sender view] tag];
         
         // _multiUploadedImagesにのってるパネルにBestshot付ける
         for (UIView *view in _multiUploadedImages.subviews) {
@@ -382,6 +385,9 @@
             }
         }
         
+        // bestshotId更新
+        _bestImageId = [[[_childCachedImageArray objectAtIndex:[sender view].tag] componentsSeparatedByString:@"-"] lastObject];
+        
         // update Parse
         PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
@@ -392,7 +398,7 @@
             if(!error) {
                 int index = 0;
                 for (PFObject *object in objects) {
-                    if (index == [[sender view] tag]) {
+                    if ([object.objectId isEqualToString:_bestImageId]) {
                         if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
                             object[@"bestFlag"] =  @"choosed";
                             [object saveInBackground];
@@ -420,7 +426,7 @@
         }];
 
         // set image cache
-        NSData *thumbData = [ImageCache getCache:[NSString stringWithFormat:@"%@%@-%d", _childObjectId, _date, [[sender view] tag]]];
+        NSData *thumbData = [ImageCache getCache:[_childCachedImageArray objectAtIndex:[sender view].tag]];
         UIImage *thumbImage = [UIImage imageWithData:thumbData];
         [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
     }
@@ -433,10 +439,31 @@
 
 - (void) openImagePageView:(int)detailImageIndex
 {
-    if ([_childImageArray count] > 0) {
+    // _childImageArrayを_childImageCacheArrayのならびにそろえる (ソートの関係でそろわない可能性あり)
+    // ついでにtmp省く
+    int i = 0;
+    int bestIndex = -1;
+    NSMutableArray *childImageArraySorted = [[NSMutableArray alloc] init];
+    for (NSString *cacheName in _childCachedImageArray) {
+        NSArray *splitArray = [cacheName componentsSeparatedByString:@"-"];
+        if (![[splitArray lastObject] isEqualToString:@"tmp"]) {
+            for (PFObject *object in _childImageArray) {
+                if ([object.objectId isEqualToString:[splitArray lastObject]]) {
+                    [childImageArraySorted addObject:object];
+                }
+            }
+        }
+        NSArray *tmpArray = [cacheName componentsSeparatedByString:@"-"];
+        if ([_bestImageId isEqualToString:[tmpArray lastObject]]) {
+            bestIndex = i;
+        }
+        i++;
+    }
+    
+    if ([childImageArraySorted count] > 0) {
         NSMutableArray *childImages = [[NSMutableArray alloc] init];
         NSMutableDictionary *section = [[NSMutableDictionary alloc] init];
-        NSArray *images = [[NSArray alloc] initWithArray:_childImageArray];
+        NSArray *images = [[NSArray alloc] initWithArray:childImageArraySorted];
         [section setObject:images forKey:@"images"];
         [childImages addObject:[[NSDictionary alloc] initWithDictionary:section]];
         
@@ -447,10 +474,11 @@
         pageViewController.childObjectId = _childObjectId;
         pageViewController.fromMultiUpload = YES;
         pageViewController.myRole = _myRole;
-        pageViewController.bestImageIndexNumber = [NSNumber numberWithInt:_bestImageIndex];
+        pageViewController.childCachedImageArray = _childCachedImageArray;
+        pageViewController.bestImageIndexNumber = [NSNumber numberWithInt:bestIndex];
         pageViewController.showPageNavigation = YES;
         NSMutableDictionary *imagesCountDic = [[NSMutableDictionary alloc] init];
-        [imagesCountDic setObject:[NSNumber numberWithInt:[_childImageArray count]] forKey:@"imagesCountNumber"];
+        [imagesCountDic setObject:[NSNumber numberWithInt:[childImageArraySorted count]] forKey:@"imagesCountNumber"];
         pageViewController.imagesCountDic = imagesCountDic;
         pageViewController.child = _child;
         pageViewController.notificationHistory = _notificationHistoryByDay;

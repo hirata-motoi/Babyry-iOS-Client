@@ -89,6 +89,7 @@
         uploadViewController.bestImageIndexArray = _bestImageIndexArray;
         uploadViewController.pageIndex = index;
         uploadViewController.myRole = _myRole;
+        uploadViewController.childCachedImageArray = _childCachedImageArray;
     }
     
     if (_notificationHistory[ymd]) {
@@ -100,7 +101,7 @@
     if (!_fromMultiUpload) {
         imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
     } else {
-        imageCachePath = [NSString stringWithFormat:@"%@%@-%d", _childObjectId, ymd, index];
+        imageCachePath = [_childCachedImageArray objectAtIndex:index];
     }
     NSData *imageCacheData = [ImageCache getCache:imageCachePath];
     if(imageCacheData) {

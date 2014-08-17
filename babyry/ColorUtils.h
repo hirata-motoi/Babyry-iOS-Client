@@ -24,4 +24,6 @@
 
 +(UIColor *) getBabyryColor;
 
++(UIColor *) getLoginViewBackColor;
+
 @end
