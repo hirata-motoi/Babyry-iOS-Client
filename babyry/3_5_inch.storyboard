@@ -925,7 +925,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
                                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="O52-J5-NgH">
-                                                        <rect key="frame" x="21" y="38" width="239" height="30"/>
+                                                        <rect key="frame" x="21" y="39" width="239" height="30"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
@@ -967,11 +967,11 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                         <color key="backgroundColor" red="0.90329079410000002" green="0.90896739130000004" blue="0.82648851440000004" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
-                        <outlet property="childNameField1" destination="O52-J5-NgH" id="svk-ig-fOq"/>
-                        <outlet property="childNameField2" destination="Osa-C1-n9V" id="VeL-Yz-xhC"/>
-                        <outlet property="childNameField3" destination="YI1-U0-pnR" id="Qd8-mA-3DR"/>
-                        <outlet property="childNameField4" destination="LgR-33-qmp" id="aMB-3c-aW9"/>
-                        <outlet property="childNameField5" destination="RTr-co-T4V" id="dCM-4Z-uyi"/>
+                        <outlet property="childNameField1" destination="Osa-C1-n9V" id="z12-NK-c3A"/>
+                        <outlet property="childNameField2" destination="O52-J5-NgH" id="5ZC-nH-L7T"/>
+                        <outlet property="childNameField3" destination="RTr-co-T4V" id="fH3-27-YAE"/>
+                        <outlet property="childNameField4" destination="LgR-33-qmp" id="u7w-t2-R9H"/>
+                        <outlet property="childNameField5" destination="YI1-U0-pnR" id="cpb-XF-qTr"/>
                         <outlet property="childNameSendLabel" destination="dt5-R2-WMR" id="mnW-L2-fjA"/>
                         <outlet property="editingView" destination="aRG-6L-cVh" id="3SE-Fz-efV"/>
                         <outlet property="textFieldContainerScrollView" destination="Opc-sd-OK3" id="Mgy-k3-X0N"/>
