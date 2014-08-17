@@ -1208,9 +1208,7 @@ for (NSMutableDictionary *section in _childImages) {
         return;
     }
     // 空のファイルを作成する
-    NSDictionary *dic =[NSDictionary dictionaryWithObject:@"hoge" forKey:@"KEY"];
-    NSData *d = [NSKeyedArchiver archivedDataWithRootObject:dic];
-    [fileManager createFileAtPath:filePath contents:d attributes:nil];
+    [fileManager createFileAtPath:filePath contents:[NSData data] attributes:nil];
     [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(addIntrodutionOfImageRequestView:) userInfo:nil repeats:NO];
 }
 

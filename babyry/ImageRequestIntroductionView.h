@@ -13,6 +13,7 @@
 @property (weak, nonatomic) IBOutlet UIView *backgroundView;
 @property (weak, nonatomic) IBOutlet UIImageView *iconView;
 @property (weak, nonatomic) IBOutlet UILabel *closeButton;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 
 + (instancetype)view;
 - (void)close;

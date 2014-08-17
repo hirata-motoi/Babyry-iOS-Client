@@ -23,7 +23,7 @@
 
 +(UIColor *) getWeekDayCalColor
 {
-    return [UIColor colorWithRed:0.949 green:0.789 blue:0.152 alpha:1.0];
+    return [self getBabyryColor];
 }
 
 +(UIColor *) getBackgroundColor
@@ -39,6 +39,11 @@
 +(UIColor *) getCellBackgroundDefaultColor
 {
     return [UIColor_Hex colorWithHexString:@"e7e4d6" alpha:1.0];
+}
+
++(UIColor *) getBabyryColor
+{
+    return [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0];
 }
 
 @end

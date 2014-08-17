@@ -8,6 +8,7 @@
 
 #import "ImageRequestIntroductionView.h"
 #import "UIColor+Hex.h"
+#import "ColorUtils.h"
 
 @implementation ImageRequestIntroductionView
 
@@ -32,6 +33,7 @@
     view.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.7];
     view.layer.cornerRadius = 5;
     view.backgroundView.layer.cornerRadius = 5;
+    view.titleLabel.textColor = [ColorUtils getBabyryColor];
     
     UITapGestureRecognizer *closeGesture = [[UITapGestureRecognizer alloc]initWithTarget:view action:@selector(close)];
     closeGesture.numberOfTapsRequired = 1;

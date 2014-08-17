@@ -8,6 +8,7 @@
 
 #import "Navigation.h"
 #import "UIColor+Hex.h"
+#import "ColorUtils.h"
 
 @implementation Navigation
 
@@ -103,7 +104,7 @@
 + (void)setNavbarColor: (UINavigationBar *)navigationBar withColor:(UIColor *)color withEtcElements:(NSArray *)elements
 {
     if (color == nil) {
-        color = [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0f];
+        color = [ColorUtils getBabyryColor];
     }
     navigationBar.barTintColor = color;
     navigationBar.backgroundColor = color;
