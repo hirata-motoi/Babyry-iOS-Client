@@ -37,6 +37,7 @@
 #import "CollectionViewSectionHeader.h"
 #import <AudioToolbox/AudioServices.h>
 #import "ImageRequestIntroductionView.h"
+#import "Config.h"
 
 @interface PageContentViewController ()
 
@@ -501,7 +502,7 @@
                 NSString *ymd = [childImage[@"date"] stringValue];
                 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-                getRequest.bucket = @"babyrydev-images";
+                getRequest.bucket = [Config getBucketName];
                 
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 // no-cache必須
@@ -522,19 +523,6 @@
                         }
                         // タイムスタンプを現在にする (そうしないとParseよりも常にキャッシュが古いと見なされるので(ベストショットを変更してParseのタイムスタンプが更新された場合))
                         [ImageCache updateTimeStamp:thumbPath];
-                    } else {
-                        [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                            // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
-                            if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                                UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                                
-                                NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
-                            }
-                            // タイムスタンプを現在にする (そうしないとParseよりも常にキャッシュが古いと見なされるので(ベストショットを変更してParseのタイムスタンプが更新された場合))
-                            [ImageCache updateTimeStamp:thumbPath];
-                        }];
                     }
                     if (reload) {
                         [_pageContentCollectionView reloadData];

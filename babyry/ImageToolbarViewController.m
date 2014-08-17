@@ -12,6 +12,7 @@
 #import "ImageToolbarCommentIcon.h"
 #import "Badge.h"
 #import "NotificationHistory.h"
+#import "Config.h"
 
 @interface ImageToolbarViewController ()
 
@@ -101,7 +102,7 @@
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-    getRequest.bucket = @"babyrydev-images";
+    getRequest.bucket = [Config getBucketName];
     getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
     // no-cache必須
     getRequest.responseCacheControl = @"no-cache";

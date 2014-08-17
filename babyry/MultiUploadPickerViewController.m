@@ -14,6 +14,7 @@
 #import "NotificationHistory.h"
 #import "Partner.h"
 #import "PushNotification.h"
+#import "Config.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -305,7 +306,7 @@
             if (object) {
                 // S3に上げる
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = @"babyrydev-images";
+                putRequest.bucket = [Config getBucketName];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
                 putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                 putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
@@ -342,7 +343,7 @@
                     if(succeeded) {
                         // S3に上げる
                         AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                        putRequest.bucket = @"babyrydev-images";
+                        putRequest.bucket = [Config getBucketName];
                         putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
                         putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                         putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];

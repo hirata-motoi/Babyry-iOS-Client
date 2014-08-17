@@ -12,5 +12,6 @@
 @interface Config : NSObject
 
 + (NSString *) getValue:key;
++ (NSString *)getBucketName;
 
 @end

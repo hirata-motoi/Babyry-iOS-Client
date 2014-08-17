@@ -11,6 +11,7 @@
 #import "ImageCache.h"
 #import "AWSS3Utils.h"
 #import "DateUtils.h"
+#import "Config.h"
 
 
 @implementation ImagePageViewController
@@ -267,7 +268,7 @@
     // まずはS3に接続
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-    getRequest.bucket = @"babyrydev-images";
+    getRequest.bucket = [Config getBucketName];
     getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
     getRequest.responseCacheControl = @"no-cache";
     
@@ -283,18 +284,6 @@
                 NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                 [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
             }
-        } else {
-            // S3になければParseに
-            [childImage[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                // cacheが存在しない場合 or cacheが存在するがparseのupdatedAtの方が新しい場合 は新規にcacheする
-                if ([childImage.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-    
-                    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
-                }
-            }];
         }
         return nil;
     }];

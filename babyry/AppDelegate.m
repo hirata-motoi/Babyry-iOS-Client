@@ -29,9 +29,6 @@
 
     // Facebood Auth
     [PFFacebookUtils initializeFacebook];
-    
-    // Twitter Auth
-    [PFTwitterUtils initializeWithConsumerKey:[SecretConfig getTwitterConsumerKey] consumerSecret:[SecretConfig getTwitterSecretKey]];
 
     // Customize the Page Indicator
     UIPageControl *pageControl = [UIPageControl appearance];

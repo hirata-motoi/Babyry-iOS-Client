@@ -16,6 +16,7 @@
 #import "Navigation.h"
 #import "AWSS3Utils.h"
 #import "NotificationHistory.h"
+#import "Config.h"
 
 @interface UploadViewController ()
 
@@ -59,7 +60,7 @@
     // 万が一imageInfoが空だった時のことを考えて、一応、一から組み立てるロジックも入れておくが、ImagePageViewController側でNoImageを省くようになったら不要になる(TODO)。
     if (_imageInfo) {
         AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-        getRequest.bucket = @"babyrydev-images";
+        getRequest.bucket = [Config getBucketName];
         getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _imageInfo.objectId];
         getRequest.responseCacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
@@ -67,12 +68,6 @@
             if (!task.error && task.result) {
                 AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                 _uploadedImageView.image = [UIImage imageWithData:getResult.body];
-            } else {
-                [_imageInfo[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                    if(!error){
-                        _uploadedImageView.image = [UIImage imageWithData:data];
-                    }
-                }];
             }
             return nil;
         }];
@@ -89,7 +84,7 @@
                 PFObject * object = [objects objectAtIndex:0];
 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-                getRequest.bucket = @"babyrydev-images";
+                getRequest.bucket = [Config getBucketName];
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
@@ -97,12 +92,6 @@
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                         _uploadedImageView.image = [UIImage imageWithData:getResult.body];
-                    } else {
-                        [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                            if(!error){
-                                _uploadedImageView.image = [UIImage imageWithData:data];
-                            }
-                        }];
                     }
                     return nil;
                 }];

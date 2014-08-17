@@ -24,4 +24,9 @@
     return @"";
 }
 
++ (NSString *)getBucketName
+{
+    return @"babyry-images";
+}
+
 @end

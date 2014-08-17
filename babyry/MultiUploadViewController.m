@@ -21,6 +21,7 @@
 #import "DateUtils.h"
 #import "UIColor+Hex.h"
 #import "ColorUtils.h"
+#import "Config.h"
 
 @interface MultiUploadViewController ()
 
@@ -309,7 +310,7 @@
             [self setCacheOfParseImage:objects];
         } else {
             AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-            getRequest.bucket = @"babyrydev-images";
+            getRequest.bucket = [Config getBucketName];
             getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
             AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
             [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
@@ -321,17 +322,6 @@
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
                     [self setCacheOfParseImage:objects];
-                } else {
-                    [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                        if (!error && data) {
-                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                            
-                            _indexForCache++;
-                            [objects removeObjectAtIndex:0];
-                            [self setCacheOfParseImage:objects];
-                        }
-                    }];
                 }
                 return nil;
             }];

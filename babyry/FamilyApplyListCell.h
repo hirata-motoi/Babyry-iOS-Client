@@ -6,7 +6,8 @@
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
-#import <UIKit/UIKit.hbabyry/FamilyApplyListCell.h>
+#import <UIKit/UIKit.h>
+#import "FamilyApplyListCell.h"
 
 @protocol FamilyApplyListCellDelegate <NSObject>
 - (void)admit:(NSInteger)index;
