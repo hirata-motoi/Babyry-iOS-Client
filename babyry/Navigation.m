@@ -111,8 +111,8 @@
     
     for (UIView *element in elements) {
         UIColor *elemColor = [UIColor colorWithCGColor:color.CGColor];
-        element.backgroundColor = [elemColor colorWithAlphaComponent:0.9];
-    }                             
+        element.backgroundColor = [elemColor colorWithAlphaComponent:1.0];
+    }
 }
 
 + (CGSize)immtableLabelSize: (UILabel *)label widhBounds:(CGSize)bounds
