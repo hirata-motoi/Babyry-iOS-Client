@@ -18,5 +18,6 @@
 +(NSArray *) listCachedImage:(NSString *)dirName;
 +(void) removeAllCache;
 +(void)updateTimeStamp:name;
++ (NSArray *) getListOfMultiUploadCache:(NSString *)prefix;
 
 @end

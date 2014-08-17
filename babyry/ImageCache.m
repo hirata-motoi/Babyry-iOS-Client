@@ -53,6 +53,52 @@
     }
 }
 
+// ${prefix}-${imageObjectId}のキャッシュをタイムスタンプでソートして返す
++ (NSArray *) getListOfMultiUploadCache:(NSString *)prefix
+{
+    NSString *prefixWithHyphen = [NSString stringWithFormat:@"%@%@", prefix, @"-"];
+    NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirPath = [array objectAtIndex:0];
+    NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *bundleDirectory = [fileManager contentsOfDirectoryAtPath:imageCacheDirPath error:nil];
+    
+    NSPredicate *filter = [NSPredicate predicateWithFormat:@"self BEGINSWITH %@", prefixWithHyphen];
+    NSArray *multiCache = [bundleDirectory filteredArrayUsingPredicate:filter];
+    
+    NSMutableArray *attributes = [NSMutableArray array];
+    
+    for (NSString *cache in multiCache) {
+        // ファイル属性にファイルパスを追加するためにDictionaryを用意しておく
+        NSMutableDictionary *tmpDictionary = [NSMutableDictionary dictionary];
+        
+        NSString *filepath = [imageCacheDirPath stringByAppendingPathComponent:cache];
+        // ファイル情報（属性）を取得
+        NSDictionary *attr = [[NSFileManager defaultManager] attributesOfItemAtPath:filepath error:nil];
+        
+        // tmp配列に属性を格納
+        [tmpDictionary setDictionary:attr];
+        
+        // tmp配列にファイルパスを格納
+        [tmpDictionary setObject:filepath forKey:@"FilePath"];
+        
+        [attributes addObject:tmpDictionary];
+    }
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:NSFileCreationDate ascending:YES];
+    NSArray *sortarray = [NSArray arrayWithObject:sortDescriptor];
+    
+    // 並び替えられたファイル配列
+    NSArray *sortedMultiCache = [attributes sortedArrayUsingDescriptors:sortarray];
+    
+    NSMutableArray *returnArray = [[NSMutableArray alloc] init];
+    for (NSMutableDictionary *attr in sortedMultiCache) {
+        NSArray *splitArray = [[attr objectForKey:@"FilePath"] componentsSeparatedByString:@"/"];
+        [returnArray addObject:[splitArray lastObject]];
+    }
+    return (NSArray *)returnArray;
+}
+
 + (void) removeCache:name
 {
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);

@@ -182,10 +182,11 @@
 {
     // ベスト以外の星、全部の写真に付ける
     UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
-    // 画像の右下に置きたい
+    
+    // どの画像でも定位置に張る
     int bestLabelWidth = self.view.frame.size.width/6;
-    int x = (self.view.frame.size.width + _imageFrame.size.width)/2 - bestLabelWidth -5;
-    int y = (self.view.frame.size.height + _imageFrame.size.height)/2 - bestLabelWidth -5;
+    int x = self.view.frame.size.width - bestLabelWidth - 5;
+    int y = self.view.frame.size.height -50 - bestLabelWidth -5;
     unSelectedBestshotView.frame = CGRectMake(x, y, bestLabelWidth, bestLabelWidth);
     [self.view addSubview:unSelectedBestshotView];
 
@@ -240,6 +241,9 @@
         }
     }
     
+    // bestshotのobjectIdを調べる
+    NSString *bestObjectId = [[[_uploadViewController.childCachedImageArray objectAtIndex:index] componentsSeparatedByString:@"-"] lastObject];
+    
     // Parseを更新(Classに外出しでも良さげ)
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -250,7 +254,7 @@
         if(!error) {
             int indexOfParse = 0;
             for (PFObject *object in objects) {
-                if (index == indexOfParse) {
+                if ([object.objectId isEqualToString:bestObjectId]) {
                     NSLog(@"choosed %@", object.objectId);
                     if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
                         object[@"bestFlag"] =  @"choosed";
