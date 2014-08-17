@@ -11,6 +11,8 @@
 #import "FamilyApplyViewController.h"
 #import "FamilyApplyListViewController.h"
 #import "IdIssue.h"
+#import "IntroPageRootViewController.h"
+#import "UIColor+Hex.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ColorUtils.h"
 #import "MyLogInViewController.h"
@@ -41,18 +43,26 @@
     _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
     _pageViewController.dataSource = self;
     
-    CGRect frame = _pageViewController.view.frame;
-    frame.size.height = self.view.frame.size.height - 70; // 70は magic number!
-    _pageViewController.view.frame = frame;
-    
-    NSLog(@"0ページ目を表示");
     UIViewController *startingViewController = [self viewControllerAtIndex:0];
+    _currentPageControl = 0;
     NSArray *viewControllers = @[startingViewController];
     [_pageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [_pageViewController didMoveToParentViewController:self];
+   
+    // pageController
+    NSArray *subviews = _pageViewController.view.subviews;
+    UIPageControl *thisControl = nil;
+    for (int i=0; i<[subviews count]; i++) {
+        if ([[subviews objectAtIndex:i] isKindOfClass:[UIPageControl class]]) {
+            thisControl = (UIPageControl *)[subviews objectAtIndex:i];
+            thisControl.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.6];
+            thisControl.pageIndicatorTintColor = [UIColor grayColor];
+            thisControl.currentPageIndicatorTintColor = [UIColor whiteColor];
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -63,7 +73,6 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"viewDidAppear in IntroFirstViewController");
     [super viewDidAppear:animated];
     
     if ([PFUser currentUser]) {
@@ -93,13 +102,11 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
     NSInteger index = viewController.view.tag;
-    NSLog(@"viewControllerBeforeViewController %d", index);
     if ((index == 0) || (index == NSNotFound)) {
         return nil;
     }
     
     index--;
-    NSLog(@"index-- :%d", index);
     return [self viewControllerAtIndex:index];
 }
 
@@ -107,42 +114,35 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
     NSInteger index = viewController.view.tag;
-    NSLog(@"viewControllerAfterViewController %d", index);
     
     if (index >= 4 || index == NSNotFound) {
         return nil;
     }
     
     index++;
-    NSLog(@"index++ :%d", index);
     return [self viewControllerAtIndex:index];
 }
 
 - (UIViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    NSLog(@"viewControllerAtIndex");
-    UIViewController *introViewController = [[UIViewController alloc] init];
-    introViewController.view.backgroundColor = [UIColor colorWithRed:0.95 green:0.85 blue:0.85 alpha:1.0];
+    _currentPageControl = index;
+    IntroPageRootViewController *vc;
     if (index == 0) {
-        UIViewController *firstVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFirstViewController"];
-        [introViewController.view addSubview:firstVC.view];
+        vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFirstViewController"];
     } else if (index == 1) {
-        UIViewController *secondVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageSecondViewController"];
-        [introViewController.view addSubview:secondVC.view];
+        vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageSecondViewController"];
     } else if (index == 2) {
-        UIViewController *thirdVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageThirdViewController"];
-        [introViewController.view addSubview:thirdVC.view];
+        vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageThirdViewController"];
     } else if (index == 3) {
-        UIViewController *fourthVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFourthViewController"];
-        [introViewController.view addSubview:fourthVC.view];
+        vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFourthViewController"];
     } else if (index == 4) {
-        UIViewController *fifthVC = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFifthViewController"];
-        [introViewController.view addSubview:fifthVC.view];
+        vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFifthViewController"];
     }
-    introViewController.view.tag = index;
-    NSLog(@"index %d is created.", index);
+    vc.delegate = self;
+    vc.currentIndex = index;
+    vc.view.tag = index;
     
-    return introViewController;
+    return vc;
 }
 
 // 全体で何ページあるか返す Delegate Method コメント外すとPageControlがあらわれる
@@ -154,9 +154,27 @@
  
 - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
 {
-    return 0;
+    return _currentPageControl;
 }
 ///////////////////////////////////////
+- (void)skipToLast:(NSInteger)currentIndex
+{
+    NSInteger waitIndex = 0;
+    for (NSInteger i = currentIndex+1; i <= 4; i++) {
+        CGFloat interval = 0.1 * waitIndex;
+        NSNumber *n = [NSNumber numberWithInteger:i];
+        NSMutableDictionary *info = [[NSMutableDictionary alloc]initWithObjects:@[n] forKeys:@[@"index"]];
+        [NSTimer scheduledTimerWithTimeInterval:interval target:self selector:@selector(nextPage:) userInfo:info repeats:NO];
+        waitIndex++;
+    }
+}
+
+- (void)nextPage:(NSTimer *)timer
+{
+    NSMutableDictionary *info = timer.userInfo;
+    NSInteger index = [info[@"index"] integerValue];
+    [_pageViewController setViewControllers:@[ [self viewControllerAtIndex:index] ] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:nil];
+}
 
 - (IBAction)registerAction:(id)sender {
     [self openLoginView];
@@ -211,7 +229,6 @@
 // ログイン後の処理
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
     // facebook, twitterでの登録時にはuserIdが発行されないのでココで発行する
-    NSLog(@"Login!!!");
 
     if (user[@"userId"] == nil) {
         user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
@@ -224,7 +241,6 @@
                 user[@"email"] = [result objectForKey:@"email"];
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if (error) {
-                        NSLog(@"error %@", error);
                         // メアドが保存できないのは、ネットワークのせいかduplicate entryのせい
                         // なのでアラートをだしてログアウトさせる
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"

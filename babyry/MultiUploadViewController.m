@@ -84,7 +84,7 @@
     _bestImageId = @"";
    
     [self disableNotificationHistory];
-    [self setupBestShotReply];
+    //[self setupBestShotReply];
 }
 
 - (void)didReceiveMemoryWarning

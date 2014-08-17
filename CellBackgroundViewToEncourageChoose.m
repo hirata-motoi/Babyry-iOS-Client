@@ -35,7 +35,7 @@
 
 - (void)layoutSubviews
 {
-    CGFloat height = self.frame.size.height / 2;
+    CGFloat height = self.frame.size.height;
     CGFloat width = height;
     _iconView.frame = CGRectMake((self.frame.size.width - width)/2, (self.frame.size.height - height)/2, width, height);
 }
