@@ -36,6 +36,7 @@
 #import "UIColor+Hex.h"
 #import "CollectionViewSectionHeader.h"
 #import <AudioToolbox/AudioServices.h>
+#import "ImageRequestIntroductionView.h"
 
 @interface PageContentViewController ()
 
@@ -470,6 +471,7 @@
             _isLoading = NO;
             
             [_hud hide:YES];
+            [self showIntroductionOfImageRequest];
             _isFirstLoad = 0;
         } else {
             NSLog(@"error occured %@", error);
@@ -1192,6 +1194,37 @@ for (NSMutableDictionary *section in _childImages) {
     imageView.frame = rect;
 }
 
+- (void)showIntroductionOfImageRequest
+{
+    if ([_selfRole isEqualToString:@"uploader"]) {
+        return;
+    }
+    
+    // チョイスとしての初load以外ならreturn
+    NSString *homeDir = NSHomeDirectory();
+    NSString *filePath = [homeDir stringByAppendingPathComponent:@"Documents/firstBootAsChooserFinished.txt"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:filePath]) {
+        return;
+    }
+    // 空のファイルを作成する
+    NSDictionary *dic =[NSDictionary dictionaryWithObject:@"hoge" forKey:@"KEY"];
+    NSData *d = [NSKeyedArchiver archivedDataWithRootObject:dic];
+    [fileManager createFileAtPath:filePath contents:d attributes:nil];
+    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(addIntrodutionOfImageRequestView:) userInfo:nil repeats:NO];
+}
+
+- (void)addIntrodutionOfImageRequestView:(NSTimer *)timer
+{
+    // ダイアログを表示
+    ImageRequestIntroductionView *view = [ImageRequestIntroductionView view];
+    CGRect rect = view.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+    view.frame = rect;
+    [self.view addSubview:view];
+    
+}
 
 
 /*

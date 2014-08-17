@@ -118,6 +118,8 @@
 		F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AC1A4D19947CC900DBFE91 /* Partner.m */; };
 		F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2AD4F09199F96DF00037C72 /* BadgeNotify.xib */; };
 		F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AD4F0C199F97AC00037C72 /* BadgeNotify.m */; };
+		F2AD4F12199FD3AB00037C72 /* ImageRequestIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */; };
+		F2AD4F15199FD5F200037C72 /* ImageRequestIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -323,6 +325,9 @@
 		F2AD4F09199F96DF00037C72 /* BadgeNotify.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BadgeNotify.xib; sourceTree = "<group>"; };
 		F2AD4F0B199F97AC00037C72 /* BadgeNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BadgeNotify.h; sourceTree = "<group>"; };
 		F2AD4F0C199F97AC00037C72 /* BadgeNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BadgeNotify.m; sourceTree = "<group>"; };
+		F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageRequestIntroductionView.xib; sourceTree = "<group>"; };
+		F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRequestIntroductionView.h; sourceTree = "<group>"; };
+		F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageRequestIntroductionView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -363,6 +368,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2AD4F0E199FD35B00037C72 /* Dialog */,
 				F2AD4F06199F96A700037C72 /* Badge */,
 				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
 				88CFF4F61998CED800B56481 /* ToolbarItem */,
@@ -797,6 +803,32 @@
 			name = Class;
 			sourceTree = "<group>";
 		};
+		F2AD4F0E199FD35B00037C72 /* Dialog */ = {
+			isa = PBXGroup;
+			children = (
+				F2AD4F10199FD37E00037C72 /* Class */,
+				F2AD4F0F199FD37700037C72 /* Xib */,
+			);
+			name = Dialog;
+			sourceTree = "<group>";
+		};
+		F2AD4F0F199FD37700037C72 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		F2AD4F10199FD37E00037C72 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
+				F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -896,6 +928,7 @@
 				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
+				F2AD4F12199FD3AB00037C72 /* ImageRequestIntroductionView.xib in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
@@ -1022,6 +1055,7 @@
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
 				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
+				F2AD4F15199FD5F200037C72 /* ImageRequestIntroductionView.m in Sources */,
 				F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */,
