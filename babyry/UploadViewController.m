@@ -68,12 +68,6 @@
             if (!task.error && task.result) {
                 AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                 _uploadedImageView.image = [UIImage imageWithData:getResult.body];
-            } else {
-                [_imageInfo[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                    if(!error){
-                        _uploadedImageView.image = [UIImage imageWithData:data];
-                    }
-                }];
             }
             return nil;
         }];
@@ -98,12 +92,6 @@
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                         _uploadedImageView.image = [UIImage imageWithData:getResult.body];
-                    } else {
-                        [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                            if(!error){
-                                _uploadedImageView.image = [UIImage imageWithData:data];
-                            }
-                        }];
                     }
                     return nil;
                 }];

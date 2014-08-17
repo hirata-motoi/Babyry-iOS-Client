@@ -322,17 +322,6 @@
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
                     [self setCacheOfParseImage:objects];
-                } else {
-                    [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                        if (!error && data) {
-                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                            
-                            _indexForCache++;
-                            [objects removeObjectAtIndex:0];
-                            [self setCacheOfParseImage:objects];
-                        }
-                    }];
                 }
                 return nil;
             }];

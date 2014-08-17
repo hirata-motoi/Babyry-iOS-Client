@@ -252,21 +252,6 @@
 //                            if (index == [objects count]) {
 //                                [_collectionView reloadData];
 //                            }
-//                        } else {
-                            // S3になければParseに取りにいく
-                            [object[@"imageFile"] getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
-                                if(!error) {
-                                    // サムネイル作るためにUIImage作成
-                                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:data]];
-                            
-                                    // サムネイル用UIImageを再度dataに変換
-                                    [ImageCache setCache:[NSString stringWithFormat:@"%@", cacheImageName] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                                    index++;
-                                    if (index == [objects count]) {
-                                        [_collectionView reloadData];
-                                    }
-                                }
-                            }];
 //                        }
 //                        return nil;
 //                    }];
