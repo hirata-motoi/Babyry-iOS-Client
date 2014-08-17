@@ -9,6 +9,7 @@
 #import "FamilyApplyListViewController.h"
 #import "FamilyRole.h"
 #import "Navigation.h"
+#import "FamilyApplyListCell.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -38,9 +39,13 @@
     // デリゲートメソッドをこのクラスで実装する
     self.familyApplyList.delegate = self;
     self.familyApplyList.dataSource = self;
+    self.familyApplyList.tableFooterView = [[UIView alloc]init];
     
     [self showFamilyApplyList];
     [Navigation setTitle:self.navigationItem withTitle:@"パートナーからの申請" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
+    
+    UINib *nib = [UINib nibWithNibName:@"FamilyApplyListCell" bundle:nil];
+    [_familyApplyList registerNib:nib forCellReuseIdentifier:@"Cell"];
 }
 
 
@@ -59,7 +64,6 @@
     [query whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (objects.count < 1) {
-            NSLog(@"招待したユーザが存在しない");
             [self showNoApplyMessage];
         } else {
             NSMutableArray * inviterUserIds = [[NSMutableArray alloc] init];
@@ -99,33 +103,29 @@
 {
     static NSString *CellIdentifier = @"Cell";
     // 再利用できるセルがあれば再利用する
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    FamilyApplyListCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (!cell) {
         // 再利用できない場合は新規で作成
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+        cell = [[FamilyApplyListCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:CellIdentifier];
     }
+    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"email"];
+    cell.emailLabel.font = [UIFont systemFontOfSize:18];
+    cell.emailLabel.numberOfLines = 0;
+    CGSize bounds = CGSizeMake(cell.emailLabel.frame.size.width, tableView.frame.size.height);
+    CGSize sizeEmailLabel = [cell.emailLabel.text
+                   boundingRectWithSize:bounds
+                   options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                   attributes:[NSDictionary dictionaryWithObject:cell.emailLabel.font forKey:NSFontAttributeName]
+                   context:nil].size;
     
-    // username
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(10, 10, 160, 40)];
-    label.text = self.inviterUsers[indexPath.row][@"email"];
-    label.font = [UIFont systemFontOfSize:10];
-    [cell.contentView addSubview:label];
+    CGRect rect = cell.emailLabel.frame;
+    rect.size.height = sizeEmailLabel.height;
+    cell.emailLabel.frame = rect;
+    cell.index = indexPath.row;
     
-    // 承認ボタン
-    UIButton *btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    btn.frame = CGRectMake(250, 10, 50, 30);
-    [btn setTitle:@"承認" forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(admit:event:) forControlEvents:UIControlEventTouchDown];
-    [cell.contentView addSubview:btn];
-    
-    // 保留ボタン
-    UIButton *rejectBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    rejectBtn.frame = CGRectMake(190, 10, 50, 30);
-    [rejectBtn setTitle:@"保留" forState:UIControlStateNormal];
-    [rejectBtn addTarget:self action:@selector(reject:event:) forControlEvents:UIControlEventTouchDown];
-    [cell.contentView addSubview:rejectBtn];
+    cell.delegate = self;
     
     return cell;
 };
@@ -135,23 +135,41 @@
     return 1;
 }
 
+// セルの高さをtextの高さに合わせる
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    FamilyApplyListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    
+    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"email"];
+    cell.emailLabel.font = [UIFont systemFontOfSize:18];
+    
+    // get cell height
+    cell.emailLabel.numberOfLines = 0;
+    CGSize bounds = CGSizeMake(cell.emailLabel.frame.size.width, tableView.frame.size.height);
+    CGSize sizeEmailLabel = [cell.emailLabel.text
+                              boundingRectWithSize:bounds
+                              options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                              attributes:[NSDictionary dictionaryWithObject:cell.emailLabel.font forKey:NSFontAttributeName]
+                              context:nil].size;
+    
+    return sizeEmailLabel.height + 30; // 余白30
+}
+
+
 - (void)closeFamilyApplyList
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)admit: (UIButton *)sender event:(UIEvent *)event
+//- (void)admit: (UIButton *)sender event:(UIEvent *)event
+- (void)admit: (NSInteger)index
 {
     // TODO 以下の処理がforegrandなのでくるくるが出ない。。。
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ更新";
     
-    UITouch *touch = [[event allTouches] anyObject];
-    CGPoint point = [touch locationInView:_familyApplyList];
-    NSIndexPath *indexPath = [_familyApplyList indexPathForRowAtPoint:point];
-    
     // 自分の行のfamilyIdを更新
-    PFObject *inviterUser = [inviterUsers objectAtIndex:indexPath.row];
+    PFObject *inviterUser = [inviterUsers objectAtIndex:index];
     NSString *familyId = inviterUser[@"familyId"];
 
     // そのうちこの辺りの処理はすべてFamilyRole classに隠蔽したい
@@ -186,28 +204,6 @@
         [row delete];
     }
     [_hud hide:YES];
-    [self closeFamilyApplyList];
-}
-
-- (void)reject: (UIButton *)sender event:(UIEvent *)event
-{
-    UITouch *touch = [[event allTouches] anyObject];
-    CGPoint point = [touch locationInView:_familyApplyList];
-    NSIndexPath *indexPath = [_familyApplyList indexPathForRowAtPoint:point];
-
-    // 自分の行のfamilyIdを更新
-    PFObject *inviterUser = [inviterUsers objectAtIndex:indexPath.row];
-    NSString *familyId = inviterUser[@"familyId"];
-    PFUser *selfUser = [PFUser currentUser];
-    
-    
-    // FamilyApplyから消す
-    PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
-    [query whereKey:@"inviteeUserId" equalTo:selfUser[@"userId"]];
-    [query whereKey:@"familyId" equalTo:familyId];
-    [query whereKey:@"userId" equalTo:inviterUser[@"userId"]];
-    PFObject *familyApplyRow = [query getFirstObject];
-    [familyApplyRow delete];
     [self closeFamilyApplyList];
 }
 
