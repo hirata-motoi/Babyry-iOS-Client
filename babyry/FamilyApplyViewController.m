@@ -166,7 +166,7 @@
 {
     PFUser *user = [PFUser currentUser];
     [user refresh];
-    _selfUserEmail.text = user[@"email"];
+    _selfUserEmail.text = user[@"emailCommon"];
 }
 
 - (void)executeSearch
@@ -180,7 +180,7 @@
         // search用APIを叩いてユーザを検索
         PFQuery * query = [PFQuery queryWithClassName:@"_User"];
         
-        [query whereKey:@"email" equalTo:inputtedUserEmail];
+        [query whereKey:@"emailCommon" equalTo:inputtedUserEmail];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
             if (!error){
                 NSLog(@"aaaa %d %@", objects.count, objects);
@@ -222,7 +222,7 @@
 - (void)showSearchResult
 {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"パートナー申請しますか？"
-                                                    message:_searchedUserObject[@"email"]
+                                                    message:_searchedUserObject[@"emailCommon"]
                                                    delegate:self
                                           cancelButtonTitle:@"戻る"
                                           otherButtonTitles:@"申請", nil

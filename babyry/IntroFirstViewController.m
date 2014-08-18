@@ -235,29 +235,46 @@
         [user save];
     }
     
-    if (!user[@"email"] || ![user[@"email"] isEqualToString:@""]) {
-        [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-            if (!error && [result objectForKey:@"email"]) {
-                user[@"email"] = [result objectForKey:@"email"];
-                [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    if (error) {
-                        // メアドが保存できないのは、ネットワークのせいかduplicate entryのせい
-                        // なのでアラートをだしてログアウトさせる
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
-                                                                        message:@"facebookで利用している\nメールアドレスで既にBabyryに\n登録している場合は\nfacebookアカウントでの\nログインは出来ません。\nそうでない場合は、\nネットワークエラーの可能性が\nありますので\nしばらくしてからお試しください。"
-                                                                       delegate:nil
-                                                              cancelButtonTitle:nil
-                                                              otherButtonTitles:@"OK", nil
-                                              ];
-                        [alert show];
-                        [PFUser logOut];
-                        [self dismissViewControllerAnimated:YES completion:nil];
-                    }
-                }];
-            } else {
-                NSLog(@"%@", error);
-            }
-        }];
+    if (!user[@"emailCommon"]) {
+        // emailがない場合はfacebookログイン
+        if (!user[@"email"] || [user[@"email"] isEqualToString:@""]) {
+            [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                if (!error && [result objectForKey:@"email"]) {
+                    
+                    // email重複チェック
+                    PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
+                    [emailQuery whereKey:@"emailCommon" equalTo:[result objectForKey:@"email"]];
+                    [emailQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+                        if(object) {
+                            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                            message:@"このfacebookアカウントで使用しているメールアドレスは既に登録済みです。"
+                                                                           delegate:nil
+                                                                  cancelButtonTitle:nil
+                                                                  otherButtonTitles:@"OK", nil
+                                                  ];
+                            [alert show];
+                            [PFUser logOut];
+                            [self dismissViewControllerAnimated:YES completion:nil];
+                        } else {
+                            user[@"emailCommon"] = [result objectForKey:@"email"];
+                            [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                                if (error) {
+                                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                                    message:@"ネットワークエラーの可能性がありますので、しばらくしてからお試しください。"
+                                                                                   delegate:nil
+                                                                          cancelButtonTitle:nil
+                                                                          otherButtonTitles:@"OK", nil
+                                                          ];
+                                    [alert show];
+                                    [PFUser logOut];
+                                    [self dismissViewControllerAnimated:YES completion:nil];
+                                }
+                            }];
+                        }
+                    }];
+                }
+            }];
+        }
     }
     
     [self dismissViewControllerAnimated:YES completion:NULL];
@@ -289,6 +306,7 @@
     BOOL informationComplete = YES;
     NSString *errorMessage = @"";
     
+    NSString *email = [[NSString alloc] init];
     NSString *password = [[NSString alloc] init];
     NSString *passwordConfirm = [[NSString alloc] init];
     
@@ -314,12 +332,24 @@
                 errorMessage = @"メールアドレスを正しく入力してください";
                 break;
             }
+            email = field;
         }
     }
     
     if (![password isEqualToString:passwordConfirm]) {
         if ([errorMessage isEqualToString:@""]) {
             errorMessage = @"確認用パスワードが一致しません";
+        }
+    }
+    
+    if (informationComplete) {
+        // email重複チェック
+        PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
+        [emailQuery whereKey:@"emailCommon" equalTo:email];
+        PFObject *object = [emailQuery getFirstObject];
+        if(object) {
+            errorMessage = @"既に登録済みのメールアドレスです";
+            informationComplete = NO;
         }
     }
     
@@ -338,17 +368,20 @@
 
 // Sent to the delegate when a PFUser is signed up.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
+    [user refresh];
     // 確認用パスワードは平文で格納されちゃうので消す
     user[@"additional"] = @"";
     
-    // authDataがなければ(Babyry専用ユーザーなら)
-    if (!user[@"authData"]) {
-        user[@"email"] = user[@"username"];
-    }
-    
+    user[@"email"] = user[@"username"];
+
     // user_idを発行して保存
     user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+    
+    // emailCommonに格納
+    user[@"emailCommon"] = user[@"username"];
+
     [user save];
+    [user refresh];
     
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
 }

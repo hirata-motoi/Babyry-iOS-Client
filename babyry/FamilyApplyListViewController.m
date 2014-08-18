@@ -110,7 +110,7 @@
         cell = [[FamilyApplyListCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:CellIdentifier];
     }
-    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"email"];
+    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"emailCommon"];
     cell.emailLabel.font = [UIFont systemFontOfSize:18];
     cell.emailLabel.numberOfLines = 0;
     CGSize bounds = CGSizeMake(cell.emailLabel.frame.size.width, tableView.frame.size.height);
@@ -140,7 +140,7 @@
 {
     FamilyApplyListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"email"];
+    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"emailCommon"];
     cell.emailLabel.font = [UIFont systemFontOfSize:18];
     
     // get cell height

@@ -110,9 +110,7 @@
 
         // facebook連携していない場合、emailが確認されているか
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
-        // usernameとemailが一致 = facebookじゃないログイン
-        if ([_currentUser[@"username"] isEqualToString:_currentUser[@"email"]]) {
-            //NSLog(@"currentUserStatus %@", _currentUser);
+        if ([_currentUser objectForKey:@"emailVerified"]) {
             if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
                 //NSLog(@"Parseにフォアグランドでとりにいく");
                 [_currentUser refresh];
