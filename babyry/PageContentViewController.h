@@ -53,4 +53,6 @@
 
 @property MBProgressHUD *hud;
 
+@property NSTimer *tm;
+
 @end

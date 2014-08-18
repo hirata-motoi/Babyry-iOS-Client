@@ -112,13 +112,13 @@
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
         // usernameとemailが一致 = facebookじゃないログイン
         if ([_currentUser[@"username"] isEqualToString:_currentUser[@"email"]]) {
-            NSLog(@"currentUserStatus %@", _currentUser);
+            //NSLog(@"currentUserStatus %@", _currentUser);
             if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-                NSLog(@"Parseにフォアグランドでとりにいく");
+                //NSLog(@"Parseにフォアグランドでとりにいく");
                 [_currentUser refresh];
-                NSLog(@"refleshed currentUser %@", _currentUser);
+                //NSLog(@"refleshed currentUser %@", _currentUser);
                 if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-                    NSLog(@"mailがまだ確認されていません");
+                    //NSLog(@"mailがまだ確認されていません");
                     [self setNotVerifiedPage];
                     return;
                 }

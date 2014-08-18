@@ -58,16 +58,12 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
-    
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
-    
     [self initializeChildImages];
     [self createCollectionView];
-    
     //[self setupScrollBarView];
     
     // Notification登録
@@ -107,13 +103,23 @@
     [super viewDidAppear:animated];
     
     [self setupNotificationHistory];
+    if (_tm || ![_tm isValid]) {
+        _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
+    }
+}
+
+-(void)setImages
+{
     [self showChildImages];
     [self setupImagesCount];
 }
 
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    [_tm invalidate];
 }
 
 -(void)createCollectionView
@@ -509,20 +515,14 @@
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
                 
-                NSLog(@"Get From S3 %@", ymd);
                 [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                        NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-                        // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
-                        if ([getResult.lastModified timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                        
+                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                             
-                            NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
-                        }
-                        // タイムスタンプを現在にする (そうしないとParseよりも常にキャッシュが古いと見なされるので(ベストショットを変更してParseのタイムスタンプが更新された場合))
-                        [ImageCache updateTimeStamp:thumbPath];
+                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
                     }
                     if (reload) {
                         [_pageContentCollectionView reloadData];
