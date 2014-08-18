@@ -270,7 +270,7 @@
             PFObject *partner = (PFUser *)[Partner partnerUser];
             if (partner != nil) {
                 NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                options[@"formatArgs"] = partner[@"nickName"];
+                options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
                 options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
                 [PushNotification sendInBackground:@"bestShotChosen" withOptions:options];
                 [self createNotificationHistory:@"bestShotChanged"];
