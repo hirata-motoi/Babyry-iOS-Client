@@ -289,6 +289,9 @@
                 child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
                 child[@"commentShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"Comment"]];
                 [child save];
+                
+                // _childPropertiesを更新
+                [_childProperties addObject:child];
             }
             
             [_hud hide:YES];
