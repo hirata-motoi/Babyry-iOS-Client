@@ -78,7 +78,6 @@
 
 - (void)applicationDidReceiveRemoteNotification
 {
-    NSLog(@"got push");
     [self viewDidAppear:YES];
 }
 
@@ -102,8 +101,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self setupNotificationHistory];
-    if (_tm || ![_tm isValid]) {
+    [self setImages];
+    if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
 }
@@ -112,6 +111,7 @@
 {
     [self showChildImages];
     [self setupImagesCount];
+    [self setupNotificationHistory];
 }
 
 
@@ -397,7 +397,6 @@
         int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
         
         if (firstDateInt <= nextLoadInt) {
-            NSLog(@"load next");
             [self getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
         }
     }
@@ -414,7 +413,6 @@
 
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
-    NSLog(@"getChildImagesWithYear %d", month);
     _isLoading = YES;
     // TODO
     NSMutableDictionary *child = _childProperty;
@@ -423,7 +421,7 @@
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 1] integerValue]]];
     [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 31] integerValue]]];
-    
+   
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             NSInteger index = [[_childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
@@ -475,7 +473,7 @@
             [self setImageCache:cacheSetQueueArray withReload:reload];
             
             _isLoading = NO;
-            
+           
             [_hud hide:YES];
             [self showIntroductionOfImageRequest];
             _isFirstLoad = 0;
