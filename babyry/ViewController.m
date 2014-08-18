@@ -106,7 +106,11 @@
         }];
         
         // プッシュ通知用のデータがなければUserIdを突っ込んでおく
-        [PushNotification setupPushNotificationInstallation];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
+            [PushNotification setupPushNotificationInstallation];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+            });
+        });
 
         // facebook連携していない場合、emailが確認されているか
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
