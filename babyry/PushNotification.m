@@ -97,8 +97,9 @@
     
     // PFInstallationへのaddとremoveは同時にはできないので、仕方なく2回リクエストを送る
     // 自分のIDはとりあえず追加
+    [currentInstallation refresh];
     [currentInstallation addUniqueObject:[NSString stringWithFormat:@"userId_%@", currentUser[@"userId"]] forKey:@"channels"];
-    [currentInstallation saveEventually:^(BOOL succeeded, NSError * error) {
+    [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError * error) {
         if (succeeded) {
             // 自分以外のユーザのIDがあれば消す
             NSMutableArray *userIds = [self extractUserIdsFromChannels:[PFInstallation currentInstallation]];
@@ -107,7 +108,7 @@
                     [currentInstallation removeObject:[NSString stringWithFormat:@"userId_%@", userId] forKey:@"channels"];
                 }
             }
-            [currentInstallation saveEventually];
+            [currentInstallation saveInBackground];
         }
     }];
 }
