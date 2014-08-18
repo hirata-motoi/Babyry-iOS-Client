@@ -13,5 +13,7 @@
 
 + (NSString *) getValue:key;
 + (NSString *)getBucketName;
++ (NSString *)getAppVertion;
++ (NSString *)getInquiryEmail;
 
 @end

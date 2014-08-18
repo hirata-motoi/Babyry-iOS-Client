@@ -18,6 +18,7 @@
 #import "Navigation.h"
 #import "AcceptableUsePolicyViewController.h"
 #import "PrivacyPolicyViewController.h"
+#import "Config.h"
 
 @interface GlobalSettingViewController ()
 
@@ -164,6 +165,10 @@
                     cell.textLabel.text = @"プライバシーポリシー";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
+                case 2:
+                    cell.textLabel.text = @"お問い合わせ";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    break;
                 default:
                     break;
             }
@@ -196,7 +201,7 @@
             rowCount = 1;
             break;
         case 2:
-            rowCount = 2;
+            rowCount = 3;
             break;
         case 3:
             rowCount = 1;
@@ -238,6 +243,9 @@
                     break;
                 case 1:
                     [self openPrivacyPolicy];
+                    break;
+                case 2:
+                    [self openInquiry];
                     break;
                 default:
                     break;
@@ -429,6 +437,37 @@
 {
     PrivacyPolicyViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"PrivacyPolicyViewController"];
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)openInquiry
+{
+    NSString *bodyFormat = @"%@\n\n\n\n\n\n\n%@\n\n%@\n\n%@\n\n%@";
+    
+    NSString *introduction = @"いつもBabyryをご利用いただき、ありがとうございます。こちらにお問い合わせ内容をご記入ください。";
+    NSString *note         = @"下記はご使用端末の情報です。お問い合わせ対応の際に使用させて頂くため、修正せず、そのまま送信してください。";
+    NSString *infoNote     = @"以下の情報はお問い合わせ対応のみに使用します。上記に同意の上、送信してください。";
+    NSString *company      = @"(株)ミーニング";
+                               
+    float osVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+    NSString *info = [NSString stringWithFormat:@"OS:%@\nOS Version:%f\nUser Id:%@\nApp Version:%@",
+                      @"iOS",
+                      osVersion,
+                      [PFUser currentUser][@"userId"],
+                      [Config getAppVertion]];
+   
+    NSString *body = [NSString stringWithFormat:bodyFormat,
+                      introduction,
+                      note,
+                      infoNote,
+                      company,
+                      info];
+    
+    NSString *encodedBody = [body stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *subject = @"Babyryお問い合わせ";
+    NSString *encodedSubject = [subject stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *url = [NSString stringWithFormat:@"mailto:%@?Subject=%@&body=%@", [Config getInquiryEmail], encodedSubject, encodedBody];
+    
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }
 
 /*

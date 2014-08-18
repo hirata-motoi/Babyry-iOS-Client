@@ -29,4 +29,14 @@
     return @"babyry-images";
 }
 
++ (NSString *)getAppVertion
+{
+    return @"1.0.0";
+}
+
++ (NSString *)getInquiryEmail
+{
+    return @"info@meaning.co.jp";
+}
+
 @end
