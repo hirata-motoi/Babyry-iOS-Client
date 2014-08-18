@@ -175,7 +175,7 @@
         case 0:
             //１番目のボタンが押されたときの処理を記述する
             break;
-        case 1:
+        case 1: {
             // imageInfo更新
             PFObject *imageObject = _uploadViewController.imageInfo;
             PFACL *removeACL = [PFACL ACL];
@@ -194,6 +194,9 @@
             [self.navigationController setNavigationBarHidden:NO];
             [self.navigationController popViewControllerAnimated:YES];
             
+            break;
+        }
+        default:
             break;
     }
     
