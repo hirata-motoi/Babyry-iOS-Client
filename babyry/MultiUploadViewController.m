@@ -406,7 +406,7 @@
                     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
                     options[@"formatArgs"] = partner[@"nickName"];
                     options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
-                    [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:options];
+                    [PushNotification sendInBackground:@"bestShotChosen" withOptions:options];
                     [self createNotificationHistory:@"bestShotChanged"];
                 }
                 

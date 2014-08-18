@@ -255,13 +255,11 @@
             int indexOfParse = 0;
             for (PFObject *object in objects) {
                 if ([object.objectId isEqualToString:bestObjectId]) {
-                    NSLog(@"choosed %@", object.objectId);
                     if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
                         object[@"bestFlag"] =  @"choosed";
                         [object saveInBackground];
                     }
                 } else {
-                    NSLog(@"unchoosed %@", object.objectId);
                     if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
                         object[@"bestFlag"] =  @"unchoosed";
                         [object saveInBackground];
@@ -271,7 +269,10 @@
             }
             PFObject *partner = (PFUser *)[Partner partnerUser];
             if (partner != nil) {
-                [PushNotification sendInBackground:@"bestshotChosenTest" withOptions:[[NSMutableDictionary alloc]initWithObjects:@[partner[@"nickName"]] forKeys:@[@"formatArgs"]]];
+                NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+                options[@"formatArgs"] = partner[@"nickName"];
+                options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+                [PushNotification sendInBackground:@"bestShotChosen" withOptions:options];
                 [self createNotificationHistory:@"bestShotChanged"];
             }
             
