@@ -97,7 +97,9 @@
     
     // PFInstallationへのaddとremoveは同時にはできないので、仕方なく2回リクエストを送る
     // 自分のIDはとりあえず追加
-    [currentInstallation refresh];
+    if (currentInstallation.objectId) {
+        [currentInstallation refresh];
+    }
     [currentInstallation addUniqueObject:[NSString stringWithFormat:@"userId_%@", currentUser[@"userId"]] forKey:@"channels"];
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError * error) {
         if (succeeded) {
