@@ -38,13 +38,6 @@
     [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
-    NSArray *startingViewControllers = @[startingViewController];
-    [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
