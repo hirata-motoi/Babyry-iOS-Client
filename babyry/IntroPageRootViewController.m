@@ -65,13 +65,11 @@
 
 - (void)skip
 {
-    NSLog(@"skip start");
     [self.delegate skipToLast:_currentIndex];
 }
 
 - (void)openLoginView
 {
-    NSLog(@"openLoginView tapped");
     [self.delegate openLoginView];
 }
 

@@ -31,9 +31,7 @@
 {
     [self for:3 timesTryBlock:^(void(^callback)(NSError* error))
     {
-        NSLog(@"issueFamilyId");
         if (issuedId) {
-            NSLog(@"issueFamilyId return because issueId exists");
             return;
         }
             
@@ -44,8 +42,6 @@
         
         if (objects.count > 0) {
             // 重複しているIDがあったので再発行
-            NSLog(@"reissue");
-            
             NSString *errorDomain = @"com.inazumatv.APP_NAME";
             NSInteger errorCode = 12345;
             NSDictionary *errorUserInfo = @{NSLocalizedDescriptionKey: @"Error Description",
@@ -53,7 +49,6 @@
             callback([[NSError alloc] initWithDomain:errorDomain code:errorCode userInfo:errorUserInfo]);
             return;
         } else {
-            NSLog(@"重複なし");
             issuedId = id;
             callback(nil);
         }

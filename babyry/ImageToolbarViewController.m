@@ -80,7 +80,6 @@
 {
     // 大きくなるようなら別Classに移動
     // 実際には消さずに、ACLで誰にも見れない設定にする & キャッシュ消す & bestFlagをとりあえずremovedにしておいてみる
-    NSLog(@"imageTrash");
     
     UIAlertView *alert = [[UIAlertView alloc]
                           initWithTitle:@"確認"
@@ -94,7 +93,6 @@
 - (void)imageSave
 {
     // 大きくなるようなら別Classに移動
-    NSLog(@"imageSave");
     
     _hud = [MBProgressHUD showHUDAddedTo:_uploadViewController.view animated:YES];
     _hud.labelText = @"画像保存中...";
@@ -110,13 +108,11 @@
     
     [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
         if(!task.error && task.result) {
-            NSLog(@"s3 get success");
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             NSData *saveData = getResult.body;
             UIImage *saveImage = [UIImage imageWithData:saveData];
             UIImageWriteToSavedPhotosAlbum(saveImage, self, @selector(savingImageIsFinished:didFinishSavingWithError:contextInfo:), nil);
         } else {
-            NSLog(@"failed get image from s3 : %@", task.error);
             [_hud hide:YES];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー"
                                                             message:@"画像の保存に失敗しました。"
@@ -181,7 +177,6 @@
             break;
         case 1:
             // imageInfo更新
-            NSLog(@"Remove Execute");
             PFObject *imageObject = _uploadViewController.imageInfo;
             PFACL *removeACL = [PFACL ACL];
             [removeACL setPublicReadAccess:NO];
@@ -210,7 +205,6 @@
     [_hud hide:YES];
     
     if(error){
-        NSLog(@"画像保存エラー");
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラー"
                                                         message:@"画像の保存に失敗しました。"
                                                        delegate:nil
@@ -220,7 +214,6 @@
         
         [alert show];
     }else{
-        NSLog(@"画像保存完了");
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
                                                         message:@"画像の保存が完了しました"
                                                        delegate:nil

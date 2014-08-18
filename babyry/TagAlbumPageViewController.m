@@ -94,7 +94,6 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
-    NSLog(@"viewControllerBeforeViewController");
     UploadViewController *uploadViewController = (UploadViewController *)viewController;
     
     NSInteger index = uploadViewController.tagAlbumPageIndex;
@@ -108,7 +107,6 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-    NSLog(@"viewControllerAfterViewController");
     UploadViewController *uploadViewController = (UploadViewController *)viewController;
     
     NSInteger index = uploadViewController.tagAlbumPageIndex;

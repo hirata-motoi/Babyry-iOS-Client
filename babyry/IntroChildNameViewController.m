@@ -63,9 +63,7 @@
     // super
     [super viewWillAppear:animated];
     
-    NSLog(@"%@", _childProperties);
     
-    NSLog(@"Number of Current Child is %d", [_childProperties count]);
     // Maxが5なので、追加できる子供は 5 - _currentChildNum;
     _addableChildNum = 5 - [_childProperties count];
     
@@ -193,7 +191,6 @@
 
 - (void)keyboardWillShow:(NSNotification*)notification
 {
-    //NSLog(@"keyboardWillShow");
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -206,7 +203,6 @@
     textViewFrame = _editingView.frame;
     float overlap;
     overlap = MAX(0.0f, CGRectGetMaxY(textViewFrame) - CGRectGetMinY(keyboardFrame));
-    //NSLog(@"overlap %f", overlap);
     
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -223,7 +219,6 @@
 
 - (void)keybaordWillHide:(NSNotification*)notification
 {
-    //NSLog(@"keyboardWillHide");
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -232,7 +227,6 @@
     textViewFrame = _editingView.frame;
     //float overlap;
     //overlap = MAX(0.0f, CGRectGetMaxY(_defaultCommentViewRect) - CGRectGetMaxY(textViewFrame));
-    //NSLog(@"overlap %f", overlap);
     
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -266,13 +260,9 @@
         }
         if (_childNameField5.text && ![_childNameField5.text isEqualToString:@""]) {
             [newChildNameArray addObject:_childNameField5.text];
-            NSLog(@"send childname");
         }
-        NSLog(@"new child %@", newChildNameArray);
         if ([newChildNameArray count] < 1) {
-            NSLog(@"no child names");
         } else {
-            NSLog(@"update child names");
             
             // 移行の処理がforegrandなのでこれ表示されない。。。
             _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];

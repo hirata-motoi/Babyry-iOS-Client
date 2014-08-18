@@ -104,7 +104,6 @@
         imageType = @"image/jpeg";
     }
     
-    NSLog(@"Parseに既に画像があるかどうかを確認");
     PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [imageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
@@ -113,15 +112,12 @@
     NSArray *imageArray = [imageQuery findObjects];
     // imageArrayが一つ以上あったら(objectId指定だから一つしか無いはずだけど)上書き
     if ([imageArray count] > 1) {
-        NSLog(@"これはあり得ないエラー");
     } else if ([imageArray count] == 1) {
         PFObject *tmpImageObject = imageArray[0];
         //imageArray[0][@"imageFile"] = imageFile;
-        NSLog(@"ほんとはいらないけど念のため");
         imageArray[0][@"bestFlag"] = @"choosed";
         [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
-                NSLog(@"save to s3 %@", tmpImageObject.objectId);
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config getBucketName];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
@@ -142,7 +138,6 @@
         // PageContentViewController.childImagesの中身に追加
         [_section[@"images"] replaceObjectAtIndex:_indexPath.row withObject:tmpImageObject];
     } else {
-        NSLog(@"一つもないなら新たに追加");
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
         //childImage[@"imageFile"] = imageFile;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
@@ -151,7 +146,6 @@
         childImage[@"bestFlag"] = @"choosed";
         [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
-                NSLog(@"save to s3 %@", childImage.objectId);
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config getBucketName];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
@@ -183,7 +177,6 @@
     [PushNotification sendInBackground:@"imageUpload" withOptions:options];
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
-    NSLog(@"saved");
     
     [self.navigationController popViewControllerAnimated:YES];
 }

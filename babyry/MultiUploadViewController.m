@@ -264,7 +264,6 @@
                     _bestImageId = object.objectId;
                 }
                 if (![ImageCache getCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId]]) {
-                    NSLog(@"new image %@", object.objectId);
                     [newImages addObject:object];
                 }
             }
@@ -278,7 +277,6 @@
                 }
                 if (!isExist) {
                     [ImageCache removeCache:cache];
-                    NSLog(@"remove image %@", cache);
                 }
             }
             

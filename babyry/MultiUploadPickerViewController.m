@@ -93,7 +93,6 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    //NSLog(@"numberOfItemsInSection %d", collectionView.tag);
     if (collectionView.tag == 1) {
         return [_alAssetsArr count];
     } else if (collectionView.tag == 2) {
@@ -116,19 +115,16 @@
 
 // セルの大きさを指定するメソッド
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    //NSLog(@"sizeForItemAtIndexPath %d", collectionView.tag);
     return CGSizeMake(self.view.frame.size.width/4 -3, self.view.frame.size.width/4 -3);
 }
 
 // 指定された場所のセルを作るメソッド
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    //NSLog(@"cellForItemAtIndexPath %d", collectionView.tag);
     if (collectionView.tag == 1) {
         //セルを再利用 or 再生成
         UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MultiUploadPickerViewControllerCell" forIndexPath:indexPath];
         for (UIView *view in [cell subviews]) {
-            //NSLog(@"remove cell's child view");
             [view removeFromSuperview];
         }
     
@@ -157,7 +153,6 @@
     } else if (collectionView.tag == 2) {
         UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MultiUploadPickerViewControllerSelectedCell" forIndexPath:indexPath];
         for (UIView *view in [cell subviews]) {
-            //NSLog(@"remove cell's child view");
             [view removeFromSuperview];
         }
         cell.tag = indexPath.row;
@@ -175,9 +170,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    //NSLog(@"didSelectItemAtIndexPath %d", collectionView.tag);
     if (collectionView.tag == 1) {
-        NSLog(@"selected %d", indexPath.row);
         int index = indexPath.row;
         if([[_checkedImageFragArray objectAtIndex:index] isEqualToString:@"NO"]){
             [_checkedImageArray addObject:indexPath];
@@ -208,12 +201,10 @@
             [_selectedImageCollectionView scrollToItemAtIndexPath:lastIndexPath atScrollPosition:UICollectionViewScrollPositionRight animated:NO];
         }
     } else if (collectionView.tag == 2) {
-        NSLog(@"selected %d", indexPath.row);
     }
 }
 
 - (IBAction)sendImageButton:(id)sender {
-    NSLog(@"send image!");
     
     if ([_checkedImageArray count] + [[_totalImageNum objectAtIndex:_indexPath.row] intValue] > 15) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限数を超えています"
@@ -245,7 +236,6 @@
     for (NSIndexPath *indexPath in _checkedImageArray) {
         ALAsset *asset = [_alAssetsArr objectAtIndex:indexPath.row];
         ALAssetRepresentation *representation = [asset defaultRepresentation];
-        NSLog(@"asset %@ %d", asset, [representation orientation]);
         NSURL *assetURL = [[asset valueForProperty:ALAssetPropertyURLs] objectForKey:[[asset defaultRepresentation] UTI]];
         NSString *fileExtension = [[assetURL path] pathExtension];
         
@@ -273,7 +263,6 @@
         childImage[@"isTmpData"] = @"TRUE";
         [childImage saveInBackgroundWithBlock:^(BOOL succeed, NSError *error){
             saveCount++;
-            NSLog(@"saved %d", saveCount);
             if ([_checkedImageArray count] == saveCount) {
                 [_hud hide:YES];
                 if (_totalImageNum) {

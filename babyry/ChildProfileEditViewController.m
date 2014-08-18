@@ -70,7 +70,6 @@
                 object[@"name"] = _childNicknameEditTextField.text;
                 [_delegate changeChildNickname:_childNicknameEditTextField.text];
             } else if ([_editTarget isEqualToString:@"birthday"]) {
-                NSLog(@"comparison date %@ %@", object[@"birthday"], [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]);
                 if(![object[@"birthday"] isEqualToDate:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]]) {
                     object[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
                 }

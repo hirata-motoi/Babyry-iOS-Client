@@ -11,7 +11,6 @@
 @implementation Sequence
 
 -(NSNumber *)issueSequenceId:(NSString *)type {
-    NSLog(@"issueSequenceId start");
     // リクエストを送信
     // 送信したいURLを作成し、Requestを作成します。
     //NSURL *url = [NSURL URLWithString:@"https://dev5002.babyry.jp/sequence/issue"];
@@ -25,7 +24,6 @@
     NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:url
                                                             cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                         timeoutInterval:20];
-    NSLog(@"create http request");
     // POST の HTTP Request を作成
     [req setHTTPMethod:@"POST"];
     [req setValue:@"application/x-www-form-urlencoded"                 forHTTPHeaderField:@"Content-Type"];
@@ -38,15 +36,11 @@
     NSError *err;
     NSError *error;
     
-    NSLog(@"request start");
     //HTTPリクエスト送信
     NSData *response = [NSURLConnection sendSynchronousRequest:req
                                              returningResponse:&resp error:&err];
-    NSLog(@"response %@", response
-          );
     NSMutableDictionary *result = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
     
-    NSLog(@"sequence id : %@", result);
     return [NSNumber numberWithInt:[[result objectForKey:@"id"] intValue]];
 }
 

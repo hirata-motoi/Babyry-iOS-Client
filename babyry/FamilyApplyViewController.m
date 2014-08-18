@@ -29,7 +29,6 @@
 
 - (void)viewDidLoad
 {
-    NSLog(@"viewDidLoad in FamilyApplyViewController");
     [super viewDidLoad];
     
     _searchingStep = @"";
@@ -46,7 +45,6 @@
     [self setupSearchForm];
     [Navigation setTitle:self.navigationItem withTitle:@"パートナー検索" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
-    NSLog(@"set navigator for keyboard");
     // view押したらキーボードを隠す
     UITapGestureRecognizer *hideKeyboradGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard:)];
     hideKeyboradGesture.numberOfTapsRequired = 1;
@@ -74,7 +72,6 @@
     _stasusHud.labelText = @"パートナーデータ確認";
     
     if (!_tm || ![_tm isValid]) {
-        NSLog(@"timer fire");
         _tm = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(checkFamilyApply) userInfo:nil repeats:YES];
         [_tm fire];
     }
@@ -86,23 +83,19 @@
     PFUser *user = [PFUser currentUser];
     
     if (user[@"familyId"]) {
-        NSLog(@"familyIdがある場合は、ひも付け完了しているか、リクエスト済み");
         PFQuery * roleQuery = [PFQuery queryWithClassName:@"FamilyRole"];
         [roleQuery whereKey:@"familyId" equalTo:user[@"familyId"]];
         [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
             if (!error){
                 if ([objects count] > 0) {
-                    NSLog(@"ひも付け済み");
                     _familyObject = [objects objectAtIndex:0];
                     [self showMessage:@"forFamily"];
                 } else {
-                    NSLog(@"ひも付け未完、申請確認");
                     PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
                     [applyQuery whereKey:@"userId" equalTo:user[@"userId"]];
                     [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                         if (!error){
                             if ([objects count] > 0) {
-                                NSLog(@"申請中、相手待ち");
                                 _applyObject = [objects objectAtIndex:0];
                                 [self showMessage:@"forInviter"];
                             }
@@ -114,13 +107,11 @@
             [_stasusHud hide:YES];
         }];
     } else {
-        NSLog(@"familyIdがない場合、申請を受けているかだけ見る");
         PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
         [applyQuery whereKey:@"inviteeUserId" equalTo:user[@"userId"]];
         [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
             if (!error){
                 if ([objects count] > 0) {
-                    NSLog(@"申請が来ています");
                     [self showMessage:@"forInvitee"];
                 }
             }
@@ -138,15 +129,12 @@
 -(void) showMessage:(NSString *)type
 {
     if ([type isEqualToString:@"forInvitee"]) {
-        NSLog(@"申請メッセージ表示");
         [_messageButton setTitle:@"申請が来ています(タップで確認)" forState:UIControlStateNormal];
         [_messageButton addTarget:self action:@selector(checkApply) forControlEvents:UIControlEventTouchDown];
     } else if ([type isEqualToString:@"forInviter"]) {
-        NSLog(@"申請メッセージ表示");
         [_messageButton setTitle:@"申請済みです(タップで取り消し)" forState:UIControlStateNormal];
         [_messageButton addTarget:self action:@selector(removeApply) forControlEvents:UIControlEventTouchDown];
     } else if ([type isEqualToString:@"forFamily"]) {
-        NSLog(@"申請メッセージ表示");
         [_messageButton setTitle:@"パートナー登録は完了しています" forState:UIControlStateNormal];
     }
     _messageButton.hidden = NO;
@@ -183,19 +171,15 @@
         [query whereKey:@"emailCommon" equalTo:inputtedUserEmail];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
             if (!error){
-                NSLog(@"aaaa %d %@", objects.count, objects);
                 if (objects.count < 1) {
-                    NSLog(@"検索0件");
                     [self showSearchNoResult];
                 } else {
                     // すでにFamilyIdがある人だった場合は表示しない
                     // セキュリティ的に、既にパートナーがいますってのも出さない方が良い
                     _searchedUserObject = [objects objectAtIndex:0];
                     if(_searchedUserObject[@"familyId"] && ![_searchedUserObject[@"familyId"] isEqualToString:@""]) {
-                        NSLog(@"このユーザーはすでにパートナーいます %@", _searchedUserObject[@"familyId"]);
                         [self showSearchNoResult];
                     } else {
-                        NSLog(@"OK");
                         [self showSearchResult];
                     }
                 }
@@ -244,7 +228,6 @@
         case 1:
         {
             if ([_searchingStep isEqualToString:@""]) {
-                NSLog(@"ユーザー見つかったのでパートを決める");
                 _searchingStep = @"applying";
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"あなたのパートを決めてください"
                                                                 message:@"パートは後から変更可能です"
@@ -254,11 +237,9 @@
                                       ];
                 [alert show];
             } else if ([_searchingStep isEqualToString:@"applying"]) {
-                NSLog(@"アップで申請");
                 _searchingStep = @"";
                 [self sendApply:@"uploader"];
             } else if ([_searchingStep isEqualToString:@"removeApply"]) {
-                NSLog(@"申請取り消し");
                 _searchingStep = @"";
                 [_applyObject delete];
                 [_applyObject save];
@@ -268,7 +249,6 @@
             break;
         case 2:
         {
-            NSLog(@"チョイスで申請");
             _searchingStep = @"";
             [self sendApply:@"chooser"];
         }
@@ -306,7 +286,6 @@
 
 - (void)setupSearchForm
 {
-    NSLog(@"setupSearchForm");
     UIImage *formImage = [UIImage imageNamed:@"FormRounded.png"];
     UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 10, 250, 30)];
     imageView.image = formImage;
@@ -331,7 +310,6 @@
 
 - (void) removeApply
 {
-    NSLog(@"remove!");
     _searchingStep = @"removeApply";
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"申請ととりけしますか？"
                                                     message:@""

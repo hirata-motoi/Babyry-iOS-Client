@@ -102,10 +102,8 @@
         if (succeeded) {
             // 自分以外のユーザのIDがあれば消す
             NSMutableArray *userIds = [self extractUserIdsFromChannels:[PFInstallation currentInstallation]];
-            NSLog(@"extracted userIds : %@", userIds);
             for (NSString *userId in userIds) {
                 if (! [userId isEqualToString:currentUser[@"userId"]]) {
-                    NSLog(@"remove : %@", userId);
                     [currentInstallation removeObject:[NSString stringWithFormat:@"userId_%@", userId] forKey:@"channels"];
                 }
             }

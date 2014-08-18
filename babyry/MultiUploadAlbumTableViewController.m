@@ -33,7 +33,6 @@
     [Navigation setTitle:self.navigationItem withTitle:@"アルバム一覧" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
     // フォトアルバムからリスト取得しておく
-    NSLog(@"get from photo album.");
     _albumListArray = [[NSMutableArray alloc] init];
     _albumImageDic = [[NSMutableDictionary alloc] init];
     //NSMutableArray *assetsArray = [[NSMutableArray alloc] init];
@@ -83,7 +82,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"album array count %d", [_albumListArray count]);
     return [_albumListArray count];
 }
 
@@ -96,8 +94,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     int index = [indexPath indexAtPosition:[indexPath length] - 1];
-    NSLog(@"table cell index : %d", index);
-    NSLog(@"album name %@", [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName]);
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AlbumListTableViewCell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"AlbumListTableViewCell"];
@@ -116,7 +112,6 @@
 {
     int index = [indexPath indexAtPosition:[indexPath length] - 1];
     NSString *albumName = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
-    NSLog(@"selected, index : %d, album name : %@", index, albumName);
     
     MultiUploadPickerViewController *multiUploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadPickerViewController"];
     multiUploadPickerViewController.alAssetsArr = [_albumImageDic objectForKey:albumName];

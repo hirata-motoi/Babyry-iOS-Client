@@ -112,11 +112,8 @@
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
         if ([_currentUser objectForKey:@"emailVerified"]) {
             if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-                //NSLog(@"Parseにフォアグランドでとりにいく");
                 [_currentUser refresh];
-                //NSLog(@"refleshed currentUser %@", _currentUser);
                 if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-                    //NSLog(@"mailがまだ確認されていません");
                     [self setNotVerifiedPage];
                     return;
                 }
@@ -125,7 +122,6 @@
         
         // falimyIdを取得
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
-            NSLog(@"ログインしているけどファミリ- IDがない = 最初のログイン");
             // パートナー検索画面を出す
             FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
             [self.navigationController pushViewController:familyApplyViewController animated:YES];
@@ -291,7 +287,6 @@
 
 -(void)logOut
 {
-    NSLog(@"Logout");
     [self dismissViewControllerAnimated:YES completion:NULL];
     [PFUser logOut];
 }
@@ -322,7 +317,6 @@
     NSString *email = selfUser[@"email"];
     selfUser[@"email"] = email;
     [selfUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        NSLog(@"selfUser succeede:%d error:%@", succeeded, error);
         [[PFUser currentUser]refresh];
     }];
     

@@ -76,7 +76,6 @@
 
 - (void)keyboardWillShow:(NSNotification*)notification
 {
-    //NSLog(@"keyboardWillShow");
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -89,7 +88,6 @@
     textViewFrame = _editingView.frame;
     float overlap;
     overlap = MAX(0.0f, CGRectGetMaxY(textViewFrame) - CGRectGetMinY(keyboardFrame));
-    //NSLog(@"overlap %f", overlap);
     
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -106,7 +104,6 @@
 
 - (void)keybaordWillHide:(NSNotification*)notification
 {
-    //NSLog(@"keyboardWillHide");
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -115,7 +112,6 @@
     textViewFrame = _editingView.frame;
     //float overlap;
     //overlap = MAX(0.0f, CGRectGetMaxY(_defaultCommentViewRect) - CGRectGetMaxY(textViewFrame));
-    //NSLog(@"overlap %f", overlap);
     
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
@@ -134,9 +130,7 @@
 {
     if ([sender view].tag == 2) {
         if (!_introMyNicknameField.text || [_introMyNicknameField.text isEqualToString:@""]) {
-            NSLog(@"invalid nickname");
         } else {
-            NSLog(@"Set MyNickname %@", _introMyNicknameField.text);
             
             PFObject *user = [PFUser currentUser];
             user[@"nickName"] = _introMyNicknameField.text;
