@@ -48,8 +48,7 @@
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"";
     
-    NSString *filePath = [self getHtmlFilePath];
-    [self loadWebView:filePath];
+    [self load];
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,23 +57,22 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (NSString *)getHtmlFilePath
+- (void)load
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Config"];
     [query whereKey:@"key" equalTo:@"privacyPolicy"];
     query.cachePolicy = kPFCachePolicyNetworkElseCache;
-    NSArray *objects = [query findObjects];
-    
-    NSString *filePath = @"";
-    if (!objects || objects.count < 1) {
-        // TODO 準備中です とか表示
-    } else {
-        PFObject *row = objects[0];
-        PFFile *fileObject = row[@"file"];
-        filePath = fileObject.url;
-    }
-    NSLog(@"filePath : %@", filePath);
-    return filePath;
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        NSString *filePath = @"";
+        if (!objects || objects.count < 1) {
+            // TODO 準備中です とか表示
+        } else {
+            PFObject *row = objects[0];
+            PFFile *fileObject = row[@"file"];
+            filePath = fileObject.url;
+            [self loadWebView:filePath];
+        }
+    }];
 }
 
 - (void)loadWebView:(NSString *)filePath
