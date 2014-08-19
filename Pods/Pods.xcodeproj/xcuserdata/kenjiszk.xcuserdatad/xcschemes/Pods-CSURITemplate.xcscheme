@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8326DB5CFA5045D6AB7CBF41"
+               BlueprintIdentifier = "152A2BC7E1454D0096BC033B"
                BuildableName = "libPods-CSURITemplate.a"
                BlueprintName = "Pods-CSURITemplate"
                ReferencedContainer = "container:Pods.xcodeproj">
