@@ -26,7 +26,7 @@
 
 + (NSString *)getBucketName
 {
-    return @"babyry-images";
+    return @"babyrydev-images";
 }
 
 + (NSString *)getAppVertion

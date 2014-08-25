@@ -140,6 +140,7 @@ PODS:
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
   - Bolts (1.1.2)
+  - CrittercismSDK (4.3.4)
   - CSURITemplate (0.3)
   - Facebook-iOS-SDK (3.16.2):
     - Bolts
@@ -154,11 +155,13 @@ PODS:
 
 DEPENDENCIES:
   - AWSiOSSDKv2
+  - CrittercismSDK
   - Facebook-iOS-SDK
 
 SPEC CHECKSUMS:
   AWSiOSSDKv2: be7410b9aff414ad2516b7a61425c4f0abf168a8
   Bolts: 2635e8698a630774689441047f3465d78c48d485
+  CrittercismSDK: d32f9f730158e3e646c445b752d7851710a1fed2
   CSURITemplate: a0708251b4453338dea48bf1ebdeee2bec6f6fe9
   Facebook-iOS-SDK: 34eef640c2cc4c8618ba0f574ad2b290e07f1b4e
   GZIP: f27c434ffee5e9a9b34f4e9c19e91350fa8bbde1
