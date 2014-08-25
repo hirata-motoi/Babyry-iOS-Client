@@ -26,17 +26,39 @@
 
 + (NSString *)getBucketName
 {
-    return @"babyrydev-images";
+    return [self config][@"aws-bucket-name"];
 }
 
 + (NSString *)getAppVertion
 {
-    return @"1.0.0";
+    return [self config][@"app-version"];
 }
 
 + (NSString *)getInquiryEmail
 {
-    return @"info@meaning.co.jp";
+    return [self config][@"inquiry-email"];
+}
+
++ (NSMutableDictionary *)config
+{
+    NSString *configName;
+#ifdef DEBUG
+    configName = @"babyrydev-config.plist";
+#else
+    configName = @"babyry-config.plist";
+#endif
+
+    NSMutableDictionary *config = [[NSMutableDictionary alloc]init];
+    NSString *homeDir = NSHomeDirectory();
+    NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"babyry.app"];
+    NSString *filePath = [appDir stringByAppendingPathComponent:configName];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:filePath]) { // yes
+        config = [NSDictionary dictionaryWithContentsOfFile:filePath];
+    }
+    
+    return config;
 }
 
 @end
