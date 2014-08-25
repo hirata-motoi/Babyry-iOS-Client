@@ -139,7 +139,7 @@ PODS:
     - TMCache (~> 1.2.0)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - Bolts (1.1.1)
+  - Bolts (1.1.2)
   - CSURITemplate (0.3)
   - Facebook-iOS-SDK (3.16.2):
     - Bolts
@@ -158,7 +158,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AWSiOSSDKv2: be7410b9aff414ad2516b7a61425c4f0abf168a8
-  Bolts: 0ca796081c3e7c139bd86d6903c27f1b83036a5d
+  Bolts: 2635e8698a630774689441047f3465d78c48d485
   CSURITemplate: a0708251b4453338dea48bf1ebdeee2bec6f6fe9
   Facebook-iOS-SDK: 34eef640c2cc4c8618ba0f574ad2b290e07f1b4e
   GZIP: f27c434ffee5e9a9b34f4e9c19e91350fa8bbde1

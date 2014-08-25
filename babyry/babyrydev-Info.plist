@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>BabyryDev</string>
+	<string>Babyry</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>jp.co.meaning.${PRODUCT_NAME:rfc1034identifier}dev</string>
+	<string>jp.co.meaning.${PRODUCT_NAME:rfc1034identifier}prod</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
