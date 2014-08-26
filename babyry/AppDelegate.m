@@ -48,6 +48,8 @@
      UIRemoteNotificationTypeSound |
      UIRemoteNotificationTypeNewsstandContentAvailability];
     
+    [self setGlobalVariables];
+    
     //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     // Override point for customization after application launch.
@@ -111,6 +113,16 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
     return [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
+}
+
+- (void)setGlobalVariables
+{
+    // env
+    #ifdef DEBUG
+        _env = @"dev";
+    #else
+        _env = @"prod";
+    #endif
 }
 
 @end
