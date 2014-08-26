@@ -10,6 +10,7 @@
 #import "FamilyRole.h"
 #import "Navigation.h"
 #import "FamilyApplyListCell.h"
+#import "Logger.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -77,6 +78,10 @@
             
             [self setupInviterUsers:inviterUserIds];
         }
+        if (error) {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in showFamilyApplyList : %@", error]];
+        }
+        
         [_hud hide:YES];
     }];
 }
@@ -89,6 +94,8 @@
         if (!error) {
             inviterUsers = objects;
             [_familyApplyList reloadData];
+        } else {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setupInviterUsers : %@", error]];
         }
     }];
 }

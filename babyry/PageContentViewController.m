@@ -38,6 +38,7 @@
 #import <AudioToolbox/AudioServices.h>
 #import "ImageRequestIntroductionView.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface PageContentViewController ()
 
@@ -478,7 +479,7 @@
             [self showIntroductionOfImageRequest];
             _isFirstLoad = 0;
         } else {
-            NSLog(@"error occured %@", error);
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [_hud hide:YES];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
                                                             message:@"ネットワークの接続状況を確認してください"
@@ -521,6 +522,8 @@
                             
                         NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                         [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                    } else {
+                        [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in getRequsetOfS3 in setImageCache : %@", task.error]];
                     }
                     if (reload) {
                         [_pageContentCollectionView reloadData];
@@ -1036,6 +1039,8 @@
     [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [_imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
+        } else {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setupImagesCount : %@", error]];
         }
     }];
 }

@@ -12,8 +12,8 @@
 #import "MBProgressHUD.h"
 #import "PageViewController.h"
 
-@interface ViewController : UIViewController <UIPageViewControllerDataSource>
-@property (weak, nonatomic) IBOutlet UIButton *openGlobalSettingViewButton;
+@interface ViewController : UIViewController
+//@property (weak, nonatomic) IBOutlet UIButton *openGlobalSettingViewButton;
 
 //- (IBAction)startWalkthrough:(id)sender;
 

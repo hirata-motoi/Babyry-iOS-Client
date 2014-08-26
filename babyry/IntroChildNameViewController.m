@@ -10,6 +10,7 @@
 #import "Navigation.h"
 #import "Sharding.h"
 #import "ColorUtils.h"
+#import "Logger.h"
 
 @interface IntroChildNameViewController ()
 
@@ -324,14 +325,21 @@
             PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
             [childQuery whereKey:@"objectId" equalTo:[[_childProperties objectAtIndex:_removeTarget] objectForKey:@"objectId"]];
             [childQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-                [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    if (succeeded) {
-                        [_childProperties removeObjectAtIndex:_removeTarget];
-                        [_hud hide:YES];
-                        [self viewWillAppear:YES];
-                        _removeTarget = -1;
-                    }
-                }];
+                if (error) {
+                    [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in find child in alertView %@", error]];
+                } else {
+                    [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        if (succeeded) {
+                            [_childProperties removeObjectAtIndex:_removeTarget];
+                            [_hud hide:YES];
+                            [self viewWillAppear:YES];
+                            _removeTarget = -1;
+                        }
+                        if (error) {
+                            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in child delete in alertView %@", error]];
+                        }
+                    }];
+                }
             }];
         }
             break;

@@ -11,6 +11,7 @@
 #import "Navigation.h"
 #import "ColorUtils.h"
 #import "FamilyApplyListViewController.h"
+#import "Logger.h"
 
 @interface FamilyApplyViewController ()
 
@@ -99,10 +100,14 @@
                                 _applyObject = [objects objectAtIndex:0];
                                 [self showMessage:@"forInviter"];
                             }
+                        } else {
+                            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from userId) : %@", error]];
                         }
                         [_stasusHud hide:YES];
                     }];
                 }
+            } else {
+                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from FamilyId) : %@", error]];
             }
             [_stasusHud hide:YES];
         }];
@@ -114,6 +119,8 @@
                 if ([objects count] > 0) {
                     [self showMessage:@"forInvitee"];
                 }
+            } else {
+                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from inviteeUserId) : %@", error]];
             }
             [_stasusHud hide:YES];
         }];
@@ -184,7 +191,7 @@
                     }
                 }
             } else {
-                NSLog(@"error occured %@", error);
+                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in executeSearch %@", error]];
             }
             [_hud hide:YES];
         }];

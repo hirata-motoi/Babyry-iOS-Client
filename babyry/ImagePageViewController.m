@@ -12,7 +12,7 @@
 #import "AWSS3Utils.h"
 #import "DateUtils.h"
 #import "Config.h"
-
+#import "Logger.h"
 
 @implementation ImagePageViewController
 
@@ -284,6 +284,8 @@
                 NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                 [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
             }
+        } else {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in cacheThumbnail : %@", task.error]];
         }
         return nil;
     }];

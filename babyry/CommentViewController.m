@@ -13,6 +13,7 @@
 #import "Partner.h"
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
+#import "Logger.h"
 
 @interface CommentViewController ()
 
@@ -142,7 +143,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 -(void)getCommentFromParse
 {
-    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", [_child[@"commentShardIndex"] integerValue]]];
+    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[_child[@"commentShardIndex"] integerValue]]];
     [commentQuery whereKey:@"childId" equalTo:_childObjectId];
     [commentQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
     [commentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -156,6 +157,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
             } else {
                 [self reloadData];
             }
+        } else {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in getCommentFromParse : %@", error]];
         }
     }];
 }
@@ -314,7 +317,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 {
     if ( _commentTextView && ![_commentTextView.text isEqualToString:@""] ) {
         // Insert To Parse
-        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", [_child[@"commentShardIndex"] integerValue]]];
+        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[_child[@"commentShardIndex"] integerValue]]];
         dailyComment[@"comment"] = _commentTextView.text;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         dailyComment[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
@@ -330,6 +333,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         }
         [dailyComment saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
             if (error) {
+                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in submitComment : %@", error]];
                 [_commentArray removeObject:dailyComment];
                 [self reloadData];
             } else {

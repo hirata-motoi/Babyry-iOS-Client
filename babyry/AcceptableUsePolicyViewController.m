@@ -9,6 +9,7 @@
 #import "AcceptableUsePolicyViewController.h"
 #import "Navigation.h"
 #import "UIColor+Hex.h"
+#import "Logger.h"
 
 @interface AcceptableUsePolicyViewController ()
 
@@ -64,8 +65,13 @@
     query.cachePolicy = kPFCachePolicyNetworkElseCache;
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         NSString *filePath = @"";
+        if (error) {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in get AcceptableUsePolicy : %@", error]];
+        }
+        
         if (!objects || objects.count < 1) {
             // TODO 準備中です とか表示
+            [Logger writeParse:@"crit" message:@"Error in get AcceptableUsePolicy : Can't get acceptableUsePolicy from Parse."];
         } else {
             PFObject *row = objects[0];
             PFFile *fileObject = row[@"file"];

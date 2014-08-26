@@ -8,6 +8,7 @@
 
 #import "TagAlbumOperationViewController.h"
 #import "TagAlbumViewController.h"
+#import "Logger.h"
 
 @interface TagAlbumOperationViewController ()
 
@@ -80,6 +81,8 @@
             } else {
                 // TODO tagのマスター情報がないときはどうしようかな
             }
+        } else {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in findObjectsInBackgroundWithBlock(setupOperationView) : %@", error]];
         }
     }];
     

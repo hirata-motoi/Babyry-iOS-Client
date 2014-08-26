@@ -8,6 +8,7 @@
 
 #import "ChildProfileEditViewController.h"
 #import "DateUtils.h"
+#import "Logger.h"
 
 @interface ChildProfileEditViewController ()
 
@@ -76,6 +77,12 @@
                 [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
             }
             [object saveInBackground];
+        } else {
+            if (error) {
+                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in saveChildName : %@", error]];
+            } else {
+                [Logger writeParse:@"crit" message:@"Error in saveChildName : There is no object from childQuery"];
+            }
         }
     }];
     _child[@"name"] = _childNicknameEditTextField.text;

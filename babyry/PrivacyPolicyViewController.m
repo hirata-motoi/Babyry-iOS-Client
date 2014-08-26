@@ -9,6 +9,7 @@
 #import "PrivacyPolicyViewController.h"
 #import "Navigation.h"
 #import "UIColor+Hex.h"
+#import "Logger.h"
 
 @interface PrivacyPolicyViewController ()
 
@@ -71,6 +72,9 @@
             PFFile *fileObject = row[@"file"];
             filePath = fileObject.url;
             [self loadWebView:filePath];
+        }
+        if (error) {
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in load privacyPolicy : %@", error]];
         }
     }];
 }

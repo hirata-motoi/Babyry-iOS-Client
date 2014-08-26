@@ -13,6 +13,7 @@
 #import "Badge.h"
 #import "NotificationHistory.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface ImageToolbarViewController ()
 
@@ -122,6 +123,7 @@
                                   ];
             
             [alert show];
+            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in imageSave : %@", task.error]];
         }
         return nil;
     }];

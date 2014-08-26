@@ -17,6 +17,8 @@
 #import "ColorUtils.h"
 #import "MyLogInViewController.h"
 #import "MySignUpViewController.h"
+#import "Logger.h"
+#import "Logger.h"
 
 @interface IntroFirstViewController ()
 
@@ -63,6 +65,8 @@
             thisControl.currentPageIndicatorTintColor = [UIColor whiteColor];
         }
     }
+    
+    [Logger writeParse:@"info" message:@"Not-Login User Opend IntroFirstViewController"];
 }
 
 - (void)didReceiveMemoryWarning
@@ -246,6 +250,7 @@
                     [emailQuery whereKey:@"emailCommon" equalTo:[result objectForKey:@"email"]];
                     [emailQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
                         if(object) {
+                            [Logger writeParse:@"warn" message:@"Warn in Email Duplicate Check"];
                             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
                                                                             message:@"このfacebookアカウントで使用しているメールアドレスは既に登録済みです。"
                                                                            delegate:nil
@@ -268,8 +273,14 @@
                                     [alert show];
                                     [PFUser logOut];
                                     [self dismissViewControllerAnimated:YES completion:nil];
+                                } else {
+                                    [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in emailCommon save : %@", error]];
                                 }
                             }];
+                        }
+                        
+                        if (error) {
+                            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in check duplicate email : %@", error]];
                         }
                     }];
                 }

@@ -25,9 +25,6 @@
         self.window.rootViewController = rootViewController;
     }
     
-    // Crittercism
-    [Crittercism enableWithAppID: @"53f2f95d1787843773000004"];
-    
     // Parse Authentification
     [Parse setApplicationId:[SecretConfig getParseApplicationId] clientKey:[SecretConfig getParseClientKey]];
 
@@ -50,6 +47,9 @@
     
     //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
+    // Crittercism
+    //[Crittercism enableWithAppID: @"53f2f95d1787843773000004"];
+    
     // Override point for customization after application launch.
     return YES;
 }
