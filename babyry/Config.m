@@ -11,6 +11,8 @@
 
 @implementation Config
 
+static NSMutableDictionary *_config = nil;
+
 + (NSString *) getValue:key
 {
     PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
@@ -41,24 +43,26 @@
 
 + (NSMutableDictionary *)config
 {
-    NSString *configName;
-#ifdef DEBUG
-    configName = @"babyrydev-config.plist";
-#else
-    configName = @"babyry-config.plist";
-#endif
+    if (_config == nil) {
+        NSString *configName;
+        #ifdef DEBUG
+            configName = @"babyrydev-config.plist";
+        #else
+            configName = @"babyry-config.plist";
+        #endif
 
-    NSMutableDictionary *config = [[NSMutableDictionary alloc]init];
-    NSString *homeDir = NSHomeDirectory();
-    NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"babyry.app"];
-    NSString *filePath = [appDir stringByAppendingPathComponent:configName];
+        _config = [[NSMutableDictionary alloc]init];
+        NSString *homeDir = NSHomeDirectory();
+        NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"babyry.app"];
+        NSString *filePath = [appDir stringByAppendingPathComponent:configName];
     
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if ([fileManager fileExistsAtPath:filePath]) { // yes
-        config = [NSDictionary dictionaryWithContentsOfFile:filePath];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        if ([fileManager fileExistsAtPath:filePath]) {
+            _config = [NSDictionary dictionaryWithContentsOfFile:filePath];
+        }
     }
     
-    return config;
+    return _config;
 }
 
 @end
