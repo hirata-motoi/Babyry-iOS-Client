@@ -1360,7 +1360,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				PROVISIONING_PROFILE = "087BED89-D87B-4851-9891-6A386ACC15B0";
 				SDKROOT = iphoneos;
 			};
 			name = BabyryDev;
@@ -1382,7 +1382,7 @@
 				INFOPLIST_FILE = "Babyry/babyrydev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = Babyry;
-				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = BabyryDev;
@@ -1460,7 +1460,7 @@
 				INFOPLIST_FILE = "Babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = Babyry;
-				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = BabyryProd;
