@@ -1,6 +1,7 @@
 .DS_Store
-babyry.xcodeproj/project.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/UserInterfaceState.xcuserstate
-babyry.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/UserInterfaceState.xcuserstate
-babyry.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
-babyry.xcodeproj/xcuserdata/kenjiszk.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
-babyry/SecretConfig.m
+Babyry.xcodeproj/project.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/UserInterfaceState.xcuserstate
+Babyry.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/UserInterfaceState.xcuserstate
+Babyry.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+Babyry.xcodeproj/xcuserdata/kenjiszk.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+Babyry/babyry-secret-config.plist
+Babyry/babyrydev-secret-config.plist
