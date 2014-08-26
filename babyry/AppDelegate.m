@@ -25,6 +25,9 @@
         self.window.rootViewController = rootViewController;
     }
     
+    // global変数
+    [self setGlobalVariables];
+    
     // Crittercism
     [Crittercism enableWithAppID: @"53f2f95d1787843773000004"];
     
@@ -47,8 +50,6 @@
      UIRemoteNotificationTypeAlert |
      UIRemoteNotificationTypeSound |
      UIRemoteNotificationTypeNewsstandContentAvailability];
-    
-    [self setGlobalVariables];
     
     //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 

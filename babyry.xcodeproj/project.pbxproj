@@ -1255,9 +1255,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
-				INFOPLIST_FILE = "Babyry/babyry-Info.plist";
+				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PRODUCT_NAME = Babyry;
+				PRODUCT_NAME = babyry;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1277,9 +1277,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
-				INFOPLIST_FILE = "Babyry/babyry-Info.plist";
+				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PRODUCT_NAME = Babyry;
+				PRODUCT_NAME = babyry;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1379,9 +1379,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
-				INFOPLIST_FILE = "Babyry/babyrydev-Info.plist";
+				INFOPLIST_FILE = "babyry/babyrydev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PRODUCT_NAME = Babyry;
+				PRODUCT_NAME = babyry;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1457,9 +1457,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
-				INFOPLIST_FILE = "Babyry/babyry-Info.plist";
+				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PRODUCT_NAME = Babyry;
+				PRODUCT_NAME = babyry;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};

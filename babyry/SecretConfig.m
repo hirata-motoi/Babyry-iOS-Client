@@ -49,7 +49,7 @@ static NSMutableDictionary *_config = nil;
 
         _config = [[NSMutableDictionary alloc]init];
         NSString *homeDir = NSHomeDirectory();
-        NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"Babyry.app"];
+        NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"babyry.app"];
         NSString *filePath = [appDir stringByAppendingPathComponent:configName];
     
         NSFileManager *fileManager = [NSFileManager defaultManager];
