@@ -46,7 +46,6 @@ static NSMutableDictionary *_config = nil;
         #else
             configName = @"babyry-secret-config.plist";
         #endif
-    
 
         _config = [[NSMutableDictionary alloc]init];
         NSString *homeDir = NSHomeDirectory();
