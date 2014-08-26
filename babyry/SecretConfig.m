@@ -41,11 +41,11 @@ static NSMutableDictionary *_config = nil;
 {
     if (_config == nil) {
         NSString *configName;
-        #ifdef DEBUG
-            configName = @"babyrydev-secret-config.plist";
-        #else
+        if ([[app env] isEqualToString:@"prod"]) {
             configName = @"babyry-secret-config.plist";
-        #endif
+        } else {
+            configName = @"babyrydev-secret-config.plist";
+        }
 
         _config = [[NSMutableDictionary alloc]init];
         NSString *homeDir = NSHomeDirectory();
