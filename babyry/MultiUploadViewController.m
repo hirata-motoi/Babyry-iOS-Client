@@ -22,6 +22,7 @@
 #import "UIColor+Hex.h"
 #import "ColorUtils.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface MultiUploadViewController ()
 
@@ -289,6 +290,8 @@
             
             _imageLoadComplete = NO;
             [self setCacheOfParseImage:[[NSMutableArray alloc] initWithArray:newImages]];
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting Image Data from Parse : %@", error]];
         }
     }];
 }
@@ -320,6 +323,8 @@
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
                     [self setCacheOfParseImage:objects];
+                } else {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest to S3 : %@", task.error]];
                 }
                 return nil;
             }];
@@ -409,7 +414,7 @@
                 }
                 
             } else {
-                NSLog(@"error at double tap %@", error);
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get images : %@", error]];
             }
         }];
 
@@ -506,6 +511,8 @@
             if (!error && objects.count > 0) {
                 // bestShotもらい済
                 [self showReceivedBestShotReply];
+            } else {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply(chooser) : %@", error]];
             }
         }];
         
@@ -524,6 +531,8 @@
         if (!error && objects.count > 0) {
             // 既にbestShotReply済
             [self showalreadyReplyedButton];
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply : %@", error]];
         }
     }];
 }
@@ -556,6 +565,8 @@
             [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
     
             [self createNotificationHistory:@"bestShotReply"];
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in sendBestShotReply %@", error]];
         }
     }];
 }

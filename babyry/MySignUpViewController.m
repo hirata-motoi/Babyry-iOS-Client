@@ -9,6 +9,7 @@
 #import "MySignUpViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ColorUtils.h"
+#import "Logger.h"
 
 @interface MySignUpViewController ()
 @property (nonatomic, strong) UIImageView *fieldsBackground;
@@ -56,6 +57,8 @@
     [self.signUpView.passwordField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     [self.signUpView.emailField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     [self.signUpView.additionalField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
+    
+    [Logger writeOneShot:@"info" message:@"SignUpViewController is opened."];
 }
 
 - (void)viewDidLayoutSubviews {

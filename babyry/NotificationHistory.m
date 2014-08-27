@@ -8,6 +8,7 @@
 
 #import "NotificationHistory.h"
 #import "DateUtils.h"
+#import "Logger.h"
 
 @implementation NotificationHistory
 
@@ -67,6 +68,8 @@ NSString *const className = @"NotificationHistory";
                 [objectsByType addObject:object];
             }
             block(history);
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
         }
     }];
 }

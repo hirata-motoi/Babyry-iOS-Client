@@ -32,6 +32,7 @@
 		88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */; };
 		88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */; };
 		88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */; };
+		88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AB3A0A19AC31D100DA92D4 /* Logger.m */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -189,6 +190,8 @@
 		88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICTutorialOverlay.m; sourceTree = "<group>"; };
 		88AA2FFD196FE06A00F4B40C /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		88AB3A0919AC31D100DA92D4 /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		88AB3A0A19AC31D100DA92D4 /* Logger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Logger.m; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -399,6 +402,8 @@
 				F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */,
 				84ABD705194DBE8500BC3CDA /* Sequence.h */,
 				84ABD706194DBE8500BC3CDA /* Sequence.m */,
+				88AB3A0919AC31D100DA92D4 /* Logger.h */,
+				88AB3A0A19AC31D100DA92D4 /* Logger.m */,
 				8814A9A8194F56620010F516 /* ImageTrimming.h */,
 				8814A9A9194F56620010F516 /* ImageTrimming.m */,
 				F230522719906D05000F5E32 /* ImageEdit.h */,
@@ -1023,6 +1028,7 @@
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
+				88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */,
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
 				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,

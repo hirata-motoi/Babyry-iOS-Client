@@ -26,6 +26,7 @@
 #import "Navigation.h"
 #import "Partner.h"
 #import "Sharding.h"
+#import "Logger.h"
 
 @interface ViewController ()
 
@@ -82,6 +83,7 @@
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
+        [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
@@ -97,10 +99,14 @@
         maintenanceQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         [maintenanceQuery whereKey:@"key" equalTo:@"maintenance"];
         [maintenanceQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            if([objects count] == 1) {
-                if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
-                    MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
-                    [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check maintenance : %@", error]];
+            } else {
+                if([objects count] == 1) {
+                    if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
+                        MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
+                        [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+                    }
                 }
             }
         }];
@@ -175,6 +181,8 @@
                     _childArrayFoundFromParse = objects;
                     [self setupChildProperties];
                     [self initializeChildImages];
+                } else {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
                 }
             }];
         }
@@ -317,6 +325,7 @@
 
 - (void)resend
 {
+    [Logger writeOneShot:@"crit" message:@"Resend email"];
     PFUser *selfUser = [PFUser currentUser];
     NSString *email = selfUser[@"email"];
     selfUser[@"email"] = email;

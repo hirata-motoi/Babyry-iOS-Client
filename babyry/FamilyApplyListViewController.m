@@ -10,6 +10,7 @@
 #import "FamilyRole.h"
 #import "Navigation.h"
 #import "FamilyApplyListCell.h"
+#import "Logger.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -77,6 +78,10 @@
             
             [self setupInviterUsers:inviterUserIds];
         }
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in showFamilyApplyList : %@", error]];
+        }
+        
         [_hud hide:YES];
     }];
 }
@@ -86,10 +91,16 @@
     PFQuery *query = [PFQuery queryWithClassName:@"_User"];
     [query whereKey:@"userId" containedIn:inviterUserIds];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error) {
-            inviterUsers = objects;
-            [_familyApplyList reloadData];
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupInviterUsers : %@", error]];
+            return;
         }
+        if (!objects || [objects count] < 1) {
+            [Logger writeOneShot:@"crit" message:@"Error in setupInviterUsers : There is no Inviter"];
+            return;
+        }
+        inviterUsers = objects;
+        [_familyApplyList reloadData];
     }];
 }
 

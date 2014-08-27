@@ -15,6 +15,7 @@
 #import "Partner.h"
 #import "PushNotification.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -276,6 +277,9 @@
                 UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
                 [naviController popViewControllerAnimated:YES];
             }
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saveTmpData in Parse : %@", error]];
+            }
         }];
     }
 }
@@ -291,6 +295,9 @@
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getTmpImage object : %@", error]];
+            }
             // objectが見つかれば上書き
             if (object) {
                 // S3に上げる
@@ -307,14 +314,21 @@
                         // エラーがなければisTmpDataを更新
                         object[@"isTmpData"] = @"FALSE";
                         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            if (error) {
+                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update isTmpData record : %@", error]];
+                            }
                             [_uploadImageDataArray removeObjectAtIndex:0];
                             [_uploadImageDataTypeArray removeObjectAtIndex:0];
                             _uploadedImageCount++;
                             [self saveToParseInBackground];
                         }];
                     } else {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in putRequest to S3 : %@", task.error]];
                         // 失敗したらレコードごと消す(でいいのかな？リトライ？)
                         [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            if (error) {
+                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete record for failed data : %@", error]];
+                            }
                             [_uploadImageDataArray removeObjectAtIndex:0];
                             [_uploadImageDataTypeArray removeObjectAtIndex:0];
                             [self saveToParseInBackground];
@@ -346,9 +360,14 @@
                                     [_uploadImageDataTypeArray removeObjectAtIndex:0];
                                     _uploadedImageCount++;
                                     [self saveToParseInBackground];
+                                } else {
+                                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %", task.error]];
                                 }
                                 return nil;
                             }];
+                    }
+                    if (error) {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in making new object for new image : %@", error]];
                     }
                 }];
             }

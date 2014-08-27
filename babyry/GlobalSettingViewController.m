@@ -19,6 +19,7 @@
 #import "AcceptableUsePolicyViewController.h"
 #import "PrivacyPolicyViewController.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface GlobalSettingViewController ()
 
@@ -359,6 +360,10 @@
     // Segment Controlをdisabled
     self.roleControl.enabled = FALSE;
     [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in switchRole : %@", error]];
+            return;
+        }
         self.roleControl.enabled = TRUE;
         [FamilyRole updateCache];
         
@@ -369,7 +374,7 @@
         [PushNotification sendInBackground:@"partSwitched" withOptions:options];
     }];
 }
-                     
+
 - (UISegmentedControl *)createRoleSwitchSegmentControl
 {
     // segment controlの作成
@@ -393,6 +398,8 @@
             } else {
                 sc.selectedSegmentIndex = 1;
             }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in createRoleSwitchSegmentControl : %@", error]];
         }
     }];
     
@@ -423,6 +430,8 @@
                     _partnerInfo = user;
                 }
             }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupPartnerInfo : %@", error]];
         }
     }];
 }

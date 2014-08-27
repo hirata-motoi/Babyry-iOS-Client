@@ -8,6 +8,7 @@
 
 #import "TagEditViewController.h"
 #import "TagView.h"
+#import "Logger.h"
 
 @interface TagEditViewController ()
 
@@ -64,6 +65,8 @@
             } else {
                 // TODO tagのマスター情報がないときはどうしようかな
             }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupTags : %@", error]];
         }
     }];
 }
@@ -142,18 +145,24 @@
     
     // 一回ChildImageオブジェクトを最新にしてから更新処理
     [_imageInfo fetchInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        _imageInfo[@"tags"] = attachedTagsList;
-        [_imageInfo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            if (!succeeded) {
-                // 失敗したことを通知
-                // やりたくないけど親から特定の子に対して通知を送るので子のmethodを直接呼び出す
-                // notifyやdelegateではうまくいかないなー
-                [tagView revertTag:tagView.attached];
-                
-                // 戻す
-                _imageInfo[@"tags"] = originalTagList;
-            }
-        }];
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in reflesh childimage : %@", error]];
+        } else {
+            _imageInfo[@"tags"] = attachedTagsList;
+            [_imageInfo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                if (!succeeded) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save new taglist : %@", error]];
+                    
+                    // 失敗したことを通知
+                    // やりたくないけど親から特定の子に対して通知を送るので子のmethodを直接呼び出す
+                    // notifyやdelegateではうまくいかないなー
+                    [tagView revertTag:tagView.attached];
+                    
+                    // 戻す
+                    _imageInfo[@"tags"] = originalTagList;
+                }
+            }];
+        }
     }];
 }
 
