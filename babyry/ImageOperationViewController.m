@@ -20,6 +20,7 @@
 #import "ImageToolbarViewController.h"
 #import "Partner.h"
 #import "NotificationHistory.h"
+#import "Logger.h"
 
 @interface ImageOperationViewController ()
 
@@ -277,7 +278,7 @@
             }
             
         } else {
-            NSLog(@"error at double tap %@", error);
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setBestShotIndex : %@", error]];
         }
     }];
 }

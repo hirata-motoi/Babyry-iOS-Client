@@ -2,11 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>inquiry-email</key>
+	<key>InquiryEmail</key>
 	<string>info@meaning.co.jp</string>
-	<key>app-version</key>
+	<key>AppVersion</key>
 	<string>1.0.0</string>
-	<key>aws-bucket-name</key>
+	<key>AWSBucketName</key>
 	<string>babyrydev-images</string>
 </dict>
 </plist>

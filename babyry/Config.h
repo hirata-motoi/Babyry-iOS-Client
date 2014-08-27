@@ -11,9 +11,8 @@
 
 @interface Config : NSObject
 
-+ (NSString *) getValue:key;
-+ (NSString *)getBucketName;
-+ (NSString *)getAppVertion;
-+ (NSString *)getInquiryEmail;
++ (NSString *)getValue:key;
++ (NSMutableDictionary *)config;
++ (NSMutableDictionary *)secretConfig;
 
 @end

@@ -12,7 +12,7 @@
 #import "AWSS3Utils.h"
 #import "DateUtils.h"
 #import "Config.h"
-
+#import "Logger.h"
 
 @implementation ImagePageViewController
 
@@ -268,7 +268,7 @@
     // まずはS3に接続
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-    getRequest.bucket = [Config getBucketName];
+    getRequest.bucket = [Config config][@"AWSBucketName"];
     getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
     getRequest.responseCacheControl = @"no-cache";
     
@@ -284,6 +284,8 @@
                 NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                 [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
             }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in cacheThumbnail : %@", task.error]];
         }
         return nil;
     }];

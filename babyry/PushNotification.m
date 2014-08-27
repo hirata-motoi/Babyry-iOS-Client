@@ -8,6 +8,7 @@
 
 #import "PushNotification.h"
 #import "Partner.h"
+#import "Logger.h"
 
 @implementation PushNotification
 
@@ -73,10 +74,14 @@
                     
                     // 送信
                     [push sendPushInBackground];
+                } else {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in Get Pertner info in PushNotificationEvent : %@", error]];
                 }
             }];
             
 
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get PushNotificationEvent : %@", error]];
         }
     }];
 }
@@ -111,6 +116,9 @@
                 }
             }
             [currentInstallation saveInBackground];
+        }
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupPushNotificationInstallation : %@", error]];
         }
     }];
 }

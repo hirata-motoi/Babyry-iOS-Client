@@ -13,6 +13,7 @@
 #import "Badge.h"
 #import "NotificationHistory.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface ImageToolbarViewController ()
 
@@ -100,7 +101,7 @@
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-    getRequest.bucket = [Config getBucketName];
+    getRequest.bucket = [Config config][@"AWSBucketName"];
     getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
     // no-cache必須
     getRequest.responseCacheControl = @"no-cache";
@@ -122,6 +123,7 @@
                                   ];
             
             [alert show];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in imageSave : %@", task.error]];
         }
         return nil;
     }];

@@ -8,9 +8,9 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
-#import "SecretConfig.h"
 #import "PageContentViewController.h"
 #import "Crittercism.h"
+#import "Config.h"
 
 @implementation AppDelegate
 
@@ -27,12 +27,9 @@
     
     // global変数
     [self setGlobalVariables];
-    
-    // Crittercism
-    [Crittercism enableWithAppID: @"53f2f95d1787843773000004"];
-    
+
     // Parse Authentification
-    [Parse setApplicationId:[SecretConfig getParseApplicationId] clientKey:[SecretConfig getParseClientKey]];
+    [Parse setApplicationId:[Config secretConfig][@"ParseApplicationId"] clientKey:[Config secretConfig][@"ParseClientKey"]];
 
     // Facebood Auth
     [PFFacebookUtils initializeFacebook];
@@ -53,6 +50,9 @@
     
     //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
+    // Crittercism
+    [Crittercism enableWithAppID: @"53f2f95d1787843773000004"];
+    
     // Override point for customization after application launch.
     return YES;
 }
