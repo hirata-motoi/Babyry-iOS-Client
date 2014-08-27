@@ -15,6 +15,7 @@
 #import "Navigation.h"
 #import "ImagePageViewController.h"
 #import "AWSS3Utils.h"
+#import "Logger.h"
 
 @interface TagAlbumViewController ()
 
@@ -256,6 +257,8 @@
 //                        return nil;
 //                    }];
                 }
+            } else {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setImageDataSource : %@", error]];
             }
         }];
     }
