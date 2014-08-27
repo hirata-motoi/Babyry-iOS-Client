@@ -475,7 +475,7 @@
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:1]];
                         }
                        
-                        // fullsizeのcacheがあれば消す
+                        // 2日以上前のfullsizeのcacheは不要なのであれば消す
                         [ImageCache removeCache:[NSString stringWithFormat:@"%@%@", _childObjectId, [date stringValue]]];
                     }
                 } else {
@@ -536,11 +536,12 @@
                         if ([queue[@"imageType"] isEqualToString:@"fullsize"]) {
                             // fullsizeのimageをcache
                             [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, ymd] image:getResult.body];
-                        } else {
-                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                            NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
                         }
+                        // thumbnailは常に作る
+                        // なので、fullsizeのcacheが作られた場合、常にtimestampはthumbnailと同じになる
+                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
                     } else {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequsetOfS3 in setImageCache : %@", task.error]];
                     }
