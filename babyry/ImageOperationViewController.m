@@ -278,7 +278,7 @@
             }
             
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setBestShotIndex : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setBestShotIndex : %@", error]];
         }
     }];
 }

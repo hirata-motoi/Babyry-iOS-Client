@@ -66,24 +66,25 @@
     PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
     [childQuery whereKey:@"objectId" equalTo:_childObjectId];
     [childQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        if (!error && object) {
-            if ([_editTarget isEqualToString:@"name"]) {
-                object[@"name"] = _childNicknameEditTextField.text;
-                [_delegate changeChildNickname:_childNicknameEditTextField.text];
-            } else if ([_editTarget isEqualToString:@"birthday"]) {
-                if(![object[@"birthday"] isEqualToDate:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]]) {
-                    object[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
-                }
-                [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
-            }
-            [object saveInBackground];
-        } else {
-            if (error) {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in saveChildName : %@", error]];
-            } else {
-                [Logger writeParse:@"crit" message:@"Error in saveChildName : There is no object from childQuery"];
-            }
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saveChildName : %@", error]];
+            return;
         }
+        if (!object) {
+            [Logger writeOneShot:@"crit" message:@"Error in saveChildName : There is no object from childQuery"];
+            return;
+        }
+        
+        if ([_editTarget isEqualToString:@"name"]) {
+            object[@"name"] = _childNicknameEditTextField.text;
+            [_delegate changeChildNickname:_childNicknameEditTextField.text];
+        } else if ([_editTarget isEqualToString:@"birthday"]) {
+            if(![object[@"birthday"] isEqualToDate:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]]) {
+                object[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
+            }
+            [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
+        }
+        [object saveInBackground];
     }];
     _child[@"name"] = _childNicknameEditTextField.text;
     

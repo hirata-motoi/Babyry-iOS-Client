@@ -71,7 +71,7 @@
     [self.logInView.usernameField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     [self.logInView.passwordField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     
-    [Logger writeParse:@"info" message:@"LoginViewController is opened."];
+    [Logger writeOneShot:@"info" message:@"LoginViewController is opened."];
 }
 
 - (void)viewDidLayoutSubviews {

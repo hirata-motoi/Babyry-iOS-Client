@@ -361,20 +361,20 @@
     self.roleControl.enabled = FALSE;
     [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in switchRole : %@", error]];
-        } else {
-            self.roleControl.enabled = TRUE;
-            [FamilyRole updateCache];
-            
-            // push通知
-            NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
-            options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
-            [PushNotification sendInBackground:@"partSwitched" withOptions:options];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in switchRole : %@", error]];
+            return;
         }
+        self.roleControl.enabled = TRUE;
+        [FamilyRole updateCache];
+        
+        // push通知
+        NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+        options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+        options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+        [PushNotification sendInBackground:@"partSwitched" withOptions:options];
     }];
 }
-                     
+
 - (UISegmentedControl *)createRoleSwitchSegmentControl
 {
     // segment controlの作成
@@ -399,7 +399,7 @@
                 sc.selectedSegmentIndex = 1;
             }
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in createRoleSwitchSegmentControl : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in createRoleSwitchSegmentControl : %@", error]];
         }
     }];
     
@@ -431,7 +431,7 @@
                 }
             }
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setupPartnerInfo : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupPartnerInfo : %@", error]];
         }
     }];
 }

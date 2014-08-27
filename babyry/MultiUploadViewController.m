@@ -291,7 +291,7 @@
             _imageLoadComplete = NO;
             [self setCacheOfParseImage:[[NSMutableArray alloc] initWithArray:newImages]];
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in getting Image Data from Parse : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting Image Data from Parse : %@", error]];
         }
     }];
 }
@@ -324,7 +324,7 @@
                     [objects removeObjectAtIndex:0];
                     [self setCacheOfParseImage:objects];
                 } else {
-                    [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in getRequest to S3 : %@", task.error]];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest to S3 : %@", task.error]];
                 }
                 return nil;
             }];
@@ -414,7 +414,7 @@
                 }
                 
             } else {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in get images : %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get images : %@", error]];
             }
         }];
 
@@ -512,7 +512,7 @@
                 // bestShotもらい済
                 [self showReceivedBestShotReply];
             } else {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply(chooser) : %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply(chooser) : %@", error]];
             }
         }];
         
@@ -532,7 +532,7 @@
             // 既にbestShotReply済
             [self showalreadyReplyedButton];
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply : %@", error]];
         }
     }];
 }
@@ -566,7 +566,7 @@
     
             [self createNotificationHistory:@"bestShotReply"];
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in sendBestShotReply %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in sendBestShotReply %@", error]];
         }
     }];
 }

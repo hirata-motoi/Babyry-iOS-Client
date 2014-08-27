@@ -83,7 +83,7 @@
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
-        [Logger writeParse:@"info" message:@"Not-Login User Accessed."];
+        [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
@@ -100,7 +100,7 @@
         [maintenanceQuery whereKey:@"key" equalTo:@"maintenance"];
         [maintenanceQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (error) {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in check maintenance : %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check maintenance : %@", error]];
             } else {
                 if([objects count] == 1) {
                     if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
@@ -182,7 +182,7 @@
                     [self setupChildProperties];
                     [self initializeChildImages];
                 } else {
-                    [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
                 }
             }];
         }
@@ -325,12 +325,12 @@
 
 - (void)resend
 {
-    [Logger writeParse:@"crit" message:@"Resend email"];
+    [Logger writeOneShot:@"crit" message:@"Resend email"];
     PFUser *selfUser = [PFUser currentUser];
     NSString *email = selfUser[@"email"];
     selfUser[@"email"] = email;
     [selfUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-         [[PFUser currentUser]refresh];
+        [[PFUser currentUser]refresh];
     }];
     
     // 再送信をした旨をalertで表示

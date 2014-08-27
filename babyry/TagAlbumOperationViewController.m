@@ -82,7 +82,7 @@
                 // TODO tagのマスター情報がないときはどうしようかな
             }
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in findObjectsInBackgroundWithBlock(setupOperationView) : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in findObjectsInBackgroundWithBlock(setupOperationView) : %@", error]];
         }
     }];
     

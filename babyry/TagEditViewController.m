@@ -66,7 +66,7 @@
                 // TODO tagのマスター情報がないときはどうしようかな
             }
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setupTags : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupTags : %@", error]];
         }
     }];
 }
@@ -146,12 +146,12 @@
     // 一回ChildImageオブジェクトを最新にしてから更新処理
     [_imageInfo fetchInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (error) {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in reflesh childimage : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in reflesh childimage : %@", error]];
         } else {
             _imageInfo[@"tags"] = attachedTagsList;
             [_imageInfo saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                 if (!succeeded) {
-                    [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in save new taglist : %@", error]];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save new taglist : %@", error]];
                     
                     // 失敗したことを通知
                     // やりたくないけど親から特定の子に対して通知を送るので子のmethodを直接呼び出す

@@ -326,20 +326,23 @@
             [childQuery whereKey:@"objectId" equalTo:[[_childProperties objectAtIndex:_removeTarget] objectForKey:@"objectId"]];
             [childQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
                 if (error) {
-                    [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in find child in alertView %@", error]];
-                } else {
-                    [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        if (succeeded) {
-                            [_childProperties removeObjectAtIndex:_removeTarget];
-                            [_hud hide:YES];
-                            [self viewWillAppear:YES];
-                            _removeTarget = -1;
-                        }
-                        if (error) {
-                            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in child delete in alertView %@", error]];
-                        }
-                    }];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in find child in alertView %@", error]];
+                    return;
                 }
+                
+                [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (error) {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in child delete in alertView %@", error]];
+                        return;
+                    }
+                    
+                    if (succeeded) {
+                        [_childProperties removeObjectAtIndex:_removeTarget];
+                        [_hud hide:YES];
+                        [self viewWillAppear:YES];
+                        _removeTarget = -1;
+                    }
+                }];
             }];
         }
             break;

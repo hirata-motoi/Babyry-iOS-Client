@@ -158,7 +158,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                 [self reloadData];
             }
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in getCommentFromParse : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getCommentFromParse : %@", error]];
         }
     }];
 }
@@ -333,7 +333,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         }
         [dailyComment saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
             if (error) {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in submitComment : %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in submitComment : %@", error]];
                 [_commentArray removeObject:dailyComment];
                 [self reloadData];
             } else {

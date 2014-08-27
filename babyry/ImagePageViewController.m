@@ -285,7 +285,7 @@
                 [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
             }
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in cacheThumbnail : %@", task.error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in cacheThumbnail : %@", task.error]];
         }
         return nil;
     }];

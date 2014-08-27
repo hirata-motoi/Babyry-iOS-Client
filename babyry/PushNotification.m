@@ -75,13 +75,13 @@
                     // 送信
                     [push sendPushInBackground];
                 } else {
-                    [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in Get Pertner info in PushNotificationEvent : %@", error]];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in Get Pertner info in PushNotificationEvent : %@", error]];
                 }
             }];
             
 
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in get PushNotificationEvent : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get PushNotificationEvent : %@", error]];
         }
     }];
 }
@@ -118,7 +118,7 @@
             [currentInstallation saveInBackground];
         }
         if (error) {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setupPushNotificationInstallation : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupPushNotificationInstallation : %@", error]];
         }
     }];
 }

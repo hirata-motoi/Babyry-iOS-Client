@@ -87,40 +87,48 @@
         PFQuery * roleQuery = [PFQuery queryWithClassName:@"FamilyRole"];
         [roleQuery whereKey:@"familyId" equalTo:user[@"familyId"]];
         [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if (!error){
-                if ([objects count] > 0) {
-                    _familyObject = [objects objectAtIndex:0];
-                    [self showMessage:@"forFamily"];
-                } else {
-                    PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
-                    [applyQuery whereKey:@"userId" equalTo:user[@"userId"]];
-                    [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                        if (!error){
-                            if ([objects count] > 0) {
-                                _applyObject = [objects objectAtIndex:0];
-                                [self showMessage:@"forInviter"];
-                            }
-                        } else {
-                            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from userId) : %@", error]];
-                        }
-                        [_stasusHud hide:YES];
-                    }];
-                }
-            } else {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from FamilyId) : %@", error]];
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from FamilyId) : %@", error]];
+                [_stasusHud hide:YES];
+                return;
             }
-            [_stasusHud hide:YES];
+            if ([objects count] > 0) {
+                _familyObject = [objects objectAtIndex:0];
+                [self showMessage:@"forFamily"];
+                [_stasusHud hide:YES];
+                return;
+            }
+            
+            PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
+            [applyQuery whereKey:@"userId" equalTo:user[@"userId"]];
+            [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from userId) : %@", error]];
+                    [_stasusHud hide:YES];
+                    return;
+                }
+                
+                if ([objects count] > 0) {
+                    _applyObject = [objects objectAtIndex:0];
+                    [self showMessage:@"forInviter"];
+                }
+                [_stasusHud hide:YES];
+            }];
         }];
     } else {
         PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
         [applyQuery whereKey:@"inviteeUserId" equalTo:user[@"userId"]];
         [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if (!error){
-                if ([objects count] > 0) {
-                    [self showMessage:@"forInvitee"];
-                }
-            } else {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from inviteeUserId) : %@", error]];
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from inviteeUserId) : %@", error]];
+                [_stasusHud hide:YES];
+                return;
+            }
+            
+            if ([objects count] > 0) {
+                [self showMessage:@"forInvitee"];
+                [_stasusHud hide:YES];
+                return;
             }
             [_stasusHud hide:YES];
         }];
@@ -191,7 +199,7 @@
                     }
                 }
             } else {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in executeSearch %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in executeSearch %@", error]];
             }
             [_hud hide:YES];
         }];

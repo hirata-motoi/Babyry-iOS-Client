@@ -74,7 +74,7 @@
             [self loadWebView:filePath];
         }
         if (error) {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in load privacyPolicy : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in load privacyPolicy : %@", error]];
         }
     }];
 }

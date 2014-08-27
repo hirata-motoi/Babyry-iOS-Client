@@ -79,7 +79,7 @@
             [self setupInviterUsers:inviterUserIds];
         }
         if (error) {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in showFamilyApplyList : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in showFamilyApplyList : %@", error]];
         }
         
         [_hud hide:YES];
@@ -91,12 +91,16 @@
     PFQuery *query = [PFQuery queryWithClassName:@"_User"];
     [query whereKey:@"userId" containedIn:inviterUserIds];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error) {
-            inviterUsers = objects;
-            [_familyApplyList reloadData];
-        } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setupInviterUsers : %@", error]];
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupInviterUsers : %@", error]];
+            return;
         }
+        if (!objects || [objects count] < 1) {
+            [Logger writeOneShot:@"crit" message:@"Error in setupInviterUsers : There is no Inviter"];
+            return;
+        }
+        inviterUsers = objects;
+        [_familyApplyList reloadData];
     }];
 }
 

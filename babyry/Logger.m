@@ -10,12 +10,13 @@
 
 @implementation Logger
 
-+ (void) writeParse:(NSString *)type message:(NSString *)message
++ (void) writeOneShot:(NSString *)type message:(NSString *)message
 {
     NSString *className = ([type isEqualToString:@"crit"]) ? @"CritLog" : ([type isEqualToString:@"warn"]) ? @"WarnLog" : ([type isEqualToString:@"info"]) ? @"InfoLog" : @"";
     
     if ([className isEqualToString:@""]) {
-        [self writeParse:@"crit" message:[NSString stringWithFormat:@"Invalid Log Type %@ : message is %@", type, message]];
+        [self writeOneShot:@"crit" message:[NSString stringWithFormat:@"Invalid Log Type %@ : message is %@", type, message]];
+        return;
     }
     
     PFObject *logObject = [PFObject objectWithClassName:className];

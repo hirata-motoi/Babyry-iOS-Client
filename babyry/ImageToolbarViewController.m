@@ -123,7 +123,7 @@
                                   ];
             
             [alert show];
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in imageSave : %@", task.error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in imageSave : %@", task.error]];
         }
         return nil;
     }];

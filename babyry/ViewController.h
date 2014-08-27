@@ -13,7 +13,6 @@
 #import "PageViewController.h"
 
 @interface ViewController : UIViewController
-//@property (weak, nonatomic) IBOutlet UIButton *openGlobalSettingViewButton;
 
 //- (IBAction)startWalkthrough:(id)sender;
 

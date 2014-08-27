@@ -58,7 +58,7 @@
     [self.signUpView.emailField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     [self.signUpView.additionalField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     
-    [Logger writeParse:@"info" message:@"SignUpViewController is opened."];
+    [Logger writeOneShot:@"info" message:@"SignUpViewController is opened."];
 }
 
 - (void)viewDidLayoutSubviews {

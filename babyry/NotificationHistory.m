@@ -69,7 +69,7 @@ NSString *const className = @"NotificationHistory";
             }
             block(history);
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
         }
     }];
 }

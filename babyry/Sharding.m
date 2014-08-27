@@ -59,7 +59,7 @@ static NSMutableDictionary *shardConf = nil;
                 [rows addObject:object];
             }
         } else {
-            [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in setupShardConf : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupShardConf : %@", error]];
         }
     }];
 }

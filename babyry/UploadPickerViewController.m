@@ -130,13 +130,13 @@
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
                 [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
-                        [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in Save to S3 : %@", task.error]];
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in Save to S3 : %@", task.error]];
                     }
                     return nil;
                 }];
             }
             if (error) {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in save best flag : %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save best flag : %@", error]];
             }
         }];
         // PageContentViewController.childImagesの中身に追加
@@ -161,13 +161,13 @@
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
                 [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
-                        [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
                     }
                     return nil;
                 }];
             }
             if (error) {
-                [Logger writeParse:@"crit" message:[NSString stringWithFormat:@"Error in get bestShot : %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get bestShot : %@", error]];
             }
         }];
         

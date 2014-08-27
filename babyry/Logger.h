@@ -11,6 +11,6 @@
 
 @interface Logger : NSObject
 
-+ (void) writeParse:(NSString *)type message:(NSString *)message;
++ (void) writeOneShot:(NSString *)type message:(NSString *)message;
 
 @end
