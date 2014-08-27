@@ -12,6 +12,7 @@
 @implementation Config
 
 static NSMutableDictionary *_config = nil;
+static NSMutableDictionary *_secretConfig = nil;
 
 + (NSString *) getValue:key
 {
@@ -26,43 +27,42 @@ static NSMutableDictionary *_config = nil;
     return @"";
 }
 
-+ (NSString *)getBucketName
-{
-    return [self config][@"aws-bucket-name"];
-}
-
-+ (NSString *)getAppVertion
-{
-    return [self config][@"app-version"];
-}
-
-+ (NSString *)getInquiryEmail
-{
-    return [self config][@"inquiry-email"];
-}
-
 + (NSMutableDictionary *)config
 {
     if (_config == nil) {
-        NSString *configName;
-        if ([[app env] isEqualToString:@"prod"]) {
-            configName = @"babyry-config.plist";
-        } else {
-            configName = @"babyrydev-config.plist";
-        }
-
-        _config = [[NSMutableDictionary alloc]init];
-        NSString *homeDir = NSHomeDirectory();
-        NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"babyry.app"];
-        NSString *filePath = [appDir stringByAppendingPathComponent:configName];
-    
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        if ([fileManager fileExistsAtPath:filePath]) {
-            _config = [NSDictionary dictionaryWithContentsOfFile:filePath];
-        }
+        NSString *configName = ([[app env] isEqualToString:@"prod"])
+            ? @"babyry-config.plist"
+            : @"babyrydev-config.plist";
+        _config = [self load:configName];
     }
     
     return _config;
+}
+
++ (NSMutableDictionary *)secretConfig
+{
+    if (_secretConfig == nil) {
+        NSString *configName = ([[app env] isEqualToString:@"prod"])
+            ? @"babyry-secret-config.plist"
+            : @"babyrydev-secret-config.plist";
+        _secretConfig = [self load:configName];
+    }
+    
+    return _secretConfig;
+}
+
++ (NSMutableDictionary *)load:(NSString *)configName
+{
+    NSMutableDictionary *config;
+    NSString *homeDir = NSHomeDirectory();
+    NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"babyry.app"];
+    NSString *filePath = [appDir stringByAppendingPathComponent:configName];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:filePath]) {
+        config = [NSDictionary dictionaryWithContentsOfFile:filePath];
+    }
+    
+    return config;
 }
 
 @end

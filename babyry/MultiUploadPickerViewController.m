@@ -295,7 +295,7 @@
             if (object) {
                 // S3に上げる
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config getBucketName];
+                putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
                 putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                 putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
@@ -332,7 +332,7 @@
                     if(succeeded) {
                         // S3に上げる
                         AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                        putRequest.bucket = [Config getBucketName];
+                        putRequest.bucket = [Config config][@"AWSBucketName"];
                         putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
                         putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                         putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];

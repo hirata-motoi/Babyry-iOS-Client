@@ -119,7 +119,7 @@
         [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config getBucketName];
+                putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
@@ -147,7 +147,7 @@
         [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config getBucketName];
+                putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
