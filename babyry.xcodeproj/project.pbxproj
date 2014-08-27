@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD706194DBE8500BC3CDA /* Sequence.m */; };
 		84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */; };
+		88008C8919ADD693005FE04F /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88008C8819ADD693005FE04F /* AddressBook.framework */; };
+		88008C8B19ADD698005FE04F /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88008C8A19ADD698005FE04F /* AddressBookUI.framework */; };
 		8814A99A1945469B0010F516 /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9991945469B0010F516 /* ImageCache.m */; };
 		8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A99C194ADB330010F516 /* MultiUploadViewController.m */; };
 		8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A9194F56620010F516 /* ImageTrimming.m */; };
@@ -148,6 +150,8 @@
 		84ABD706194DBE8500BC3CDA /* Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sequence.m; sourceTree = "<group>"; };
 		84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyViewController.h; sourceTree = "<group>"; };
 		84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyViewController.m; sourceTree = "<group>"; };
+		88008C8819ADD693005FE04F /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		88008C8A19ADD698005FE04F /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		8814A9881944572A0010F516 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		8814A9981945469B0010F516 /* ImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCache.h; sourceTree = "<group>"; };
 		8814A9991945469B0010F516 /* ImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCache.m; sourceTree = "<group>"; };
@@ -359,6 +363,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88008C8B19ADD698005FE04F /* AddressBookUI.framework in Frameworks */,
+				88008C8919ADD693005FE04F /* AddressBook.framework in Frameworks */,
 				88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */,
 				88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */,
 				88B1909D1938D23700ED630C /* Social.framework in Frameworks */,
@@ -517,6 +523,8 @@
 		88B18C75193814CE00ED630C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				88008C8A19ADD698005FE04F /* AddressBookUI.framework */,
+				88008C8819ADD693005FE04F /* AddressBook.framework */,
 				8833BC871964F7700040FD2A /* ImageIO.framework */,
 				88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */,
 				8814A9881944572A0010F516 /* CoreData.framework */,
