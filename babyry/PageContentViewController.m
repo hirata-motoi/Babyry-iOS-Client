@@ -148,7 +148,7 @@
 // セルの大きさを指定するメソッド
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     float width = self.view.frame.size.width;
-    if (indexPath.section == 0 && indexPath.row == 0) {
+    if ([self isToday:indexPath.section withRow:indexPath.row]) {
         return  CGSizeMake(width, self.view.frame.size.height - 44 - 20  - width*2/3); // TODO magic number
     }
     return CGSizeMake(width/3 - 2, width/3 - 2);
@@ -179,8 +179,11 @@
     
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] stringValue];
-    
-    NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
+   
+    NSString *imageCachePath = ([self isToday:indexPath.section withRow:indexPath.row])
+        ? [NSString stringWithFormat:@"%@%@", _childObjectId , ymd]
+        : [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
+
     [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
     
     // カレンダーラベル付ける
@@ -321,7 +324,7 @@
 
     // カレンダーラベル組み立て
     CalenderLabel *calLabelView = [CalenderLabel view];
-    if (indexPath.row == 0 && indexPath.section == 0) {
+    if ([self isToday:indexPath.section withRow:indexPath.row]) {
         calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/6, cellHeight/6);
     } else {
         calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/4, cellHeight/4);
@@ -415,7 +418,6 @@
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
     _isLoading = YES;
-    // TODO
     NSMutableDictionary *child = _childProperty;
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
     query.limit = 1000;
@@ -446,7 +448,15 @@
                             // ParseのupdatedAtが新しい時だけ
                             NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, [date stringValue]];
                             if ([childImageDate.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-                                [cacheSetQueueArray addObject:childImageDate];
+                                
+                                NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
+                                queueForCache[@"objectId"] = childImageDate.objectId;
+                                queueForCache[@"date"] = childImageDate[@"date"];
+                                if ([self isToday:index withRow:i]) {
+                                    queueForCache[@"imageType"] = @"fullsize";
+                                }
+                                
+                                [cacheSetQueueArray addObject:queueForCache];
                             }
                             bestshotExist = YES;
                         }
@@ -464,11 +474,15 @@
                         } else {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:1]];
                         }
+                       
+                        // fullsizeのcacheがあれば消す
+                        [ImageCache removeCache:[NSString stringWithFormat:@"%@%@", _childObjectId, [date stringValue]]];
                     }
                 } else {
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
                     // 本画像がないのでローカルにキャッシュがあれば消す。
                     [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, [date stringValue]]];
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@%@", _childObjectId, [date stringValue]]]; // fullsize
                 }
             }
             [self setImageCache:cacheSetQueueArray withReload:reload];
@@ -501,30 +515,36 @@
         for (int i = 0; i < concurrency; i++) {
             // キャッシュ取り出し
             if ([cacheSetQueueArray count] > 0) {
-                PFObject *childImage = [cacheSetQueueArray objectAtIndex:0];
+                NSMutableDictionary *queue = [cacheSetQueueArray objectAtIndex:0];
                 [cacheSetQueueArray removeObjectAtIndex:0];
                 
-                NSString *ymd = [childImage[@"date"] stringValue];
+                NSString *ymd = [queue[@"date"] stringValue];
                 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
                 getRequest.bucket = [Config config][@"AWSBucketName"];
                                                       
-                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
+                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], queue[@"objectId"]];
                 // no-cache必須
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
                 
                 [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                    
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                        
-                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                            
-                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                       
+                        if ([queue[@"imageType"] isEqualToString:@"fullsize"]) {
+                            // fullsizeのimageをcache
+                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, ymd] image:getResult.body];
+                        } else {
+                            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
+                            NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                        }
                     } else {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequsetOfS3 in setImageCache : %@", task.error]];
                     }
+                    
                     if (reload) {
                         [_pageContentCollectionView reloadData];
                         [NSThread sleepForTimeInterval:0.1];
@@ -873,7 +893,7 @@
             
             if([self withinTwoDay:indexPath] && [self isNoImage:indexPath]) {
                 // チョイス催促をいれてもいいけど、いまは UP PHOTO アイコンをはめている
-                if (indexPath.section == 0 && indexPath.row == 0) {
+                if ([self isToday:indexPath.section withRow:indexPath.row]) {
                     CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
                     CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                     backgroundView.frame = rect;
@@ -888,7 +908,7 @@
                 }
             } else {
                 // アップアイコン
-                if (indexPath.section == 0 && indexPath.row == 0) {
+                if ([self isToday:indexPath.section withRow:indexPath.row]) {
                     CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
                     CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                     backgroundView.frame = rect;
@@ -910,7 +930,7 @@
             if ([self withinTwoDay:indexPath]) {
                 // アップ催促
                 if ([self isNoImage:indexPath]) {
-                    if (indexPath.section == 0 && indexPath.row == 0) {
+                    if ([self isToday:indexPath.section withRow:indexPath.row]) {
                         CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
@@ -930,7 +950,7 @@
                 } else {
                     // チョイス促進アイコン貼る
                     NSNumber *uploadedNum = [totalImageNum objectAtIndex:indexPath.row];
-                    if (indexPath.section == 0 && indexPath.row == 0) {
+                    if ([self isToday:indexPath.section withRow:indexPath.row]) {
                         CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
@@ -960,7 +980,7 @@
     }
     
     // best shotが既に選択済の場合は普通に写真を表示
-    if (indexPath.section == 0 && indexPath.row == 0) {
+    if ([self isToday:indexPath.section withRow:indexPath.row]) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
@@ -1212,6 +1232,10 @@ for (NSMutableDictionary *section in _childImages) {
     
 }
 
+- (BOOL)isToday:(NSInteger)section withRow:(NSInteger)row
+{
+    return (section == 0 && row == 0) ? YES : NO;
+}
 
 /*
 #pragma mark - Navigation
