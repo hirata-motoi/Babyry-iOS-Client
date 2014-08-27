@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "88B18C72193814CE00ED630C"
-               BuildableName = "Babyry.app"
+               BuildableName = "babyry.app"
                BlueprintName = "babyry"
                ReferencedContainer = "container:babyry.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "88B18C72193814CE00ED630C"
-            BuildableName = "Babyry.app"
+            BuildableName = "babyry.app"
             BlueprintName = "babyry"
             ReferencedContainer = "container:babyry.xcodeproj">
          </BuildableReference>
@@ -52,7 +52,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "88B18C72193814CE00ED630C"
-            BuildableName = "Babyry.app"
+            BuildableName = "babyry.app"
             BlueprintName = "babyry"
             ReferencedContainer = "container:babyry.xcodeproj">
          </BuildableReference>
@@ -70,7 +70,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "88B18C72193814CE00ED630C"
-            BuildableName = "Babyry.app"
+            BuildableName = "babyry.app"
             BlueprintName = "babyry"
             ReferencedContainer = "container:babyry.xcodeproj">
          </BuildableReference>

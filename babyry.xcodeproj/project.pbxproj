@@ -194,7 +194,7 @@
 		88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICTutorialOverlay.m; sourceTree = "<group>"; };
 		88AA2FFD196FE06A00F4B40C /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
-		88B18C73193814CE00ED630C /* Babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		88B18C7A193814CE00ED630C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -508,7 +508,7 @@
 		88B18C74193814CE00ED630C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				88B18C73193814CE00ED630C /* Babyry.app */,
+				88B18C73193814CE00ED630C /* babyry.app */,
 				88B18C94193814CF00ED630C /* babyryTests.xctest */,
 			);
 			name = Products;
@@ -886,7 +886,7 @@
 			);
 			name = babyry;
 			productName = babyrydev;
-			productReference = 88B18C73193814CE00ED630C /* Babyry.app */;
+			productReference = 88B18C73193814CE00ED630C /* babyry.app */;
 			productType = "com.apple.product-type.application";
 		};
 		88B18C93193814CF00ED630C /* babyryTests */ = {
