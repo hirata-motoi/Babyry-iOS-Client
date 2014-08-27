@@ -7,7 +7,7 @@
 //
 
 #import "AWSS3Utils.h"
-#import "SecretConfig.h"
+#import "Config.h"
 
 @implementation AWSS3Utils
 
@@ -15,9 +15,9 @@
 {
     AWSCognitoCredentialsProvider *credentialsProvider = [AWSCognitoCredentialsProvider
                                                           credentialsWithRegionType:AWSRegionUSEast1
-                                                          accountId:[SecretConfig getAWSAccountId]
-                                                          identityPoolId:[SecretConfig getAWSCognitoIdentityPoolId]
-                                                          unauthRoleArn:[SecretConfig getAWSCognitoUnauthRoleArn]
+                                                          accountId:[Config secretConfig][@"AWSAccountId"]
+                                                          identityPoolId:[Config secretConfig][@"AWSCognitoIdentityPoolId"]
+                                                          unauthRoleArn:[Config secretConfig][@"AWSCognitoUnauthRoleArn"]
                                                           authRoleArn:nil];
     AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:AWSRegionAPNortheast1 credentialsProvider:credentialsProvider];
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;

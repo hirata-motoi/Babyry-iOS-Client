@@ -462,7 +462,7 @@
                       @"iOS",
                       osVersion,
                       [PFUser currentUser][@"userId"],
-                      [Config getAppVertion]];
+                      [Config config][@"AppVersion"]];
    
     NSString *body = [NSString stringWithFormat:bodyFormat,
                       introduction,
@@ -474,7 +474,7 @@
     NSString *encodedBody = [body stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *subject = @"Babyryお問い合わせ";
     NSString *encodedSubject = [subject stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *url = [NSString stringWithFormat:@"mailto:%@?Subject=%@&body=%@", [Config getInquiryEmail], encodedSubject, encodedBody];
+    NSString *url = [NSString stringWithFormat:@"mailto:%@?Subject=%@&body=%@", [Config config][@"InquiryEmail"], encodedSubject, encodedBody];
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }

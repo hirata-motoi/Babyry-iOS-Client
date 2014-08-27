@@ -8,9 +8,9 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
-#import "SecretConfig.h"
 #import "PageContentViewController.h"
 #import "Crittercism.h"
+#import "Config.h"
 
 @implementation AppDelegate
 
@@ -25,8 +25,11 @@
         self.window.rootViewController = rootViewController;
     }
     
+    // global変数
+    [self setGlobalVariables];
+
     // Parse Authentification
-    [Parse setApplicationId:[SecretConfig getParseApplicationId] clientKey:[SecretConfig getParseClientKey]];
+    [Parse setApplicationId:[Config secretConfig][@"ParseApplicationId"] clientKey:[Config secretConfig][@"ParseClientKey"]];
 
     // Facebood Auth
     [PFFacebookUtils initializeFacebook];
@@ -111,6 +114,16 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
     return [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
+}
+
+- (void)setGlobalVariables
+{
+    // env
+    #ifdef DEBUG
+        _env = @"dev";
+    #else
+        _env = @"prod";
+    #endif
 }
 
 @end

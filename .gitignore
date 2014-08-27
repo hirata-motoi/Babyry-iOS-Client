@@ -2,4 +2,5 @@
 babyry.xcodeproj/project.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/UserInterfaceState.xcuserstate
 babyry.xcworkspace/xcuserdata/kenjiszk.xcuserdatad/
 babyry.xcodeproj/xcuserdata/kenjiszk.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
-babyry/SecretConfig.m
+babyry/babyry-secret-config.plist
+babyry/babyrydev-secret-config.plist

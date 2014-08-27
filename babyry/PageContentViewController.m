@@ -507,8 +507,8 @@
                 NSString *ymd = [childImage[@"date"] stringValue];
                 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-                getRequest.bucket = [Config getBucketName];
-                
+                getRequest.bucket = [Config config][@"AWSBucketName"];
+                                                      
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 // no-cache必須
                 getRequest.responseCacheControl = @"no-cache";
