@@ -144,6 +144,13 @@
 + (void)removeSelfUserIdFromChannels:(PushNotificationBlock)block
 {
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    
+    // currentInstallationが保存できていない場合(simulator or 起動時にout of network)は
+    // 後続の処理で落ちるのでlogout処理だけやる
+    if (!currentInstallation.objectId) {
+        block();
+        return;
+    }
     // 自分のuserIdを消す
     NSString *targetChannel = [NSString stringWithFormat:@"userId_%@", [PFUser currentUser][@"userId"]];
     [currentInstallation removeObject:targetChannel forKey:@"channels"];
