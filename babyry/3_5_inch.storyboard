@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="aNE-hl-s3s">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="aNE-hl-s3s">
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -759,10 +759,10 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
             </objects>
             <point key="canvasLocation" x="1314" y="-1938"/>
         </scene>
-        <!--View Controller-->
+        <!--Not Email Verified View Controller-->
         <scene sceneID="pr0-Q2-VHI">
             <objects>
-                <viewController storyboardIdentifier="NotEmailVerifiedViewController" id="y9S-Ig-rlg" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NotEmailVerifiedViewController" id="y9S-Ig-rlg" customClass="NotEmailVerifiedViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="6UJ-oA-OGe">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

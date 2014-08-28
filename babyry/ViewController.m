@@ -27,6 +27,7 @@
 #import "Partner.h"
 #import "Sharding.h"
 #import "Logger.h"
+#import "NotEmailVerifiedViewController.h"
 
 @interface ViewController ()
 
@@ -238,64 +239,11 @@
 
 -(void)setNotVerifiedPage
 {
-    UIViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
-    
-    // リロードラベル
-    UILabel *reloadLabel = [[UILabel alloc] init];
-    reloadLabel.userInteractionEnabled = YES;
-    reloadLabel.textAlignment = NSTextAlignmentCenter;
-    reloadLabel.text = @"リロード";
-    reloadLabel.textColor = [UIColor orangeColor];
-    reloadLabel.layer.cornerRadius = 50;
-    reloadLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    reloadLabel.layer.borderWidth = 2.0f;
-    CGRect frame = CGRectMake((self.view.frame.size.width - 100)/2, self.view.frame.size.height*2/3, 100, 100);
-    reloadLabel.frame = frame;
-    [emailVerifiedViewController.view addSubview:reloadLabel];
-    
-    UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(reloadEmailVerifiedView:)];
-    stgr.numberOfTapsRequired = 1;
-    [reloadLabel addGestureRecognizer:stgr];
-    
-    // ログアウトラベル
-    UILabel *logoutLabel = [[UILabel alloc] init];
-    logoutLabel.font = [UIFont systemFontOfSize:12];
-    logoutLabel.userInteractionEnabled = YES;
-    logoutLabel.textAlignment = NSTextAlignmentCenter;
-    logoutLabel.text = @"ログアウト";
-    logoutLabel.textColor = [UIColor orangeColor];
-    logoutLabel.layer.cornerRadius = 5;
-    logoutLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    logoutLabel.layer.borderWidth = 1.0f;
-    frame = CGRectMake(10, 30, 80, 30);
-    logoutLabel.frame = frame;
-    [emailVerifiedViewController.view addSubview:logoutLabel];
-    
-    UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logOut)];
-    stgr2.numberOfTapsRequired = 1;
-    [logoutLabel addGestureRecognizer:stgr2];
-    
-    // メール再送信ラベル
-    UILabel *resendLabel = [[UILabel alloc]init];
-    resendLabel.font = [UIFont systemFontOfSize:18];
-    resendLabel.userInteractionEnabled = YES;
-    resendLabel.textAlignment = NSTextAlignmentCenter;
-    resendLabel.text = @"再送信";
-    resendLabel.textColor = [UIColor orangeColor];
-    resendLabel.frame = CGRectMake(self.view.frame.size.width - 90 - 15, self.view.frame.size.height*2/3 + 75, 90, 44);
-    [emailVerifiedViewController.view addSubview:resendLabel];
-    
-    UITapGestureRecognizer *resendGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(resend)];
-    resendGesture.numberOfTapsRequired = 1;
-    [resendLabel addGestureRecognizer:resendGesture];
-    
-    [self presentViewController:emailVerifiedViewController animated:YES completion:NULL];
+    NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
+    emailVerifiedViewController.viewController = self;
+    [self presentViewController:emailVerifiedViewController animated:YES completion:nil];
 }
 
--(void)reloadEmailVerifiedView:(id)selector
-{
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
 
 -(void)logOut
 {
@@ -322,26 +270,5 @@
         [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
     }
 }
-
-- (void)resend
-{
-    [Logger writeOneShot:@"crit" message:@"Resend email"];
-    PFUser *selfUser = [PFUser currentUser];
-    NSString *email = selfUser[@"email"];
-    selfUser[@"email"] = email;
-    [selfUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [[PFUser currentUser]refresh];
-    }];
-    
-    // 再送信をした旨をalertで表示
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"以下のアドレスへ再度メールを送信しました"
-                                              message:[PFUser currentUser][@"email"]
-                                              delegate:nil
-                                              cancelButtonTitle:@"閉じる"
-                                              otherButtonTitles:nil
-                          ];
-    [alert show];
-}
-
 
 @end

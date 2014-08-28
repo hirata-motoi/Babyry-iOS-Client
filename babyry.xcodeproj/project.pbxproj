@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD706194DBE8500BC3CDA /* Sequence.m */; };
 		84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */; };
+		88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */; };
 		8814A99A1945469B0010F516 /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9991945469B0010F516 /* ImageCache.m */; };
 		8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A99C194ADB330010F516 /* MultiUploadViewController.m */; };
 		8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A9194F56620010F516 /* ImageTrimming.m */; };
@@ -148,6 +149,8 @@
 		84ABD706194DBE8500BC3CDA /* Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sequence.m; sourceTree = "<group>"; };
 		84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyViewController.h; sourceTree = "<group>"; };
 		84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyViewController.m; sourceTree = "<group>"; };
+		88008C8C19AF1169005FE04F /* NotEmailVerifiedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotEmailVerifiedViewController.h; sourceTree = "<group>"; };
+		88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotEmailVerifiedViewController.m; sourceTree = "<group>"; };
 		8814A9881944572A0010F516 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		8814A9981945469B0010F516 /* ImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCache.h; sourceTree = "<group>"; };
 		8814A9991945469B0010F516 /* ImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCache.m; sourceTree = "<group>"; };
@@ -754,6 +757,8 @@
 				8881CFA019A0C67800B909C8 /* MyLogInViewController.m */,
 				8881CFA219A0DBC800B909C8 /* MySignUpViewController.h */,
 				8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */,
+				88008C8C19AF1169005FE04F /* NotEmailVerifiedViewController.h */,
+				88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */,
 			);
 			name = Intro;
 			sourceTree = "<group>";
@@ -1092,6 +1097,7 @@
 				889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */,
 				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
+				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
