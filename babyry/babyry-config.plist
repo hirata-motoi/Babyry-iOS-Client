@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>InviteMailText</key>
-	<string>あなたのパートナーからBabyryへの招待が届いています。 以下のURLからアプリをインストール後、パートナーのメールアドレス %@ を検索してください。 https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
+	<string>あなたのパートナーからBabyryへの招待が届いています。 以下のURLからアプリをインストール後、パートナーのメールアドレス %@ を検索してください。  https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
 	<key>InviteMailTitle</key>
 	<string>Babyryへ招待が届いています</string>
 	<key>InquiryEmail</key>

@@ -47,13 +47,6 @@
     self.selfUserIdContainer.backgroundColor = [UIColor whiteColor];
     [self showSelfUserEmail];
     
-    // 招待した人のメールアドレス入りのstring作成 (招待用)
-    NSString *inviteTitle = [Config config][@"InviteMailTitle"];
-    NSString *inviteText = [Config config][@"InviteMailText"];
-    NSString *inviteReplacedText = [inviteText stringByReplacingOccurrencesOfString:@"%@" withString:_selfUserEmail.text];
-    _escapedUrlTitle = [inviteTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    _escapedUrlText = [inviteReplacedText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
     [self setupSearchForm];
     [Navigation setTitle:self.navigationItem withTitle:@"パートナー検索" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
@@ -68,7 +61,7 @@
     [_searchBackContainerView addSubview:_messageButton];
     _messageButton.hidden = YES;
     
-    _pickedAddress = [[NSString alloc] init];
+    _pickedAddress = @"";
 }
 
 - (void)didReceiveMemoryWarning
@@ -188,11 +181,17 @@
 - (void)executeSearch
 {
     NSString * inputtedUserEmail = [[NSString alloc] init];
-    if (_pickedAddress) {
+    if (![_pickedAddress isEqualToString:@""]) {
         inputtedUserEmail = _pickedAddress;
     } else {
         inputtedUserEmail = [_searchForm.text mutableCopy];
     }
+    
+    if ([inputtedUserEmail isEqualToString:_selfUserEmail.text]) {
+        [self showSearchYourSelf];
+        return;
+    }
+    
     if (inputtedUserEmail && ![inputtedUserEmail isEqualToString:@""]) {
         
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -234,6 +233,7 @@
                                           otherButtonTitles:@"OK", nil
                           ];
     [alert show];
+    _pickedAddress = @"";
 }
 
 - (void)showSearchResult
@@ -245,6 +245,19 @@
                                           otherButtonTitles:@"申請", nil
                           ];
     [alert show];
+    _pickedAddress = @"";
+}
+
+- (void)showSearchYourSelf
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"自分のメールアドレスには申請できません"
+                                                    message:@"パートナーのメールアドレスを入力してください"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
+    _pickedAddress = @"";
 }
 
 // 画像削除確認後に呼ばれる
@@ -360,11 +373,25 @@
 }
 
 - (IBAction)inviteByLine:(id)sender {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", _escapedUrlText]]];
+    NSDictionary *mailInfo = [self makeMailInfo];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", mailInfo[@"text"]]]];
 }
 
 - (IBAction)inviteByMail:(id)sender {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", _escapedUrlTitle, _escapedUrlText]]];
+    NSDictionary *mailInfo = [self makeMailInfo];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", mailInfo[@"title"], mailInfo[@"text"]]]];
+}
+
+- (NSDictionary *) makeMailInfo
+{
+    NSMutableDictionary *mailDic = [[NSMutableDictionary alloc] init];
+    NSString *inviteTitle = [Config config][@"InviteMailTitle"];
+    NSString *inviteText = [Config config][@"InviteMailText"];
+    NSString *inviteReplacedText = [inviteText stringByReplacingOccurrencesOfString:@"%@" withString:_selfUserEmail.text];
+    mailDic[@"title"] = [inviteTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    mailDic[@"text"] = [inviteReplacedText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    return [[NSDictionary alloc] initWithDictionary:mailDic];
 }
 
 - (IBAction)searchFromAddressBook:(id)sender {

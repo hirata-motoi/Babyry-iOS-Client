@@ -36,9 +36,6 @@
 @property PFObject *familyObject;
 @property PFObject *applyObject;
 
-@property NSString *escapedUrlTitle;
-@property NSString *escapedUrlText;
-
 @property NSString *pickedAddress;
 
 @end
