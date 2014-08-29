@@ -41,7 +41,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     // よく使うからここに書いておく
-    [PFUser logOut];
+    //[PFUser logOut];
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ準備中";
@@ -240,7 +240,6 @@
 -(void)setNotVerifiedPage
 {
     NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
-    emailVerifiedViewController.viewController = self;
     [self presentViewController:emailVerifiedViewController animated:YES completion:nil];
 }
 
