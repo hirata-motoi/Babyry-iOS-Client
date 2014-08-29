@@ -373,21 +373,26 @@
 }
 
 - (IBAction)inviteByLine:(id)sender {
-    NSDictionary *mailInfo = [self makeMailInfo];
+    NSDictionary *mailInfo = [self makeInviteBody:@"line"];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", mailInfo[@"text"]]]];
 }
 
 - (IBAction)inviteByMail:(id)sender {
-    NSDictionary *mailInfo = [self makeMailInfo];
+    NSDictionary *mailInfo = [self makeInviteBody:@"mail"];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", mailInfo[@"title"], mailInfo[@"text"]]]];
 }
 
-- (NSDictionary *) makeMailInfo
+- (NSDictionary *) makeInviteBody:(NSString *)type
 {
     NSMutableDictionary *mailDic = [[NSMutableDictionary alloc] init];
     NSString *inviteTitle = [Config config][@"InviteMailTitle"];
-    NSString *inviteText = [Config config][@"InviteMailText"];
-    NSString *inviteReplacedText = [inviteText stringByReplacingOccurrencesOfString:@"%@" withString:_selfUserEmail.text];
+    NSString *inviteText = [[NSString alloc] init];
+    if ([type isEqualToString:@"line"]) {
+        inviteText = [Config config][@"InviteLineText"];
+    } else if ([type isEqualToString:@"mail"]) {
+        inviteText = [Config config][@"InviteMailText"];
+    }
+    NSString *inviteReplacedText = [inviteText stringByReplacingOccurrencesOfString:@"%mail" withString:_selfUserEmail.text];
     mailDic[@"title"] = [inviteTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     mailDic[@"text"] = [inviteReplacedText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
