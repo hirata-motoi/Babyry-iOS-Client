@@ -11,8 +11,11 @@
 
 @interface NotEmailVerifiedViewController : UIViewController
 
-@property UIViewController *viewController;
 @property NSTimer *tm;
 @property BOOL isTimerRunning;
+
+@property (strong, nonatomic) IBOutlet UILabel *logOutLabel;
+@property (strong, nonatomic) IBOutlet UILabel *resendLabel;
+
 
 @end

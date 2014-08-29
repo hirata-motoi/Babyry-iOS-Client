@@ -28,41 +28,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
-    // ログアウトラベル
-    UILabel *logoutLabel = [[UILabel alloc] init];
-    logoutLabel.font = [UIFont systemFontOfSize:12];
-    logoutLabel.userInteractionEnabled = YES;
-    logoutLabel.textAlignment = NSTextAlignmentCenter;
-    logoutLabel.text = @"ログアウト";
-    logoutLabel.textColor = [UIColor orangeColor];
-    logoutLabel.layer.cornerRadius = 5;
-    logoutLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    logoutLabel.layer.borderWidth = 1.0f;
-    CGRect frame = CGRectMake(10, 30, 80, 30);
-    logoutLabel.frame = frame;
-    [self.view addSubview:logoutLabel];
-    
-    UITapGestureRecognizer *stgr1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logOut)];
-    stgr1.numberOfTapsRequired = 1;
-    [logoutLabel addGestureRecognizer:stgr1];
-    
-    // メール再送信ラベル
-    UILabel *resendLabel = [[UILabel alloc]init];
-    resendLabel.font = [UIFont systemFontOfSize:18];
-    resendLabel.userInteractionEnabled = YES;
-    resendLabel.textAlignment = NSTextAlignmentCenter;
-    resendLabel.text = @"確認メール再送信";
-    resendLabel.textColor = [UIColor orangeColor];
-    resendLabel.frame = CGRectMake(self.view.frame.size.width/2 - 180/2, self.view.frame.size.height*2/3 + 75, 180, 44);
-    resendLabel.layer.cornerRadius = 5;
-    resendLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    resendLabel.layer.borderWidth = 1;
-    [self.view addSubview:resendLabel];
-    
-    UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(resend)];
-    stgr2.numberOfTapsRequired = 1;
-    [resendLabel addGestureRecognizer:stgr2];
+
+    [self setLabel];
     
     _isTimerRunning = NO;
 }
@@ -88,11 +55,33 @@
     }
 }
 
+-(void)setLabel
+{
+    // ログアウトラベル
+    _logOutLabel.userInteractionEnabled = YES;
+    _logOutLabel.layer.cornerRadius = 5;
+    _logOutLabel.layer.borderColor = [UIColor orangeColor].CGColor;
+    _logOutLabel.layer.borderWidth = 1.0f;
+    
+    UITapGestureRecognizer *stgr1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logOut)];
+    stgr1.numberOfTapsRequired = 1;
+    [_logOutLabel addGestureRecognizer:stgr1];
+    
+    // メール再送信ラベル
+    _resendLabel.userInteractionEnabled = YES;
+    _resendLabel.layer.cornerRadius = 5;
+    _resendLabel.layer.borderColor = [UIColor orangeColor].CGColor;
+    _resendLabel.layer.borderWidth = 1;
+    
+    UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(resend)];
+    stgr2.numberOfTapsRequired = 1;
+    [_resendLabel addGestureRecognizer:stgr2];
+}
+
 -(void)checkEmailVerified
 {
     if (!_isTimerRunning) {
         _isTimerRunning = YES;
-        NSLog(@"checkEmailVerified");
         PFUser *user = [PFUser currentUser];
         [user refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
             if(error) {
