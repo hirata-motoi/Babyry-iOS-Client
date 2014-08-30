@@ -537,8 +537,7 @@
                             // fullsizeのimageをcache
                             [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, ymd] image:getResult.body];
                         }
-                        // thumbnailは常に作る
-                        // なので、fullsizeのcacheが作られた場合、常にtimestampはthumbnailと同じになる
+                        // ChileImageオブジェクトのupdatedAtとtimestampを比較するためthumbnailは常に作る
                         UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                         NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
                         [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
