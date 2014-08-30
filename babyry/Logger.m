@@ -12,6 +12,11 @@
 
 + (void) writeOneShot:(NSString *)type message:(NSString *)message
 {
+    // prodでなければログに出す
+    if(![[app env] isEqualToString:@"prod"]) {
+        NSLog(@"[%@] %@", type, message);
+    }
+    
     NSString *className = ([type isEqualToString:@"crit"]) ? @"CritLog" : ([type isEqualToString:@"warn"]) ? @"WarnLog" : ([type isEqualToString:@"info"]) ? @"InfoLog" : @"";
     
     if ([className isEqualToString:@""]) {
