@@ -12,6 +12,7 @@
 #import "ColorUtils.h"
 #import "FamilyApplyListViewController.h"
 #import "Logger.h"
+#import "Config.h"
 
 @interface FamilyApplyViewController ()
 
@@ -38,6 +39,9 @@
     _searchBackContainerView.backgroundColor = [ColorUtils getBackgroundColor];
     _searchBackContainerView.layer.cornerRadius = 10;
     
+    _inviteContainer.backgroundColor = [ColorUtils getBackgroundColor];
+    _inviteContainer.layer.cornerRadius = 10;
+    
 	// Do any additional setup after loading the view.
     self.searchContainerView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
     self.selfUserIdContainer.backgroundColor = [UIColor whiteColor];
@@ -56,6 +60,8 @@
     _messageButton.backgroundColor = [ColorUtils getSunDayCalColor];
     [_searchBackContainerView addSubview:_messageButton];
     _messageButton.hidden = YES;
+    
+    _pickedAddress = @"";
 }
 
 - (void)didReceiveMemoryWarning
@@ -174,7 +180,18 @@
 
 - (void)executeSearch
 {
-    NSString * inputtedUserEmail = [_searchForm.text mutableCopy];
+    NSString * inputtedUserEmail = [[NSString alloc] init];
+    if (![_pickedAddress isEqualToString:@""]) {
+        inputtedUserEmail = _pickedAddress;
+    } else {
+        inputtedUserEmail = [_searchForm.text mutableCopy];
+    }
+    
+    if ([inputtedUserEmail isEqualToString:_selfUserEmail.text]) {
+        [self showSearchYourSelf];
+        return;
+    }
+    
     if (inputtedUserEmail && ![inputtedUserEmail isEqualToString:@""]) {
         
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -216,6 +233,7 @@
                                           otherButtonTitles:@"OK", nil
                           ];
     [alert show];
+    _pickedAddress = @"";
 }
 
 - (void)showSearchResult
@@ -227,6 +245,19 @@
                                           otherButtonTitles:@"申請", nil
                           ];
     [alert show];
+    _pickedAddress = @"";
+}
+
+- (void)showSearchYourSelf
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"自分のメールアドレスには申請できません"
+                                                    message:@"パートナーのメールアドレスを入力してください"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
+    _pickedAddress = @"";
 }
 
 // 画像削除確認後に呼ばれる
@@ -339,6 +370,74 @@
 {
     FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
     [self.navigationController pushViewController:familyApplyListViewController animated:YES];
+}
+
+- (IBAction)inviteByLine:(id)sender {
+    NSDictionary *mailInfo = [self makeInviteBody:@"line"];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", mailInfo[@"text"]]]];
+}
+
+- (IBAction)inviteByMail:(id)sender {
+    NSDictionary *mailInfo = [self makeInviteBody:@"mail"];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", mailInfo[@"title"], mailInfo[@"text"]]]];
+}
+
+- (NSDictionary *) makeInviteBody:(NSString *)type
+{
+    NSMutableDictionary *mailDic = [[NSMutableDictionary alloc] init];
+    NSString *inviteTitle = [Config config][@"InviteMailTitle"];
+    NSString *inviteText = [[NSString alloc] init];
+    if ([type isEqualToString:@"line"]) {
+        inviteText = [Config config][@"InviteLineText"];
+    } else if ([type isEqualToString:@"mail"]) {
+        inviteText = [Config config][@"InviteMailText"];
+    }
+    NSString *inviteReplacedText = [inviteText stringByReplacingOccurrencesOfString:@"%mail" withString:_selfUserEmail.text];
+    mailDic[@"title"] = [inviteTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    mailDic[@"text"] = [inviteReplacedText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    return [[NSDictionary alloc] initWithDictionary:mailDic];
+}
+
+- (IBAction)searchFromAddressBook:(id)sender {
+    ABPeoplePickerNavigationController *ABPicker = [[ABPeoplePickerNavigationController alloc] init];
+    ABPicker.peoplePickerDelegate = self;
+    [self presentViewController:ABPicker animated:YES completion:nil];
+}
+
+// ABPeoplePickerNavigationControllerDelegateのデリゲートメソッド
+- (void)peoplePickerNavigationControllerDidCancel: (ABPeoplePickerNavigationController *)peoplePicker
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)peoplePickerNavigationController: (ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person
+{
+    ABMutableMultiValueRef multi = ABRecordCopyValue(person, kABPersonEmailProperty);
+    if (ABMultiValueGetCount(multi)>1) {
+        // 複数メールアドレスがある
+        // メールアドレスのみ表示するようにする
+        [peoplePicker setDisplayedProperties:[NSArray arrayWithObject:[NSNumber numberWithInt:kABPersonEmailProperty]]];
+        return YES;
+    } else {
+        // メールアドレスは1件だけ
+        _pickedAddress = (__bridge NSString*)ABMultiValueCopyValueAtIndex(multi, 0);
+        [self dismissViewControllerAnimated:YES completion:nil];
+        [self executeSearch];
+        return NO;
+    }
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
+{
+    // 選択したメールアドレスを取り出す
+    ABMutableMultiValueRef multi = ABRecordCopyValue(person, property);
+    CFIndex index = ABMultiValueGetIndexForIdentifier(multi, identifier);
+    _pickedAddress = (__bridge NSString*)ABMultiValueCopyValueAtIndex(multi, index);
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [self executeSearch];
+    return NO;
 }
 
 @end
