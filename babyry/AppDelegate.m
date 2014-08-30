@@ -51,7 +51,7 @@
     //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     // Crittercism
-    [Crittercism enableWithAppID: @"53f2f95d1787843773000004"];
+    [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
     
     // Override point for customization after application launch.
     return YES;
