@@ -11,6 +11,8 @@
 #import "PageContentViewController.h"
 #import "Crittercism.h"
 #import "Config.h"
+#import "AppSetting.h"
+#import "DateUtils.h"
 
 @implementation AppDelegate
 
@@ -24,6 +26,10 @@
         
         self.window.rootViewController = rootViewController;
     }
+   
+    // CoreData
+    [MagicalRecord setupCoreDataStackWithStoreNamed:@"babyry.sqlite"];
+    [self setupFirstLaunchUUID];
     
     // global変数
     [self setGlobalVariables];
@@ -109,6 +115,8 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    
+    [MagicalRecord cleanUp];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
@@ -124,6 +132,23 @@
     #else
         _env = @"prod";
     #endif
+}
+
+- (void)setupFirstLaunchUUID
+{
+    NSString *UUIDKeyName = [Config config][@"UUIDKeyName"];
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:UUIDKeyName];
+    if (as) {
+        return;
+    }
+    
+    AppSetting *newAs = [AppSetting MR_createEntity];
+    newAs.name = UUIDKeyName;
+    newAs.value = [[NSUUID UUID] UUIDString];
+    newAs.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAs.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    
 }
 
 @end
