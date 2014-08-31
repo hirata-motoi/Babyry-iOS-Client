@@ -105,6 +105,9 @@
     if (currentInstallation.objectId) {
         [currentInstallation refresh];
     }
+    if([currentInstallation[@"badge"] intValue] < 0) {
+        currentInstallation[@"badge"] = [NSNumber numberWithInt:0];
+    }
     [currentInstallation addUniqueObject:[NSString stringWithFormat:@"userId_%@", currentUser[@"userId"]] forKey:@"channels"];
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError * error) {
         if (succeeded) {
