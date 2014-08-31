@@ -39,6 +39,7 @@
 #import "ImageRequestIntroductionView.h"
 #import "Config.h"
 #import "Logger.h"
+#import "AppSetting.h"
 
 @interface PageContentViewController ()
 
@@ -1209,14 +1210,17 @@ for (NSMutableDictionary *section in _childImages) {
     }
     
     // チョイスとしての初load以外ならreturn
-    NSString *homeDir = NSHomeDirectory();
-    NSString *filePath = [homeDir stringByAppendingPathComponent:@"Documents/firstBootAsChooserFinished.txt"];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if ([fileManager fileExistsAtPath:filePath]) {
+    AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedFirstLaunch"]];
+    if (appSetting) {
         return;
     }
-    // 空のファイルを作成する
-    [fileManager createFileAtPath:filePath contents:[NSData data] attributes:nil];
+
+    AppSetting *newAppSetting = [AppSetting MR_createEntity];
+    newAppSetting.name = [Config config][@"FinishedFirstLaunch"];
+    newAppSetting.value = @"";
+    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(addIntrodutionOfImageRequestView:) userInfo:nil repeats:NO];
 }
 
