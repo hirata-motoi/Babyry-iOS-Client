@@ -7,6 +7,8 @@
 //
 
 #import "Logger.h"
+#import "AppSetting.h"
+#import "Config.h"
 
 @implementation Logger
 
@@ -28,6 +30,11 @@
     logObject[@"message"] = message;
     if ([PFUser currentUser]) {
         logObject[@"userId"] = [PFUser currentUser].objectId;
+    }
+    
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"UUIDKeyName"]];
+    if (as) {                                                              
+        logObject[@"UUID"] = as.value;
     }
     [logObject saveInBackground];
 }

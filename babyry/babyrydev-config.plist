@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UUIDKeyName</key>
+	<string>firstLaunchUUID</string>
 	<key>InviteLineText</key>
 	<string>あなたのパートナーからBabyryへの招待が届いています。 以下のURLからアプリをインストール後、パートナーのメールアドレス %mail を検索してください。  https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
 	<key>InviteMailText</key>
