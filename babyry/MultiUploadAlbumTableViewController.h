@@ -14,7 +14,7 @@
 
 @property ALAssetsLibrary *library;
 @property NSMutableArray *albumListArray;
-@property NSMutableDictionary *albumImageDic;
+@property NSMutableArray *albumImageAssetsArray;
 
 @property UITableView *albumTableView;
 
