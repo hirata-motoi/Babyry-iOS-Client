@@ -10,6 +10,36 @@
 
 @implementation ImageCache
 
+/*
+ImageCache以下の構造
+ 
+    ImageCache
+      |
+       `- $childObjectId
+           |
+            `- bestShot
+           |    |
+           |     `- fullsize
+           |         |
+           |          `- yyyymmdd
+           |    |
+           |     `- thumbnail
+           |         |
+           |          `- yyyymmdd
+           |
+            `- candidate
+                |
+                 `- yyyymmdd
+                     |
+                      `- fullsize
+                     |    |
+                     |     `- $imageObjectId
+                     |
+                      `- thumbnail
+                          |
+                           `- $imageObjectId
+*/
+
 + (void) setCache:name image:(NSData *)image dir:(NSString *)dir
 {
     // Cache Dir
