@@ -54,5 +54,8 @@
 @property MBProgressHUD *hud;
 
 @property NSTimer *tm;
+@property NSTimer *waitPartnerTimer;
+
+@property UIView *waitingCoverView;
 
 @end
