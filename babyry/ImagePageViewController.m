@@ -99,12 +99,15 @@
     
     // Cacheからはりつけ
     NSString *imageCachePath = [[NSString alloc] init];
+    NSString *cacheDir = [[NSString alloc]init];
     if (!_fromMultiUpload) {
-        imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
+        imageCachePath = ymd;
+        cacheDir = [NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId];
     } else {
         imageCachePath = [_childCachedImageArray objectAtIndex:index];
+        cacheDir = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, ymd];
     }
-    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:cacheDir];
     if(imageCacheData) {
         uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];
     } else {
@@ -282,7 +285,10 @@
                 UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                 
                 NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                [ImageCache
+                    setCache:ymd
+                    image:thumbData
+                    dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]];
             }
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in cacheThumbnail : %@", task.error]];

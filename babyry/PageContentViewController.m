@@ -182,8 +182,8 @@
     NSString *ymd = [childImage[@"date"] stringValue];
    
     NSString *imageCachePath = ([self isToday:indexPath.section withRow:indexPath.row])
-        ? [NSString stringWithFormat:@"%@%@", _childObjectId , ymd]
-        : [NSString stringWithFormat:@"%@%@thumb", _childObjectId , ymd];
+        ? [NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId , ymd]
+        : [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId , ymd];
 
     [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
     
@@ -447,7 +447,7 @@
                         if ([childImageDate[@"bestFlag"] isEqualToString:@"choosed"]) {
                             [images replaceObjectAtIndex:i withObject:childImageDate];
                             // ParseのupdatedAtが新しい時だけ
-                            NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, [date stringValue]];
+                            NSString *thumbPath = [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId, [date stringValue]];
                             if ([childImageDate.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
                                 
                                 NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
@@ -463,7 +463,8 @@
                         }
                     }
                     
-                    if (index == 0 && (i == 0|| i == 1)) {
+                    NSIndexPath *ip = [NSIndexPath indexPathForRow:i inSection:index];
+                    if ([self withinTwoDay:ip]) {
                         // 昨日、今日の場合は単に写真の枚数を突っ込む
                         [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[childImageDic[date] count]]];
                     } else {
@@ -471,19 +472,16 @@
                         if(!bestshotExist) {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
                             // 本画像がないのでローカルにキャッシュがあれば消す。
-                            [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, [date stringValue]]];
+                            [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId, [date stringValue]]];
                         } else {
                             [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:1]];
                         }
-                       
-                        // 2日以上前のfullsizeのcacheは不要なのであれば消す
-                        [ImageCache removeCache:[NSString stringWithFormat:@"%@%@", _childObjectId, [date stringValue]]];
                     }
                 } else {
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
                     // 本画像がないのでローカルにキャッシュがあれば消す。
-                    [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, [date stringValue]]];
-                    [ImageCache removeCache:[NSString stringWithFormat:@"%@%@", _childObjectId, [date stringValue]]]; // fullsize
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId, [date stringValue]]];
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId, [date stringValue]]]; // fullsize
                 }
             }
             [self setImageCache:cacheSetQueueArray withReload:reload];
@@ -505,6 +503,8 @@
             [alert show];
         }
     }];
+    // 不要なfullsizeのキャッシュを消す
+    [self removeUnnecessaryFullsizeCache];
 }
 
 - (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
@@ -536,12 +536,16 @@
                        
                         if ([queue[@"imageType"] isEqualToString:@"fullsize"]) {
                             // fullsizeのimageをcache
-                            [ImageCache setCache:[NSString stringWithFormat:@"%@%@", _childObjectId, ymd] image:getResult.body];
+                            [ImageCache
+                                setCache:ymd
+                                image:getResult.body
+                                dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", _childObjectId]
+                            ];
                         }
                         // ChileImageオブジェクトのupdatedAtとtimestampを比較するためthumbnailは常に作る
                         UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
                         NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd] image:thumbData];
+                        [ImageCache setCache:ymd image:thumbData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]];
                     } else {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequsetOfS3 in setImageCache : %@", task.error]];
                     }
@@ -881,7 +885,7 @@
 
 - (void)setBackgroundViewOfCell:(TagAlbumCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
 {
-    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     NSString *role = _selfRole;
     
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -1239,6 +1243,21 @@ for (NSMutableDictionary *section in _childImages) {
 - (BOOL)isToday:(NSInteger)section withRow:(NSInteger)row
 {
     return (section == 0 && row == 0) ? YES : NO;
+}
+
+// 今日の分以外のbestShot/fullsize配下のキャッシュを削除する
+- (void)removeUnnecessaryFullsizeCache
+{
+    NSDateComponents *todayComps = [self dateComps];
+    NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", todayComps.year, todayComps.month, todayComps.day];
+   
+    NSArray *cacheFiles = [ImageCache listCachedImage:[NSString stringWithFormat:@"ImageCache/%@/bestShot/fullsize", _childObjectId]];
+    for (NSString *fileName in cacheFiles) {
+        if ([fileName isEqualToString:ymd]) {
+            continue;
+        }
+        [ImageCache removeCache:[NSString stringWithFormat:@"%@/%@/%@", _childObjectId, @"bestShot/fullsize", fileName]];
+    }
 }
 
 /*

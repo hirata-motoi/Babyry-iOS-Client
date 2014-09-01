@@ -214,11 +214,13 @@
     _selectedBestshotView.frame = [sender view].frame;
     [self.view addSubview:_selectedBestshotView];
     [self setBestShotIndex:_pageIndex];
-    
+   
     UIImage *thumbImage = [ImageCache makeThumbNail:_uploadedImage];
     NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:thumbData];
-}
+    NSData *fullsizeData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(_uploadedImage, 1.0f)];
+    [ImageCache setCache:_date image:thumbData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]];
+    [ImageCache setCache:_date image:fullsizeData dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", _childObjectId]];
+}                                                                                                    
 
 - (int)getBestShotIndex
 {
