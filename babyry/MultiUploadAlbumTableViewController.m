@@ -33,6 +33,8 @@
     [Navigation setTitle:self.navigationItem withTitle:@"アルバム一覧" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
     // フォトアルバムからリスト取得しておく
+    NSMutableArray *albumListAll = [[NSMutableArray alloc]init];
+    
     _albumListArray = [[NSMutableArray alloc] init];
     _albumImageAssetsArray = [[NSMutableArray alloc] init];
     _library = [[ALAssetsLibrary alloc] init];
@@ -40,14 +42,14 @@
     [_library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         if (group) {
             [group setAssetsFilter:[ALAssetsFilter allPhotos]];
-            [_albumListArray addObject:group];
+            [albumListAll addObject:group];
         } else if (!group) {
             [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                 if (group && [[group valueForProperty:ALAssetsGroupPropertyType] intValue] != 16) {
                     [group setAssetsFilter:[ALAssetsFilter allPhotos]];
-                    [_albumListArray addObject:group];
+                    [albumListAll addObject:group];
                 } else if (!group) {
-                    for (ALAssetsGroup *group in _albumListArray) {
+                    for (ALAssetsGroup *group in albumListAll) {
                         NSMutableArray *albumImageArray = [[NSMutableArray alloc] init];
                         ALAssetsGroupEnumerationResultsBlock assetsEnumerationBlock = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
                             if (result) {
@@ -57,9 +59,7 @@
                         [group enumerateAssetsUsingBlock:assetsEnumerationBlock];
                         if ([albumImageArray count] > 0) {
                             [_albumImageAssetsArray addObject:albumImageArray];
-                        } else {
-                            // アルバムの中に画像が0枚なので表示しない
-                            [_albumListArray removeObject:group];
+                            [_albumListArray addObject:group];
                         }
                     }
                     
