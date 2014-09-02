@@ -72,6 +72,17 @@
     _sendImageLabel.layer.cornerRadius = 10;
     _sendImageLabel.layer.borderColor = [UIColor whiteColor].CGColor;
     _sendImageLabel.layer.borderWidth = 2;
+    
+    _multiUploadMax = 3;
+    
+    // Config.m の方に入れますTODO
+    PFQuery *upperLimit = [PFQuery queryWithClassName:@"Config"];
+    [upperLimit whereKey:@"key" equalTo:@"multiUploadUpperLimit"];
+    [upperLimit getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (object) {
+            _multiUploadMax = [object[@"value"] intValue];
+        }
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -174,6 +185,16 @@
     if (collectionView.tag == 1) {
         int index = indexPath.row;
         if([[_checkedImageFragArray objectAtIndex:index] isEqualToString:@"NO"]){
+            if ([_checkedImageArray count] >= _multiUploadMax) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限数を超えています"
+                                                                message:[NSString stringWithFormat:@"一度にアップロードできる写真は%d枚です", _multiUploadMax]
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"OK", nil
+                                      ];
+                [alert show];
+                return;
+            }
             [_checkedImageArray addObject:indexPath];
             [_checkedImageFragArray replaceObjectAtIndex:index withObject:@"YES"];
         } else {
