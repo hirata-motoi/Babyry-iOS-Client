@@ -57,6 +57,9 @@
                         [group enumerateAssetsUsingBlock:assetsEnumerationBlock];
                         if ([albumImageArray count] > 0) {
                             [_albumImageAssetsArray addObject:albumImageArray];
+                        } else {
+                            // アルバムの中に画像が0枚なので表示しない
+                            [_albumListArray removeObject:group];
                         }
                     }
                     
