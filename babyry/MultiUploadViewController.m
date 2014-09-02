@@ -267,7 +267,7 @@
                 if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
                     _bestImageId = object.objectId;
                 }
-                if (![ImageCache getCache: object.objectId dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]]) {
+                if (![ImageCache getCache:object.objectId dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]]) {
                     [newImages addObject:object];
                 }
             }
@@ -275,7 +275,7 @@
             for (NSString *cache in _childCachedImageArray) {
                 BOOL isExist = NO;
                 for (PFObject *object in objects) {
-                    if ([cache isEqualToString: object.objectId]) {
+                    if ([cache isEqualToString:object.objectId]) {
                         isExist = YES;
                     }
                 }
@@ -336,7 +336,7 @@
                     ];
                     [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@-tmp", _childObjectId, _date, object.objectId]];
                     [ImageCache
-                        setCache: object.objectId
+                        setCache:object.objectId
                         image:getResult.body
                         dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", _childObjectId, _date]
                     ];
@@ -443,20 +443,20 @@
 
     // set image cache
     NSData *fullsizeImageData = [ImageCache
-                                 getCache: _bestImageId
+                                 getCache:_bestImageId
                                  dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", _childObjectId, _date]];
     [ImageCache
-        setCache: _date
+        setCache:_date
         image:fullsizeImageData
         dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", _childObjectId]
     ];
     // thumbnailも更新する
     NSData *thumbnailImageData = [ImageCache
-                                 getCache: _bestImageId
+                                 getCache:_bestImageId
                                  dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]];
     UIImage *thumbImage = [UIImage imageWithData:thumbnailImageData];
     [ImageCache
-        setCache: _date
+        setCache:_date
         image:UIImageJPEGRepresentation(thumbImage, 0.7f)
         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
     ];
