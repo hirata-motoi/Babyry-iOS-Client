@@ -467,6 +467,11 @@
                     if ([self withinTwoDay:ip]) {
                         // 昨日、今日の場合は単に写真の枚数を突っ込む
                         [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[childImageDic[date] count]]];
+                        // BestShotがない場合はcache削除(BestShotを削除した場合のため)
+                        if (!bestshotExist) {
+                            [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId, [date stringValue]]];
+                            [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId, [date stringValue]]];
+                        }
                     } else {
                         // 二日以上前で、ベストショットが無いのであれば、0を入れてキャッシュ消す
                         if(!bestshotExist) {
@@ -563,6 +568,9 @@
         }
     } else {
         NSLog(@"get image cache queue end!");
+        if (reload) {
+            [_pageContentCollectionView reloadData];
+        }
     }
 }
 
