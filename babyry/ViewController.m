@@ -179,6 +179,11 @@
             // 二発目以降はbackgroundで引かないとUIが固まる
             [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if(!error) {
+                    // 申請を取り下げた場合に起こりうる
+                    if ([objects count] < 1) {
+                        [self setChildNames];
+                        return;
+                    }
                     _childArrayFoundFromParse = objects;
                     [self setupChildProperties];
                     [self initializeChildImages];

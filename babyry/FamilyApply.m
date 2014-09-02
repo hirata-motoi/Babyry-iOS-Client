@@ -30,6 +30,32 @@
     }
 }
 
++ (void)getApplyingEmailWithBlock:(GetApplyingEmailBlock)block
+{
+    PFQuery *query1 = [PFQuery queryWithClassName:@"FamilyApply"];
+    query1.cachePolicy = kPFCachePolicyNetworkOnly;
+    [query1 whereKey:@"userId" equalTo:[PFUser currentUser][@"userId"]];
+    [query1 getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get familyappylist at getApplyingEmailWithBlock : %@", error]];
+            return;
+        }
+        NSString *inviteeUserId = [[NSString alloc] initWithString:object[@"inviteeUserId"]];
+        
+        PFQuery *query2 = [PFQuery queryWithClassName:@"_User"];
+        query2.cachePolicy = kPFCachePolicyNetworkOnly;
+        [query2 whereKey:@"userId" equalTo:inviteeUserId];
+        [query2 getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get getApplyingEmailWithBlock at  : %@", error]];
+                return;
+            }
+
+            block(object[@"emailCommon"]);
+        }];
+    }];
+}
+
 + (void)deleteApply
 {
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];

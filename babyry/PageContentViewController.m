@@ -1254,19 +1254,22 @@ for (NSMutableDictionary *section in _childImages) {
     _selfRole = [FamilyApply selfRole];
     
     // 下のボタンを押せないようにViewを重ねる
-    if (!_waitingCoverView) {
-        _waitingCoverView = [[UIView alloc] initWithFrame:self.view.frame];
-        [self.view addSubview:_waitingCoverView];
-        
-        // 承認待ちメッセージの表示
-        WaitPartnerAcceptView *view = [WaitPartnerAcceptView view];
-        CGRect rect = view.frame;
-        rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
-        rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
-        view.frame = rect;
-        view.parentViewController = self;
-        [_waitingCoverView addSubview:view];
+    if (_waitingCoverView) {
+        [_waitingCoverView removeFromSuperview];
+        _waitingCoverView = nil;
     }
+    
+    _waitingCoverView = [[UIView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:_waitingCoverView];
+    
+    // 承認待ちメッセージの表示
+    WaitPartnerAcceptView *view = [WaitPartnerAcceptView view];
+    CGRect rect = view.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+    view.frame = rect;
+    view.parentViewController = self;
+    [_waitingCoverView addSubview:view];
     
     if (!_waitPartnerTimer || ![_waitPartnerTimer isValid]) {
         _waitPartnerTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(checkFamilyRole) userInfo:nil repeats:YES];

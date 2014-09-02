@@ -11,6 +11,7 @@
 @interface WaitPartnerAcceptView : UIView
 @property (strong, nonatomic) IBOutlet UIButton *withdrawLabel;
 - (IBAction)withdrawAction:(id)sender;
+@property (strong, nonatomic) IBOutlet UILabel *applyingMailLabel;
 
 + (instancetype)view;
 

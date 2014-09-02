@@ -9,10 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <Parse/Parse.h>
 
+typedef void (^GetApplyingEmailBlock)(NSString *email);
+
 @interface FamilyApply : NSObject
 
 + (PFObject *)getFamilyApply;
 + (NSString *)selfRole;
 + (void)deleteApply;
++ (void)getApplyingEmailWithBlock:(GetApplyingEmailBlock)block;
 
 @end

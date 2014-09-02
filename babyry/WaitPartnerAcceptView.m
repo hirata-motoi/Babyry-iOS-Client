@@ -42,6 +42,10 @@
     
     view.withdrawLabel.userInteractionEnabled = YES;
     
+    [FamilyApply getApplyingEmailWithBlock:^(NSString *email){
+        view.applyingMailLabel.text = [NSString stringWithFormat:@"申請中:%@", email];
+    }];
+    
     return view;
 }
 
@@ -89,7 +93,7 @@
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if(error) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete user familyId at WaitPartnerAccept : %@", error]];
-                        [self closeSelf:YES];
+                        [self closeSelf:NO];
                         [hud hide:YES];
                         return;
                     }
@@ -108,8 +112,8 @@
 
 -(void) closeSelf:(BOOL) isSucceeded
 {
-    [self.superview removeFromSuperview];
     if (isSucceeded) {
+        [self.superview removeFromSuperview];
         FamilyApplyViewController * familyApplyViewController = [_parentViewController.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
         [_parentViewController.navigationController pushViewController:familyApplyViewController animated:YES];
     }
