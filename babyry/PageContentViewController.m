@@ -531,7 +531,7 @@
                 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
                 getRequest.bucket = [Config config][@"AWSBucketName"];
-                                                      
+
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], queue[@"objectId"]];
                 // no-cache必須
                 getRequest.responseCacheControl = @"no-cache";
@@ -570,7 +570,6 @@
             }
         }
     } else {
-        NSLog(@"get image cache queue end!");
         if (reload) {
             [_pageContentCollectionView reloadData];
         }

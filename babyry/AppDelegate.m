@@ -27,13 +27,13 @@
         self.window.rootViewController = rootViewController;
     }
    
+    // global変数
+    [self setGlobalVariables];
+    
     // CoreData
     [MagicalRecord setupCoreDataStackWithStoreNamed:@"babyry.sqlite"];
     [self setupFirstLaunchUUID];
     
-    // global変数
-    [self setGlobalVariables];
-
     // Parse Authentification
     [Parse setApplicationId:[Config secretConfig][@"ParseApplicationId"] clientKey:[Config secretConfig][@"ParseClientKey"]];
 
