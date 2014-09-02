@@ -55,6 +55,15 @@
     [object save];
 }
 
++ (void)createFamilyRoleWithBlock:(NSMutableDictionary *)data withBlock:(PFBooleanResultBlock)block
+{
+    PFObject *object = [PFObject objectWithClassName:@"FamilyRole"];
+    object[@"familyId"] = data[@"familyId"];
+    object[@"uploader"] = data[@"uploader"];
+    object[@"chooser"]  = data[@"chooser"];
+    [object saveInBackgroundWithBlock:block];
+}
+
 + (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block
 {
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
