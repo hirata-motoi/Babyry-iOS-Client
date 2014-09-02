@@ -83,7 +83,6 @@
             [user refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
                 if (error) {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in refresh user at WaitPartnerAccept : %@", error]];
-                    [self closeSelf:NO];
                     [hud hide:YES];
                     return;
                 }
@@ -93,7 +92,6 @@
                 [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if(error) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete user familyId at WaitPartnerAccept : %@", error]];
-                        [self closeSelf:NO];
                         [hud hide:YES];
                         return;
                     }
@@ -102,7 +100,7 @@
                     [Child deleteByFamilyId:familyId];
                     [hud hide:YES];
                     [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply delete deletedBy:%@ familyId:%@", [PFUser currentUser][@"userId"], familyId]];
-                    [self closeSelf:YES];
+                    [self closeSelf];
                 }];
             }];
         }
@@ -110,13 +108,11 @@
     }
 }
 
--(void) closeSelf:(BOOL) isSucceeded
+-(void) closeSelf
 {
-    if (isSucceeded) {
-        [self.superview removeFromSuperview];
-        FamilyApplyViewController * familyApplyViewController = [_parentViewController.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-        [_parentViewController.navigationController pushViewController:familyApplyViewController animated:YES];
-    }
+    [self.superview removeFromSuperview];
+    FamilyApplyViewController * familyApplyViewController = [_parentViewController.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+    [_parentViewController.navigationController pushViewController:familyApplyViewController animated:YES];
 }
 
 @end
