@@ -13,6 +13,7 @@
 #import "FamilyApplyListViewController.h"
 #import "Logger.h"
 #import "Config.h"
+#import "WaitPartnerAcceptView.h"
 
 @interface FamilyApplyViewController ()
 
@@ -158,14 +159,17 @@
         return;
     }
     
+    if ([type isEqualToString:@"forInviter"]) {
+        // ここは派手にダイアログだすからreturn
+        return;
+    }
+    
     if ([type isEqualToString:@"forInvitee"]) {
         [_messageButton setTitle:@"申請が来ています(タップで確認)" forState:UIControlStateNormal];
         [_messageButton addTarget:self action:@selector(checkApply) forControlEvents:UIControlEventTouchDown];
-    } else if ([type isEqualToString:@"forInviter"]) {
-        [_messageButton setTitle:@"申請済みです(タップで取り消し)" forState:UIControlStateNormal];
-        [_messageButton addTarget:self action:@selector(removeApply) forControlEvents:UIControlEventTouchDown];
-    } else if ([type isEqualToString:@"forFamily"]) {
+    } else  if ([type isEqualToString:@"forFamily"]) {
         [_messageButton setTitle:@"パートナー登録は完了しています" forState:UIControlStateNormal];
+        [self.navigationController popViewControllerAnimated:YES];
     }
     _messageButton.hidden = NO;
 }
@@ -337,7 +341,7 @@
     [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply send from:%@ to:%@ role:%@", currentUser[@"userId"], _searchedUserObject[@"userId"], role]];
     // そのうちpush通知送る
     
-    [self closeFamilyApply];
+    [self showWaitPartnerMessage];
 }
 
 - (void)setupSearchForm
@@ -448,6 +452,26 @@
     [self dismissViewControllerAnimated:YES completion:nil];
     [self executeSearch];
     return NO;
+}
+
+- (void) showWaitPartnerMessage
+{
+    // 下のボタンを押せないようにViewを重ねる
+    if (_waitingCoverView) {
+        [_waitingCoverView removeFromSuperview];
+        _waitingCoverView = nil;
+    }
+    
+    _waitingCoverView = [[UIView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:_waitingCoverView];
+    
+    // 承認待ちメッセージの表示
+    WaitPartnerAcceptView *view = [WaitPartnerAcceptView view];
+    CGRect rect = view.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+    view.frame = rect;
+    [_waitingCoverView addSubview:view];
 }
 
 @end

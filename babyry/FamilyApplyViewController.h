@@ -38,4 +38,7 @@
 
 @property NSString *pickedAddress;
 
+@property NSTimer *waitPartnerTimer;
+@property UIView *waitingCoverView;
+
 @end

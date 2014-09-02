@@ -97,7 +97,6 @@
                     }
                     
                     [FamilyApply deleteApply];
-                    [Child deleteByFamilyId:familyId];
                     [hud hide:YES];
                     [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply delete deletedBy:%@ familyId:%@", [PFUser currentUser][@"userId"], familyId]];
                     [self closeSelf];
@@ -111,8 +110,6 @@
 -(void) closeSelf
 {
     [self.superview removeFromSuperview];
-    FamilyApplyViewController * familyApplyViewController = [_parentViewController.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-    [_parentViewController.navigationController pushViewController:familyApplyViewController animated:YES];
 }
 
 @end

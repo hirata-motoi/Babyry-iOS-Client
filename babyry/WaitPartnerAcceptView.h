@@ -15,6 +15,4 @@
 
 + (instancetype)view;
 
-@property UIViewController *parentViewController;
-
 @end
