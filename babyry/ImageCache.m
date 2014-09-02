@@ -10,7 +10,37 @@
 
 @implementation ImageCache
 
-+ (void) setCache:name image:(NSData *) image
+/*
+ImageCache以下の構造
+ 
+    ImageCache
+      |
+       `- $childObjectId
+           |
+            `- bestShot
+           |    |
+           |     `- fullsize
+           |         |
+           |          `- yyyymmdd
+           |    |
+           |     `- thumbnail
+           |         |
+           |          `- yyyymmdd
+           |
+            `- candidate
+                |
+                 `- yyyymmdd
+                     |
+                      `- fullsize
+                     |    |
+                     |     `- $imageObjectId
+                     |
+                      `- thumbnail
+                          |
+                           `- $imageObjectId
+*/
+
++ (void) setCache:name image:(NSData *)image dir:(NSString *)dir
 {
     // Cache Dir
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -18,6 +48,8 @@
     
     // Create ImageCache dir if not found
     NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
+    imageCacheDirPath = [imageCacheDirPath stringByAppendingPathComponent:dir];
+
     // 次にFileManagerを用いて、ディレクトリの作成を行います。
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if(![fileManager fileExistsAtPath:imageCacheDirPath]) {
@@ -38,11 +70,12 @@
     //NSLog(@"saved at %@", savedPath);
 }
 
-+ (NSData *) getCache:name
++ (NSData *) getCache:(NSString *)name dir:(NSString *)dir
 {
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirPath = [array objectAtIndex:0];
     NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
+    imageCacheDirPath = [imageCacheDirPath stringByAppendingPathComponent:dir];
     NSString *imageCacheFilePath = [imageCacheDirPath stringByAppendingPathComponent:name];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -53,19 +86,15 @@
     }
 }
 
-// ${prefix}-${imageObjectId}のキャッシュをタイムスタンプでソートして返す
-+ (NSArray *) getListOfMultiUploadCache:(NSString *)prefix
++ (NSArray *) getListOfMultiUploadCache:(NSString *)dir
 {
-    NSString *prefixWithHyphen = [NSString stringWithFormat:@"%@%@", prefix, @"-"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirPath = [array objectAtIndex:0];
     NSString *imageCacheDirPath = [cacheDirPath stringByAppendingPathComponent:@"ImageCache"];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *bundleDirectory = [fileManager contentsOfDirectoryAtPath:imageCacheDirPath error:nil];
-    
-    NSPredicate *filter = [NSPredicate predicateWithFormat:@"self BEGINSWITH %@", prefixWithHyphen];
-    NSArray *multiCache = [bundleDirectory filteredArrayUsingPredicate:filter];
-    
+    imageCacheDirPath = [imageCacheDirPath stringByAppendingPathComponent:dir];
+    NSArray *multiCache = [fileManager contentsOfDirectoryAtPath:imageCacheDirPath
+                                                     error:nil];
     NSMutableArray *attributes = [NSMutableArray array];
     
     for (NSString *cache in multiCache) {

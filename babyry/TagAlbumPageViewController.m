@@ -73,7 +73,7 @@
     
     // Cacheからはりつけ
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
-    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     if(imageCacheData) {
         uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];
     } else {

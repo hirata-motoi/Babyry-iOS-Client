@@ -109,7 +109,7 @@
     NSString *yyyymmdd = [imageObject[@"date"] stringValue];
     // Cacheからはりつけ
     NSString *imageCachePath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, yyyymmdd];
-    NSData *imageCacheData = [ImageCache getCache:imageCachePath];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     if(imageCacheData) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
     } else {
