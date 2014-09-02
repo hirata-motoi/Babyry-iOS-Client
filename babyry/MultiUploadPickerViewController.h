@@ -41,4 +41,6 @@
 @property AWSServiceConfiguration *configuration;
 @property NSInteger uploadedImageCount;
 
+@property int multiUploadMax;
+
 @end
