@@ -34,20 +34,37 @@
     
     // フォトアルバムからリスト取得しておく
     _albumListArray = [[NSMutableArray alloc] init];
-    _albumImageDic = [[NSMutableDictionary alloc] init];
-    //NSMutableArray *assetsArray = [[NSMutableArray alloc] init];
+    _albumImageAssetsArray = [[NSMutableArray alloc] init];
     _library = [[ALAssetsLibrary alloc] init];
-    [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+
+    [_library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         if (group) {
+            [group setAssetsFilter:[ALAssetsFilter allPhotos]];
             [_albumListArray addObject:group];
-            NSMutableArray *albumImageArray = [[NSMutableArray alloc] init];
-            ALAssetsGroupEnumerationResultsBlock assetsEnumerationBlock = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                if (result) {
-                    [albumImageArray addObject:result];
+        } else if (!group) {
+            [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                if (group && [[group valueForProperty:ALAssetsGroupPropertyType] intValue] != 16) {
+                    [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+                    [_albumListArray addObject:group];
+                } else if (!group) {
+                    for (ALAssetsGroup *group in _albumListArray) {
+                        NSMutableArray *albumImageArray = [[NSMutableArray alloc] init];
+                        ALAssetsGroupEnumerationResultsBlock assetsEnumerationBlock = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                            if (result) {
+                                [albumImageArray addObject:result];
+                            }
+                        };
+                        [group enumerateAssetsUsingBlock:assetsEnumerationBlock];
+                        if ([albumImageArray count] > 0) {
+                            [_albumImageAssetsArray addObject:albumImageArray];
+                        } else {
+                            // アルバムの中に画像が0枚なので表示しない
+                            [_albumListArray removeObject:group];
+                        }
+                    }
+                    
                 }
-            };
-            [group enumerateAssetsUsingBlock:assetsEnumerationBlock];
-            [_albumImageDic setObject:albumImageArray forKey:[group valueForProperty:ALAssetsGroupPropertyName]];
+            } failureBlock:nil];
         }
     } failureBlock:nil];
 }
@@ -100,9 +117,9 @@
     }
     cell.backgroundColor = [UIColor whiteColor];
     cell.textLabel.text = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%d枚", [[_albumImageDic objectForKey:cell.textLabel.text] count]];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%d枚", [[_albumImageAssetsArray objectAtIndex:index] count]];
     
-    UIImage *tmpImage = [UIImage imageWithCGImage:[[[_albumImageDic objectForKey:cell.textLabel.text] lastObject] thumbnail]];
+    UIImage *tmpImage = [UIImage imageWithCGImage:[[[_albumImageAssetsArray objectAtIndex:index] lastObject] thumbnail]];
     cell.imageView.image = tmpImage;
     
     return cell;
@@ -111,10 +128,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     int index = [indexPath indexAtPosition:[indexPath length] - 1];
-    NSString *albumName = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
     
     MultiUploadPickerViewController *multiUploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadPickerViewController"];
-    multiUploadPickerViewController.alAssetsArr = [_albumImageDic objectForKey:albumName];
+    multiUploadPickerViewController.alAssetsArr = [_albumImageAssetsArray objectAtIndex:index];
     multiUploadPickerViewController.month = _month;
     multiUploadPickerViewController.childObjectId = _childObjectId;
     multiUploadPickerViewController.date = _date;
