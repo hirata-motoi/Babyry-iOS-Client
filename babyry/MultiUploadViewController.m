@@ -49,14 +49,14 @@
     _instructionLabel.backgroundColor = [ColorUtils getBackgroundColor];
     _instructionLabel.textColor = [UIColor whiteColor];
     _instructionLabel.font = [UIFont systemFontOfSize:14];
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
         _myRole = @"uploader";
         _instructionLabel.text = @"写真をアップロードしましょう(上限15枚)。\n[ここをタップして画像を選択]";
         _instructionLabel.userInteractionEnabled = YES;
         UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
         uploadGesture.numberOfTapsRequired = 1;
         [_instructionLabel addGestureRecognizer:uploadGesture];
-    } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
+    } else if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"chooser"]) {
         _myRole = @"chooser";
         _instructionLabel.text = @"ベストショットを選択しましょう。\n[写真の星マークをタップして選択できます]";
     }

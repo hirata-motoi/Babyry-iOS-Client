@@ -74,6 +74,10 @@
 		88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */; };
 		88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF50C1999FA1F00B56481 /* ColorUtils.m */; };
 		88CFF52D199B68E400B56481 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF52F199B68E400B56481 /* Localizable.strings */; };
+		88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */; };
+		88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */; };
+		88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2821E19B48B8900225DD3 /* FamilyApply.m */; };
+		88E2822219B4A8DE00225DD3 /* Child.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2822119B4A8DE00225DD3 /* Child.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		D79AFBEA8B9F4207B47E8CAD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB30DD347E5C4D729656DE8C /* libPods.a */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
@@ -262,6 +266,13 @@
 		88CFF50C1999FA1F00B56481 /* ColorUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtils.m; sourceTree = "<group>"; };
 		88CFF52E199B68E400B56481 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88CFF530199B68F100B56481 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		88E2821819B4858E00225DD3 /* WaitPartnerAcceptView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitPartnerAcceptView.h; sourceTree = "<group>"; };
+		88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaitPartnerAcceptView.m; sourceTree = "<group>"; };
+		88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WaitPartnerAcceptView.xib; sourceTree = "<group>"; };
+		88E2821D19B48B8900225DD3 /* FamilyApply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApply.h; sourceTree = "<group>"; };
+		88E2821E19B48B8900225DD3 /* FamilyApply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApply.m; sourceTree = "<group>"; };
+		88E2822019B4A8DE00225DD3 /* Child.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Child.h; sourceTree = "<group>"; };
+		88E2822119B4A8DE00225DD3 /* Child.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Child.m; sourceTree = "<group>"; };
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB30DD347E5C4D729656DE8C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
@@ -438,6 +449,8 @@
 				F261A887196523110072BBD2 /* NSObject+Retry.m */,
 				F20F7641196BC43A00FD2529 /* FamilyRole.h */,
 				F20F7642196BC43A00FD2529 /* FamilyRole.m */,
+				88E2821D19B48B8900225DD3 /* FamilyApply.h */,
+				88E2821E19B48B8900225DD3 /* FamilyApply.m */,
 				882A6A24196B7D4A00E07D60 /* Config.h */,
 				882A6A25196B7D4A00E07D60 /* Config.m */,
 				885A223519750DD20039B263 /* DateUtils.h */,
@@ -468,6 +481,8 @@
 				88CFF50C1999FA1F00B56481 /* ColorUtils.m */,
 				F271B31C1999E5E800C9952A /* Badge.h */,
 				F271B31D1999E5E800C9952A /* Badge.m */,
+				88E2822019B4A8DE00225DD3 /* Child.h */,
+				88E2822119B4A8DE00225DD3 /* Child.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -878,6 +893,7 @@
 			isa = PBXGroup;
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
+				88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -887,6 +903,8 @@
 			children = (
 				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
 				F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */,
+				88E2821819B4858E00225DD3 /* WaitPartnerAcceptView.h */,
+				88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -894,8 +912,6 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				F2AE04E719B2E8C100B39C6F /* AppSetting.h */,
-				F2AE04E819B2E8C100B39C6F /* AppSetting.m */,
 			);
 			name = CoreData;
 			sourceTree = "<group>";
@@ -1008,6 +1024,7 @@
 				F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
+				88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
 				88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */,
@@ -1070,6 +1087,7 @@
 				F2310C22198F43DF00E01DA3 /* DragView.m in Sources */,
 				F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */,
 				88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */,
+				88E2822219B4A8DE00225DD3 /* Child.m in Sources */,
 				88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
 				F210670F196E805A00187119 /* TagView.m in Sources */,
@@ -1086,6 +1104,7 @@
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
+				88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */,
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
@@ -1118,6 +1137,7 @@
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
 				8881CFA119A0C67800B909C8 /* MyLogInViewController.m in Sources */,
 				F2AE04EC19B2EC8500B39C6F /* AppSetting.m in Sources */,
+				88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */,
 				88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */,
 				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,

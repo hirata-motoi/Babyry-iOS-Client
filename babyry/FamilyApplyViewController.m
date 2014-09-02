@@ -135,6 +135,10 @@
                 [self showMessage:@"forInvitee"];
                 [_stasusHud hide:YES];
                 return;
+            } else {
+                [self showMessage:@"clear"];
+                [_stasusHud hide:YES];
+                return;
             }
             [_stasusHud hide:YES];
         }];
@@ -149,6 +153,11 @@
 
 -(void) showMessage:(NSString *)type
 {
+    if ([type isEqualToString:@"clear"]) {
+        _messageButton.hidden = YES;
+        return;
+    }
+    
     if ([type isEqualToString:@"forInvitee"]) {
         [_messageButton setTitle:@"申請が来ています(タップで確認)" forState:UIControlStateNormal];
         [_messageButton addTarget:self action:@selector(checkApply) forControlEvents:UIControlEventTouchDown];
@@ -325,6 +334,7 @@
     familyApply[@"role"] = role;
     
     [familyApply save];
+    [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply send from:%@ to:%@ role:%@", currentUser[@"userId"], _searchedUserObject[@"userId"], role]];
     // そのうちpush通知送る
     
     [self closeFamilyApply];

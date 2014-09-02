@@ -14,6 +14,7 @@
 #import "ImageTrimming.h"
 #import "ImageCache.h"
 #import "FamilyRole.h"
+#import "FamilyApply.h"
 #import "ImagePageViewController.h"
 #import "ArrayUtils.h"
 #import "TagAlbumCollectionViewCell.h"
@@ -40,6 +41,7 @@
 #import "Config.h"
 #import "Logger.h"
 #import "AppSetting.h"
+#import "WaitPartnerAcceptView.h"
 
 @interface PageContentViewController ()
 
@@ -96,11 +98,16 @@
         _hud.labelText = @"データ同期中";
     }
     
-    _selfRole = [FamilyRole selfRole];
-    [_pageContentCollectionView reloadData];
+    _selfRole = [FamilyRole selfRole:@"useCache"];
+    if (_selfRole) {
+        [_pageContentCollectionView reloadData];
+    } else {
+        [self showWaitPartnerMessage];
+    }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     [self setImages];
@@ -1245,7 +1252,6 @@ for (NSMutableDictionary *section in _childImages) {
     rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
     view.frame = rect;
     [self.view addSubview:view];
-    
 }
 
 - (BOOL)isToday:(NSInteger)section withRow:(NSInteger)row
@@ -1265,6 +1271,45 @@ for (NSMutableDictionary *section in _childImages) {
             continue;
         }
         [ImageCache removeCache:[NSString stringWithFormat:@"%@/%@/%@", _childObjectId, @"bestShot/fullsize", fileName]];
+    }
+}
+
+- (void) showWaitPartnerMessage
+{
+    // FamilyRoleが無いので承認待ちの人
+    // FamilyApplyから自分が選択したRoleを取得
+    _selfRole = [FamilyApply selfRole];
+    
+    // 下のボタンを押せないようにViewを重ねる
+    if (_waitingCoverView) {
+        [_waitingCoverView removeFromSuperview];
+        _waitingCoverView = nil;
+    }
+    
+    _waitingCoverView = [[UIView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:_waitingCoverView];
+    
+    // 承認待ちメッセージの表示
+    WaitPartnerAcceptView *view = [WaitPartnerAcceptView view];
+    CGRect rect = view.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+    view.frame = rect;
+    view.parentViewController = self;
+    [_waitingCoverView addSubview:view];
+    
+    if (!_waitPartnerTimer || ![_waitPartnerTimer isValid]) {
+        _waitPartnerTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(checkFamilyRole) userInfo:nil repeats:YES];
+        [_waitPartnerTimer fire];
+    }
+}
+
+- (void) checkFamilyRole
+{
+    _selfRole = [FamilyRole selfRole:@"noCache"];
+    if (_selfRole) {
+        [_waitingCoverView removeFromSuperview];
+        [_waitPartnerTimer invalidate];
     }
 }
 

@@ -343,7 +343,7 @@
 - (void)switchRole
 {
     NSString *role = [self getSelectedRole];
-    PFObject *familyRole = [FamilyRole getFamilyRole];
+    PFObject *familyRole = [FamilyRole getFamilyRole:@"useCache"];
     NSString *uploaderUserId = familyRole[@"uploader"];
     NSString *chooserUserId  = familyRole[@"chooser"];
     NSString *partnerUserId  = ([uploaderUserId isEqualToString:[PFUser currentUser][@"userId"]]) ? chooserUserId : uploaderUserId;

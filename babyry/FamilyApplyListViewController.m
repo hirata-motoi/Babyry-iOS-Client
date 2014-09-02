@@ -215,7 +215,11 @@
         [row delete];
     }
     [_hud hide:YES];
-    [self closeFamilyApplyList];
+    
+    [Logger
+        writeOneShot:@"info"
+        message:[NSString stringWithFormat:@"FamilyApply admit from:%@ to:%@ familyid:%@", inviterUser[@"userId"], [PFUser currentUser][@"userId"], familyId]];
+    [self closeFamilyApplyList];                                                                          
 }
 
 - (void)showNoApplyMessage
