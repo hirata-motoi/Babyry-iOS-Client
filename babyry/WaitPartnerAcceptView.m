@@ -97,6 +97,7 @@
                     [FamilyApply deleteApply];
                     [Child deleteByFamilyId:familyId];
                     [hud hide:YES];
+                    [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply delete deletedBy:%@ familyId:%@", [PFUser currentUser][@"userId"], familyId]];
                     [self closeSelf:YES];
                 }];
             }];

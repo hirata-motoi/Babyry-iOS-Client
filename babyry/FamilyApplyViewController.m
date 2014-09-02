@@ -334,6 +334,7 @@
     familyApply[@"role"] = role;
     
     [familyApply save];
+    [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply send from:%@ to:%@ role:%@", currentUser[@"userId"], _searchedUserObject[@"userId"], role]];
     // そのうちpush通知送る
     
     [self closeFamilyApply];
