@@ -8,6 +8,7 @@
 
 #import "Config.h"
 #import "MaintenanceViewController.h"
+#import "Logger.h"
 
 @implementation Config
 
@@ -30,9 +31,14 @@ static NSMutableDictionary *_secretConfig = nil;
 + (NSMutableDictionary *)config
 {
     if (_config == nil) {
-        NSString *configName = ([[app env] isEqualToString:@"prod"])
-            ? @"babyry-config.plist"
-            : @"babyrydev-config.plist";
+        NSString *configName =
+            ([[app env] isEqualToString:@"prod"]) ? @"babyry-config.plist"    :
+            ([[app env] isEqualToString:@"dev"])  ? @"babyrydev-config.plist" : nil;
+        if (configName == nil) {
+            NSString *exceptionString = [NSString stringWithFormat:@"invalid configName due to unknown env:%@", [app env]];
+            [Logger writeOneShot:@"crit" message:exceptionString];
+            @throw exceptionString;
+        }
         _config = [self load:configName];
     }
     
@@ -42,9 +48,14 @@ static NSMutableDictionary *_secretConfig = nil;
 + (NSMutableDictionary *)secretConfig
 {
     if (_secretConfig == nil) {
-        NSString *configName = ([[app env] isEqualToString:@"prod"])
-            ? @"babyry-secret-config.plist"
-            : @"babyrydev-secret-config.plist";
+        NSString *configName =
+            ([[app env] isEqualToString:@"prod"]) ? @"babyry-secret-config.plist"    :
+            ([[app env] isEqualToString:@"dev"])  ? @"babyrydev-secret-config.plist" : nil;
+        if (configName == nil) {
+            NSString *exceptionString = [NSString stringWithFormat:@"invalid secretConfigName due to unknown env:%@", [app env]];
+            [Logger writeOneShot:@"crit" message:exceptionString];
+            @throw exceptionString;
+        }
         _secretConfig = [self load:configName];
     }
     
