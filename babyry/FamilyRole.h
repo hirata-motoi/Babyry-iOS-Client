@@ -15,6 +15,7 @@
 + (NSString *)selfRole:(NSString *)cacheType;
 + (void)updateCache;
 + (void)createFamilyRole: (NSMutableDictionary *)data;
++ (void)createFamilyRoleWithBlock:(NSMutableDictionary *)data withBlock:(PFBooleanResultBlock)block;
 + (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block;
 
 @end
