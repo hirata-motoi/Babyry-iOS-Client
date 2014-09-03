@@ -131,8 +131,19 @@
             }
         }
         
-        // falimyIdを取得
+        // falimyIdがなければ招待画面をだして先に進めない
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
+            // パートナー検索画面を出す
+            FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+            [self.navigationController pushViewController:familyApplyViewController animated:YES];
+            return;
+        }
+        
+        // roleを更新
+        [FamilyRole updateCache];
+        
+        // roleがundefの場合パートナーひも付けされてないからパートナー招待画面を出す
+        if (![FamilyRole selfRole:@"useCache"]) {
             // パートナー検索画面を出す
             FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
             [self.navigationController pushViewController:familyApplyViewController animated:YES];
@@ -149,9 +160,6 @@
                 return;
             }
         }
-        
-        // roleを更新
-        [FamilyRole updateCache];
         
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
