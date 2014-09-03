@@ -160,7 +160,7 @@
     }
     
     if ([type isEqualToString:@"forInviter"]) {
-        // ここは派手にダイアログだすからreturn
+        [self showWaitPartnerMessage];
         return;
     }
     

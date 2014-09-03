@@ -19,6 +19,8 @@
         query.cachePolicy = kPFCachePolicyCacheElseNetwork;
     } else if ([cacheType isEqualToString:@"NetworkFirst"]) {
         query.cachePolicy = kPFCachePolicyNetworkElseCache;
+    } else if ([cacheType isEqualToString:@"cachekOnly"]) {
+        query.cachePolicy = kPFCachePolicyCacheOnly;
     } else {
         query.cachePolicy = kPFCachePolicyCacheElseNetwork;
     }

@@ -131,12 +131,22 @@
             }
         }
         
-        // falimyIdを取得
+        // falimyIdがなければ招待画面をだして先に進めない
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
             // パートナー検索画面を出す
             FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
             [self.navigationController pushViewController:familyApplyViewController animated:YES];
             return;
+        }
+        
+        // roleがundefの場合パートナーひも付けされてないからパートナー招待画面を出す
+        if (![FamilyRole selfRole:@"cachekOnly"]) {
+            if (![FamilyRole selfRole:@"noCache"]) {
+                // パートナー検索画面を出す
+                FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+                [self.navigationController pushViewController:familyApplyViewController animated:YES];
+                return;
+            }
         }
         
         // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
