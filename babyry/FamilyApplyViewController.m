@@ -11,6 +11,9 @@
 #import "Navigation.h"
 #import "ColorUtils.h"
 #import "FamilyApplyListViewController.h"
+#import "Logger.h"
+#import "Config.h"
+#import "WaitPartnerAcceptView.h"
 
 @interface FamilyApplyViewController ()
 
@@ -37,6 +40,9 @@
     _searchBackContainerView.backgroundColor = [ColorUtils getBackgroundColor];
     _searchBackContainerView.layer.cornerRadius = 10;
     
+    _inviteContainer.backgroundColor = [ColorUtils getBackgroundColor];
+    _inviteContainer.layer.cornerRadius = 10;
+    
 	// Do any additional setup after loading the view.
     self.searchContainerView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
     self.selfUserIdContainer.backgroundColor = [UIColor whiteColor];
@@ -55,6 +61,8 @@
     _messageButton.backgroundColor = [ColorUtils getSunDayCalColor];
     [_searchBackContainerView addSubview:_messageButton];
     _messageButton.hidden = YES;
+    
+    _pickedAddress = @"";
 }
 
 - (void)didReceiveMemoryWarning
@@ -86,34 +94,52 @@
         PFQuery * roleQuery = [PFQuery queryWithClassName:@"FamilyRole"];
         [roleQuery whereKey:@"familyId" equalTo:user[@"familyId"]];
         [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if (!error){
-                if ([objects count] > 0) {
-                    _familyObject = [objects objectAtIndex:0];
-                    [self showMessage:@"forFamily"];
-                } else {
-                    PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
-                    [applyQuery whereKey:@"userId" equalTo:user[@"userId"]];
-                    [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                        if (!error){
-                            if ([objects count] > 0) {
-                                _applyObject = [objects objectAtIndex:0];
-                                [self showMessage:@"forInviter"];
-                            }
-                        }
-                        [_stasusHud hide:YES];
-                    }];
-                }
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from FamilyId) : %@", error]];
+                [_stasusHud hide:YES];
+                return;
             }
-            [_stasusHud hide:YES];
+            if ([objects count] > 0) {
+                _familyObject = [objects objectAtIndex:0];
+                [self showMessage:@"forFamily"];
+                [_stasusHud hide:YES];
+                return;
+            }
+            
+            PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
+            [applyQuery whereKey:@"userId" equalTo:user[@"userId"]];
+            [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from userId) : %@", error]];
+                    [_stasusHud hide:YES];
+                    return;
+                }
+                
+                if ([objects count] > 0) {
+                    _applyObject = [objects objectAtIndex:0];
+                    [self showMessage:@"forInviter"];
+                }
+                [_stasusHud hide:YES];
+            }];
         }];
     } else {
         PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
         [applyQuery whereKey:@"inviteeUserId" equalTo:user[@"userId"]];
         [applyQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if (!error){
-                if ([objects count] > 0) {
-                    [self showMessage:@"forInvitee"];
-                }
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in checkFamilyApply(from inviteeUserId) : %@", error]];
+                [_stasusHud hide:YES];
+                return;
+            }
+            
+            if ([objects count] > 0) {
+                [self showMessage:@"forInvitee"];
+                [_stasusHud hide:YES];
+                return;
+            } else {
+                [self showMessage:@"clear"];
+                [_stasusHud hide:YES];
+                return;
             }
             [_stasusHud hide:YES];
         }];
@@ -128,14 +154,22 @@
 
 -(void) showMessage:(NSString *)type
 {
+    if ([type isEqualToString:@"clear"]) {
+        _messageButton.hidden = YES;
+        return;
+    }
+    
+    if ([type isEqualToString:@"forInviter"]) {
+        [self showWaitPartnerMessage];
+        return;
+    }
+    
     if ([type isEqualToString:@"forInvitee"]) {
         [_messageButton setTitle:@"申請が来ています(タップで確認)" forState:UIControlStateNormal];
         [_messageButton addTarget:self action:@selector(checkApply) forControlEvents:UIControlEventTouchDown];
-    } else if ([type isEqualToString:@"forInviter"]) {
-        [_messageButton setTitle:@"申請済みです(タップで取り消し)" forState:UIControlStateNormal];
-        [_messageButton addTarget:self action:@selector(removeApply) forControlEvents:UIControlEventTouchDown];
-    } else if ([type isEqualToString:@"forFamily"]) {
+    } else  if ([type isEqualToString:@"forFamily"]) {
         [_messageButton setTitle:@"パートナー登録は完了しています" forState:UIControlStateNormal];
+        [self.navigationController popViewControllerAnimated:YES];
     }
     _messageButton.hidden = NO;
 }
@@ -159,7 +193,18 @@
 
 - (void)executeSearch
 {
-    NSString * inputtedUserEmail = [_searchForm.text mutableCopy];
+    NSString * inputtedUserEmail = [[NSString alloc] init];
+    if (![_pickedAddress isEqualToString:@""]) {
+        inputtedUserEmail = _pickedAddress;
+    } else {
+        inputtedUserEmail = [_searchForm.text mutableCopy];
+    }
+    
+    if ([inputtedUserEmail isEqualToString:_selfUserEmail.text]) {
+        [self showSearchYourSelf];
+        return;
+    }
+    
     if (inputtedUserEmail && ![inputtedUserEmail isEqualToString:@""]) {
         
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -184,7 +229,7 @@
                     }
                 }
             } else {
-                NSLog(@"error occured %@", error);
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in executeSearch %@", error]];
             }
             [_hud hide:YES];
         }];
@@ -201,6 +246,7 @@
                                           otherButtonTitles:@"OK", nil
                           ];
     [alert show];
+    _pickedAddress = @"";
 }
 
 - (void)showSearchResult
@@ -212,6 +258,19 @@
                                           otherButtonTitles:@"申請", nil
                           ];
     [alert show];
+    _pickedAddress = @"";
+}
+
+- (void)showSearchYourSelf
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"自分のメールアドレスには申請できません"
+                                                    message:@"パートナーのメールアドレスを入力してください"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
+    _pickedAddress = @"";
 }
 
 // 画像削除確認後に呼ばれる
@@ -279,9 +338,10 @@
     familyApply[@"role"] = role;
     
     [familyApply save];
+    [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply send from:%@ to:%@ role:%@", currentUser[@"userId"], _searchedUserObject[@"userId"], role]];
     // そのうちpush通知送る
     
-    [self closeFamilyApply];
+    [self showWaitPartnerMessage];
 }
 
 - (void)setupSearchForm
@@ -324,6 +384,94 @@
 {
     FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
     [self.navigationController pushViewController:familyApplyListViewController animated:YES];
+}
+
+- (IBAction)inviteByLine:(id)sender {
+    NSDictionary *mailInfo = [self makeInviteBody:@"line"];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"line://msg/text/%@", mailInfo[@"text"]]]];
+}
+
+- (IBAction)inviteByMail:(id)sender {
+    NSDictionary *mailInfo = [self makeInviteBody:@"mail"];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", mailInfo[@"title"], mailInfo[@"text"]]]];
+}
+
+- (NSDictionary *) makeInviteBody:(NSString *)type
+{
+    NSMutableDictionary *mailDic = [[NSMutableDictionary alloc] init];
+    NSString *inviteTitle = [Config config][@"InviteMailTitle"];
+    NSString *inviteText = [[NSString alloc] init];
+    if ([type isEqualToString:@"line"]) {
+        inviteText = [Config config][@"InviteLineText"];
+    } else if ([type isEqualToString:@"mail"]) {
+        inviteText = [Config config][@"InviteMailText"];
+    }
+    NSString *inviteReplacedText = [inviteText stringByReplacingOccurrencesOfString:@"%mail" withString:_selfUserEmail.text];
+    mailDic[@"title"] = [inviteTitle stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    mailDic[@"text"] = [inviteReplacedText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    return [[NSDictionary alloc] initWithDictionary:mailDic];
+}
+
+- (IBAction)searchFromAddressBook:(id)sender {
+    ABPeoplePickerNavigationController *ABPicker = [[ABPeoplePickerNavigationController alloc] init];
+    ABPicker.peoplePickerDelegate = self;
+    [self presentViewController:ABPicker animated:YES completion:nil];
+}
+
+// ABPeoplePickerNavigationControllerDelegateのデリゲートメソッド
+- (void)peoplePickerNavigationControllerDidCancel: (ABPeoplePickerNavigationController *)peoplePicker
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)peoplePickerNavigationController: (ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person
+{
+    ABMutableMultiValueRef multi = ABRecordCopyValue(person, kABPersonEmailProperty);
+    if (ABMultiValueGetCount(multi)>1) {
+        // 複数メールアドレスがある
+        // メールアドレスのみ表示するようにする
+        [peoplePicker setDisplayedProperties:[NSArray arrayWithObject:[NSNumber numberWithInt:kABPersonEmailProperty]]];
+        return YES;
+    } else {
+        // メールアドレスは1件だけ
+        _pickedAddress = (__bridge NSString*)ABMultiValueCopyValueAtIndex(multi, 0);
+        [self dismissViewControllerAnimated:YES completion:nil];
+        [self executeSearch];
+        return NO;
+    }
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
+{
+    // 選択したメールアドレスを取り出す
+    ABMutableMultiValueRef multi = ABRecordCopyValue(person, property);
+    CFIndex index = ABMultiValueGetIndexForIdentifier(multi, identifier);
+    _pickedAddress = (__bridge NSString*)ABMultiValueCopyValueAtIndex(multi, index);
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [self executeSearch];
+    return NO;
+}
+
+- (void) showWaitPartnerMessage
+{
+    // 下のボタンを押せないようにViewを重ねる
+    if (_waitingCoverView) {
+        [_waitingCoverView removeFromSuperview];
+        _waitingCoverView = nil;
+    }
+    
+    _waitingCoverView = [[UIView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:_waitingCoverView];
+    
+    // 承認待ちメッセージの表示
+    WaitPartnerAcceptView *view = [WaitPartnerAcceptView view];
+    CGRect rect = view.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+    view.frame = rect;
+    [_waitingCoverView addSubview:view];
 }
 
 @end

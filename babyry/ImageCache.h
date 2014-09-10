@@ -10,14 +10,14 @@
 
 @interface ImageCache : NSObject
 
-+ (void) setCache:name image:(NSData *) image;
-+ (NSData *) getCache:date;
++ (void) setCache:name image:(NSData *)image dir:(NSString *)dir;
++ (NSData *) getCache:(NSString *)name dir:(NSString *)dir;
 + (UIImage *) makeThumbNail:(UIImage *)orgImage;
 + (void) removeCache:name;
 + (NSDate *) returnTimestamp:name;
-+(NSArray *) listCachedImage:(NSString *)dirName;
-+(void) removeAllCache;
-+(void)updateTimeStamp:name;
-+ (NSArray *) getListOfMultiUploadCache:(NSString *)prefix;
++ (NSArray *) listCachedImage:(NSString *)dirName;
++ (void) removeAllCache;
++ (void)updateTimeStamp:name;
++ (NSArray *) getListOfMultiUploadCache:(NSString *)dir;
 
 @end

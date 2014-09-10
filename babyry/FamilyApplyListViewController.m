@@ -10,6 +10,7 @@
 #import "FamilyRole.h"
 #import "Navigation.h"
 #import "FamilyApplyListCell.h"
+#import "Logger.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -77,6 +78,10 @@
             
             [self setupInviterUsers:inviterUserIds];
         }
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in showFamilyApplyList : %@", error]];
+        }
+        
         [_hud hide:YES];
     }];
 }
@@ -86,10 +91,16 @@
     PFQuery *query = [PFQuery queryWithClassName:@"_User"];
     [query whereKey:@"userId" containedIn:inviterUserIds];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error) {
-            inviterUsers = objects;
-            [_familyApplyList reloadData];
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupInviterUsers : %@", error]];
+            return;
         }
+        if (!objects || [objects count] < 1) {
+            [Logger writeOneShot:@"crit" message:@"Error in setupInviterUsers : There is no Inviter"];
+            return;
+        }
+        inviterUsers = objects;
+        [_familyApplyList reloadData];
     }];
 }
 
@@ -164,7 +175,6 @@
 //- (void)admit: (UIButton *)sender event:(UIEvent *)event
 - (void)admit: (NSInteger)index
 {
-    // TODO 以下の処理がforegrandなのでくるくるが出ない。。。
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ更新";
     
@@ -187,24 +197,43 @@
     PFUser *selfUser = [PFUser currentUser];
     selfUser[@"familyId"] = familyId;
     [selfUser save];
-    
+
     // FamilyRoleにinsert
     NSArray *objects = [[NSArray alloc]initWithObjects:familyId, uploader, chooser , nil];
     NSArray *keys    = [[NSArray alloc]initWithObjects:@"familyId", @"uploader", @"chooser", nil];
     NSMutableDictionary *familyRoleData = [[NSMutableDictionary alloc]initWithObjects:objects forKeys:keys];
-    [FamilyRole createFamilyRole:familyRoleData];
-    [FamilyRole updateCache]; // 非同期でキャッシュを更新しておく
-    
-    // FamilyApplyから消す TODO FamilyApply classへの委譲
-    PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
-    [query whereKey:@"inviteeUserId" equalTo:selfUser[@"userId"]];
-    NSArray *familyApplyRows = [query findObjects];
-    for (int i = 0; i < familyApplyRows.count; i++) {
-        PFObject *row = [familyApplyRows objectAtIndex:i];
-        [row delete];
-    }
-    [_hud hide:YES];
-    [self closeFamilyApplyList];
+    [FamilyRole createFamilyRoleWithBlock:familyRoleData withBlock:^(BOOL succeeded, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in createFamilyRoleWithBlock : %@", error]];
+            [_hud hide:YES];
+            return;
+        }
+        
+        [FamilyRole updateCache]; // 非同期でキャッシュを更新しておく
+        
+        // FamilyApplyから消す TODO FamilyApply classへの委譲
+        PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
+        [query whereKey:@"inviteeUserId" equalTo:selfUser[@"userId"]];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if(error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in removing FamilyApply record : %@", error]];
+                [_hud hide:YES];
+                return;
+            }
+            
+            for (int i = 0; i < objects.count; i++) {
+                PFObject *row = [objects objectAtIndex:i];
+                [row deleteInBackground];
+            }
+            
+            [_hud hide:YES];
+            
+            [Logger
+             writeOneShot:@"info"
+             message:[NSString stringWithFormat:@"FamilyApply admit from:%@ to:%@ familyid:%@", inviterUser[@"userId"], [PFUser currentUser][@"userId"], familyId]];
+            [self closeFamilyApplyList];
+        }];
+    }];
 }
 
 - (void)showNoApplyMessage

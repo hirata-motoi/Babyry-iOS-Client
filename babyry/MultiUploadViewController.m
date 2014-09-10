@@ -22,6 +22,7 @@
 #import "UIColor+Hex.h"
 #import "ColorUtils.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface MultiUploadViewController ()
 
@@ -48,14 +49,14 @@
     _instructionLabel.backgroundColor = [ColorUtils getBackgroundColor];
     _instructionLabel.textColor = [UIColor whiteColor];
     _instructionLabel.font = [UIFont systemFontOfSize:14];
-    if ([[FamilyRole selfRole] isEqualToString:@"uploader"]) {
+    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
         _myRole = @"uploader";
         _instructionLabel.text = @"写真をアップロードしましょう(上限15枚)。\n[ここをタップして画像を選択]";
         _instructionLabel.userInteractionEnabled = YES;
         UITapGestureRecognizer *uploadGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUploadGesture:)];
         uploadGesture.numberOfTapsRequired = 1;
         [_instructionLabel addGestureRecognizer:uploadGesture];
-    } else if ([[FamilyRole selfRole] isEqualToString:@"chooser"]) {
+    } else if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"chooser"]) {
         _myRole = @"chooser";
         _instructionLabel.text = @"ベストショットを選択しましょう。\n[写真の星マークをタップして選択できます]";
     }
@@ -151,7 +152,8 @@
 
 - (void) showCacheImages
 {
-    _childCachedImageArray = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@%@", _childObjectId, _date]]];
+    // その日のcandidate画像数のファイル名を返せばいい
+    _childCachedImageArray = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]]];
     [_multiUploadedImages reloadData];
 }
 
@@ -203,7 +205,9 @@
     NSString *splitForTmp = [splitForTmpArray lastObject];
     
     if (![splitForTmp isEqualToString:@"tmp"]) {
-        NSData *tmpImageData = [ImageCache getCache:[_childCachedImageArray objectAtIndex:indexPath.row]];
+        NSData *tmpImageData = [ImageCache
+                                getCache:[_childCachedImageArray objectAtIndex:indexPath.row]
+                                dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]];
         cell.backgroundColor = [UIColor blackColor];
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
         
@@ -263,7 +267,7 @@
                 if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
                     _bestImageId = object.objectId;
                 }
-                if (![ImageCache getCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId]]) {
+                if (![ImageCache getCache:object.objectId dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]]) {
                     [newImages addObject:object];
                 }
             }
@@ -271,12 +275,13 @@
             for (NSString *cache in _childCachedImageArray) {
                 BOOL isExist = NO;
                 for (PFObject *object in objects) {
-                    if ([cache isEqualToString:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId]]) {
+                    if ([cache isEqualToString:object.objectId]) {
                         isExist = YES;
                     }
                 }
                 if (!isExist) {
-                    [ImageCache removeCache:cache];
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", _childObjectId, _date, cache]];
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/fullsize/%@", _childObjectId, _date, cache]];
                 }
             }
             
@@ -289,8 +294,13 @@
             
             _imageLoadComplete = NO;
             [self setCacheOfParseImage:[[NSMutableArray alloc] initWithArray:newImages]];
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting Image Data from Parse : %@", error]];
         }
     }];
+    
+    // 不要なdirの削除
+    [self removePastCandidateDir];
 }
 
 -(void)setCacheOfParseImage:(NSMutableArray *)objects
@@ -300,7 +310,11 @@
         
         if ([object[@"isTmpData"] isEqualToString:@"TRUE"]) {
             // 本画像がはまるまではtmpを付けておく
-            [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%@-tmp", _childObjectId, _date, object.objectId] image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])];
+            [ImageCache
+                setCache:[NSString stringWithFormat:@"%@-tmp", object.objectId]
+                image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])
+                dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]
+            ];
             _tmpCacheCount++;
             
             _indexForCache++;
@@ -308,18 +322,30 @@
             [self setCacheOfParseImage:objects];
         } else {
             AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-            getRequest.bucket = [Config getBucketName];
+            getRequest.bucket = [Config config][@"AWSBucketName"];
             getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
             AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
             [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {
                     AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                     UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                    [ImageCache setCache:[NSString stringWithFormat:@"%@%@-%@", _childObjectId, _date, object.objectId] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+                    [ImageCache
+                        setCache:object.objectId
+                        image:UIImageJPEGRepresentation(thumbImage, 0.7f)
+                        dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]
+                    ];
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@-tmp", _childObjectId, _date, object.objectId]];
+                    [ImageCache
+                        setCache:object.objectId
+                        image:getResult.body
+                        dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", _childObjectId, _date]
+                    ];
                     
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
                     [self setCacheOfParseImage:objects];
+                } else {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest to S3 : %@", task.error]];
                 }
                 return nil;
             }];
@@ -359,65 +385,81 @@
 
 -(void)selectBestShot:(id) sender {
     
-    if ([_myRole isEqualToString:@"chooser"] && _imageLoadComplete) {
+    if ( !([_myRole isEqualToString:@"chooser"] && _imageLoadComplete) ) {
+        return;
+    }
         
-        // _multiUploadedImagesにのってるパネルにBestshot付ける
-        for (UIView *view in _multiUploadedImages.subviews) {
-            if (view.tag == [[sender view] tag] && [view isKindOfClass:[UICollectionViewCell class]]) {
-                for (UIView *subview in view.subviews) {
-                    if (subview.tag == [[sender view] tag] && subview.frame.size.width < view.frame.size.width) {
-                        [_selectedBestshotView removeFromSuperview];
-                        [view addSubview:_selectedBestshotView];
-                    }
+    // _multiUploadedImagesにのってるパネルにBestshot付ける
+    for (UIView *view in _multiUploadedImages.subviews) {
+        if (view.tag == [[sender view] tag] && [view isKindOfClass:[UICollectionViewCell class]]) {
+            for (UIView *subview in view.subviews) {
+                if (subview.tag == [[sender view] tag] && subview.frame.size.width < view.frame.size.width) {
+                    [_selectedBestshotView removeFromSuperview];
+                    [view addSubview:_selectedBestshotView];
                 }
             }
         }
-        
-        // bestshotId更新
-        _bestImageId = [[[_childCachedImageArray objectAtIndex:[sender view].tag] componentsSeparatedByString:@"-"] lastObject];
-        
-        // update Parse
-        PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
-        childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
-        [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-        [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
-        [childImageQuery orderByAscending:@"createdAt"];
-        [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            if(!error) {
-                int index = 0;
-                for (PFObject *object in objects) {
-                    if ([object.objectId isEqualToString:_bestImageId]) {
-                        if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
-                            object[@"bestFlag"] =  @"choosed";
-                            [object saveInBackground];
-                        }
-                    } else {
-                        if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
-                            object[@"bestFlag"] =  @"unchoosed";
-                            [object saveInBackground];
-                        }
-                    }
-                    index++;
-                }
-                PFObject *partner = (PFUser *)[Partner partnerUser];
-                if (partner != nil) {
-                    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                    options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
-                    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
-                    [PushNotification sendInBackground:@"bestShotChosen" withOptions:options];
-                    [self createNotificationHistory:@"bestShotChanged"];
-                }
-                
-            } else {
-                NSLog(@"error at double tap %@", error);
-            }
-        }];
-
-        // set image cache
-        NSData *thumbData = [ImageCache getCache:[_childCachedImageArray objectAtIndex:[sender view].tag]];
-        UIImage *thumbImage = [UIImage imageWithData:thumbData];
-        [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
     }
+    
+    // bestshotId更新
+    _bestImageId = [[[_childCachedImageArray objectAtIndex:[sender view].tag] componentsSeparatedByString:@"-"] lastObject];
+    
+    // update Parse
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+    childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
+    [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
+    [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
+    [childImageQuery orderByAscending:@"createdAt"];
+    [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if(!error) {
+            int index = 0;
+            for (PFObject *object in objects) {
+                if ([object.objectId isEqualToString:_bestImageId]) {
+                    if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
+                        object[@"bestFlag"] =  @"choosed";
+                        [object saveInBackground];
+                    }
+                } else {
+                    if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
+                        object[@"bestFlag"] =  @"unchoosed";
+                        [object saveInBackground];
+                    }
+                }
+                index++;
+            }
+            PFObject *partner = (PFUser *)[Partner partnerUser];
+            if (partner != nil) {
+                NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+                options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+                options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+                [PushNotification sendInBackground:@"bestShotChosen" withOptions:options];
+                [self createNotificationHistory:@"bestShotChanged"];
+            }
+            
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get images : %@", error]];
+        }
+    }];
+
+    // set image cache
+    NSData *fullsizeImageData = [ImageCache
+                                 getCache:_bestImageId
+                                 dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", _childObjectId, _date]];
+    [ImageCache
+        setCache:_date
+        image:fullsizeImageData
+        dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", _childObjectId]
+    ];
+    // thumbnailも更新する
+    NSData *thumbnailImageData = [ImageCache
+                                 getCache:_bestImageId
+                                 dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]];
+    UIImage *thumbImage = [UIImage imageWithData:thumbnailImageData];
+    [ImageCache
+        setCache:_date
+        image:UIImageJPEGRepresentation(thumbImage, 0.7f)
+        dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
+    ];
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
@@ -506,6 +548,8 @@
             if (!error && objects.count > 0) {
                 // bestShotもらい済
                 [self showReceivedBestShotReply];
+            } else {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply(chooser) : %@", error]];
             }
         }];
         
@@ -524,6 +568,8 @@
         if (!error && objects.count > 0) {
             // 既にbestShotReply済
             [self showalreadyReplyedButton];
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in BestShotReply : %@", error]];
         }
     }];
 }
@@ -556,6 +602,8 @@
             [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
     
             [self createNotificationHistory:@"bestShotReply"];
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in sendBestShotReply %@", error]];
         }
     }];
 }
@@ -630,6 +678,22 @@
 - (CGRect)buttonRect
 {
     return CGRectMake(_headerView.frame.size.width - 30 - 5, (_headerView.frame.size.height - 30) / 2, 30, 30);
+}
+
+// 昨日より前のcandidate dirは不要なので削除
+- (void)removePastCandidateDir
+{
+    NSDateComponents *todayComps = [DateUtils dateCompsFromDate:nil];
+    NSDateComponents *yesterdayComps = [DateUtils addDateComps:todayComps withUnit:@"day" withValue:-1];
+    NSString *today = [NSString stringWithFormat:@"%ld%02ld%02ld", todayComps.year, todayComps.month, todayComps.day];
+    NSString *yesterday = [NSString stringWithFormat:@"%ld%02ld%02ld", yesterdayComps.year, yesterdayComps.month, yesterdayComps.day];
+    
+    NSArray *dateDirList = [ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate", _childObjectId]];
+    for (NSString *dirName in dateDirList) {
+        if ( ![dirName isEqualToString:today] && ![dirName isEqualToString:yesterday] ) {
+            [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@", _childObjectId, dirName]];
+        }
+    }
 }
 
 @end

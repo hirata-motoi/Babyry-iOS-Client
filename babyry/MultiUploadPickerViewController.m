@@ -15,6 +15,7 @@
 #import "Partner.h"
 #import "PushNotification.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -71,6 +72,17 @@
     _sendImageLabel.layer.cornerRadius = 10;
     _sendImageLabel.layer.borderColor = [UIColor whiteColor].CGColor;
     _sendImageLabel.layer.borderWidth = 2;
+    
+    _multiUploadMax = 3;
+    
+    // Config.m の方に入れますTODO
+    PFQuery *upperLimit = [PFQuery queryWithClassName:@"Config"];
+    [upperLimit whereKey:@"key" equalTo:@"multiUploadUpperLimit"];
+    [upperLimit getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (object) {
+            _multiUploadMax = [object[@"value"] intValue];
+        }
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -173,6 +185,16 @@
     if (collectionView.tag == 1) {
         int index = indexPath.row;
         if([[_checkedImageFragArray objectAtIndex:index] isEqualToString:@"NO"]){
+            if ([_checkedImageArray count] >= _multiUploadMax) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限数を超えています"
+                                                                message:[NSString stringWithFormat:@"一度にアップロードできる写真は%d枚です", _multiUploadMax]
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"OK", nil
+                                      ];
+                [alert show];
+                return;
+            }
             [_checkedImageArray addObject:indexPath];
             [_checkedImageFragArray replaceObjectAtIndex:index withObject:@"YES"];
         } else {
@@ -276,6 +298,9 @@
                 UINavigationController *naviController = (UINavigationController *)self.presentingViewController;
                 [naviController popViewControllerAnimated:YES];
             }
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saveTmpData in Parse : %@", error]];
+            }
         }];
     }
 }
@@ -291,11 +316,14 @@
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getTmpImage object : %@", error]];
+            }
             // objectが見つかれば上書き
             if (object) {
                 // S3に上げる
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config getBucketName];
+                putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
                 putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                 putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
@@ -307,14 +335,21 @@
                         // エラーがなければisTmpDataを更新
                         object[@"isTmpData"] = @"FALSE";
                         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            if (error) {
+                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update isTmpData record : %@", error]];
+                            }
                             [_uploadImageDataArray removeObjectAtIndex:0];
                             [_uploadImageDataTypeArray removeObjectAtIndex:0];
                             _uploadedImageCount++;
                             [self saveToParseInBackground];
                         }];
                     } else {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in putRequest to S3 : %@", task.error]];
                         // 失敗したらレコードごと消す(でいいのかな？リトライ？)
                         [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            if (error) {
+                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete record for failed data : %@", error]];
+                            }
                             [_uploadImageDataArray removeObjectAtIndex:0];
                             [_uploadImageDataTypeArray removeObjectAtIndex:0];
                             [self saveToParseInBackground];
@@ -332,7 +367,7 @@
                     if(succeeded) {
                         // S3に上げる
                         AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                        putRequest.bucket = [Config getBucketName];
+                        putRequest.bucket = [Config config][@"AWSBucketName"];
                         putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
                         putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                         putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
@@ -346,9 +381,14 @@
                                     [_uploadImageDataTypeArray removeObjectAtIndex:0];
                                     _uploadedImageCount++;
                                     [self saveToParseInBackground];
+                                } else {
+                                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %", task.error]];
                                 }
                                 return nil;
                             }];
+                    }
+                    if (error) {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in making new object for new image : %@", error]];
                     }
                 }];
             }

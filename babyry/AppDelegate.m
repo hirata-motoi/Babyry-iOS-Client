@@ -8,8 +8,11 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
-#import "SecretConfig.h"
 #import "PageContentViewController.h"
+#import "Crittercism.h"
+#import "Config.h"
+#import "AppSetting.h"
+#import "DateUtils.h"
 
 @implementation AppDelegate
 
@@ -23,9 +26,16 @@
         
         self.window.rootViewController = rootViewController;
     }
+   
+    // global変数
+    [self setGlobalVariables];
+    
+    // CoreData
+    [MagicalRecord setupCoreDataStackWithStoreNamed:@"babyry.sqlite"];
+    [self setupFirstLaunchUUID];
     
     // Parse Authentification
-    [Parse setApplicationId:[SecretConfig getParseApplicationId] clientKey:[SecretConfig getParseClientKey]];
+    [Parse setApplicationId:[Config secretConfig][@"ParseApplicationId"] clientKey:[Config secretConfig][@"ParseClientKey"]];
 
     // Facebood Auth
     [PFFacebookUtils initializeFacebook];
@@ -46,6 +56,9 @@
     
     //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
+    // Crittercism
+    [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
+    
     // Override point for customization after application launch.
     return YES;
 }
@@ -102,11 +115,40 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    
+    [MagicalRecord cleanUp];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
     return [FBAppCall handleOpenURL:url sourceApplication:sourceApplication withSession:[PFFacebookUtils session]];
+}
+
+- (void)setGlobalVariables
+{
+    // env
+    #ifdef DEBUG
+        _env = @"dev";
+    #else
+        _env = @"prod";
+    #endif
+}
+
+- (void)setupFirstLaunchUUID
+{
+    NSString *UUIDKeyName = [Config config][@"UUIDKeyName"];
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:UUIDKeyName];
+    if (as) {
+        return;
+    }
+    
+    AppSetting *newAs = [AppSetting MR_createEntity];
+    newAs.name = UUIDKeyName;
+    newAs.value = [[NSUUID UUID] UUIDString];
+    newAs.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAs.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    
 }
 
 @end

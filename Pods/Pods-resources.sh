@@ -53,6 +53,7 @@ install_resource "AWSiOSSDKv2/SES/Resources/email-2010-12-01.json"
 install_resource "AWSiOSSDKv2/SNS/Resources/sns-2010-03-31.json"
 install_resource "AWSiOSSDKv2/SQS/Resources/sqs-2012-11-05.json"
 install_resource "AWSiOSSDKv2/SimpleDB/Resources/sdb-2009-04-15.json"
+install_resource "CrittercismSDK/CrittercismSDK/dsym_upload.sh"
 install_resource "Facebook-iOS-SDK/src/FBUserSettingsViewResources.bundle"
 
 rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from="$RESOURCES_TO_COPY" / "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"

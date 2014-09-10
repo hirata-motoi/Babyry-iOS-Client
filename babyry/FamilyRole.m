@@ -10,19 +10,33 @@
 
 @implementation FamilyRole
 
-+ (PFObject *)getFamilyRole
++ (PFObject *)getFamilyRole:(NSString *)cacheType
 {
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
-    query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+    if ([cacheType isEqualToString:@"noCache"]) {
+        query.cachePolicy = kPFCachePolicyNetworkOnly;
+    } else if ([cacheType isEqualToString:@"useCache"]) {
+        query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+    } else if ([cacheType isEqualToString:@"NetworkFirst"]) {
+        query.cachePolicy = kPFCachePolicyNetworkElseCache;
+    } else if ([cacheType isEqualToString:@"cachekOnly"]) {
+        query.cachePolicy = kPFCachePolicyCacheOnly;
+    } else {
+        query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+    }
     [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
     PFObject *object = [query getFirstObject];
     return object;
 }
 
-+ (NSString *)selfRole
++ (NSString *)selfRole:(NSString *)cacheType
 {
-    PFObject *object = [self getFamilyRole];
-    return ([object[@"uploader"] isEqualToString:[PFUser currentUser][@"userId"]]) ? @"uploader" : @"chooser";
+    PFObject *object = [self getFamilyRole:cacheType];
+    if (object) {
+        return ([object[@"uploader"] isEqualToString:[PFUser currentUser][@"userId"]]) ? @"uploader" : @"chooser";
+    } else {
+        return nil;
+    }
 }
 
 + (void)updateCache
@@ -41,6 +55,15 @@
     object[@"uploader"] = data[@"uploader"];
     object[@"chooser"]  = data[@"chooser"];
     [object save];
+}
+
++ (void)createFamilyRoleWithBlock:(NSMutableDictionary *)data withBlock:(PFBooleanResultBlock)block
+{
+    PFObject *object = [PFObject objectWithClassName:@"FamilyRole"];
+    object[@"familyId"] = data[@"familyId"];
+    object[@"uploader"] = data[@"uploader"];
+    object[@"chooser"]  = data[@"chooser"];
+    [object saveInBackgroundWithBlock:block];
 }
 
 + (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block

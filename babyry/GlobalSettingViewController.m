@@ -19,6 +19,7 @@
 #import "AcceptableUsePolicyViewController.h"
 #import "PrivacyPolicyViewController.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface GlobalSettingViewController ()
 
@@ -342,7 +343,7 @@
 - (void)switchRole
 {
     NSString *role = [self getSelectedRole];
-    PFObject *familyRole = [FamilyRole getFamilyRole];
+    PFObject *familyRole = [FamilyRole getFamilyRole:@"useCache"];
     NSString *uploaderUserId = familyRole[@"uploader"];
     NSString *chooserUserId  = familyRole[@"chooser"];
     NSString *partnerUserId  = ([uploaderUserId isEqualToString:[PFUser currentUser][@"userId"]]) ? chooserUserId : uploaderUserId;
@@ -359,6 +360,10 @@
     // Segment Controlをdisabled
     self.roleControl.enabled = FALSE;
     [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in switchRole : %@", error]];
+            return;
+        }
         self.roleControl.enabled = TRUE;
         [FamilyRole updateCache];
         
@@ -369,7 +374,7 @@
         [PushNotification sendInBackground:@"partSwitched" withOptions:options];
     }];
 }
-                     
+
 - (UISegmentedControl *)createRoleSwitchSegmentControl
 {
     // segment controlの作成
@@ -393,6 +398,8 @@
             } else {
                 sc.selectedSegmentIndex = 1;
             }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in createRoleSwitchSegmentControl : %@", error]];
         }
     }];
     
@@ -423,6 +430,8 @@
                     _partnerInfo = user;
                 }
             }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupPartnerInfo : %@", error]];
         }
     }];
 }
@@ -453,7 +462,7 @@
                       @"iOS",
                       osVersion,
                       [PFUser currentUser][@"userId"],
-                      [Config getAppVertion]];
+                      [Config config][@"AppVersion"]];
    
     NSString *body = [NSString stringWithFormat:bodyFormat,
                       introduction,
@@ -465,7 +474,7 @@
     NSString *encodedBody = [body stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *subject = @"Babyryお問い合わせ";
     NSString *encodedSubject = [subject stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *url = [NSString stringWithFormat:@"mailto:%@?Subject=%@&body=%@", [Config getInquiryEmail], encodedSubject, encodedBody];
+    NSString *url = [NSString stringWithFormat:@"mailto:%@?Subject=%@&body=%@", [Config config][@"InquiryEmail"], encodedSubject, encodedBody];
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }

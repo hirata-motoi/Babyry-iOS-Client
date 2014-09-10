@@ -1,4 +1,4 @@
-//
+#import "Crittercism.h"//
 //  XMLDictionary.m
 //
 //  Version 1.4

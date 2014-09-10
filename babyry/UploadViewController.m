@@ -17,6 +17,7 @@
 #import "AWSS3Utils.h"
 #import "NotificationHistory.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface UploadViewController ()
 
@@ -60,7 +61,7 @@
     // 万が一imageInfoが空だった時のことを考えて、一応、一から組み立てるロジックも入れておくが、ImagePageViewController側でNoImageを省くようになったら不要になる(TODO)。
     if (_imageInfo) {
         AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-        getRequest.bucket = [Config getBucketName];
+        getRequest.bucket = [Config config][@"AWSBucketName"];
         getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _imageInfo.objectId];
         getRequest.responseCacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
@@ -68,6 +69,8 @@
             if (!task.error && task.result) {
                 AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                 _uploadedImageView.image = [UIImage imageWithData:getResult.body];
+            } else {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController : %@", task.error]];
             }
             return nil;
         }];
@@ -84,7 +87,7 @@
                 PFObject * object = [objects objectAtIndex:0];
 
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-                getRequest.bucket = [Config getBucketName];
+                getRequest.bucket = [Config config][@"AWSBucketName"];
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
@@ -92,12 +95,17 @@
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                         _uploadedImageView.image = [UIImage imageWithData:getResult.body];
+                    } else {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController(new image) : %@", task.error]];
                     }
                     return nil;
                 }];
                 _imageInfo = object;
                 isPreload = NO;
                 [self setupOperationView:isPreload];
+            }
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in findObject in UploadViewController(new image) : %@", error]];
             }
         }];
     }

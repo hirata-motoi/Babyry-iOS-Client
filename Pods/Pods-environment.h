@@ -88,13 +88,19 @@
 #define COCOAPODS_POD_AVAILABLE_Bolts
 #define COCOAPODS_VERSION_MAJOR_Bolts 1
 #define COCOAPODS_VERSION_MINOR_Bolts 1
-#define COCOAPODS_VERSION_PATCH_Bolts 1
+#define COCOAPODS_VERSION_PATCH_Bolts 2
 
 // CSURITemplate
 #define COCOAPODS_POD_AVAILABLE_CSURITemplate
 #define COCOAPODS_VERSION_MAJOR_CSURITemplate 0
 #define COCOAPODS_VERSION_MINOR_CSURITemplate 3
 #define COCOAPODS_VERSION_PATCH_CSURITemplate 0
+
+// CrittercismSDK
+#define COCOAPODS_POD_AVAILABLE_CrittercismSDK
+#define COCOAPODS_VERSION_MAJOR_CrittercismSDK 4
+#define COCOAPODS_VERSION_MINOR_CrittercismSDK 3
+#define COCOAPODS_VERSION_PATCH_CrittercismSDK 4
 
 // Facebook-iOS-SDK
 #define COCOAPODS_POD_AVAILABLE_Facebook_iOS_SDK
@@ -107,6 +113,18 @@
 #define COCOAPODS_VERSION_MAJOR_GZIP 1
 #define COCOAPODS_VERSION_MINOR_GZIP 0
 #define COCOAPODS_VERSION_PATCH_GZIP 3
+
+// MagicalRecord
+#define COCOAPODS_POD_AVAILABLE_MagicalRecord
+#define COCOAPODS_VERSION_MAJOR_MagicalRecord 2
+#define COCOAPODS_VERSION_MINOR_MagicalRecord 2
+#define COCOAPODS_VERSION_PATCH_MagicalRecord 0
+
+// MagicalRecord/Core
+#define COCOAPODS_POD_AVAILABLE_MagicalRecord_Core
+#define COCOAPODS_VERSION_MAJOR_MagicalRecord_Core 2
+#define COCOAPODS_VERSION_MINOR_MagicalRecord_Core 2
+#define COCOAPODS_VERSION_PATCH_MagicalRecord_Core 0
 
 // Mantle
 #define COCOAPODS_POD_AVAILABLE_Mantle

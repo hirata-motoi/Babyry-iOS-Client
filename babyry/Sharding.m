@@ -7,6 +7,7 @@
 //
 
 #import "Sharding.h"
+#import "Logger.h"
 
 @implementation Sharding
 
@@ -19,13 +20,13 @@ static NSMutableDictionary *shardConf = nil;
         return 1;
     }
     
-    NSInteger rateSum;
+    NSInteger rateSum = 0;
     for (PFObject *row in settings) {
         rateSum += [row[@"rate"] integerValue];
     }
   
     NSInteger shardIndex = [settings[ settings.count - 1 ][@"shardIndex"] integerValue]; // 初期値は最後のindex
-    NSInteger sum;
+    NSInteger sum = 0;
     NSInteger rand = arc4random() % rateSum;
     for (PFObject *row in settings) {
         sum += [row[@"rate"] integerValue];
@@ -57,6 +58,8 @@ static NSMutableDictionary *shardConf = nil;
                 
                 [rows addObject:object];
             }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupShardConf : %@", error]];
         }
     }];
 }

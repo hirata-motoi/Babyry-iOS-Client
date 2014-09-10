@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD706194DBE8500BC3CDA /* Sequence.m */; };
 		84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */; };
+		88008C8919ADD693005FE04F /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88008C8819ADD693005FE04F /* AddressBook.framework */; };
+		88008C8B19ADD698005FE04F /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88008C8A19ADD698005FE04F /* AddressBookUI.framework */; };
+		88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */; };
 		8814A99A1945469B0010F516 /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9991945469B0010F516 /* ImageCache.m */; };
 		8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A99C194ADB330010F516 /* MultiUploadViewController.m */; };
 		8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814A9A9194F56620010F516 /* ImageTrimming.m */; };
@@ -17,7 +20,6 @@
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
-		885A224D197D75550039B263 /* SecretConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A224C197D75550039B263 /* SecretConfig.m */; };
 		887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */; };
 		8881CFA119A0C67800B909C8 /* MyLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8881CFA019A0C67800B909C8 /* MyLogInViewController.m */; };
 		8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */; };
@@ -32,6 +34,7 @@
 		88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FF6196E667400F4B40C /* IntroChildNameViewController.m */; };
 		88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */; };
 		88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */; };
+		88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AB3A0A19AC31D100DA92D4 /* Logger.m */; };
 		88B18C77193814CE00ED630C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C76193814CE00ED630C /* Foundation.framework */; };
 		88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C78193814CE00ED630C /* CoreGraphics.framework */; };
 		88B18C7B193814CE00ED630C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18C7A193814CE00ED630C /* UIKit.framework */; };
@@ -71,6 +74,10 @@
 		88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */; };
 		88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF50C1999FA1F00B56481 /* ColorUtils.m */; };
 		88CFF52D199B68E400B56481 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF52F199B68E400B56481 /* Localizable.strings */; };
+		88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */; };
+		88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */; };
+		88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2821E19B48B8900225DD3 /* FamilyApply.m */; };
+		88E2822219B4A8DE00225DD3 /* Child.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2822119B4A8DE00225DD3 /* Child.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		D79AFBEA8B9F4207B47E8CAD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB30DD347E5C4D729656DE8C /* libPods.a */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
@@ -117,6 +124,11 @@
 		F271B31B1998CC2200C9952A /* Sharding.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31A1998CC2200C9952A /* Sharding.m */; };
 		F271B31E1999E5E800C9952A /* Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31D1999E5E800C9952A /* Badge.m */; };
 		F2A7EDB419A0BDC700C73D4F /* IntroPageRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2A7EDB319A0BDC700C73D4F /* IntroPageRootViewController.m */; };
+		F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2A8332419AAC28600E2AB58 /* babyrydev-Info.plist */; };
+		F2A8332A19AB0F0F00E2AB58 /* babyrydev-config.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2A8332919AB0F0F00E2AB58 /* babyrydev-config.plist */; };
+		F2A8332C19AB0F5C00E2AB58 /* babyry-config.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2A8332B19AB0F5C00E2AB58 /* babyry-config.plist */; };
+		F2A8332E19AC585100E2AB58 /* babyrydev-secret-config.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2A8332D19AC585100E2AB58 /* babyrydev-secret-config.plist */; };
+		F2A8333019AC591B00E2AB58 /* babyry-secret-config.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2A8332F19AC591B00E2AB58 /* babyry-secret-config.plist */; };
 		F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */; };
 		F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ABB122197D295B009E35CB /* CommentTableViewCell.m */; };
 		F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AC1A4A19937FF500DBFE91 /* NotificationHistory.m */; };
@@ -125,6 +137,9 @@
 		F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AD4F0C199F97AC00037C72 /* BadgeNotify.m */; };
 		F2AD4F12199FD3AB00037C72 /* ImageRequestIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */; };
 		F2AD4F15199FD5F200037C72 /* ImageRequestIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */; };
+		F2AE04D919B2DE4E00B39C6F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8814A9881944572A0010F516 /* CoreData.framework */; };
+		F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */; };
+		F2AE04EC19B2EC8500B39C6F /* AppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AE04EB19B2EC8500B39C6F /* AppSetting.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,6 +158,10 @@
 		84ABD706194DBE8500BC3CDA /* Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sequence.m; sourceTree = "<group>"; };
 		84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyViewController.h; sourceTree = "<group>"; };
 		84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyViewController.m; sourceTree = "<group>"; };
+		88008C8819ADD693005FE04F /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		88008C8A19ADD698005FE04F /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
+		88008C8C19AF1169005FE04F /* NotEmailVerifiedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotEmailVerifiedViewController.h; sourceTree = "<group>"; };
+		88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotEmailVerifiedViewController.m; sourceTree = "<group>"; };
 		8814A9881944572A0010F516 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		8814A9981945469B0010F516 /* ImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCache.h; sourceTree = "<group>"; };
 		8814A9991945469B0010F516 /* ImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCache.m; sourceTree = "<group>"; };
@@ -160,8 +179,6 @@
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		885A223519750DD20039B263 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
 		885A223619750DD20039B263 /* DateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtils.m; sourceTree = "<group>"; };
-		885A224B197D75550039B263 /* SecretConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecretConfig.h; sourceTree = "<group>"; };
-		885A224C197D75550039B263 /* SecretConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecretConfig.m; sourceTree = "<group>"; };
 		887CF8E01987822300B90C2E /* UIPlaceHolderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPlaceHolderTextView.h; sourceTree = "<group>"; };
 		887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPlaceHolderTextView.m; sourceTree = "<group>"; };
 		8881CF9F19A0C67800B909C8 /* MyLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyLogInViewController.h; sourceTree = "<group>"; };
@@ -189,6 +206,8 @@
 		88AA2FFA196E93F600F4B40C /* ICTutorialOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICTutorialOverlay.m; sourceTree = "<group>"; };
 		88AA2FFD196FE06A00F4B40C /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		88AA2FFE196FE06A00F4B40C /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		88AB3A0919AC31D100DA92D4 /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		88AB3A0A19AC31D100DA92D4 /* Logger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Logger.m; sourceTree = "<group>"; };
 		88B18C73193814CE00ED630C /* babyry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = babyry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88B18C76193814CE00ED630C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		88B18C78193814CE00ED630C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -247,6 +266,13 @@
 		88CFF50C1999FA1F00B56481 /* ColorUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtils.m; sourceTree = "<group>"; };
 		88CFF52E199B68E400B56481 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88CFF530199B68F100B56481 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		88E2821819B4858E00225DD3 /* WaitPartnerAcceptView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitPartnerAcceptView.h; sourceTree = "<group>"; };
+		88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaitPartnerAcceptView.m; sourceTree = "<group>"; };
+		88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WaitPartnerAcceptView.xib; sourceTree = "<group>"; };
+		88E2821D19B48B8900225DD3 /* FamilyApply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApply.h; sourceTree = "<group>"; };
+		88E2821E19B48B8900225DD3 /* FamilyApply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApply.m; sourceTree = "<group>"; };
+		88E2822019B4A8DE00225DD3 /* Child.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Child.h; sourceTree = "<group>"; };
+		88E2822119B4A8DE00225DD3 /* Child.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Child.m; sourceTree = "<group>"; };
 		88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB30DD347E5C4D729656DE8C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
@@ -329,6 +355,11 @@
 		F271B31D1999E5E800C9952A /* Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Badge.m; sourceTree = "<group>"; };
 		F2A7EDB219A0BDC700C73D4F /* IntroPageRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroPageRootViewController.h; sourceTree = "<group>"; };
 		F2A7EDB319A0BDC700C73D4F /* IntroPageRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroPageRootViewController.m; sourceTree = "<group>"; };
+		F2A8332419AAC28600E2AB58 /* babyrydev-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "babyrydev-Info.plist"; path = "Babyry/babyrydev-Info.plist"; sourceTree = SOURCE_ROOT; };
+		F2A8332919AB0F0F00E2AB58 /* babyrydev-config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "babyrydev-config.plist"; path = "Babyry/babyrydev-config.plist"; sourceTree = SOURCE_ROOT; };
+		F2A8332B19AB0F5C00E2AB58 /* babyry-config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "babyry-config.plist"; path = "Babyry/babyry-config.plist"; sourceTree = SOURCE_ROOT; };
+		F2A8332D19AC585100E2AB58 /* babyrydev-secret-config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "babyrydev-secret-config.plist"; path = "Babyry/babyrydev-secret-config.plist"; sourceTree = SOURCE_ROOT; };
+		F2A8332F19AC591B00E2AB58 /* babyry-secret-config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "babyry-secret-config.plist"; path = "Babyry/babyry-secret-config.plist"; sourceTree = SOURCE_ROOT; };
 		F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CommentTableViewCell.xib; path = ../CommentTableViewCell.xib; sourceTree = "<group>"; };
 		F2ABB121197D295B009E35CB /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
 		F2ABB122197D295B009E35CB /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
@@ -342,6 +373,9 @@
 		F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageRequestIntroductionView.xib; sourceTree = "<group>"; };
 		F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRequestIntroductionView.h; sourceTree = "<group>"; };
 		F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageRequestIntroductionView.m; sourceTree = "<group>"; };
+		F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "babyry-coredata.xcdatamodel"; sourceTree = "<group>"; };
+		F2AE04EA19B2EC8500B39C6F /* AppSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetting.h; sourceTree = "<group>"; };
+		F2AE04EB19B2EC8500B39C6F /* AppSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSetting.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -349,6 +383,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2AE04D919B2DE4E00B39C6F /* CoreData.framework in Frameworks */,
+				88008C8B19ADD698005FE04F /* AddressBookUI.framework in Frameworks */,
+				88008C8919ADD693005FE04F /* AddressBook.framework in Frameworks */,
 				88B18C79193814CE00ED630C /* CoreGraphics.framework in Frameworks */,
 				88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */,
 				88B1909D1938D23700ED630C /* Social.framework in Frameworks */,
@@ -382,6 +419,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2AE04E319B2E66B00B39C6F /* CoreData */,
 				F2AD4F0E199FD35B00037C72 /* Dialog */,
 				F2AD4F06199F96A700037C72 /* Badge */,
 				F2305217198FE7BE000F5E32 /* CellBackgroundView */,
@@ -399,6 +437,8 @@
 				F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */,
 				84ABD705194DBE8500BC3CDA /* Sequence.h */,
 				84ABD706194DBE8500BC3CDA /* Sequence.m */,
+				88AB3A0919AC31D100DA92D4 /* Logger.h */,
+				88AB3A0A19AC31D100DA92D4 /* Logger.m */,
 				8814A9A8194F56620010F516 /* ImageTrimming.h */,
 				8814A9A9194F56620010F516 /* ImageTrimming.m */,
 				F230522719906D05000F5E32 /* ImageEdit.h */,
@@ -409,14 +449,14 @@
 				F261A887196523110072BBD2 /* NSObject+Retry.m */,
 				F20F7641196BC43A00FD2529 /* FamilyRole.h */,
 				F20F7642196BC43A00FD2529 /* FamilyRole.m */,
+				88E2821D19B48B8900225DD3 /* FamilyApply.h */,
+				88E2821E19B48B8900225DD3 /* FamilyApply.m */,
 				882A6A24196B7D4A00E07D60 /* Config.h */,
 				882A6A25196B7D4A00E07D60 /* Config.m */,
 				885A223519750DD20039B263 /* DateUtils.h */,
 				885A223619750DD20039B263 /* DateUtils.m */,
 				F215DDDC19777CD00092C712 /* PushNotification.h */,
 				F215DDDD19777CD00092C712 /* PushNotification.m */,
-				885A224B197D75550039B263 /* SecretConfig.h */,
-				885A224C197D75550039B263 /* SecretConfig.m */,
 				F2694AFA1982618C008239F6 /* Navigation.h */,
 				F2694AFB1982618C008239F6 /* Navigation.m */,
 				F2694AFD19827013008239F6 /* UIColor+Hex.h */,
@@ -441,6 +481,8 @@
 				88CFF50C1999FA1F00B56481 /* ColorUtils.m */,
 				F271B31C1999E5E800C9952A /* Badge.h */,
 				F271B31D1999E5E800C9952A /* Badge.m */,
+				88E2822019B4A8DE00225DD3 /* Child.h */,
+				88E2822119B4A8DE00225DD3 /* Child.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -507,6 +549,8 @@
 		88B18C75193814CE00ED630C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				88008C8A19ADD698005FE04F /* AddressBookUI.framework */,
+				88008C8819ADD693005FE04F /* AddressBook.framework */,
 				8833BC871964F7700040FD2A /* ImageIO.framework */,
 				88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */,
 				8814A9881944572A0010F516 /* CoreData.framework */,
@@ -551,9 +595,17 @@
 			isa = PBXGroup;
 			children = (
 				88B18C7E193814CE00ED630C /* babyry-Info.plist */,
+				F2A8332419AAC28600E2AB58 /* babyrydev-Info.plist */,
 				88B18C7F193814CE00ED630C /* InfoPlist.strings */,
 				88B18C82193814CE00ED630C /* main.m */,
 				88B18C84193814CE00ED630C /* babyry-Prefix.pch */,
+				F2A8332919AB0F0F00E2AB58 /* babyrydev-config.plist */,
+				F2A8332B19AB0F5C00E2AB58 /* babyry-config.plist */,
+				F2A8332D19AC585100E2AB58 /* babyrydev-secret-config.plist */,
+				F2A8332F19AC591B00E2AB58 /* babyry-secret-config.plist */,
+				F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */,
+				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
+				F2AE04EB19B2EC8500B39C6F /* AppSetting.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -739,6 +791,8 @@
 				8881CFA019A0C67800B909C8 /* MyLogInViewController.m */,
 				8881CFA219A0DBC800B909C8 /* MySignUpViewController.h */,
 				8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */,
+				88008C8C19AF1169005FE04F /* NotEmailVerifiedViewController.h */,
+				88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */,
 			);
 			name = Intro;
 			sourceTree = "<group>";
@@ -839,6 +893,7 @@
 			isa = PBXGroup;
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
+				88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -848,8 +903,17 @@
 			children = (
 				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
 				F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */,
+				88E2821819B4858E00225DD3 /* WaitPartnerAcceptView.h */,
+				88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */,
 			);
 			name = Class;
+			sourceTree = "<group>";
+		};
+		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -940,6 +1004,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				88CFF52D199B68E400B56481 /* Localizable.strings in Resources */,
+				F2A8332C19AB0F5C00E2AB58 /* babyry-config.plist in Resources */,
 				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
 				F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */,
 				F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */,
@@ -949,17 +1014,22 @@
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
 				F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */,
 				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
+				F2A8333019AC591B00E2AB58 /* babyry-secret-config.plist in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
+				F2A8332A19AB0F0F00E2AB58 /* babyrydev-config.plist in Resources */,
 				F2AD4F12199FD3AB00037C72 /* ImageRequestIntroductionView.xib in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
+				F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
+				88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
 				88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */,
 				F233421519A114E900928101 /* FamilyApplyListCell.xib in Resources */,
+				F2A8332E19AC585100E2AB58 /* babyrydev-secret-config.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1017,27 +1087,30 @@
 				F2310C22198F43DF00E01DA3 /* DragView.m in Sources */,
 				F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */,
 				88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */,
+				88E2822219B4A8DE00225DD3 /* Child.m in Sources */,
 				88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
 				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
+				88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */,
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
 				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
-				885A224D197D75550039B263 /* SecretConfig.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
+				88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */,
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
 				F271B31E1999E5E800C9952A /* Badge.m in Sources */,
+				F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */,
 				8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
@@ -1063,6 +1136,8 @@
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
 				8881CFA119A0C67800B909C8 /* MyLogInViewController.m in Sources */,
+				F2AE04EC19B2EC8500B39C6F /* AppSetting.m in Sources */,
+				88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */,
 				88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */,
 				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
@@ -1072,6 +1147,7 @@
 				889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */,
 				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
+				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
@@ -1182,7 +1258,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1215,7 +1291,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1238,7 +1314,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1260,7 +1336,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -1305,6 +1381,164 @@
 			};
 			name = Release;
 		};
+		F2A8332119AAC24100E2AB58 /* BabyryDev */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "087BED89-D87B-4851-9891-6A386ACC15B0";
+				SDKROOT = iphoneos;
+			};
+			name = BabyryDev;
+		};
+		F2A8332219AAC24100E2AB58 /* BabyryDev */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 83E1B3929686498094BDC25D /* Pods.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
+				INFOPLIST_FILE = "babyry/babyrydev-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = babyry;
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = BabyryDev;
+		};
+		F2A8332319AAC24100E2AB58 /* BabyryDev */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/babyrydev.app/babyrydev";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "babyrydev/babyrydev-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "babyrydevTests/babyryTests-Info.plist";
+				PRODUCT_NAME = babyryTests;
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = BabyryDev;
+		};
+		F2A8332619AAF71000E2AB58 /* BabyryProd */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = BabyryProd;
+		};
+		F2A8332719AAF71000E2AB58 /* BabyryProd */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 83E1B3929686498094BDC25D /* Pods.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "babyry/babyry-Prefix.pch";
+				INFOPLIST_FILE = "babyry/babyry-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = babyry;
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = BabyryProd;
+		};
+		F2A8332819AAF71000E2AB58 /* BabyryProd */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/babyrydev.app/babyrydev";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "babyrydev/babyrydev-Prefix.pch";
+				INFOPLIST_FILE = "babyrydevTests/babyryTests-Info.plist";
+				PRODUCT_NAME = babyryTests;
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = BabyryProd;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1312,7 +1546,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				88B18CA3193814CF00ED630C /* Debug */,
+				F2A8332119AAC24100E2AB58 /* BabyryDev */,
 				88B18CA4193814CF00ED630C /* Release */,
+				F2A8332619AAF71000E2AB58 /* BabyryProd */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1321,7 +1557,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				88B18CA6193814CF00ED630C /* Debug */,
+				F2A8332219AAC24100E2AB58 /* BabyryDev */,
 				88B18CA7193814CF00ED630C /* Release */,
+				F2A8332719AAF71000E2AB58 /* BabyryProd */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1330,12 +1568,27 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				88B18CA9193814CF00ED630C /* Debug */,
+				F2A8332319AAC24100E2AB58 /* BabyryDev */,
 				88B18CAA193814CF00ED630C /* Release */,
+				F2A8332819AAF71000E2AB58 /* BabyryProd */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */,
+			);
+			currentVersion = F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */;
+			path = "babyry-coredata.xcdatamodeld";
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 88B18C6B193814CE00ED630C /* Project object */;
 }

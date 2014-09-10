@@ -13,4 +13,8 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
+    #import "AppDelegate.h"
+    #import "CoreData+MagicalRecord.h"
 #endif
+
+#define app (AppDelegate *)[[UIApplication sharedApplication] delegate]

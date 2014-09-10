@@ -13,6 +13,7 @@
 #import "Badge.h"
 #import "NotificationHistory.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface ImageToolbarViewController ()
 
@@ -100,7 +101,7 @@
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-    getRequest.bucket = [Config getBucketName];
+    getRequest.bucket = [Config config][@"AWSBucketName"];
     getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
     // no-cache必須
     getRequest.responseCacheControl = @"no-cache";
@@ -122,6 +123,7 @@
                                   ];
             
             [alert show];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in imageSave : %@", task.error]];
         }
         return nil;
     }];
@@ -178,6 +180,8 @@
         case 1: {
             // imageInfo更新
             PFObject *imageObject = _uploadViewController.imageInfo;
+            BOOL isChoosed = ([imageObject[@"bestFlag"] isEqualToString:@"choosed"]) ? YES : NO;
+            
             PFACL *removeACL = [PFACL ACL];
             [removeACL setPublicReadAccess:NO];
             [removeACL setPublicWriteAccess:NO];
@@ -185,8 +189,16 @@
             imageObject[@"bestFlag"] = @"removed";
             [imageObject saveInBackground];
             
-            // キャッシュから消す (${childId}${ymd}thumb)
-            [ImageCache removeCache:[NSString stringWithFormat:@"%@%@thumb", _uploadViewController.childObjectId, _uploadViewController.date]];
+            // キャッシュから消す
+            NSString *childObjectId = _uploadViewController.childObjectId;
+            NSString *date = _uploadViewController.date;
+            if (isChoosed) {
+                [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", childObjectId, date]];
+                [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/fullsize/%@", childObjectId, date]];
+            }
+            // bestShot未確定の場合  ファイル名を指定して消す
+            [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", childObjectId, date, imageObject.objectId]];
+            [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/fullsize/%@", childObjectId, date, imageObject.objectId]];
             
             // 画像有る無しのカウントを0にする
             [_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];

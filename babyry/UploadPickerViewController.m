@@ -13,6 +13,7 @@
 #import "Partner.h"
 #import "NotificationHistory.h"
 #import "Config.h"
+#import "Logger.h"
 
 @interface UploadPickerViewController ()
 
@@ -119,7 +120,7 @@
         [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config getBucketName];
+                putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
@@ -129,25 +130,26 @@
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
                 [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
-                        NSLog(@"save error to S3 %@", task.error);
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in Save to S3 : %@", task.error]];
                     }
                     return nil;
                 }];
+            }
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save best flag : %@", error]];
             }
         }];
         // PageContentViewController.childImagesの中身に追加
         [_section[@"images"] replaceObjectAtIndex:_indexPath.row withObject:tmpImageObject];
     } else {
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
-        //childImage[@"imageFile"] = imageFile;
-        // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         childImage[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"choosed";
         [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (succeeded) {
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config getBucketName];
+                putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
@@ -157,10 +159,13 @@
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
                 [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
                     if (task.error) {
-                        NSLog(@"save error to S3 %@", task.error);
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
                     }
                     return nil;
                 }];
+            }
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get bestShot : %@", error]];
             }
         }];
         
@@ -170,7 +175,11 @@
     
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
     UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
-    [ImageCache setCache:[NSString stringWithFormat:@"%@%@thumb", _childObjectId, _date] image:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+    [ImageCache
+        setCache:_date
+        image:UIImageJPEGRepresentation(thumbImage, 0.7f)
+        dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
+    ];
     
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];

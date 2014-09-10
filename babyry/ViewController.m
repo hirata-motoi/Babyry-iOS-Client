@@ -26,6 +26,8 @@
 #import "Navigation.h"
 #import "Partner.h"
 #import "Sharding.h"
+#import "Logger.h"
+#import "NotEmailVerifiedViewController.h"
 
 @interface ViewController ()
 
@@ -82,6 +84,7 @@
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
+        [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
@@ -97,10 +100,14 @@
         maintenanceQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         [maintenanceQuery whereKey:@"key" equalTo:@"maintenance"];
         [maintenanceQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            if([objects count] == 1) {
-                if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
-                    MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
-                    [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check maintenance : %@", error]];
+            } else {
+                if([objects count] == 1) {
+                    if([[objects objectAtIndex:0][@"value"] isEqualToString:@"ON"]) {
+                        MaintenanceViewController *maintenanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MaintenanceViewController"];
+                        [self presentViewController:maintenanceViewController animated:YES completion:NULL];
+                    }
                 }
             }
         }];
@@ -124,12 +131,22 @@
             }
         }
         
-        // falimyIdを取得
+        // falimyIdがなければ招待画面をだして先に進めない
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
             // パートナー検索画面を出す
             FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
             [self.navigationController pushViewController:familyApplyViewController animated:YES];
             return;
+        }
+        
+        // roleがundefの場合パートナーひも付けされてないからパートナー招待画面を出す
+        if (![FamilyRole selfRole:@"cachekOnly"]) {
+            if (![FamilyRole selfRole:@"noCache"]) {
+                // パートナー検索画面を出す
+                FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+                [self.navigationController pushViewController:familyApplyViewController animated:YES];
+                return;
+            }
         }
         
         // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
@@ -172,9 +189,16 @@
             // 二発目以降はbackgroundで引かないとUIが固まる
             [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if(!error) {
+                    // 申請を取り下げた場合に起こりうる
+                    if ([objects count] < 1) {
+                        [self setChildNames];
+                        return;
+                    }
                     _childArrayFoundFromParse = objects;
                     [self setupChildProperties];
                     [self initializeChildImages];
+                } else {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
                 }
             }];
         }
@@ -230,64 +254,10 @@
 
 -(void)setNotVerifiedPage
 {
-    UIViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
-    
-    // リロードラベル
-    UILabel *reloadLabel = [[UILabel alloc] init];
-    reloadLabel.userInteractionEnabled = YES;
-    reloadLabel.textAlignment = NSTextAlignmentCenter;
-    reloadLabel.text = @"リロード";
-    reloadLabel.textColor = [UIColor orangeColor];
-    reloadLabel.layer.cornerRadius = 50;
-    reloadLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    reloadLabel.layer.borderWidth = 2.0f;
-    CGRect frame = CGRectMake((self.view.frame.size.width - 100)/2, self.view.frame.size.height*2/3, 100, 100);
-    reloadLabel.frame = frame;
-    [emailVerifiedViewController.view addSubview:reloadLabel];
-    
-    UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(reloadEmailVerifiedView:)];
-    stgr.numberOfTapsRequired = 1;
-    [reloadLabel addGestureRecognizer:stgr];
-    
-    // ログアウトラベル
-    UILabel *logoutLabel = [[UILabel alloc] init];
-    logoutLabel.font = [UIFont systemFontOfSize:12];
-    logoutLabel.userInteractionEnabled = YES;
-    logoutLabel.textAlignment = NSTextAlignmentCenter;
-    logoutLabel.text = @"ログアウト";
-    logoutLabel.textColor = [UIColor orangeColor];
-    logoutLabel.layer.cornerRadius = 5;
-    logoutLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    logoutLabel.layer.borderWidth = 1.0f;
-    frame = CGRectMake(10, 30, 80, 30);
-    logoutLabel.frame = frame;
-    [emailVerifiedViewController.view addSubview:logoutLabel];
-    
-    UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logOut)];
-    stgr2.numberOfTapsRequired = 1;
-    [logoutLabel addGestureRecognizer:stgr2];
-    
-    // メール再送信ラベル
-    UILabel *resendLabel = [[UILabel alloc]init];
-    resendLabel.font = [UIFont systemFontOfSize:18];
-    resendLabel.userInteractionEnabled = YES;
-    resendLabel.textAlignment = NSTextAlignmentCenter;
-    resendLabel.text = @"再送信";
-    resendLabel.textColor = [UIColor orangeColor];
-    resendLabel.frame = CGRectMake(self.view.frame.size.width - 90 - 15, self.view.frame.size.height*2/3 + 75, 90, 44);
-    [emailVerifiedViewController.view addSubview:resendLabel];
-    
-    UITapGestureRecognizer *resendGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(resend)];
-    resendGesture.numberOfTapsRequired = 1;
-    [resendLabel addGestureRecognizer:resendGesture];
-    
-    [self presentViewController:emailVerifiedViewController animated:YES completion:NULL];
+    NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
+    [self presentViewController:emailVerifiedViewController animated:YES completion:nil];
 }
 
--(void)reloadEmailVerifiedView:(id)selector
-{
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
 
 -(void)logOut
 {
@@ -314,25 +284,5 @@
         [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
     }
 }
-
-- (void)resend
-{
-    PFUser *selfUser = [PFUser currentUser];
-    NSString *email = selfUser[@"email"];
-    selfUser[@"email"] = email;
-    [selfUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [[PFUser currentUser]refresh];
-    }];
-    
-    // 再送信をした旨をalertで表示
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"以下のアドレスへ再度メールを送信しました"
-                                              message:[PFUser currentUser][@"email"]
-                                              delegate:nil
-                                              cancelButtonTitle:@"閉じる"
-                                              otherButtonTitles:nil
-                          ];
-    [alert show];
-}
-
 
 @end

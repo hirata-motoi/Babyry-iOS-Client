@@ -8,6 +8,7 @@
 
 #import "PushNotification.h"
 #import "Partner.h"
+#import "Logger.h"
 
 @implementation PushNotification
 
@@ -73,10 +74,14 @@
                     
                     // 送信
                     [push sendPushInBackground];
+                } else {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in Get Pertner info in PushNotificationEvent : %@", error]];
                 }
             }];
             
 
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get PushNotificationEvent : %@", error]];
         }
     }];
 }
@@ -100,6 +105,9 @@
     if (currentInstallation.objectId) {
         [currentInstallation refresh];
     }
+    if([currentInstallation[@"badge"] intValue] < 0) {
+        currentInstallation[@"badge"] = [NSNumber numberWithInt:0];
+    }
     [currentInstallation addUniqueObject:[NSString stringWithFormat:@"userId_%@", currentUser[@"userId"]] forKey:@"channels"];
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError * error) {
         if (succeeded) {
@@ -111,6 +119,9 @@
                 }
             }
             [currentInstallation saveInBackground];
+        }
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupPushNotificationInstallation : %@", error]];
         }
     }];
 }
@@ -136,6 +147,13 @@
 + (void)removeSelfUserIdFromChannels:(PushNotificationBlock)block
 {
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    
+    // currentInstallationが保存できていない場合(simulator or 起動時にout of network)は
+    // 後続の処理で落ちるのでlogout処理だけやる
+    if (!currentInstallation.objectId) {
+        block();
+        return;
+    }
     // 自分のuserIdを消す
     NSString *targetChannel = [NSString stringWithFormat:@"userId_%@", [PFUser currentUser][@"userId"]];
     [currentInstallation removeObject:targetChannel forKey:@"channels"];
