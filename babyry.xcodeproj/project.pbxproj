@@ -60,6 +60,7 @@
 		88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FB7193B2D52009474DC /* PageContentViewController.m */; };
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
 		88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */; };
+		88C072A419C17FEC00BF6F6F /* ChooseRegisterStepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -243,6 +244,8 @@
 		88B89FBC193EDC04009474DC /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
 		88B89FBD193EDC04009474DC /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
 		88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = BabyryNewVersionDraft.storyboard; sourceTree = "<group>"; };
+		88C072A219C17FEC00BF6F6F /* ChooseRegisterStepViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChooseRegisterStepViewController.h; sourceTree = "<group>"; };
+		88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChooseRegisterStepViewController.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -796,6 +799,8 @@
 				8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */,
 				88008C8C19AF1169005FE04F /* NotEmailVerifiedViewController.h */,
 				88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */,
+				88C072A219C17FEC00BF6F6F /* ChooseRegisterStepViewController.h */,
+				88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */,
 			);
 			name = Intro;
 			sourceTree = "<group>";
@@ -1100,6 +1105,7 @@
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
 				88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */,
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
+				88C072A419C17FEC00BF6F6F /* ChooseRegisterStepViewController.m in Sources */,
 				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,

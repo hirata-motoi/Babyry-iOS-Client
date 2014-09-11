@@ -41,7 +41,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     // よく使うからここに書いておく
-    //[PFUser logOut];
+    [PFUser logOut];
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ準備中";
@@ -84,27 +84,18 @@
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
-//        NSLog(@"aaa %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]);
-//        if (アプリのバージョンが古い場合は昔のロジック) {
-            // アプリのバージョンを確認してロジック変えるのがよさげ
-            [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
-            _only_first_load = 1;
-            [_pageViewController.view removeFromSuperview];
-            [_pageViewController removeFromParentViewController];
-            _pageViewController = nil;
-            
-            // ログインしてない場合は、イントロ+ログインViewを出す
-            IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
-            [self presentViewController:introFirstViewController animated:YES completion:NULL];
-//        } else {
-//            if () {
-//                // coreデータを見る (username & passwordを保存してあればそこからログインする)
-//                
-//            } else {
-//                // coreデータに無ければログインしたことが無いので、usernameとpasswordをランダムで発行してサインインする
-//                
-//            }
-//        }
+        
+        // アプリのバージョンを確認してロジック変えるのがよさげ
+        [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
+        _only_first_load = 1;
+        [_pageViewController.view removeFromSuperview];
+        [_pageViewController removeFromParentViewController];
+        _pageViewController = nil;
+        
+        // ログインしてない場合は、イントロ+ログインViewを出す
+        IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
+        [self presentViewController:introFirstViewController animated:YES completion:NULL];
+        
     } else {
         // メンテナンス状態かどうか確認
         // バックグラウンドで行わないと一瞬固まる

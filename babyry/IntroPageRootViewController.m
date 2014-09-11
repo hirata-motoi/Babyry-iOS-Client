@@ -8,6 +8,10 @@
 
 #import "IntroPageRootViewController.h"
 #import "UIColor+Hex.h"
+#import "ChooseRegisterStepViewController.h"
+#import "MyLogInViewController.h"
+#import "IdIssue.h"
+#import "Logger.h"
 
 @interface IntroPageRootViewController ()
 
@@ -34,8 +38,16 @@
    
     UITapGestureRecognizer *openLoginView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openLoginView)];
     openLoginView.numberOfTapsRequired = 1;
-    if (_startButton) {
-        [_startButton addGestureRecognizer:openLoginView];
+    UITapGestureRecognizer *showRegisterStepCheckView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(showRegisterStepCheckView)];
+    showRegisterStepCheckView.numberOfTapsRequired = 1;
+//    if (_invitedButton) {
+//        [_invitedButton addGestureRecognizer:openLoginView];
+//    }
+    if (_registerButton) {
+        [_registerButton addGestureRecognizer:showRegisterStepCheckView];
+    }
+    if (_loginButton) {
+        [_loginButton addGestureRecognizer:openLoginView];
     }
     [self setupSkipAction];
 }
@@ -49,8 +61,10 @@
         target = _skipFromSecond;
     } else if (_skipFromThird) {
         target = _skipFromThird;
-    } else {
+    } else if (_skipFromFourth) {
         target = _skipFromFourth;
+    } else {
+        target = _skipFromFifth;
     }
     [self setupSkipGesture:target];
 }
@@ -68,10 +82,132 @@
     [self.delegate skipToLast:_currentIndex];
 }
 
+//- (void)openLoginView
+//{
+//    [self.delegate openLoginView];
+//}
+
 - (void)openLoginView
 {
-    [self.delegate openLoginView];
+    // Customize the Log In View Controller
+    MyLogInViewController *logInViewController = [[MyLogInViewController alloc] init];
+    logInViewController.delegate = self;
+    logInViewController.facebookPermissions = [NSArray arrayWithObjects:@"public_profile", @"email", @"user_friends", nil];
+    logInViewController.fields =
+    PFLogInFieldsUsernameAndPassword |
+    PFLogInFieldsLogInButton |
+    PFLogInFieldsPasswordForgotten |
+    PFLogInFieldsFacebook |
+    PFLogInFieldsDismissButton;
+    
+    // Present Log In View Controller
+    [self presentViewController:logInViewController animated:YES completion:NULL];
 }
+
+///////////////////////////////////////////////////////
+// PFLogInViewControllerのmethodたち
+// Sent to the delegate to determine whether the log in request should be submitted to the server.
+// クライアントでvalidateを入れる。むだにParseと通信しない(お金発生しない)
+- (BOOL)logInViewController:(PFLogInViewController *)logInController shouldBeginLogInWithUsername:(NSString *)username password:(NSString *)password {
+    // Check if both fields are completed
+    if (username && password && username.length != 0 && password.length != 0) {
+        return YES; // Begin login process
+    }
+    
+    [[[UIAlertView alloc] initWithTitle:@"入力されていない項目があります"
+                                message:@"全ての項目を埋めてください"
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
+    return NO; // Interrupt login process
+}
+
+// Sent to the delegate when a PFUser is logged in.
+// ログイン後の処理
+- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+    // facebook, twitterでの登録時にはuserIdが発行されないのでココで発行する
+    
+    if (user[@"userId"] == nil) {
+        user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+        [user save];
+    }
+    
+    if (!user[@"emailCommon"]) {
+        // emailがない場合はfacebookログイン
+        if (!user[@"email"] || [user[@"email"] isEqualToString:@""]) {
+            [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get facebook email : %@", error]];
+                    return;
+                }
+                if (![result objectForKey:@"email"]) {
+                    [Logger writeOneShot:@"crit" message:@"There is no email in facebook"];
+                    return;
+                }
+                
+                // email重複チェック
+                PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
+                [emailQuery whereKey:@"emailCommon" equalTo:[result objectForKey:@"email"]];
+                [emailQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+                    if (error) {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check duplicate email : %@", error]];
+                        return;
+                    }
+                    
+                    if(object) {
+                        [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Warn in Email Duplicate Check : %@", object[@"emailCommon"]]];
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                        message:@"このfacebookアカウントで使用しているメールアドレスは既に登録済みです。"
+                                                                       delegate:nil
+                                                              cancelButtonTitle:nil
+                                                              otherButtonTitles:@"OK", nil
+                                              ];
+                        [alert show];
+                        [PFUser logOut];
+                        [self dismissViewControllerAnimated:YES completion:nil];
+                    } else {
+                        user[@"emailCommon"] = [result objectForKey:@"email"];
+                        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            if (error) {
+                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save email saving : %@", error]];
+                                
+                                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                                message:@"ネットワークエラーの可能性がありますので、しばらくしてからお試しください。"
+                                                                               delegate:nil
+                                                                      cancelButtonTitle:nil
+                                                                      otherButtonTitles:@"OK", nil
+                                                      ];
+                                [alert show];
+                                [PFUser logOut];
+                                [self dismissViewControllerAnimated:YES completion:nil];
+                            }
+                        }];
+                    }
+                }];
+            }];
+        }
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+// Sent to the delegate when the log in attempt fails.
+// ログインが失敗したら
+- (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
+    //NSLog(@"Failed to log in...");
+    [[[UIAlertView alloc] initWithTitle:@"ログインエラー"
+                                message:@"ログインエラーが発生しました。メールアドレスとパスワードを確認してください。"
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
+}
+
+// Sent to the delegate when the log in screen is dismissed.
+// ログインviewのばつが押されたら
+- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+///////////////////////////////////////////////
 
 - (void)didReceiveMemoryWarning
 {
@@ -79,15 +215,10 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)showRegisterStepCheckView
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    ChooseRegisterStepViewController *chooseRegisterStepViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChooseRegisterStepViewController"];
+    [self presentViewController:chooseRegisterStepViewController animated:YES completion:nil];
 }
-*/
 
 @end

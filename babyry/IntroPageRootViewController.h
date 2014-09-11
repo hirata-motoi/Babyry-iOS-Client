@@ -8,19 +8,21 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
-
+#import "MyLogInViewController.h"
 
 @protocol IntroPageRootViewControllerDelegate <NSObject>
-- (void)openLoginView;
 - (void)skipToLast:(NSInteger)currentIndex;
 @end
 
-@interface IntroPageRootViewController : UIViewController
-@property (weak, nonatomic) IBOutlet UIButton *startButton;
+@interface IntroPageRootViewController : UIViewController<PFLogInViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *skipFromFirst;
 @property (weak, nonatomic) IBOutlet UILabel *skipFromSecond;
 @property (weak, nonatomic) IBOutlet UILabel *skipFromThird;
 @property (weak, nonatomic) IBOutlet UILabel *skipFromFourth;
+@property (strong, nonatomic) IBOutlet UILabel *skipFromFifth;
+@property (strong, nonatomic) IBOutlet UILabel *invitedButton;
+@property (strong, nonatomic) IBOutlet UILabel *registerButton;
+@property (strong, nonatomic) IBOutlet UILabel *loginButton;
 
 @property NSInteger currentIndex;
 
