@@ -15,7 +15,7 @@
 	<key>InquiryEmail</key>
 	<string>info@meaning.co.jp</string>
 	<key>AppVersion</key>
-	<string>1.0.1</string>
+	<string>1.0.2</string>
 	<key>AWSBucketName</key>
 	<string>babyry-images</string>
 </dict>
