@@ -238,7 +238,7 @@
         [user save];
     }
     
-    if (!user[@"emailCommon"]) {
+    if (!user[@"emailCommon"] || [user[@"emailCommon"] isEqualToString:@""]) {
         // emailがない場合はfacebookログイン
         if (!user[@"email"] || [user[@"email"] isEqualToString:@""]) {
             [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
