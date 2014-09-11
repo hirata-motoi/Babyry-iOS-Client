@@ -97,7 +97,7 @@
     // 既にFamilyひも付け完了している、申請済み、リクエストが来ている、を確認する。
     PFUser *user = [PFUser currentUser];
     
-    if (user[@"familyId"]) {
+    if (user[@"familyId"] && ![user[@"familyId"] isEqualToString:@""]) {
         PFQuery * roleQuery = [PFQuery queryWithClassName:@"FamilyRole"];
         [roleQuery whereKey:@"familyId" equalTo:user[@"familyId"]];
         [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
