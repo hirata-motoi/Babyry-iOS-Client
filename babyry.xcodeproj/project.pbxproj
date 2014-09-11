@@ -59,6 +59,7 @@
 		88B1909D1938D23700ED630C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B1909C1938D23700ED630C /* Social.framework */; };
 		88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FB7193B2D52009474DC /* PageContentViewController.m */; };
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
+		88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A619C211AB00BF6F6F /* CheckAppVersion.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -243,6 +244,8 @@
 		88B89FB7193B2D52009474DC /* PageContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageContentViewController.m; sourceTree = "<group>"; };
 		88B89FBC193EDC04009474DC /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
 		88B89FBD193EDC04009474DC /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
+		88C072A519C211AB00BF6F6F /* CheckAppVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckAppVersion.h; sourceTree = "<group>"; };
+		88C072A619C211AB00BF6F6F /* CheckAppVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckAppVersion.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -488,6 +491,8 @@
 				F271B31D1999E5E800C9952A /* Badge.m */,
 				88E2822019B4A8DE00225DD3 /* Child.h */,
 				88E2822119B4A8DE00225DD3 /* Child.m */,
+				88C072A519C211AB00BF6F6F /* CheckAppVersion.h */,
+				88C072A619C211AB00BF6F6F /* CheckAppVersion.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1111,6 +1116,7 @@
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
+				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */,
