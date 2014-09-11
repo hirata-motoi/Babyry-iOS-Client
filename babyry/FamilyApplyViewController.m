@@ -499,11 +499,7 @@
 
 - (void)toggleLogoutButton
 {
-    if (!_clearView) {
-        [self createLogoutView];
-    }
-    
-    if (_clearView.hidden == NO) {
+    if (_clearView) {
         [UIView animateWithDuration:0.3f
                      animations:^{
                          CGRect rect = _logoutButtonView.frame;
@@ -513,26 +509,26 @@
                      completion:^(BOOL finished){
                          _clearView.hidden = YES;
                          _logoutButtonView.hidden = YES;
+                        [_clearView removeFromSuperview];
+                         _clearView = nil;
                      }];
-    } else {
-        _clearView.hidden = NO;
-        _logoutButtonView.hidden = NO;
-        [UIView animateWithDuration:0.3f
-                     animations:^{
-                         CGRect rect = _logoutButtonView.frame;
-                         rect.origin.y = 64;
-                         _logoutButtonView.frame = rect;
-                     }
-                     completion:^(BOOL finished){
-                     }];
+        return;
     }
     
+    [self createLogoutView];
+    [UIView animateWithDuration:0.3f
+                 animations:^{
+                     CGRect rect = _logoutButtonView.frame;
+                     rect.origin.y = 64;
+                     _logoutButtonView.frame = rect;
+                 }
+                 completion:^(BOOL finished){
+                 }];
 }
 
 - (void)createLogoutView
 {
     _clearView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    _clearView.hidden = YES;
     [self.view addSubview:_clearView];
     UITapGestureRecognizer *clearViewGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleLogoutButton)];
     clearViewGesture.numberOfTapsRequired = 1;
@@ -542,7 +538,6 @@
     int viewHeight = 44;
     _logoutButtonView = [[UIView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - viewWidth, 0, viewWidth, viewHeight)];
     _logoutButtonView.backgroundColor = [ColorUtils getBabyryColor];
-    _logoutButtonView.hidden = YES;
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:_logoutButtonView.bounds
                                      byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerBottomRight)
                                            cornerRadii:CGSizeMake(3.0, 3.0)];
