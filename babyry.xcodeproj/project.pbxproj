@@ -140,6 +140,8 @@
 		F2AE04D919B2DE4E00B39C6F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8814A9881944572A0010F516 /* CoreData.framework */; };
 		F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */; };
 		F2AE04EC19B2EC8500B39C6F /* AppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AE04EB19B2EC8500B39C6F /* AppSetting.m */; };
+		F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */; };
+		F2B7E0E119C1F3A00052981B /* LogoutIntroduceView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -376,6 +378,9 @@
 		F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "babyry-coredata.xcdatamodel"; sourceTree = "<group>"; };
 		F2AE04EA19B2EC8500B39C6F /* AppSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetting.h; sourceTree = "<group>"; };
 		F2AE04EB19B2EC8500B39C6F /* AppSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSetting.m; sourceTree = "<group>"; };
+		F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogoutIntroduceView.xib; sourceTree = "<group>"; };
+		F2B7E0DF19C1F3A00052981B /* LogoutIntroduceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogoutIntroduceView.h; sourceTree = "<group>"; };
+		F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogoutIntroduceView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -894,6 +899,7 @@
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
 				88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */,
+				F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -905,6 +911,8 @@
 				F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */,
 				88E2821819B4858E00225DD3 /* WaitPartnerAcceptView.h */,
 				88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */,
+				F2B7E0DF19C1F3A00052981B /* LogoutIntroduceView.h */,
+				F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -1025,6 +1033,7 @@
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 				88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */,
+				F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
 				88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */,
@@ -1161,6 +1170,7 @@
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
 				F2AD4F15199FD5F200037C72 /* ImageRequestIntroductionView.m in Sources */,
 				F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */,
+				F2B7E0E119C1F3A00052981B /* LogoutIntroduceView.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */,
 				84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */,
