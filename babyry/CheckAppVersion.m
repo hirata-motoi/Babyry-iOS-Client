@@ -15,7 +15,7 @@
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Config"];
     query.cachePolicy = kPFCachePolicyNetworkElseCache;
-    [query whereKey:@"key" equalTo:@"versionLimit"];
+    [query whereKey:@"key" equalTo:@"minimumVersion"];
     [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (object) {
             NSArray *minimumVersion = [object[@"value"] componentsSeparatedByString:@"."];
