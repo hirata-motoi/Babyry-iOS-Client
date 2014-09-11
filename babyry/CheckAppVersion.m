@@ -18,31 +18,31 @@
     [query whereKey:@"key" equalTo:@"versionLimit"];
     [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (object) {
-            NSArray *versionLimit = [object[@"value"] componentsSeparatedByString:@"."];
-            int majorLimit = [versionLimit[0] intValue];
-            int minorLimit = [versionLimit[1] intValue];
-            int revisionLimit = [versionLimit[2] intValue];
+            NSArray *minimumVersion = [object[@"value"] componentsSeparatedByString:@"."];
+            int minimumMajor = [minimumVersion[0] intValue];
+            int minimumMinor = [minimumVersion[1] intValue];
+            int minimumRevision = [minimumVersion[2] intValue];
             
-            NSArray *versionCurrent = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] componentsSeparatedByString:@"."];
-            int majorCurrent = [versionCurrent[0] intValue];
-            int minorCurrent = [versionCurrent[1] intValue];
-            int revisionCurrent = [versionCurrent[2] intValue];
+            NSArray *currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] componentsSeparatedByString:@"."];
+            int currentMajor = [currentVersion[0] intValue];
+            int currentMinor = [currentVersion[1] intValue];
+            int currentRevision = [currentVersion[2] intValue];
             
-            if (majorCurrent > majorLimit) {
+            if (currentMajor > minimumMajor) {
                 return;
-            } else if (majorCurrent < majorLimit) {
+            } else if (currentMajor < minimumMajor) {
                 [self showUpdateAlert];
                 return;
             }
             
-            if (minorCurrent > minorLimit) {
+            if (currentMinor > minimumMinor) {
                 return;
-            } else if (minorCurrent < minorLimit) {
+            } else if (currentMinor < minimumMinor) {
                 [self showUpdateAlert];
                 return;
             }
             
-            if (revisionCurrent < revisionLimit) {
+            if (currentRevision < minimumRevision) {
                 [self showUpdateAlert];
             }
         }
@@ -64,7 +64,7 @@
     switch (buttonIndex) {
         case 0:
         {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://itunes.apple.com/jp/app/babyry/id910129660?mt=8"]];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[Config config][@"AppStoreURL"]]];
         }
             break;
     }
