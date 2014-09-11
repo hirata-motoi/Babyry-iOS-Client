@@ -574,7 +574,7 @@
 - (void)logout:(NSInteger)buttonIndex
 {
     switch (buttonIndex) {
-        case 0../babyry.xcodeproj/project.pbxproj
+        case 0:
             break;
         case 1:
         {
