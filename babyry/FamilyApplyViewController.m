@@ -69,7 +69,7 @@
     
     // logoutボタン
     [self setupLogoutButton];
-    [self showRescueDialog];
+    [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(showRescueDialog) userInfo:nil repeats:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -600,8 +600,10 @@
         }
         
         if (object[@"emailCommon"] && ![object[@"emailCommon"] isEqualToString:@""]) {
+            _selfUserEmail.text = object[@"emailCommon"];
             return;
         }
+        
     
         LogoutIntroduceView *view = [LogoutIntroduceView view];
         CGRect rect = view.frame;
