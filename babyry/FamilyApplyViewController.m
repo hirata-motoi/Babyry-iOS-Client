@@ -574,7 +574,7 @@
 - (void)logout:(NSInteger)buttonIndex
 {
     switch (buttonIndex) {
-        case 0../babyry.xcodeproj/project.pbxproj
+        case 0:
             break;
         case 1:
         {
@@ -598,17 +598,24 @@
 // emailCommonが空になったユーザの救済措置
 - (void)showRescueDialog
 {
-    if ([PFUser currentUser][@"emailCommon"]) {
-        return;
-    }
+    [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in showRescueDialog refreshing user %@", error]];
+            return;
+        }
+        
+        if (object[@"emailCommon"] && ![object[@"emailCommon"] isEqualToString:@""]) {
+            return;
+        }
     
-    LogoutIntroduceView *view = [LogoutIntroduceView view];
-    CGRect rect = view.frame;
-    rect.origin.x = (self.view.frame.size.width - rect.size.width)/1.5;
-    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
-    view.frame = rect;
-    view.delegate = self;
-    [self.view addSubview:view];
+        LogoutIntroduceView *view = [LogoutIntroduceView view];
+        CGRect rect = view.frame;
+        rect.origin.x = (self.view.frame.size.width - rect.size.width)/1.5;
+        rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+        view.frame = rect;
+        view.delegate = self;
+        [self.view addSubview:view];
+    }];
 }
 
 @end
