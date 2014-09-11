@@ -19,11 +19,17 @@
     [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (object) {
             NSArray *minimumVersion = [object[@"value"] componentsSeparatedByString:@"."];
+            if ([minimumVersion count] != 3) {
+                return;
+            }
             int minimumMajor = [minimumVersion[0] intValue];
             int minimumMinor = [minimumVersion[1] intValue];
             int minimumRevision = [minimumVersion[2] intValue];
             
             NSArray *currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] componentsSeparatedByString:@"."];
+            if ([currentVersion count] != 3) {
+                return;
+            }
             int currentMajor = [currentVersion[0] intValue];
             int currentMinor = [currentVersion[1] intValue];
             int currentRevision = [currentVersion[2] intValue];
