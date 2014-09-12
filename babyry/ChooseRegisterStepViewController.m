@@ -199,7 +199,10 @@
     PFUser *user = [PFUser user];
     user.username = [idIssue randomStringWithLength:8];
     user.password = [idIssue randomStringWithLength:8];
-    NSLog(@"%@ %@", user.username, user.password);
+    user[@"userId"] = [idIssue issue:@"user"];
+    
+    // emailCommonは検索で使わなくなるから、本来は入れなくていいのだけど旧バージョンでは必要なのでuserIdを入れておく(申請までにはこのフローはなくなる)
+    user[@"emailCommon"] = user.username;
     
     [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
