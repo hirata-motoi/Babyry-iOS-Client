@@ -11,8 +11,10 @@
 #import "MBProgressHUD.h"
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
+#import "ViewController.h"
+#import "LogoutIntroduceView.h"
 
-@interface FamilyApplyViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate>
+@interface FamilyApplyViewController : UIViewController <ABPeoplePickerNavigationControllerDelegate, LogoutIntroduceViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *searchBackContainerView;
 @property (weak, nonatomic) IBOutlet UIView *searchContainerView;
@@ -40,5 +42,9 @@
 
 @property NSTimer *waitPartnerTimer;
 @property UIView *waitingCoverView;
+@property BOOL tryingLogout;
+@property UIView *clearView;
+@property UIView *logoutButtonView;
+@property ViewController *viewController;
 
 @end
