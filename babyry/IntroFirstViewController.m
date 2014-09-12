@@ -238,7 +238,7 @@
         [user save];
     }
     
-    if (!user[@"emailCommon"]) {
+    if (!user[@"emailCommon"] || [user[@"emailCommon"] isEqualToString:@""]) {
         // emailがない場合はfacebookログイン
         if (!user[@"email"] || [user[@"email"] isEqualToString:@""]) {
             [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
@@ -254,14 +254,22 @@
                 // email重複チェック
                 PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
                 [emailQuery whereKey:@"emailCommon" equalTo:[result objectForKey:@"email"]];
-                [emailQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+                [emailQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                     if (error) {
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check duplicate email : %@", error]];
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check duplicate email. Email:%@ Error:%@", result[@"email"], error]];
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                        message:@"電波状況のよい場所で再度お試しください。"
+                                                                       delegate:nil
+                                                              cancelButtonTitle:nil
+                                                              otherButtonTitles:@"OK", nil
+                                              ];
+                        [alert show];
+                        [PFUser logOut];
+                        [self dismissViewControllerAnimated:YES completion:nil];
                         return;
                     }
-                    
-                    if(object) {
-                        [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Warn in Email Duplicate Check : %@", object[@"emailCommon"]]];
+                    if(objects.count > 0) {
+                        [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Warn in Email Duplicate Check. Duplicate Count:%d, Email:%@", objects.count, result[@"email"]]];
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
                                                                         message:@"このfacebookアカウントで使用しているメールアドレスは既に登録済みです。"
                                                                        delegate:nil

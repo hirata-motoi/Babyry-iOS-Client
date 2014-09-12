@@ -14,6 +14,9 @@
 #import "Logger.h"
 #import "Config.h"
 #import "WaitPartnerAcceptView.h"
+#import "ImageCache.h"
+#import "PushNotification.h"
+#import "LogoutIntroduceView.h"
 
 @interface FamilyApplyViewController ()
 
@@ -63,6 +66,10 @@
     _messageButton.hidden = YES;
     
     _pickedAddress = @"";
+    
+    // logoutボタン
+    [self setupLogoutButton];
+    [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(showRescueDialog) userInfo:nil repeats:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -90,7 +97,7 @@
     // 既にFamilyひも付け完了している、申請済み、リクエストが来ている、を確認する。
     PFUser *user = [PFUser currentUser];
     
-    if (user[@"familyId"]) {
+    if (user[@"familyId"] && ![user[@"familyId"] isEqualToString:@""]) {
         PFQuery * roleQuery = [PFQuery queryWithClassName:@"FamilyRole"];
         [roleQuery whereKey:@"familyId" equalTo:user[@"familyId"]];
         [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
@@ -275,6 +282,13 @@
 
 // 画像削除確認後に呼ばれる
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    // logout処理
+    if (_tryingLogout) {
+        _tryingLogout = NO;
+        [self logout:buttonIndex];
+        return;
+    }
     
     switch (buttonIndex) {
         case 0:
@@ -472,6 +486,133 @@
     rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
     view.frame = rect;
     [_waitingCoverView addSubview:view];
+}
+
+- (void)setupLogoutButton
+{
+    UIButton *logoutButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [logoutButton setBackgroundImage:[UIImage imageNamed:@"CogWheelReverse"] forState:UIControlStateNormal];
+    [logoutButton addTarget:self action:@selector(toggleLogoutButton) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:logoutButton];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+}
+
+- (void)toggleLogoutButton
+{
+    if (_clearView) {
+        [UIView animateWithDuration:0.3f
+                     animations:^{
+                         CGRect rect = _logoutButtonView.frame;
+                         rect.origin.y = 0;
+                         _logoutButtonView.frame = rect;
+                     }
+                     completion:^(BOOL finished){
+                         _clearView.hidden = YES;
+                         _logoutButtonView.hidden = YES;
+                        [_clearView removeFromSuperview];
+                         _clearView = nil;
+                     }];
+        return;
+    }
+    
+    [self createLogoutView];
+    [UIView animateWithDuration:0.3f
+                 animations:^{
+                     CGRect rect = _logoutButtonView.frame;
+                     rect.origin.y = 64;
+                     _logoutButtonView.frame = rect;
+                 }
+                 completion:^(BOOL finished){
+                 }];
+}
+
+- (void)createLogoutView
+{
+    _clearView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    [self.view addSubview:_clearView];
+    UITapGestureRecognizer *clearViewGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleLogoutButton)];
+    clearViewGesture.numberOfTapsRequired = 1;
+    [_clearView addGestureRecognizer:clearViewGesture];
+   
+    int viewWidth = 120;
+    int viewHeight = 44;
+    _logoutButtonView = [[UIView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - viewWidth, 0, viewWidth, viewHeight)];
+    _logoutButtonView.backgroundColor = [ColorUtils getBabyryColor];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:_logoutButtonView.bounds
+                                     byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerBottomRight)
+                                           cornerRadii:CGSizeMake(3.0, 3.0)];
+    
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame = _logoutButtonView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    _logoutButtonView.layer.mask = maskLayer;
+    
+    UIButton *logoutButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, viewWidth, viewHeight)];
+    [logoutButton setTitle:@"ログアウト" forState:UIControlStateNormal];
+    [logoutButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [logoutButton addTarget:self action:@selector(showLogoutAlert) forControlEvents:UIControlEventTouchUpInside];
+    [_logoutButtonView addSubview:logoutButton];
+    
+    [_clearView addSubview:_logoutButtonView];
+}
+
+- (void)showLogoutAlert
+{
+    _tryingLogout = YES;
+    [[[UIAlertView alloc] initWithTitle:@""
+                                message:@"ログアウトします、よろしいですか？"
+                               delegate:self
+                      cancelButtonTitle:@"キャンセル"
+                      otherButtonTitles:@"ログアウト", nil] show];
+}
+
+- (void)logout:(NSInteger)buttonIndex
+{
+    switch (buttonIndex) {
+        case 0:
+            break;
+        case 1:
+        {
+            [self doLogout];
+            break;
+        }
+    }
+}
+
+- (void)doLogout
+{
+    [self.navigationController popViewControllerAnimated:YES];
+    [ImageCache removeAllCache];
+    [PushNotification removeSelfUserIdFromChannels:^(){
+        [PFUser logOut];
+        [_viewController viewDidAppear:YES];
+    }];
+}
+
+// FB会員登録したユーザのemailCommonが空になる障害で
+// emailCommonが空になったユーザの救済措置
+- (void)showRescueDialog
+{
+    [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in showRescueDialog refreshing user %@", error]];
+            return;
+        }
+        
+        if (object[@"emailCommon"] && ![object[@"emailCommon"] isEqualToString:@""]) {
+            _selfUserEmail.text = object[@"emailCommon"];
+            return;
+        }
+        
+    
+        LogoutIntroduceView *view = [LogoutIntroduceView view];
+        CGRect rect = view.frame;
+        rect.origin.x = (self.view.frame.size.width - rect.size.width)/1.5;
+        rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+        view.frame = rect;
+        view.delegate = self;
+        [self.view addSubview:view];
+    }];
 }
 
 @end

@@ -28,6 +28,7 @@
 #import "Sharding.h"
 #import "Logger.h"
 #import "NotEmailVerifiedViewController.h"
+#import "CheckAppVersion.h"
 
 @interface ViewController ()
 
@@ -81,6 +82,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    // 強制アップデート用 (backgroundメソッド)
+    [CheckAppVersion checkForceUpdate];
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
@@ -147,6 +151,7 @@
         if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
             // パートナー検索画面を出す
             FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+            familyApplyViewController.viewController = self;
             [self.navigationController pushViewController:familyApplyViewController animated:YES];
             return;
         }
