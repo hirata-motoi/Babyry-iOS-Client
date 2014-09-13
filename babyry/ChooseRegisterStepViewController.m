@@ -92,50 +92,32 @@
     BOOL informationComplete = YES;
     NSString *errorMessage = @"";
     
-    NSString *email = [[NSString alloc] init];
-    NSString *password = [[NSString alloc] init];
-    NSString *passwordConfirm = [[NSString alloc] init];
-    
+    // 埋まってないfieldチェック
     for (id key in info) {
         NSString *field = [info objectForKey:key];
         if (!field || field.length == 0) { // check completion
             errorMessage = @"入力が完了していない項目があります";
             break;
         }
-        if ([key isEqualToString:@"password"]){
-            if(![field canBeConvertedToEncoding:NSASCIIStringEncoding]) {
-                errorMessage = @"パスワードに全角文字は使用できません";
-                break;
-            } else if ([field length] < 8) {
-                errorMessage = @"パスワードは8文字以上を設定してください";
-                break;
-            }
-            password = field;
-        } else if ([key isEqualToString:@"additional"]) {
-            passwordConfirm = field;
-        } else if ([key isEqualToString:@"username"]) {
-            if (![self validateEmailWithString:field]) {
-                errorMessage = @"メールアドレスを正しく入力してください";
-                break;
-            }
-            email = field;
-        }
     }
     
-    if (![password isEqualToString:passwordConfirm]) {
-        if ([errorMessage isEqualToString:@""]) {
+    // エラーメッセージが無い = 全部埋まっている場合はそれぞれの中身をチェック
+    if ([errorMessage isEqualToString:@""]) {
+        if (![self validateEmailWithString:[info objectForKey:@"username"]]) {
+            errorMessage = @"メールアドレスを正しく入力してください";
+        } else if(![[info objectForKey:@"password"] canBeConvertedToEncoding:NSASCIIStringEncoding]) {
+            errorMessage = @"パスワードに全角文字は使用できません";
+        } else if ([[info objectForKey:@"password"] length] < 8) {
+            errorMessage = @"パスワードは8文字以上を設定してください";
+        } else if (![[info objectForKey:@"password"] isEqualToString:[info objectForKey:@"additional"]]){
             errorMessage = @"確認用パスワードが一致しません";
-        }
-    }
-    
-    if (informationComplete) {
-        // email重複チェック
-        PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
-        [emailQuery whereKey:@"emailCommon" equalTo:email];
-        PFObject *object = [emailQuery getFirstObject];
-        if(object) {
-            errorMessage = @"既に登録済みのメールアドレスです";
-            informationComplete = NO;
+        } else {
+            PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
+            [emailQuery whereKey:@"emailCommon" equalTo:[info objectForKey:@"username"]];
+            PFObject *object = [emailQuery getFirstObject];
+            if(object) {
+                errorMessage = @"既に登録済みのメールアドレスです";
+            }
         }
     }
     
