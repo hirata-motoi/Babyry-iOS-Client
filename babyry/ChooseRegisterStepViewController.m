@@ -157,7 +157,6 @@
 
 // Sent to the delegate when the sign up attempt fails.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
-    //NSLog(@"Failed to sign up... %@", error);
     [[[UIAlertView alloc] initWithTitle:@"登録エラー"
                                 message:@"エラーが発生しました。メールアドレスとパスワードを確認後、もう一度お試しください。"
                                delegate:nil
