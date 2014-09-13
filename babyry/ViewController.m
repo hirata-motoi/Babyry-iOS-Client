@@ -29,6 +29,7 @@
 #import "Logger.h"
 #import "NotEmailVerifiedViewController.h"
 #import "CheckAppVersion.h"
+#import "TmpUser.h"
 
 @interface ViewController ()
 
@@ -85,6 +86,9 @@
     
     // 強制アップデート用 (backgroundメソッド)
     [CheckAppVersion checkForceUpdate];
+    
+    // tmpUserData (会員登録していないひと) でログインできるか試行
+    [TmpUser loginTmpUserByCoreData];
     
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in

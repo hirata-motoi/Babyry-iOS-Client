@@ -62,6 +62,8 @@
 		88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */; };
 		88C072A419C17FEC00BF6F6F /* ChooseRegisterStepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */; };
 		88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A619C211AB00BF6F6F /* CheckAppVersion.m */; };
+		88C072C419C4599900BF6F6F /* TmpUserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C319C4599900BF6F6F /* TmpUserData.m */; };
+		88C072C719C459D600BF6F6F /* TmpUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C619C459D600BF6F6F /* TmpUser.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -251,6 +253,11 @@
 		88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChooseRegisterStepViewController.m; sourceTree = "<group>"; };
 		88C072A519C211AB00BF6F6F /* CheckAppVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckAppVersion.h; sourceTree = "<group>"; };
 		88C072A619C211AB00BF6F6F /* CheckAppVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckAppVersion.m; sourceTree = "<group>"; };
+		88C072C119C458E000BF6F6F /* babyry-coredata-v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "babyry-coredata-v2.xcdatamodel"; sourceTree = "<group>"; };
+		88C072C219C4599900BF6F6F /* TmpUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TmpUserData.h; sourceTree = "<group>"; };
+		88C072C319C4599900BF6F6F /* TmpUserData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TmpUserData.m; sourceTree = "<group>"; };
+		88C072C519C459D600BF6F6F /* TmpUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TmpUser.h; sourceTree = "<group>"; };
+		88C072C619C459D600BF6F6F /* TmpUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TmpUser.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -498,6 +505,8 @@
 				88E2822119B4A8DE00225DD3 /* Child.m */,
 				88C072A519C211AB00BF6F6F /* CheckAppVersion.h */,
 				88C072A619C211AB00BF6F6F /* CheckAppVersion.m */,
+				88C072C519C459D600BF6F6F /* TmpUser.h */,
+				88C072C619C459D600BF6F6F /* TmpUser.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -933,6 +942,8 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				88C072C219C4599900BF6F6F /* TmpUserData.h */,
+				88C072C319C4599900BF6F6F /* TmpUserData.m */,
 			);
 			name = CoreData;
 			sourceTree = "<group>";
@@ -1146,6 +1157,7 @@
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
 				88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */,
+				88C072C419C4599900BF6F6F /* TmpUserData.m in Sources */,
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
 				88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */,
@@ -1178,6 +1190,7 @@
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
+				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
 				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,
@@ -1607,9 +1620,10 @@
 		F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				88C072C119C458E000BF6F6F /* babyry-coredata-v2.xcdatamodel */,
 				F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */,
 			);
-			currentVersion = F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */;
+			currentVersion = 88C072C119C458E000BF6F6F /* babyry-coredata-v2.xcdatamodel */;
 			path = "babyry-coredata.xcdatamodeld";
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

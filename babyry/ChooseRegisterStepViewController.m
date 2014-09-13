@@ -8,6 +8,8 @@
 
 #import "ChooseRegisterStepViewController.h"
 #import "IdIssue.h"
+#import "TmpUser.h"
+#import "Logger.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -206,11 +208,10 @@
     
     [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
-            // Hooray! Let them use the app now.
+            [TmpUser setTmpUserToCoreData:user.username password:(NSString *)user.password];
             [self dismissViewControllerAnimated:YES completion:nil];
         } else {
-            NSLog(@"error %@", error);
-            // Show the errorString somewhere and let the user try again.
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in continueWithNoLogin : %@", error]];
         }
     }];
 }
