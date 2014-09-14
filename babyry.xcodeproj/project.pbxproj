@@ -64,6 +64,8 @@
 		88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A619C211AB00BF6F6F /* CheckAppVersion.m */; };
 		88C072C419C4599900BF6F6F /* TmpUserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C319C4599900BF6F6F /* TmpUserData.m */; };
 		88C072C719C459D600BF6F6F /* TmpUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C619C459D600BF6F6F /* TmpUser.m */; };
+		88C072CB19C60E1600BF6F6F /* UserRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072CA19C60E1600BF6F6F /* UserRegisterViewController.m */; };
+		88C072CE19C61C2F00BF6F6F /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072CD19C61C2F00BF6F6F /* Account.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -258,6 +260,10 @@
 		88C072C319C4599900BF6F6F /* TmpUserData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TmpUserData.m; sourceTree = "<group>"; };
 		88C072C519C459D600BF6F6F /* TmpUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TmpUser.h; sourceTree = "<group>"; };
 		88C072C619C459D600BF6F6F /* TmpUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TmpUser.m; sourceTree = "<group>"; };
+		88C072C919C60E1600BF6F6F /* UserRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserRegisterViewController.h; sourceTree = "<group>"; };
+		88C072CA19C60E1600BF6F6F /* UserRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserRegisterViewController.m; sourceTree = "<group>"; };
+		88C072CC19C61C2F00BF6F6F /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
+		88C072CD19C61C2F00BF6F6F /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -507,6 +513,8 @@
 				88C072A619C211AB00BF6F6F /* CheckAppVersion.m */,
 				88C072C519C459D600BF6F6F /* TmpUser.h */,
 				88C072C619C459D600BF6F6F /* TmpUser.m */,
+				88C072CC19C61C2F00BF6F6F /* Account.h */,
+				88C072CD19C61C2F00BF6F6F /* Account.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -765,6 +773,8 @@
 				889002FA198F5EC7005775B5 /* ChildProfileViewController.m */,
 				889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */,
 				889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */,
+				88C072C919C60E1600BF6F6F /* UserRegisterViewController.h */,
+				88C072CA19C60E1600BF6F6F /* UserRegisterViewController.m */,
 			);
 			name = GlobalSetting;
 			sourceTree = "<group>";
@@ -1140,6 +1150,7 @@
 				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
+				88C072CE19C61C2F00BF6F6F /* Account.m in Sources */,
 				88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */,
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
@@ -1147,6 +1158,7 @@
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
 				F271B31E1999E5E800C9952A /* Badge.m in Sources */,
 				F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */,
+				88C072CB19C60E1600BF6F6F /* UserRegisterViewController.m in Sources */,
 				8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,

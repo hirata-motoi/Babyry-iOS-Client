@@ -129,6 +129,17 @@
             dispatch_sync(dispatch_get_main_queue(), ^{
             });
         });
+        
+        // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
+        // まずはキャッシュから確認
+        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+            //キャッシュがなければフォアグランドで引いても良い。
+            [_currentUser refresh];
+            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+                [self setMyNickNamePage];
+                return;
+            }
+        }
 
         // facebook連携していない場合、emailが確認されているか
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
@@ -157,17 +168,6 @@
                 // パートナー検索画面を出す
                 FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
                 [self.navigationController pushViewController:familyApplyViewController animated:YES];
-                return;
-            }
-        }
-        
-        // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
-        // まずはキャッシュから確認
-        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-            //キャッシュがなければフォアグランドで引いても良い。
-            [_currentUser refresh];
-            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-                [self setMyNickNamePage];
                 return;
             }
         }

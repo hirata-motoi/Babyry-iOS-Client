@@ -7,6 +7,8 @@
 //
 
 #import "IntroMyNicknameViewController.h"
+#import "MBProgressHUD.h"
+#import "Logger.h"
 
 @interface IntroMyNicknameViewController ()
 
@@ -28,9 +30,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
-    _introMyNicknameSendLabel.layer.cornerRadius = _introMyNicknameSendLabel.frame.size.width/2;
-    _introMyNicknameSendLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    _introMyNicknameSendLabel.layer.borderWidth = 2.0f;
     _introMyNicknameSendLabel.tag = 2;
     
     UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
@@ -80,24 +79,12 @@
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
     
-    // Calc overlap of keyboardFrame and textViewFrame
-    CGRect keyboardFrame;
-    CGRect textViewFrame;
-    keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    keyboardFrame = [_editingView.superview convertRect:keyboardFrame fromView:nil];
-    textViewFrame = _editingView.frame;
-    float overlap;
-    overlap = MAX(0.0f, CGRectGetMaxY(textViewFrame) - CGRectGetMinY(keyboardFrame));
-    
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
     void (^animations)(void);
     duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     animationCurve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] integerValue];
     animations = ^(void) {
-        CGRect viewFrame = _editingView.frame;
-        viewFrame.origin.y -= overlap;
-        _editingView.frame = viewFrame;
     };
     [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:animations completion:nil];
 }
@@ -108,20 +95,12 @@
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
     
-    CGRect textViewFrame;
-    textViewFrame = _editingView.frame;
-    //float overlap;
-    //overlap = MAX(0.0f, CGRectGetMaxY(_defaultCommentViewRect) - CGRectGetMaxY(textViewFrame));
-    
     NSTimeInterval duration;
     UIViewAnimationCurve animationCurve;
     void (^animations)(void);
     duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     animationCurve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] integerValue];
     animations = ^(void) {
-        CGRect viewFrame = _editingView.frame;
-        viewFrame.origin.y = (self.view.frame.size.height - _editingView.frame.size.height);
-        _editingView.frame = viewFrame;
     };
     [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:animations completion:nil];
 }
@@ -134,13 +113,37 @@
             
             PFObject *user = [PFUser currentUser];
             user[@"nickName"] = _introMyNicknameField.text;
-            [user save];
-
-            if ([self.navigationController isViewLoaded]) {
-                [self.navigationController popToRootViewControllerAnimated:YES];
+            
+            if (_selectSexController.selectedSegmentIndex == 0) {
+                user[@"sex"] = @"male";
             } else {
-                [self dismissViewControllerAnimated:YES completion:nil];
+                user[@"sex"] = @"female";
             }
+            
+            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            hud.labelText = @"データ保存中";
+
+            [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving username and sex : %@", error]];
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"データの保存に失敗しました"
+                                                                    message:@"ネットワークエラーが発生しました。もう一度お試しください。"
+                                                                   delegate:nil
+                                                          cancelButtonTitle:nil
+                                                          otherButtonTitles:@"OK", nil
+                                          ];
+                    [alert show];
+                    [hud hide:YES];
+                    return;
+                }
+               
+                [hud hide:YES];
+                if ([self.navigationController isViewLoaded]) {
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                } else {
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                }
+            }];
         }
     } else {
         [self.view endEditing:YES];
