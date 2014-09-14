@@ -44,9 +44,9 @@
     [self.logInView.facebookButton setBackgroundImage:nil forState:UIControlStateNormal];
     [self.logInView.facebookButton setBackgroundImage:nil forState:UIControlStateHighlighted];
     
-    [self.logInView.signUpButton setBackgroundColor:[ColorUtils getSunDayCalColor]];
-    [self.logInView.signUpButton setBackgroundImage:nil forState:UIControlStateNormal];
-    [self.logInView.signUpButton setBackgroundImage:nil forState:UIControlStateHighlighted];
+//    [self.logInView.signUpButton setBackgroundColor:[ColorUtils getSunDayCalColor]];
+//    [self.logInView.signUpButton setBackgroundImage:nil forState:UIControlStateNormal];
+//    [self.logInView.signUpButton setBackgroundImage:nil forState:UIControlStateHighlighted];
     
     // Add login field background
     fieldsBackground = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
@@ -83,15 +83,15 @@
     [self.logInView.dismissButton setFrame:CGRectMake(0.0f, 10.0f, 45.5f, 45.5f)];
     //[self.logInView.logo setFrame:CGRectMake(66.5f, 70.0f, 187.0f, 58.5f)];
     
-    [self.logInView.usernameField setFrame:CGRectMake(35.0f, frameHeight, 250.0f, frameHeight)];
-    [self.logInView.passwordField setFrame:CGRectMake(35.0f, frameHeight * 2, 250.0f, frameHeight)];
+    [self.logInView.usernameField setFrame:CGRectMake(35.0f, frameHeight * 2, 250.0f, frameHeight)];
+    [self.logInView.passwordField setFrame:CGRectMake(35.0f, frameHeight * 3, 250.0f, frameHeight)];
     
-    [self.logInView.logInButton setFrame:CGRectMake(35.0f, frameHeight * 3, 250.0f, 60.0f)];
+    [self.logInView.logInButton setFrame:CGRectMake(35.0f, frameHeight * 4, 250.0f, 60.0f)];
     [self.logInView.passwordForgottenButton setFrame:CGRectMake(35.0f, self.logInView.logInButton.frame.origin.y + self.logInView.logInButton.frame.size.height, 250.0f, 40.0f)];
     
-    [self.logInView.facebookButton setFrame:CGRectMake(35.0f, frameHeight * 5, 250.0f, 40.0f)];
+    [self.logInView.facebookButton setFrame:CGRectMake(35.0f, frameHeight * 6, 250.0f, 40.0f)];
     
-    [self.logInView.signUpButton setFrame:CGRectMake(35.0f, frameHeight * 6, 250.0f, 40.0f)];
+//    [self.logInView.signUpButton setFrame:CGRectMake(35.0f, frameHeight * 6, 250.0f, 40.0f)];
     
     [self.fieldsBackground setFrame:CGRectMake(35.0f, 145.0f, 250.0f, 100.0f)];
 }

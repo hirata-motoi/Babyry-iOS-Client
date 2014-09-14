@@ -31,7 +31,7 @@
     [self setGlobalVariables];
     
     // CoreData
-    [MagicalRecord setupCoreDataStackWithStoreNamed:@"babyry.sqlite"];
+    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"babyry.sqlite"];
     [self setupFirstLaunchUUID];
     
     // Parse Authentification

@@ -195,7 +195,9 @@
 {
     PFUser *user = [PFUser currentUser];
     [user refresh];
-    _selfUserEmail.text = user[@"emailCommon"];
+    if (user[@"emailCommon"]) {
+        _selfUserEmail.text = user[@"emailCommon"];
+    }
 }
 
 - (void)executeSearch
