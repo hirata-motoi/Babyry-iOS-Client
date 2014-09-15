@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="AppSetting" representedClassName="AppSetting" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -14,8 +14,17 @@
         <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="TutorialBestShot" representedClassName="TutorialBestShot" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="imageObjectId" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TutorialStage" representedClassName="TutorialStage" syncable="YES">
+        <attribute name="currentStage" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="AppSetting" positionX="-45" positionY="0" width="128" height="103"/>
-        <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="135"/>
+        <element name="AppSetting" positionX="-45" positionY="0" width="128" height="105"/>
+        <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="133"/>
+        <element name="TutorialStage" positionX="-18" positionY="90" width="128" height="58"/>
+        <element name="TutorialBestShot" positionX="-9" positionY="171" width="128" height="75"/>
     </elements>
 </model>
