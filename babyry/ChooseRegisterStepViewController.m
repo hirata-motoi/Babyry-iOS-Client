@@ -134,6 +134,7 @@
     [user save];
     [user refresh];
     
+    // 本登録完了なのでCoreDataのisRegisteredをtureにする
     [TmpUser registerComplete];
     
     _isSignUpCompleted = YES;

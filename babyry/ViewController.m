@@ -93,7 +93,6 @@
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
         
-        // アプリのバージョンを確認してロジック変えるのがよさげ
         [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];

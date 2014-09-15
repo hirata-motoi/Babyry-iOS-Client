@@ -123,6 +123,7 @@
     if (![PFFacebookUtils isLinkedWithUser:user]) {
         [PFFacebookUtils linkUser:user permissions:[NSArray arrayWithObjects:@"public_profile", @"email", @"user_friends", nil] block:^(BOOL succeeded, NSError *error) {
             if (error) {
+                // ひも付けエラーならそのまま画面は移動せずにアラートだけ出す
                 [hud hide:YES];
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in registerByFacebook : %@", error]];
                 [[[UIAlertView alloc] initWithTitle:@"Facebookログインに失敗しました"
@@ -133,17 +134,33 @@
                 return;
             }
             
-            // ここは大体がIntroPageRootViewControllerのコピペ (Modelとしてどこかに格納したいが、blockが階層で面倒だったのでごめんなさい)
-            // ここでエラーが起きたらfacebookアカウントとunlinkする
+            // ここは大体がIntroPageRootViewControllerのコピペ
+            // Classにまとめたかったが、ここでエラーが起きた場合には、ログアウトではなくfacebookアカウントとunlinkする処理になるため、いまはコピペで。
             [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                 if (error) {
+                    // メアド取得失敗したのでunlinkする
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get facebook email at registerByFacebook : %@", error]];
                     [self unlinkFacebookAccount:user];
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
+                                                                    message:@"電波状況のよい場所で再度お試しください。"
+                                                                   delegate:nil
+                                                          cancelButtonTitle:nil
+                                                          otherButtonTitles:@"OK", nil
+                                          ];
+                    [alert show];
                     return;
                 }
                 if (![result objectForKey:@"email"]) {
+                    // メアドが入っていないのでunlinkする
                     [Logger writeOneShot:@"crit" message:@"There is no email in facebook at registerByFacebook"];
                     [self unlinkFacebookAccount:user];
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook接続エラー"
+                                                                    message:@"Facebookのアカウントからメールアドレスが取得できませんでした。"
+                                                                   delegate:nil
+                                                          cancelButtonTitle:nil
+                                                          otherButtonTitles:@"OK", nil
+                                          ];
+                    [alert show];
                     return;
                 }
                 
@@ -152,6 +169,7 @@
                 [emailQuery whereKey:@"emailCommon" equalTo:[result objectForKey:@"email"]];
                 [emailQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                     if (error) {
+                        // クエリのエラーの場合unlinkする
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check duplicate email. Email:%@ Error:%@", result[@"email"], error]];
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
                                                                         message:@"電波状況のよい場所で再度お試しください。"
@@ -165,6 +183,7 @@
                     }
                     
                     if([objects count] > 0) {
+                        // 重複チェックエラー、unlink
                         [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Warn in Email Duplicate Check. Duplicate Count:%d, Email:%@", objects.count, result[@"email"]]];
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
                                                                         message:@"このfacebookアカウントで使用しているメールアドレスは既に登録済みです。"
@@ -176,6 +195,7 @@
                         [self unlinkFacebookAccount:user];
                     } else {
                         user[@"emailCommon"] = [result objectForKey:@"email"];
+                        user[@"username"] = [result objectForKey:@"email"];
                         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                             if (error) {
                                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save email saving : %@", error]];
@@ -189,7 +209,16 @@
                                 [alert show];
                                 [self unlinkFacebookAccount:user];
                             }
+                            // すべてが成功した場合だけ、isRegisteredをtrueにする
                             [TmpUser registerComplete];
+                            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"完了"
+                                                                            message:@"簡易ログイン会員とFacebookアカウントをひも付けが完了しました。"
+                                                                           delegate:nil
+                                                                  cancelButtonTitle:nil
+                                                                  otherButtonTitles:@"OK", nil
+                                                  ];
+                            [alert show];
+                            [self.navigationController popViewControllerAnimated:YES];
                         }];
                     }
                 }];
@@ -258,6 +287,10 @@
     [PFFacebookUtils unlinkUserInBackground:user block:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"unlink facebook account"]];
+        }
+        // エラーの場合どうしたものか。。。
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Faild in unlink facebook account : %@", error]];
         }
     }];
 }

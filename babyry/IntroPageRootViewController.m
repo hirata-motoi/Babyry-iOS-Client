@@ -193,7 +193,6 @@
                                                   ];
                             [alert show];
                             [PFUser logOut];
-                            [self dismissViewControllerAnimated:YES completion:nil];
                         }
                         [TmpUser registerComplete];
                     }];
