@@ -1719,6 +1719,14 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics"/>
+                    <connections>
+                        <outlet property="facebookRegisterButton" destination="f6v-dU-o75" id="g6X-Eh-7FF"/>
+                        <outlet property="mailAddressField" destination="k9x-Cn-QEH" id="35V-G8-ZF3"/>
+                        <outlet property="mailAddressRegisterButton" destination="6UU-La-Xcz" id="ix2-iH-B5Y"/>
+                        <outlet property="mailAddressRegisterViewContainer" destination="GTg-he-ssl" id="kvo-pE-sQI"/>
+                        <outlet property="passwordComfirmField" destination="WbE-yd-ZQQ" id="7G7-D5-4Xo"/>
+                        <outlet property="passwordField" destination="Zcj-Ky-gze" id="y4L-Fd-7rK"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RQw-Ds-B3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
