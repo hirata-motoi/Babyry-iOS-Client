@@ -48,6 +48,8 @@
 
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
+- (void)showAlertMessage;
+- (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
 
 @property AWSServiceConfiguration *configuration;
 

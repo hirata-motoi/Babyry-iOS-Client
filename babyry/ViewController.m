@@ -30,6 +30,7 @@
 #import "NotEmailVerifiedViewController.h"
 #import "CheckAppVersion.h"
 #import "TmpUser.h"
+#import "Tutorial.h"
 
 @interface ViewController ()
 
@@ -141,25 +142,42 @@
                 }
             }
         }
+      
+        // familyIdを発行する前に呼び出す必要がある
+        BOOL hasFamilyId = (_currentUser[@"familyId"]) ? YES : NO;
+        [Tutorial initializeTutorialStage:hasFamilyId];
         
-        // falimyIdがなければ招待画面をだして先に進めない
-        if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
-            // パートナー検索画面を出す
-            FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-            familyApplyViewController.viewController = self;
-            [self.navigationController pushViewController:familyApplyViewController animated:YES];
-            return;
+        // familyIdがなければ新規にfamilyIdを発行
+        if (!_currentUser[@"familyId"]) {
+            IdIssue *idIssue = [[IdIssue alloc]init];
+            _currentUser[@"familyId"] = [idIssue issue:@"family"];
+            [_currentUser saveInBackground];
+            // その上でbotと紐付けをする TutorialMapにデータを保存
+            PFObject *tutorialMap = [PFObject objectWithClassName:@"TutorialMap"];
+            tutorialMap[@"userId"] = _currentUser[@"userId"];
+            [tutorialMap saveInBackground];
+            
+            // TODO TutorialSetting entityにChild.objectIdを保存しとく。TutorialSettingにobjectIdがあればチュートリアル中と判断する
         }
         
-        // roleがundefの場合パートナーひも付けされてないからパートナー招待画面を出す
-        if (![FamilyRole selfRole:@"cachekOnly"]) {
-            if (![FamilyRole selfRole:@"noCache"]) {
-                // パートナー検索画面を出す
-                FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-                [self.navigationController pushViewController:familyApplyViewController animated:YES];
-                return;
-            }
-        }
+//        // falimyIdがなければ招待画面をだして先に進めない
+//        if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
+//            // パートナー検索画面を出す
+//            FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+//            familyApplyViewController.viewController = self;
+//            [self.navigationController pushViewController:familyApplyViewController animated:YES];
+//            return;
+//        }
+//        
+//        // roleがundefの場合パートナーひも付けされてないからパートナー招待画面を出す
+//        if (![FamilyRole selfRole:@"cachekOnly"]) {
+//            if (![FamilyRole selfRole:@"noCache"]) {
+//                // パートナー検索画面を出す
+//                FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+//                [self.navigationController pushViewController:familyApplyViewController animated:YES];
+//                return;
+//            }
+//        }
         
         // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
         // まずはキャッシュから確認
@@ -174,7 +192,7 @@
         
         // roleを更新
         [FamilyRole updateCache];
-        
+
         // Set if user has no child
         PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
         [childQuery whereKey:@"familyId" equalTo:_currentUser[@"familyId"]];
@@ -184,15 +202,31 @@
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
-            _childArrayFoundFromParse = [childQuery findObjects];
-            [self setupChildProperties];
-        
-            // こどもが一人もいない = 一番最初のログインで一人目のこどもを作成しておく
-            // こどもいるけどNW接続ないcacheないみたいな状況でここに入るとまずいか？
-            if ([_childArrayFoundFromParse count] < 1) {
-                [self setChildNames];
-                return;
+            NSArray *childList = [childQuery findObjects];
+            if (childList.count < 1) {
+                // こどもがいないのでbabyryちゃんのobjectIdをConfigから引く → _childArrayFromParseにセット
+                // ここは同期で処理する
+                PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
+                [query whereKey:@"key" equalTo:@"tutorialChild"];
+                NSArray *botUsers = [query findObjects];
+                if (botUsers.count > 0) {
+                    NSString *childObjectId = botUsers[0][@"value"];
+                    // Childからbotのrowをひく
+                    PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
+                    [botQuery whereKey:@"objectId" equalTo:childObjectId];
+                    NSArray *botChild = [botQuery findObjects];
+                    
+                    if (botChild.count > 0) {
+                        childList = botChild;
+                    } else {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"No Bot User in Child class objectId:%@", childObjectId]];
+                    }
+                } else {
+                    [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
+                }
             }
+            _childArrayFoundFromParse = childList;
+            [self setupChildProperties];
             [self initializeChildImages];
             _only_first_load = 0;
             
@@ -203,12 +237,37 @@
                 if(!error) {
                     // 申請を取り下げた場合に起こりうる
                     if ([objects count] < 1) {
-                        [self setChildNames];
-                        return;
+                        // こどもがいないのでbabyryちゃんのobjectIdをConfigから引く → _childArrayFromParseにセット
+                        // TODO babyryちゃんのobjectIdはキャッシュしておきたいなー
+                        PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
+                        [query whereKey:@"key" equalTo:@"tutorialChild"];
+                        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                            if (error) {
+                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting tutorialChild : %@", error]];
+                                // TODO ネットワークを確認してねというメッセージ出す
+                            }
+                            if (objects.count > 0) {
+                                NSString *childObjectId = objects[0][@"value"];
+                                // Childからbotのrowをひく
+                                PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
+                                [botQuery whereKey:@"objectId" equalTo:childObjectId];
+                                [botQuery findObjectsInBackgroundWithBlock:^(NSArray *botUsers, NSError *error) {
+                                    if (error) {
+                                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting tutorialBotChild from Child objectId:%@", childObjectId]];
+                                    }
+                                    if (botUsers.count > 0) {
+                                        _childArrayFoundFromParse = botUsers;
+                                        [self setupChildProperties];
+                                        [self initializeChildImages];
+                                    } else {
+                                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"No Bot User in Child class objectId:%@", childObjectId]];
+                                    }
+                                }];
+                            } else {
+                                [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
+                            }
+                        }];
                     }
-                    _childArrayFoundFromParse = objects;
-                    [self setupChildProperties];
-                    [self initializeChildImages];
                 } else {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
                 }
@@ -249,14 +308,55 @@
 
 -(void) showPageViewController
 {
-    if (!_pageViewController) {
-        _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-        _pageViewController.childProperties = _childProperties;
-        [self addChildViewController:_pageViewController];
-        [self.view addSubview:_pageViewController.view];
+    if (_pageViewController) {
+        [self setupGlobalSetting];
+        return;
     }
+    
+    PFUser *user = [PFUser currentUser];
+    if (user[@"familyId"]) {
+        [self instantiatePageViewController];
+        return;
+    }
+    
+    user[@"familyId"] = [self createFamilyId];
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        PFQuery *query = [PFQuery queryWithClassName:@"TutorialMap"];
+        [query whereKey:@"userId" equalTo:user[@"userId"]];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting TutorialMap userId:%@ error:%@", user[@"userId"], error]];
+                // TODO ネットワークエラーが発生しました を表示
+                return;
+            }
+            if (objects.count > 0) {
+                [self instantiatePageViewController];
+            }
+            PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
+            tutorialMap[@"userid"] = user[@"userId"];
+            [tutorialMap saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    // TODO ネットワークエラーが発生しました を表示
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving TutorialMap userId:%@ error:%@", user[@"userId"], error]];
+                    return;
+                }
+                [self instantiatePageViewController];
+            }];
+        }];
+    }];
+}
 
-    // global setting
+- (void)instantiatePageViewController
+{
+    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
+    _pageViewController.childProperties = _childProperties;
+    [self addChildViewController:_pageViewController];
+    [self.view addSubview:_pageViewController.view];
+    [self setupGlobalSetting];
+}
+
+- (void)setupGlobalSetting
+{
     UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
     [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"listReverse"] forState:UIControlStateNormal];
     [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
@@ -295,6 +395,12 @@
     for (PFObject *child in _childArrayFoundFromParse) {
         [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
     }
+}
+
+- (NSString*) createFamilyId
+{
+    IdIssue *idIssue = [[IdIssue alloc]init];
+    return [idIssue issue:@"family"];
 }
 
 @end
