@@ -10,6 +10,8 @@
 #import "NicknameEditViewController.h"
 #import "ChildProfileViewController.h"
 #import "Navigation.h"
+#import "PartnerApply.h"
+#import "PartnerInviteViewController.h"
 
 @interface ProfileViewController ()
 
@@ -60,7 +62,7 @@
             numberOfRows = 1;
             break;
         case 1:
-            numberOfRows = 1;
+            numberOfRows = 2;
             break;
         case 2:
             numberOfRows = [_childProperties count];
@@ -101,6 +103,13 @@
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     break;
                 }
+                case 1: {
+                    if ([[PartnerApply getApplyStatus] isEqualToString:@"NoApplying"]) {
+                        cell.textLabel.text = @"パートナー招待";
+                    }
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    break;
+                }
                 default:
                     break;
             }
@@ -135,6 +144,11 @@
         case 1:
             switch (indexPath.row) {
                 case 0:
+                    break;
+                case 1:
+                    if ([[PartnerApply getApplyStatus] isEqualToString:@"NoApplying"]) {
+                        [self openPartnerApplyView];
+                    }
                     break;
                     
                 default:
@@ -195,6 +209,12 @@
     childProfileViewController.childName = child[@"name"];
     childProfileViewController.childBirthday = child[@"birthday"];
     [self.navigationController pushViewController:childProfileViewController animated:YES];
+}
+
+- (void)openPartnerApplyView
+{
+    PartnerInviteViewController *partnerInviteViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerInviteViewController"];
+    [self.navigationController pushViewController:partnerInviteViewController animated:YES];
 }
 
 /*
