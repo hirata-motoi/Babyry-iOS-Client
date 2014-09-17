@@ -160,24 +160,11 @@
             [tutorialMap saveInBackground];
             
             // chooserに設定
-            PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
-            [query whereKey:@"key" equalTo:@"tutorialChild"];
-            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                if (error) {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting toturialChild : %@", error]];
-                    return;
-                }
-                if (objects.count > 0) {
-                    NSString *tutorialChildObjectId = objects[0][@"value"];
-                    
-                    PFObject *familyRole = [PFObject objectWithClassName:@"FamilyRole"];
-                    familyRole[@"familyId"] = _currentUser[@"familyId"];
-                    familyRole[@"chooser"]  = _currentUser[@"userId"];
-                    familyRole[@"uploader"] = tutorialChildObjectId;
-                    [familyRole saveInBackground];
-                }
-            }];
-            
+            PFObject *familyRole = [PFObject objectWithClassName:@"FamilyRole"];
+            familyRole[@"familyId"] = _currentUser[@"familyId"];
+            familyRole[@"chooser"]  = _currentUser[@"userId"];
+            familyRole[@"uploader"] = @"";
+            [familyRole saveInBackground];
         }
         
 //        // falimyIdがなければ招待画面をだして先に進めない
