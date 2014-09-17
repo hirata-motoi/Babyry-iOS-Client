@@ -13,6 +13,7 @@
 #import "Config.h"
 #import "AppSetting.h"
 #import "DateUtils.h"
+#import "Logger.h"
 
 @implementation AppDelegate
 
@@ -59,6 +60,8 @@
     // Crittercism
     [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
     
+    [self setTrackingLogName:@""];
+    
     // Override point for customization after application launch.
     return YES;
 }
@@ -102,6 +105,8 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
+    [self setTrackingLogName:@"applicationWillEnterForeground"];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
@@ -115,7 +120,6 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    
     [MagicalRecord cleanUp];
 }
 
@@ -149,6 +153,11 @@
     newAs.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     
+}
+
+- (void) setTrackingLogName:(NSString *)type
+{
+    [Logger resetTrackingLogName:type];
 }
 
 @end

@@ -12,5 +12,8 @@
 @interface Logger : NSObject
 
 + (void) writeOneShot:(NSString *)type message:(NSString *)message;
++ (void) resetTrackingLogName:(NSString *)type;
++ (void) writeToTrackingLog:(NSString *)message;
++ (void) sendTrackingLog;
 
 @end

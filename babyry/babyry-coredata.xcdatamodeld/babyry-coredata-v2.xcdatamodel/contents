@@ -14,8 +14,14 @@
         <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="TrackingLogEntity" representedClassName="TrackingLogEntity" syncable="YES">
+        <attribute name="lastViewController" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="logName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
         <element name="AppSetting" positionX="-45" positionY="0" width="128" height="103"/>
         <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="135"/>
+        <element name="TrackingLogEntity" positionX="27" positionY="135" width="128" height="90"/>
     </elements>
 </model>

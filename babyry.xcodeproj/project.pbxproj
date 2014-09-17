@@ -64,6 +64,7 @@
 		88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A619C211AB00BF6F6F /* CheckAppVersion.m */; };
 		88C072C419C4599900BF6F6F /* TmpUserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C319C4599900BF6F6F /* TmpUserData.m */; };
 		88C072C719C459D600BF6F6F /* TmpUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C619C459D600BF6F6F /* TmpUser.m */; };
+		88C072E919C9E58D00BF6F6F /* TrackingLogEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072E819C9E58D00BF6F6F /* TrackingLogEntity.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -258,6 +259,8 @@
 		88C072C319C4599900BF6F6F /* TmpUserData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TmpUserData.m; sourceTree = "<group>"; };
 		88C072C519C459D600BF6F6F /* TmpUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TmpUser.h; sourceTree = "<group>"; };
 		88C072C619C459D600BF6F6F /* TmpUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TmpUser.m; sourceTree = "<group>"; };
+		88C072E719C9E58D00BF6F6F /* TrackingLogEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackingLogEntity.h; sourceTree = "<group>"; };
+		88C072E819C9E58D00BF6F6F /* TrackingLogEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackingLogEntity.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -942,6 +945,8 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				88C072E719C9E58D00BF6F6F /* TrackingLogEntity.h */,
+				88C072E819C9E58D00BF6F6F /* TrackingLogEntity.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
 				88C072C319C4599900BF6F6F /* TmpUserData.m */,
 			);
@@ -1185,6 +1190,7 @@
 				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
+				88C072E919C9E58D00BF6F6F /* TrackingLogEntity.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
