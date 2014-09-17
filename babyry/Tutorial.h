@@ -7,12 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TutorialStage.h"
 
 @interface Tutorial : NSObject
 
 + (void)initializeTutorialStage:(BOOL)hasFamilyId;
-+ (NSString *)currentStage;
-+ (NSString *)updateStage:(NSString *)preStage;
++ (TutorialStage *)currentStage;
++ (TutorialStage *)updateStage;
 + (BOOL)underTutorial;
 
 @end

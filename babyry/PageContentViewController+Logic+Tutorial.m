@@ -8,6 +8,7 @@
 
 #import "PageContentViewController+Logic+Tutorial.h"
 #import "DateUtils.h"
+#import "TutorialBestShot.h"
 
 @implementation PageContentViewController_Logic_Tutorial
 
@@ -31,7 +32,7 @@
         return [obj2[@"date"] compare:obj1[@"date"]];
     }];
     
-    // 最新の日付と現在日時の差を出す = 全てのchildImageの日付をこの差で補正していく
+    // Parseの画像のうち最新のものの日付と現在の日時の差を出す = 全てのchildImageの日付をこの差で補正していく
     NSNumber *latestYMDOfDefaultImage = sortedChildImages[0][@"date"];
     NSDateComponents *defaultImageComps = [self compsFromNumber:latestYMDOfDefaultImage];
     NSDateComponents *todayComps = [self dateComps];
@@ -48,6 +49,22 @@
         NSDateComponents *compensatedComps = [DateUtils addDateComps:comps withUnit:@"day" withValue:diffDays.day];
         childImage[@"date"] = [self numberFromComps:compensatedComps];
     }
+}
+
+// 今日の画像はTutorialBestShotに保存してあるBestShot情報を利用する
+- (void)compensateBestFlagOfChildImage:(NSArray *)childImages
+{
+    // 今日
+    NSDateComponents *todayComps = [DateUtils dateCompsFromDate:[NSDate date]];
+    NSNumber *todayYMD = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", todayComps.year, todayComps.month, todayComps.day] integerValue]];
+    TutorialBestShot *todayBestShot = [TutorialBestShot MR_findFirst];
+   
+    for (PFObject *childImage in childImages) {
+        if ([childImage.objectId isEqualToString:todayBestShot.imageObjectId]) {
+            childImage[@"bestFlag"] = @"choosed";
+        }
+    }
+    
 }
 
 - (NSDateComponents *)compsFromNumber:(NSNumber *)date

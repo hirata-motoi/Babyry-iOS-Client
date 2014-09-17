@@ -69,6 +69,7 @@
         if (!error) {
             
             [self compensateDateOfChildImage:objects];
+            [self compensateBestFlagOfChildImage:objects];
             
             NSInteger index = [[self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
             NSMutableDictionary *section = [self.pageContentViewController.childImages objectAtIndex:index];
@@ -232,6 +233,9 @@
 }
 
 - (void)compensateDateOfChildImage:(NSArray *)objects
+{}
+
+- (void)compensateBestFlagOfChildImage:(NSArray *)objects
 {}
 
 - (void)showIntroductionOfImageRequest

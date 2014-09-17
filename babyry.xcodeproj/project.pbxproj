@@ -149,10 +149,11 @@
 		F2B7E0DC19C166D20052981B /* Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0DB19C166D20052981B /* Tutorial.m */; };
 		F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */; };
 		F2B7E0E119C1F3A00052981B /* LogoutIntroduceView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */; };
-		F2B7E0E519C5A53C0052981B /* MultiUploadViewController+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0E419C5A53C0052981B /* MultiUploadViewController+Tutorial.m */; };
-		F2B7E0E819C68EDC0052981B /* TutorialBestShot.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0E719C68EDC0052981B /* TutorialBestShot.m */; };
 		F2B7E0EE19C742520052981B /* PageContentViewController+Logic.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0ED19C742520052981B /* PageContentViewController+Logic.m */; };
 		F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934EC19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m */; };
+		F2D934F019C78D3B001F33D0 /* MultiUploadViewController+Logic.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934EF19C78D3B001F33D0 /* MultiUploadViewController+Logic.m */; };
+		F2D934F319C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934F219C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m */; };
+		F2D934FF19C9463E001F33D0 /* TutorialBestShot.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -406,14 +407,16 @@
 		F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogoutIntroduceView.xib; sourceTree = "<group>"; };
 		F2B7E0DF19C1F3A00052981B /* LogoutIntroduceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogoutIntroduceView.h; sourceTree = "<group>"; };
 		F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogoutIntroduceView.m; sourceTree = "<group>"; };
-		F2B7E0E319C5A53C0052981B /* MultiUploadViewController+Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MultiUploadViewController+Tutorial.h"; sourceTree = "<group>"; };
-		F2B7E0E419C5A53C0052981B /* MultiUploadViewController+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MultiUploadViewController+Tutorial.m"; sourceTree = "<group>"; };
-		F2B7E0E619C68EDC0052981B /* TutorialBestShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialBestShot.h; sourceTree = "<group>"; };
-		F2B7E0E719C68EDC0052981B /* TutorialBestShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialBestShot.m; sourceTree = "<group>"; };
 		F2B7E0EC19C742520052981B /* PageContentViewController+Logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PageContentViewController+Logic.h"; sourceTree = "<group>"; };
 		F2B7E0ED19C742520052981B /* PageContentViewController+Logic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PageContentViewController+Logic.m"; sourceTree = "<group>"; };
 		F2D934EB19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PageContentViewController+Logic+Tutorial.h"; sourceTree = "<group>"; };
 		F2D934EC19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PageContentViewController+Logic+Tutorial.m"; sourceTree = "<group>"; };
+		F2D934EE19C78D3B001F33D0 /* MultiUploadViewController+Logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MultiUploadViewController+Logic.h"; sourceTree = "<group>"; };
+		F2D934EF19C78D3B001F33D0 /* MultiUploadViewController+Logic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MultiUploadViewController+Logic.m"; sourceTree = "<group>"; };
+		F2D934F119C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MultiUploadViewController+Logic+Tutorial.h"; sourceTree = "<group>"; };
+		F2D934F219C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MultiUploadViewController+Logic+Tutorial.m"; sourceTree = "<group>"; };
+		F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialBestShot.h; sourceTree = "<group>"; };
+		F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialBestShot.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -851,12 +854,14 @@
 			children = (
 				8814A99B194ADB330010F516 /* MultiUploadViewController.h */,
 				8814A99C194ADB330010F516 /* MultiUploadViewController.m */,
-				F2B7E0E319C5A53C0052981B /* MultiUploadViewController+Tutorial.h */,
-				F2B7E0E419C5A53C0052981B /* MultiUploadViewController+Tutorial.m */,
 				88CFF4DD199763CA00B56481 /* MultiUploadAlbumTableViewController.h */,
 				88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */,
 				8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */,
 				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
+				F2D934EE19C78D3B001F33D0 /* MultiUploadViewController+Logic.h */,
+				F2D934EF19C78D3B001F33D0 /* MultiUploadViewController+Logic.m */,
+				F2D934F119C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.h */,
+				F2D934F219C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m */,
 			);
 			name = MultiUpload;
 			sourceTree = "<group>";
@@ -966,8 +971,8 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				F2B7E0E619C68EDC0052981B /* TutorialBestShot.h */,
-				F2B7E0E719C68EDC0052981B /* TutorialBestShot.m */,
+				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
+				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
 				88C072C319C4599900BF6F6F /* TmpUserData.m */,
 				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
@@ -1159,8 +1164,10 @@
 				889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
 				88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */,
+				F2D934FF19C9463E001F33D0 /* TutorialBestShot.m in Sources */,
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
 				88C072A419C17FEC00BF6F6F /* ChooseRegisterStepViewController.m in Sources */,
+				F2D934F319C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m in Sources */,
 				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
@@ -1189,10 +1196,10 @@
 				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
 				88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */,
 				88C072C419C4599900BF6F6F /* TmpUserData.m in Sources */,
+				F2D934F019C78D3B001F33D0 /* MultiUploadViewController+Logic.m in Sources */,
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				F2B7E0DC19C166D20052981B /* Tutorial.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
-				F2B7E0E519C5A53C0052981B /* MultiUploadViewController+Tutorial.m in Sources */,
 				88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */,
 				F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */,
 				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
@@ -1234,7 +1241,6 @@
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
 				F2AD4F15199FD5F200037C72 /* ImageRequestIntroductionView.m in Sources */,
 				F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */,
-				F2B7E0E819C68EDC0052981B /* TutorialBestShot.m in Sources */,
 				F2B7E0E119C1F3A00052981B /* LogoutIntroduceView.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */,

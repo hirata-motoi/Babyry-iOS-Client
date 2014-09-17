@@ -31,6 +31,7 @@
 #import "CheckAppVersion.h"
 #import "TmpUser.h"
 #import "Tutorial.h"
+#import "DateUtils.h"
 
 @interface ViewController ()
 
@@ -152,12 +153,31 @@
             IdIssue *idIssue = [[IdIssue alloc]init];
             _currentUser[@"familyId"] = [idIssue issue:@"family"];
             [_currentUser saveInBackground];
+            
             // その上でbotと紐付けをする TutorialMapにデータを保存
             PFObject *tutorialMap = [PFObject objectWithClassName:@"TutorialMap"];
             tutorialMap[@"userId"] = _currentUser[@"userId"];
             [tutorialMap saveInBackground];
             
-            // TODO TutorialSetting entityにChild.objectIdを保存しとく。TutorialSettingにobjectIdがあればチュートリアル中と判断する
+            // chooserに設定
+            PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
+            [query whereKey:@"key" equalTo:@"tutorialChild"];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting toturialChild : %@", error]];
+                    return;
+                }
+                if (objects.count > 0) {
+                    NSString *tutorialChildObjectId = objects[0][@"value"];
+                    
+                    PFObject *familyRole = [PFObject objectWithClassName:@"FamilyRole"];
+                    familyRole[@"familyId"] = _currentUser[@"familyId"];
+                    familyRole[@"chooser"]  = _currentUser[@"userId"];
+                    familyRole[@"uploader"] = tutorialChildObjectId;
+                    [familyRole saveInBackground];
+                }
+            }];
+            
         }
         
 //        // falimyIdがなければ招待画面をだして先に進めない

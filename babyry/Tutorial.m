@@ -9,6 +9,7 @@
 #import "Tutorial.h"
 #import "TutorialStage.h"
 #import "Config.h"
+#import "DateUtils.h"
 
 @implementation Tutorial
 
@@ -23,58 +24,43 @@
     // tutorial stageがない かつ familyIdがある → tutorial実装前のアプリで始めたユーザ → tutorialは不要
     NSArray *tutorialStages = [Config config][@"tutorialStages"];
     NSString *firstStage = (hasFamilyId) ? tutorialStages[tutorialStages.count - 1] : tutorialStages[0];
-    NSLog(@"stage : %@", firstStage);
     TutorialStage *newTutorialStage = [TutorialStage MR_createEntity];
     newTutorialStage.currentStage = firstStage;
-    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
-+ (NSString *)currentStage
++ (TutorialStage *)currentStage
 {
     TutorialStage *tutorialStage = [TutorialStage MR_findFirst];
-    
-    if (!tutorialStage) {
-        NSString *firstStage = [Config config][@"tutorialStages"][0];
-        TutorialStage *newTutorialStage = [TutorialStage MR_createEntity];
-        newTutorialStage.currentStage = firstStage;
-        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-        return firstStage;
-    }
-    
-    return tutorialStage.currentStage;
+    return tutorialStage;
 }
 
 + (BOOL)underTutorial
 {
-    NSString *currentStage = [self currentStage];
+    TutorialStage *currentStage = [self currentStage];
     if (!currentStage) {
         return NO;
     }
-    return ![currentStage isEqualToString:@"tutorialFinished"];
+    return ![currentStage.currentStage isEqualToString:@"tutorialFinished"];
 }
 
 // 引数が空の場合はexception
 // rowがない場合はexception
-+ (NSString *)updateStage:(NSString *)preStage
++ (TutorialStage *)updateStage
 {
-    if (!preStage) {
-        @throw @"invalid argument";
-    }
-    TutorialStage *tutorialStage = [TutorialStage MR_findFirst];
-    if (!tutorialStage) {
-        @throw @"can't find currentTutorialStage";
+    NSArray *tutorialStages = [Config config][@"tutorialStages"];
+    TutorialStage *currentStage = [self currentStage];
+    if (!currentStage || [currentStage.currentStage isEqualToString:tutorialStages[ tutorialStages.count - 1 ]]) {
+        return nil;
     }
    
-    NSString *nextStage = @"";
-    NSArray *tutorialStages = [Config config][@"tutorialStages"];
     for (int i = 0; i < tutorialStages.count; i++) {
-        if ([preStage isEqualToString: tutorialStages[i]]) {
-            tutorialStage.currentStage = tutorialStages[i + 1];
+        if ([currentStage.currentStage isEqualToString: tutorialStages[i]]) {
+            currentStage.currentStage = tutorialStages[i + 1];
             break;                       
         }
     }
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-    return tutorialStage.currentStage;
+    return currentStage;
 }
 
 @end
