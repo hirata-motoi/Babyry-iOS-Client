@@ -8,12 +8,10 @@
 	<string>https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
 	<key>tutorialStages</key>
 	<array>
-		<string>uploadByBot</string>
 		<string>chooseByUser</string>
 		<string>partChange </string>
 		<string>addChild</string>
 		<string>uploadByUser</string>
-		<string>chooseByBot</string>
 		<string>tutorialFinished</string>
 	</array>
 	<key>FinishedFirstLaunch</key>

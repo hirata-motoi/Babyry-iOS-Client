@@ -50,7 +50,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    if ([Tutorial underTutorial]) {
+    if ([Tutorial shouldShowDefaultImage]) {
         logicTutorial = [[MultiUploadViewController_Logic_Tutorial alloc]init];
         logicTutorial.multiUploadViewController = self;
     } else {

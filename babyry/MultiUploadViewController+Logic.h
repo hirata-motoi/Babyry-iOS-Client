@@ -18,5 +18,6 @@
 - (void)updateImagesFromParse;
 - (void)updateBestShot;
 - (void)createNotificationHistory:(NSString *)type;
+- (void)updateBestShotWithChild:(NSMutableDictionary *)childProperty withDate:(NSString *)date;
 
 @end

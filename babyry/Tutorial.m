@@ -44,6 +44,23 @@
     return ![currentStage.currentStage isEqualToString:@"tutorialFinished"];
 }
 
++ (BOOL)shouldShowDefaultImage
+{
+    TutorialStage *currentStage = [self currentStage];
+    if (!currentStage) {
+        return NO;
+    }
+    
+    if (
+        [currentStage.currentStage isEqualToString:@"chooseByUser"] ||
+        [currentStage.currentStage isEqualToString:@"partChange"]   ||
+        [currentStage.currentStage isEqualToString:@"addChild"]
+    ) {
+        return YES;
+    }
+    return NO;
+}
+
 // 引数が空の場合はexception
 // rowがない場合はexception
 + (TutorialStage *)updateStage

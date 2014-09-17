@@ -16,6 +16,8 @@
 #import "PushNotification.h"
 #import "Config.h"
 #import "Logger.h"
+#import "Tutorial.h"
+#import "MultiUploadViewController+Logic.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -414,6 +416,12 @@
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
             options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
             [PushNotification sendInBackground:@"imageUpload" withOptions:options];
+           
+            if ([Tutorial underTutorial]) {
+                // best shotを選んであげる
+                MultiUploadViewController_Logic *logic = [[MultiUploadViewController_Logic alloc]init];
+                [logic updateBestShotWithChild:_child withDate:_date];
+            }
         }
     }
 }
