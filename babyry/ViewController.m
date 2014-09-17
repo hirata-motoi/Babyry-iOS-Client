@@ -31,6 +31,7 @@
 #import "CheckAppVersion.h"
 #import "TmpUser.h"
 #import "Tutorial.h"
+#import "TutorialAttributes.h"
 #import "DateUtils.h"
 
 @interface ViewController ()
@@ -75,6 +76,9 @@
     
     // sharding conf初期化
     [Sharding setupShardConf];
+    
+    // notification center
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -218,6 +222,9 @@
                 NSArray *botUsers = [query findObjects];
                 if (botUsers.count > 0) {
                     NSString *childObjectId = botUsers[0][@"value"];
+                    
+                    [Tutorial upsertTutorialAttributes:@"tutorialChildObjectId" withValue:childObjectId];
+                    
                     // Childからbotのrowをひく
                     PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
                     [botQuery whereKey:@"objectId" equalTo:childObjectId];
@@ -255,6 +262,7 @@
                             }
                             if (objects.count > 0) {
                                 NSString *childObjectId = objects[0][@"value"];
+                                [Tutorial upsertTutorialAttributes:@"tutorialChildObjectId" withValue:childObjectId];
                                 // Childからbotのrowをひく
                                 PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
                                 [botQuery whereKey:@"objectId" equalTo:childObjectId];
@@ -408,6 +416,16 @@
 {
     IdIssue *idIssue = [[IdIssue alloc]init];
     return [idIssue issue:@"family"];
+}
+
+- (void)reloadPageViewController
+{
+    NSLog(@"reloadPageViewController childProperties:%@", _childProperties);
+    [_pageViewController.view removeFromSuperview];
+    [_pageViewController removeFromParentViewController];
+    _pageViewController = nil;
+   
+    [self instantiatePageViewController];
 }
 
 @end

@@ -14,6 +14,10 @@
         <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="TutorialAttributes" representedClassName="TutorialAttributes" syncable="YES">
+        <attribute name="key" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="TutorialBestShot" representedClassName="TutorialBestShot" syncable="YES">
         <attribute name="imageObjectId" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
@@ -25,5 +29,6 @@
         <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="133"/>
         <element name="TutorialBestShot" positionX="-9" positionY="171" width="128" height="58"/>
         <element name="TutorialStage" positionX="-18" positionY="90" width="128" height="58"/>
+        <element name="TutorialAttributes" positionX="-18" positionY="99" width="128" height="75"/>
     </elements>
 </model>

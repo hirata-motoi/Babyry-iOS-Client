@@ -284,16 +284,30 @@
                 [child save];
                 
                 // _childPropertiesを更新
-                [_childProperties addObject:child];
+                // TODO childPropertiesはPFObjectじゃなくてdictionaryを保持するようになってる。。。仕様そろえる必要あり
+                NSMutableDictionary *childProperty = [[NSMutableDictionary alloc]init];
+                childProperty[@"objectId"] = child.objectId;
+                childProperty[@"name"] = child[@"name"];
+                childProperty[@"childImageShardIndex"] = child[@"childImageShardIndex"];
+                childProperty[@"commentShardIndex"] = child[@"commentShardIndex"];
+                childProperty[@"createdAt"] = child.createdAt;
+                [_childProperties addObject:childProperty];
             }
             
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
             if ([Tutorial underTutorial]) {
                 [ImageCache removeAllCache];
                 [Tutorial updateStage];
-                // ViewControllerのchildPropertiesからデフォルトのこどもを削除 indexではなくちゃんとobject指定して消した方がいい
-                [_childProperties removeObjectAtIndex:0];
+                // ViewControllerのchildPropertiesからデフォルトのこどもを削除
+                NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+                NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
+                NSArray *tutorialChildObjects = [_childProperties filteredArrayUsingPredicate:p];
+                [_childProperties removeObject:tutorialChildObjects[0]];
             }
+            
+            // _pageViewControllerを再読み込み
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
             
             [_hud hide:YES];
             

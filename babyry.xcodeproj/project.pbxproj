@@ -154,6 +154,7 @@
 		F2D934F019C78D3B001F33D0 /* MultiUploadViewController+Logic.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934EF19C78D3B001F33D0 /* MultiUploadViewController+Logic.m */; };
 		F2D934F319C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934F219C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m */; };
 		F2D934FF19C9463E001F33D0 /* TutorialBestShot.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */; };
+		F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -417,6 +418,8 @@
 		F2D934F219C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MultiUploadViewController+Logic+Tutorial.m"; sourceTree = "<group>"; };
 		F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialBestShot.h; sourceTree = "<group>"; };
 		F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialBestShot.m; sourceTree = "<group>"; };
+		F2D9350019C95DA8001F33D0 /* TutorialAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialAttributes.h; sourceTree = "<group>"; };
+		F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialAttributes.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -971,6 +974,8 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				F2D9350019C95DA8001F33D0 /* TutorialAttributes.h */,
+				F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */,
 				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
 				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
@@ -1234,6 +1239,7 @@
 				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
+				F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */,
 				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,
 				F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
