@@ -83,9 +83,13 @@
         // ここは起きえないけど、進んじゃうと落ちるからreturn
         return;
     }
+    
+    // 次に開いたときの為に、最後のViewController(=次回最初のViewController)を記録、ただしlastLineはCoreDataには入れない
     NSArray *logs = [message componentsSeparatedByString:@" "];
-    entity.lastViewController = [logs lastObject];
-    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    if (![[logs lastObject] isEqualToString:@"lastLine"]) {
+        entity.lastViewController = [logs lastObject];
+        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    }
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                          NSUserDomainMask,
