@@ -34,8 +34,8 @@
     NSNumber *currentDate = [NSNumber numberWithInteger:[self.multiUploadViewController.date integerValue]];
     NSNumber *latestDateOfDefaultImage = childImages[0][@"date"];
     
-    NSDateComponents *currentComps = [self compsFromNumber:currentDate];
-    NSDateComponents *defaultImageComps = [self compsFromNumber:latestDateOfDefaultImage];
+    NSDateComponents *currentComps = [DateUtils compsFromNumber:currentDate];
+    NSDateComponents *defaultImageComps = [DateUtils compsFromNumber:latestDateOfDefaultImage];
     
     NSCalendar *calendar = [NSCalendar currentCalendar];
     NSDateComponents *diffDays = [calendar
@@ -44,15 +44,14 @@
                                   toDate:[calendar dateFromComponents:currentComps]
                                   options:0];
     for (PFObject *childImage in childImages) {
-        NSDateComponents *comps = [self compsFromNumber:childImage[@"date"]];
+        NSDateComponents *comps = [DateUtils compsFromNumber:childImage[@"date"]];
         NSDateComponents *compensatedComps = [DateUtils addDateComps:comps withUnit:@"day" withValue:diffDays.day];
-        childImage[@"date"] = [self numberFromComps:compensatedComps];
+        childImage[@"date"] = [DateUtils numberFromComps:compensatedComps];
     }
 }
 
 - (void)compensateBestImageId:(NSArray *)childImages
 {
-    NSNumber *currentDate = [NSNumber numberWithInteger:[self.multiUploadViewController.date integerValue]];
     TutorialBestShot *tutorialBestShot = [TutorialBestShot MR_findFirst];
     if (!tutorialBestShot) {
         return;
@@ -61,30 +60,8 @@
     self.multiUploadViewController.bestImageId = tutorialBestShot.imageObjectId;
 }
 
-- (NSDateComponents *)compsFromNumber:(NSNumber *)date
-{
-    NSString *ymdString = [date stringValue];
-    NSString *year  = [ymdString substringWithRange:NSMakeRange(0, 4)];
-    NSString *month = [ymdString substringWithRange:NSMakeRange(4, 2)];
-    NSString *day   = [ymdString substringWithRange:NSMakeRange(6, 2)];
-    
-    NSDateComponents *comps = [[NSDateComponents alloc]init];
-    comps.year  = [year integerValue];
-    comps.month = [month integerValue];
-    comps.day   = [day integerValue];
-    
-    return comps;
-}
-
-- (NSNumber *)numberFromComps:(NSDateComponents *)comps
-{
-    NSString *string = [NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day];
-    return [NSNumber numberWithInt:[string intValue]];
-}
-
 - (void)updateBestShot
 {
-    NSNumber *currentDate = [NSNumber numberWithInteger:[self.multiUploadViewController.date integerValue]];
     TutorialBestShot *tutorialBestShot = [TutorialBestShot MR_findFirst];
     if (!tutorialBestShot) {
         tutorialBestShot = [TutorialBestShot MR_createEntity];

@@ -338,6 +338,7 @@
             }
             if (objects.count > 0) {
                 [self instantiatePageViewController];
+                return;
             }
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
             tutorialMap[@"userid"] = user[@"userId"];

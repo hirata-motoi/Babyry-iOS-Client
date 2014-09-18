@@ -34,7 +34,7 @@
     
     // Parseの画像のうち最新のものの日付と現在の日時の差を出す = 全てのchildImageの日付をこの差で補正していく
     NSNumber *latestYMDOfDefaultImage = sortedChildImages[0][@"date"];
-    NSDateComponents *defaultImageComps = [self compsFromNumber:latestYMDOfDefaultImage];
+    NSDateComponents *defaultImageComps = [DateUtils compsFromNumber:latestYMDOfDefaultImage];
     NSDateComponents *todayComps = [self dateComps];
 
     NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -45,9 +45,9 @@
                                   options:0];
     
     for (PFObject *childImage in childImages) {
-        NSDateComponents *comps = [self compsFromNumber:childImage[@"date"]];
+        NSDateComponents *comps = [DateUtils compsFromNumber:childImage[@"date"]];
         NSDateComponents *compensatedComps = [DateUtils addDateComps:comps withUnit:@"day" withValue:diffDays.day];
-        childImage[@"date"] = [self numberFromComps:compensatedComps];
+        childImage[@"date"] = [DateUtils numberFromComps:compensatedComps];
     }
 }
 
@@ -65,27 +65,6 @@
         }
     }
     
-}
-
-- (NSDateComponents *)compsFromNumber:(NSNumber *)date
-{
-    NSString *ymdString = [date stringValue];
-    NSString *year  = [ymdString substringWithRange:NSMakeRange(0, 4)];
-    NSString *month = [ymdString substringWithRange:NSMakeRange(4, 2)];
-    NSString *day   = [ymdString substringWithRange:NSMakeRange(6, 2)];
-    
-    NSDateComponents *comps = [[NSDateComponents alloc]init];
-    comps.year  = [year integerValue];
-    comps.month = [month integerValue];
-    comps.day   = [day integerValue];
-    
-    return comps;
-}
-
-- (NSNumber *)numberFromComps:(NSDateComponents *)comps
-{
-    NSString *string = [NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day];
-    return [NSNumber numberWithInt:[string intValue]];
 }
 
 @end

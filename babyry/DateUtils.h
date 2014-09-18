@@ -16,5 +16,7 @@
 +(NSString *) getWeekStringFromNum:(int)weekDayNum;
 +(NSDateComponents *)addDateComps:(NSDateComponents *)comps withUnit:(NSString *)unit withValue:(NSInteger)value;
 + (NSDateComponents *)dateCompsFromDate:(NSDate *)date;
++ (NSDateComponents *)compsFromNumber:(NSNumber *)date;
++ (NSNumber *)numberFromComps:(NSDateComponents *)comps;
 
 @end
