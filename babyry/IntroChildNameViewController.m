@@ -11,6 +11,8 @@
 #import "Sharding.h"
 #import "ColorUtils.h"
 #import "Logger.h"
+#import "Tutorial.h"
+#import "ImageCache.h"
 
 @interface IntroChildNameViewController ()
 
@@ -283,6 +285,14 @@
                 
                 // _childPropertiesを更新
                 [_childProperties addObject:child];
+            }
+            
+            // もしtutorial中だった場合はデフォルトのこどもの情報を消す
+            if ([Tutorial underTutorial]) {
+                [ImageCache removeAllCache];
+                [Tutorial updateStage];
+                // ViewControllerのchildPropertiesからデフォルトのこどもを削除 indexではなくちゃんとobject指定して消した方がいい
+                [_childProperties removeObjectAtIndex:0];
             }
             
             [_hud hide:YES];

@@ -20,6 +20,7 @@
 #import "PrivacyPolicyViewController.h"
 #import "Config.h"
 #import "Logger.h"
+#import "Tutorial.h"
 
 @interface GlobalSettingViewController ()
 
@@ -366,6 +367,11 @@
         }
         self.roleControl.enabled = TRUE;
         [FamilyRole updateCache];
+        
+        // Tutorial中の場合はステージを進める
+        if ([Tutorial underTutorial]) {
+            [Tutorial updateStage];
+        }
         
         // push通知
         NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
