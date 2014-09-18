@@ -95,7 +95,6 @@
     _currentUser = [PFUser currentUser];
     if (!_currentUser) { // No user logged in
         
-        // アプリのバージョンを確認してロジック変えるのがよさげ
         [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];
@@ -131,6 +130,17 @@
             dispatch_sync(dispatch_get_main_queue(), ^{
             });
         });
+        
+        // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
+        // まずはキャッシュから確認
+        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+            //キャッシュがなければフォアグランドで引いても良い。
+            [_currentUser refresh];
+            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
+                [self setMyNickNamePage];
+                return;
+            }
+        }
 
         // facebook連携していない場合、emailが確認されているか
         // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
@@ -185,17 +195,6 @@
 //                return;
 //            }
 //        }
-        
-        // nickname確認 なければ入れてもらう (ないとpush通知とかで落ちる)
-        // まずはキャッシュから確認
-        if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-            //キャッシュがなければフォアグランドで引いても良い。
-            [_currentUser refresh];
-            if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
-                [self setMyNickNamePage];
-                return;
-            }
-        }
         
         // roleを更新
         [FamilyRole updateCache];

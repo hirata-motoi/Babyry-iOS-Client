@@ -13,6 +13,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *introMyNicknameField;
 @property (strong, nonatomic) IBOutlet UILabel *introMyNicknameSendLabel;
 @property (strong, nonatomic) IBOutlet UIView *editingView;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *selectSexController;
 
 @property BOOL keyboradObserving;
 

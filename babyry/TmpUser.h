@@ -12,5 +12,7 @@
 
 + (void) setTmpUserToCoreData:(NSString *)username password:(NSString *)password;
 + (void) loginTmpUserByCoreData;
++ (BOOL) checkRegistered;
++ (void) registerComplete;
 
 @end

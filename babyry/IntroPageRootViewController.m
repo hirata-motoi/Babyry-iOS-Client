@@ -12,6 +12,7 @@
 #import "MyLogInViewController.h"
 #import "IdIssue.h"
 #import "Logger.h"
+#import "TmpUser.h"
 
 @interface IntroPageRootViewController ()
 
@@ -192,12 +193,14 @@
                                                   ];
                             [alert show];
                             [PFUser logOut];
-                            [self dismissViewControllerAnimated:YES completion:nil];
                         }
+                        [TmpUser registerComplete];
                     }];
                 }
             }];
         }];
+    } else {
+        [TmpUser registerComplete];
     }
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
