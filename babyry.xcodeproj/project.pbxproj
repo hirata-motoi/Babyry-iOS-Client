@@ -66,6 +66,9 @@
 		88C072C719C459D600BF6F6F /* TmpUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C619C459D600BF6F6F /* TmpUser.m */; };
 		88C072CB19C60E1600BF6F6F /* UserRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072CA19C60E1600BF6F6F /* UserRegisterViewController.m */; };
 		88C072CE19C61C2F00BF6F6F /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072CD19C61C2F00BF6F6F /* Account.m */; };
+		88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */; };
+		88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D319C87A3200BF6F6F /* PartnerApply.m */; };
+		88C072E019C8B03A00BF6F6F /* PartnerApplyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -271,6 +274,12 @@
 		88C072CA19C60E1600BF6F6F /* UserRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserRegisterViewController.m; sourceTree = "<group>"; };
 		88C072CC19C61C2F00BF6F6F /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
 		88C072CD19C61C2F00BF6F6F /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
+		88C072CF19C8798000BF6F6F /* PartnerInviteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerInviteViewController.h; sourceTree = "<group>"; };
+		88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerInviteViewController.m; sourceTree = "<group>"; };
+		88C072D219C87A3200BF6F6F /* PartnerApply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApply.h; sourceTree = "<group>"; };
+		88C072D319C87A3200BF6F6F /* PartnerApply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApply.m; sourceTree = "<group>"; };
+		88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApplyEntity.h; sourceTree = "<group>"; };
+		88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApplyEntity.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -538,6 +547,8 @@
 				F2B7E0DB19C166D20052981B /* Tutorial.m */,
 				88C072CC19C61C2F00BF6F6F /* Account.h */,
 				88C072CD19C61C2F00BF6F6F /* Account.m */,
+				88C072D219C87A3200BF6F6F /* PartnerApply.h */,
+				88C072D319C87A3200BF6F6F /* PartnerApply.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -800,6 +811,8 @@
 				889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */,
 				88C072C919C60E1600BF6F6F /* UserRegisterViewController.h */,
 				88C072CA19C60E1600BF6F6F /* UserRegisterViewController.m */,
+				88C072CF19C8798000BF6F6F /* PartnerInviteViewController.h */,
+				88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */,
 			);
 			name = GlobalSetting;
 			sourceTree = "<group>";
@@ -983,6 +996,10 @@
 			children = (
 				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
 				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
+				88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */,
+				88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */,
+				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
+				F2AE04EB19B2EC8500B39C6F /* AppSetting.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
 				88C072C319C4599900BF6F6F /* TmpUserData.m */,
 				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
@@ -1182,7 +1199,9 @@
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
+				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
+				88C072E019C8B03A00BF6F6F /* PartnerApplyEntity.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
@@ -1231,6 +1250,7 @@
 				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
+				88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */,
 				F2305221198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m in Sources */,
 				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */,

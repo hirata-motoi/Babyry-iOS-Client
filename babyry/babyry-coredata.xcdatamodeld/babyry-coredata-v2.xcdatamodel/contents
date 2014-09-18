@@ -6,6 +6,10 @@
         <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="PartnerApplyEntity" representedClassName="PartnerApplyEntity" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="pinCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
     <entity name="TmpUserData" representedClassName="TmpUserData" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="isRegistered" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -25,5 +29,6 @@
         <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="133"/>
         <element name="TutorialBestShot" positionX="-9" positionY="171" width="128" height="58"/>
         <element name="TutorialStage" positionX="-18" positionY="90" width="128" height="58"/>
+        <element name="PartnerApplyEntity" positionX="18" positionY="126" width="128" height="73"/>
     </elements>
 </model>
