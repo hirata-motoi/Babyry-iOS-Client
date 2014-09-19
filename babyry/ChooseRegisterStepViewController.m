@@ -10,6 +10,7 @@
 #import "IdIssue.h"
 #import "TmpUser.h"
 #import "Logger.h"
+#import "Account.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -101,25 +102,7 @@
         }
     }
     
-    // エラーメッセージが無い = 全部埋まっている場合はそれぞれの中身をチェック
-    if ([errorMessage isEqualToString:@""]) {
-        if (![self validateEmailWithString:[info objectForKey:@"username"]]) {
-            errorMessage = @"メールアドレスを正しく入力してください";
-        } else if(![[info objectForKey:@"password"] canBeConvertedToEncoding:NSASCIIStringEncoding]) {
-            errorMessage = @"パスワードに全角文字は使用できません";
-        } else if ([[info objectForKey:@"password"] length] < 8) {
-            errorMessage = @"パスワードは8文字以上を設定してください";
-        } else if (![[info objectForKey:@"password"] isEqualToString:[info objectForKey:@"additional"]]){
-            errorMessage = @"確認用パスワードが一致しません";
-        } else {
-            PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
-            [emailQuery whereKey:@"emailCommon" equalTo:[info objectForKey:@"username"]];
-            PFObject *object = [emailQuery getFirstObject];
-            if(object) {
-                errorMessage = @"既に登録済みのメールアドレスです";
-            }
-        }
-    }
+    errorMessage = [Account checkEmailRegisterFields:[info objectForKey:@"username"] password:[info objectForKey:@"password"] passwordConfirm:[info objectForKey:@"additional"]];
     
     // Display an alert if a field wasn't completed
     if (![errorMessage isEqualToString:@""]) {
@@ -151,6 +134,9 @@
     [user save];
     [user refresh];
     
+    // 本登録完了なのでCoreDataのisRegisteredをtureにする
+    [TmpUser registerComplete];
+    
     _isSignUpCompleted = YES;
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
 }
@@ -167,13 +153,6 @@
 // Sent to the delegate when the sign up screen is dismissed.
 - (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
     //NSLog(@"User dismissed the signUpViewController");
-}
-
-- (BOOL)validateEmailWithString:(NSString*)email
-{
-    NSString *emailRegex = @"[\\S]+@[A-Za-z0-9.-]+\\.[A-Za-z]{1,10}";
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
-    return [emailTest evaluateWithObject:email];
 }
 
 - (void)continueWithNoLogin

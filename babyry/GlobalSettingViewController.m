@@ -24,6 +24,8 @@
 #import "TutorialNavigator.h"
 #import "GlobalSettingViewController+Logic.h"
 #import "GlobalSettingViewController+Logic+Tutorial.h"
+#import "TmpUser.h"
+#import "UserRegisterViewController.h"
 
 @interface GlobalSettingViewController ()
 
@@ -64,12 +66,6 @@
     _settingTableView.delegate = self;
     _settingTableView.dataSource = self;
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    //[self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
@@ -95,19 +91,6 @@
 
 #pragma mark - Table view data source
 
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-//{
-//#warning Potentially incomplete method implementation.
-//    // Return the number of sections.
-//    return 1;
-//}
-//
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-//{
-//#warning Incomplete method implementation.
-//    // Return the number of rows in the section.
-//    return 1;
-//}
 
 - (id)logic
 {
@@ -168,18 +151,38 @@
     
     switch (indexPath.section) {
         case 0:
-            switch (indexPath.row) {
-                case 0:
-                    cell.textLabel.text = @"プロフィール";
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    break;
-                case 1:
-                    cell.textLabel.text = @"あなたのパート";
-                    _roleControl = [self createRoleSwitchSegmentControl];
-                    [cell addSubview:_roleControl];
-                    break;
-                default:
-                    break;
+            if ([TmpUser checkRegistered]) {
+                switch (indexPath.row) {
+                    case 0:
+                        cell.textLabel.text = @"プロフィール";
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        break;
+                    case 1:
+                        cell.textLabel.text = @"あなたのパート";
+                        _roleControl = [self createRoleSwitchSegmentControl];
+                        [cell addSubview:_roleControl];
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                switch (indexPath.row) {
+                    case 0:
+                        cell.textLabel.text = @"プロフィール";
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        break;
+                    case 1:
+                        cell.textLabel.text = @"あなたのパート";
+                        _roleControl = [self createRoleSwitchSegmentControl];
+                        [cell addSubview:_roleControl];
+                        break;
+                    case 2:
+                        cell.textLabel.text = @"本登録を完了する";
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        break;
+                    default:
+                        break;
+                }
             }
             break;
         case 1:
@@ -239,7 +242,11 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
-            rowCount = 2;
+            if ([TmpUser checkRegistered]) {
+                rowCount = 2;
+            } else {
+                rowCount = 3;
+            }
             break;
         case 1:
             rowCount = 1;
@@ -271,6 +278,9 @@
                     [self openProfileEdit];
                     break;
                 case 1:
+                    break;
+                case 2:
+                    [self openRegisterView];
                     break;
                 default:
                     break;
@@ -347,18 +357,21 @@
     }
 }
 
+- (void)openRegisterView
+{
+    UserRegisterViewController * userRegisterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
+    [self.navigationController pushViewController:userRegisterViewController animated:YES];
+}
 
 - (void)openFamilyApply
 {
     FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-    //[self presentViewController:familyApplyViewController animated:true completion:nil];
     [self.navigationController pushViewController:familyApplyViewController animated:YES];
 }
 
 - (void)openFamilyApplyList
 {
     FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-    //[self presentViewController:familyApplyListViewController animated:true completion:nil];
     [self.navigationController pushViewController:familyApplyListViewController animated:YES];
 }
 

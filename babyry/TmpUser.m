@@ -24,7 +24,7 @@
         // 新規ログイン完了した後に呼ぶので、もし古いログイン情報があったら上書きをしないと駄目
         tud.username = username;
         tud.password = password;
-        tud.isRegistered = [NSNumber numberWithBool:YES];
+        tud.isRegistered = [NSNumber numberWithBool:NO];
         tud.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
         tud.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     } else {
@@ -32,7 +32,7 @@
         newTud.name = TmpUserDataKeyName;
         newTud.username = username;
         newTud.password = password;
-        tud.isRegistered = [NSNumber numberWithBool:YES];
+        tud.isRegistered = [NSNumber numberWithBool:NO];
         newTud.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
         newTud.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     }
@@ -52,6 +52,30 @@
         if (user) {
             [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Login as %@", tud.username]];
         }
+    }
+}
+
++ (BOOL) checkRegistered
+{
+    NSString *TmpUserDataKeyName = [Config config][@"TmpUserDataKeyName"];
+    TmpUserData *tud = [TmpUserData MR_findFirstByAttribute:@"name" withValue:TmpUserDataKeyName];
+    if (tud){
+        if (tud.isRegistered) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
++ (void) registerComplete
+{
+    NSString *TmpUserDataKeyName = [Config config][@"TmpUserDataKeyName"];
+    TmpUserData *tud = [TmpUserData MR_findFirstByAttribute:@"name" withValue:TmpUserDataKeyName];
+    if (tud){
+        // ここは簡易ログイン後のみ呼ばれるので tudが無いことは無い
+        tud.isRegistered = [NSNumber numberWithBool:YES];
+        tud.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }
 }
 

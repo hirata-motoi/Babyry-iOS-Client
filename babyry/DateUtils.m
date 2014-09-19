@@ -124,5 +124,26 @@
     return dateComps;
 }
 
++ (NSDateComponents *)compsFromNumber:(NSNumber *)date
+{
+    NSString *ymdString = [date stringValue];
+    NSString *year  = [ymdString substringWithRange:NSMakeRange(0, 4)];
+    NSString *month = [ymdString substringWithRange:NSMakeRange(4, 2)];
+    NSString *day   = [ymdString substringWithRange:NSMakeRange(6, 2)];
+    
+    NSDateComponents *comps = [[NSDateComponents alloc]init];
+    comps.year  = [year integerValue];
+    comps.month = [month integerValue];
+    comps.day   = [day integerValue];
+    
+    return comps;
+}
+
++ (NSNumber *)numberFromComps:(NSDateComponents *)comps
+{
+    NSString *string = [NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day];
+    return [NSNumber numberWithInt:[string intValue]];
+}
+
 
 @end

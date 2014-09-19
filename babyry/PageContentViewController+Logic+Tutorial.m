@@ -37,7 +37,7 @@
     
     // Parseの画像のうち最新のものの日付と現在の日時の差を出す = 全てのchildImageの日付をこの差で補正していく
     NSNumber *latestYMDOfDefaultImage = sortedChildImages[0][@"date"];
-    NSDateComponents *defaultImageComps = [self compsFromNumber:latestYMDOfDefaultImage];
+    NSDateComponents *defaultImageComps = [DateUtils compsFromNumber:latestYMDOfDefaultImage];
     NSDateComponents *todayComps = [self dateComps];
 
     NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -48,9 +48,9 @@
                                   options:0];
     
     for (PFObject *childImage in childImages) {
-        NSDateComponents *comps = [self compsFromNumber:childImage[@"date"]];
+        NSDateComponents *comps = [DateUtils compsFromNumber:childImage[@"date"]];
         NSDateComponents *compensatedComps = [DateUtils addDateComps:comps withUnit:@"day" withValue:diffDays.day];
-        childImage[@"date"] = [self numberFromComps:compensatedComps];
+        childImage[@"date"] = [DateUtils numberFromComps:compensatedComps];
     }
 }
 
