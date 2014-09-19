@@ -21,4 +21,8 @@
 @property UIViewController *viewController;
 @property NSMutableArray *childProperties;
 
+// for tutorial
+@property UITableViewCell *partSwitchCell;
+@property UITableViewCell *addChildCell;
+
 @end

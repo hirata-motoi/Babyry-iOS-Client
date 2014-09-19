@@ -139,6 +139,7 @@
             [self.pageContentViewController.hud hide:YES];
             [self showIntroductionOfImageRequest];
             self.pageContentViewController.isFirstLoad = 0;
+            [self finalizeProcess];
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [self.pageContentViewController.hud hide:YES];
@@ -395,5 +396,12 @@
     }
 }
 
+- (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath
+{
+    return NO;
+}
+
+- (void)finalizeProcess
+{}
 
 @end

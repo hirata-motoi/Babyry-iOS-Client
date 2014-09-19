@@ -193,8 +193,6 @@
 
 - (void)updateBestShotWithChild:(NSMutableDictionary *)childProperty withDate:(NSString *)date
 {
-    NSLog(@"updateBestShotWithChild  child:%@ date:%@", childProperty, date);
-    
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [childProperty[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:childProperty[@"objectId"]];
@@ -276,5 +274,11 @@
 {
     return [_multiUploadViewController.bestImageId isEqualToString:bestImageId];
 }
+
+- (void)removeGestureForTutorial:(UICollectionViewCell *)cell
+{}
+
+- (void)finalizeProcess
+{}
 
 @end

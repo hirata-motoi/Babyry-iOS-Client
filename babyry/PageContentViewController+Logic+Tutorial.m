@@ -9,6 +9,9 @@
 #import "PageContentViewController+Logic+Tutorial.h"
 #import "DateUtils.h"
 #import "TutorialBestShot.h"
+#import "Tutorial.h"
+#import "TutorialStage.h"
+#import "Config.h"
 
 @implementation PageContentViewController_Logic_Tutorial
 
@@ -86,6 +89,34 @@
 {
     NSString *string = [NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day];
     return [NSNumber numberWithInt:[string intValue]];
+}
+
+- (void)showIntroductionOfImageRequest
+{}
+
+- (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath
+{
+    TutorialStage *currentStage = [Tutorial currentStage];
+    NSArray *tutorialStages = [Config config][@"tutorialStages"];
+    
+    // tutorial第一ステージ以外はタップ可能
+    if (![currentStage.currentStage isEqualToString:tutorialStages[0]]) {
+        return NO;
+    }
+   
+    // 1つ目のcellはタップ可能
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        return NO;
+    }
+    return YES;
+}
+
+- (void)finalizeProcess
+{
+    [self.pageContentViewController.tn removeNavigationView];
+    self.pageContentViewController.tn = [[TutorialNavigator alloc]init];
+    self.pageContentViewController.tn.targetViewController = self.pageContentViewController;
+    [self.pageContentViewController.tn showNavigationView];
 }
 
 @end

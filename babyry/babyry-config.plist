@@ -12,6 +12,7 @@
 		<string>partChange </string>
 		<string>addChild</string>
 		<string>uploadByUser</string>
+		<string>familyApply</string>
 		<string>tutorialFinished</string>
 	</array>
 	<key>FinishedFirstLaunch</key>

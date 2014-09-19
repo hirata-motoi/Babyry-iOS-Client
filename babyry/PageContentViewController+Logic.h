@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "PageContentViewController.h"
+#import "TagAlbumCollectionViewCell.h"
 
 @interface PageContentViewController_Logic : NSObject
 
@@ -22,6 +23,7 @@
 - (BOOL)shouldShowMultiUploadView:(NSIndexPath *)indexPath;
 - (BOOL)isNoImage:(NSIndexPath *)indexPath;
 - (BOOL)isBestImageFixed:(NSIndexPath *)indexPath;
+- (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath;
 
 @property PageContentViewController *pageContentViewController;
 

@@ -10,6 +10,8 @@
 #import "DateUtils.h"
 #import "TutorialBestShot.h"
 #import "Tutorial.h"
+#import "TutorialStage.h"
+#import "Config.h"
 
 @implementation MultiUploadViewController_Logic_Tutorial
 
@@ -52,7 +54,6 @@
 
 - (void)compensateBestImageId:(NSArray *)childImages
 {
-    NSNumber *currentDate = [NSNumber numberWithInteger:[self.multiUploadViewController.date integerValue]];
     TutorialBestShot *tutorialBestShot = [TutorialBestShot MR_findFirst];
     if (!tutorialBestShot) {
         return;
@@ -84,7 +85,6 @@
 
 - (void)updateBestShot
 {
-    NSNumber *currentDate = [NSNumber numberWithInteger:[self.multiUploadViewController.date integerValue]];
     TutorialBestShot *tutorialBestShot = [TutorialBestShot MR_findFirst];
     if (!tutorialBestShot) {
         tutorialBestShot = [TutorialBestShot MR_createEntity];
@@ -93,6 +93,25 @@
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     
     [Tutorial updateStage];
+}
+
+- (void)removeGestureForTutorial:(UICollectionViewCell *)cell
+{
+    TutorialStage *currentStage = [Tutorial currentStage];
+    
+    if (![currentStage.currentStage isEqualToString:@"chooseByUser"]) {
+        return;
+    }
+    for (UITapGestureRecognizer *gesture in [cell gestureRecognizers]) {
+        if([gesture isKindOfClass:[UITapGestureRecognizer class]]) {
+            [cell removeGestureRecognizer:gesture];
+        }
+    }
+}
+
+- (void)finalizeProcess
+{
+    [self.multiUploadViewController.navigationController popViewControllerAnimated:YES];
 }
 
 @end

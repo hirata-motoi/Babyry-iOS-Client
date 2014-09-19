@@ -12,13 +12,16 @@
 #import "ColorUtils.h"
 #import "Logger.h"
 #import "Tutorial.h"
+#import "TutorialNavigator.h"
 #import "ImageCache.h"
 
 @interface IntroChildNameViewController ()
 
 @end
 
-@implementation IntroChildNameViewController
+@implementation IntroChildNameViewController {
+    TutorialNavigator *tn;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -181,6 +184,23 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    if ([Tutorial underTutorial]) {
+        tn = [[TutorialNavigator alloc]init];
+        tn.targetViewController = self;
+        [tn showNavigationView];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    if ([Tutorial underTutorial]) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+}
+
 /*
 #pragma mark - Navigation
 
@@ -302,7 +322,9 @@
                 NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
                 NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
                 NSArray *tutorialChildObjects = [_childProperties filteredArrayUsingPredicate:p];
-                [_childProperties removeObject:tutorialChildObjects[0]];
+                if (tutorialChildObjects.count > 0) {
+                    [_childProperties removeObject:tutorialChildObjects[0]];
+                }
             }
             
             // _pageViewControllerを再読み込み

@@ -294,6 +294,10 @@
                 }
                 _uploadedImageCount = 0; // initialize
                 [self saveToParseInBackground];
+                
+                if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUser"]) {
+                    [Tutorial updateStage];
+                }
                 [self dismissViewControllerAnimated:YES completion:NULL];
                 
                 //アルバム表示のViewも消す
@@ -384,7 +388,7 @@
                                     _uploadedImageCount++;
                                     [self saveToParseInBackground];
                                 } else {
-                                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %", task.error]];
+                                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %@", task.error]];
                                 }
                                 return nil;
                             }];
