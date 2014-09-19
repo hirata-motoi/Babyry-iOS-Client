@@ -69,6 +69,9 @@
 		88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */; };
 		88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D319C87A3200BF6F6F /* PartnerApply.m */; };
 		88C072E019C8B03A00BF6F6F /* PartnerApplyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */; };
+		88C072F119CAB50100BF6F6F /* ChildListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072F019CAB50100BF6F6F /* ChildListCell.m */; };
+		88C072F319CAB64500BF6F6F /* ChildListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88C072F219CAB64500BF6F6F /* ChildListCell.xib */; };
+		88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072F519CC107800BF6F6F /* ParseUtils.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -280,6 +283,11 @@
 		88C072D319C87A3200BF6F6F /* PartnerApply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApply.m; sourceTree = "<group>"; };
 		88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApplyEntity.h; sourceTree = "<group>"; };
 		88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApplyEntity.m; sourceTree = "<group>"; };
+		88C072EF19CAB50100BF6F6F /* ChildListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildListCell.h; sourceTree = "<group>"; };
+		88C072F019CAB50100BF6F6F /* ChildListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildListCell.m; sourceTree = "<group>"; };
+		88C072F219CAB64500BF6F6F /* ChildListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildListCell.xib; sourceTree = "<group>"; };
+		88C072F419CC107800BF6F6F /* ParseUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseUtils.h; sourceTree = "<group>"; };
+		88C072F519CC107800BF6F6F /* ParseUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseUtils.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -475,6 +483,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				88C072EA19CAAFC400BF6F6F /* ChildListCell */,
 				F2AE04E319B2E66B00B39C6F /* CoreData */,
 				F2AD4F0E199FD35B00037C72 /* Dialog */,
 				F2AD4F06199F96A700037C72 /* Badge */,
@@ -549,6 +558,8 @@
 				88C072CD19C61C2F00BF6F6F /* Account.m */,
 				88C072D219C87A3200BF6F6F /* PartnerApply.h */,
 				88C072D319C87A3200BF6F6F /* PartnerApply.m */,
+				88C072F419CC107800BF6F6F /* ParseUtils.h */,
+				88C072F519CC107800BF6F6F /* ParseUtils.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -691,6 +702,32 @@
 				88B18C9E193814CF00ED630C /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		88C072EA19CAAFC400BF6F6F /* ChildListCell */ = {
+			isa = PBXGroup;
+			children = (
+				88C072EC19CAAFEC00BF6F6F /* Xib */,
+				88C072EB19CAAFE200BF6F6F /* Class */,
+			);
+			name = ChildListCell;
+			sourceTree = "<group>";
+		};
+		88C072EB19CAAFE200BF6F6F /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				88C072EF19CAB50100BF6F6F /* ChildListCell.h */,
+				88C072F019CAB50100BF6F6F /* ChildListCell.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
+		88C072EC19CAAFEC00BF6F6F /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				88C072F219CAB64500BF6F6F /* ChildListCell.xib */,
+			);
+			name = Xib;
 			sourceTree = "<group>";
 		};
 		88CFF4E21997AC6700B56481 /* Class */ = {
@@ -998,8 +1035,6 @@
 				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
 				88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */,
 				88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */,
-				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
-				F2AE04EB19B2EC8500B39C6F /* AppSetting.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
 				88C072C319C4599900BF6F6F /* TmpUserData.m */,
 				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
@@ -1117,6 +1152,7 @@
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
 				F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */,
+				88C072F319CAB64500BF6F6F /* ChildListCell.xib in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 				88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */,
@@ -1218,6 +1254,7 @@
 				8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */,
 				F2B7E0EE19C742520052981B /* PageContentViewController+Logic.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
+				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
@@ -1235,6 +1272,7 @@
 				F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */,
 				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
 				88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */,
+				88C072F119CAB50100BF6F6F /* ChildListCell.m in Sources */,
 				F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */,
 				F2A7EDB419A0BDC700C73D4F /* IntroPageRootViewController.m in Sources */,
 				F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */,
