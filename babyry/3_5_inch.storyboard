@@ -1573,6 +1573,11 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <connections>
+                        <outlet property="invitedButton" destination="GKF-af-Rte" id="mj1-SG-z2g"/>
+                        <outlet property="loginButton" destination="3sF-cM-R4b" id="SQw-FG-dmN"/>
+                        <outlet property="registerButton" destination="niC-hb-5Gd" id="hYU-0g-d7r"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Glu-Ia-9uH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

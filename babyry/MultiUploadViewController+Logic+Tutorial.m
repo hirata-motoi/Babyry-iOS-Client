@@ -10,6 +10,8 @@
 #import "DateUtils.h"
 #import "TutorialBestShot.h"
 #import "Tutorial.h"
+#import "TutorialStage.h"
+#import "Config.h"
 
 @implementation MultiUploadViewController_Logic_Tutorial
 
@@ -70,6 +72,25 @@
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     
     [Tutorial updateStage];
+}
+
+- (void)removeGestureForTutorial:(UICollectionViewCell *)cell
+{
+    TutorialStage *currentStage = [Tutorial currentStage];
+    
+    if (![currentStage.currentStage isEqualToString:@"chooseByUser"]) {
+        return;
+    }
+    for (UITapGestureRecognizer *gesture in [cell gestureRecognizers]) {
+        if([gesture isKindOfClass:[UITapGestureRecognizer class]]) {
+            [cell removeGestureRecognizer:gesture];
+        }
+    }
+}
+
+- (void)finalizeProcess
+{
+    [self.multiUploadViewController.navigationController popViewControllerAnimated:YES];
 }
 
 @end

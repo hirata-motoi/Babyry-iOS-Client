@@ -21,6 +21,9 @@
 #import "Config.h"
 #import "Logger.h"
 #import "Tutorial.h"
+#import "TutorialNavigator.h"
+#import "GlobalSettingViewController+Logic.h"
+#import "GlobalSettingViewController+Logic+Tutorial.h"
 #import "TmpUser.h"
 #import "UserRegisterViewController.h"
 
@@ -28,7 +31,11 @@
 
 @end
 
-@implementation GlobalSettingViewController
+@implementation GlobalSettingViewController {
+    TutorialNavigator *tn;
+    GlobalSettingViewController_Logic *logic;
+    GlobalSettingViewController_Logic_Tutorial *logicTutorial;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,6 +49,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if ([Tutorial underTutorial]) {
+        logicTutorial = [[GlobalSettingViewController_Logic_Tutorial alloc]init];
+        logicTutorial.globalSettingViewController = self;
+    } else {
+        logic = [[GlobalSettingViewController_Logic alloc]init];
+        logic.globalSettingViewController = self;
+    }
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@""
@@ -61,8 +76,28 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    tn = [[TutorialNavigator alloc]init];
+    tn.targetViewController = self;
+    [tn showNavigationView];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [tn removeNavigationView];
+    tn = nil;
+}
+
 #pragma mark - Table view data source
 
+
+- (id)logic
+{
+    return
+        (logicTutorial) ? logicTutorial :
+        (logic)         ? logic         : nil;
+}
 
 - (void)close
 {
@@ -192,6 +227,13 @@
             break;
     }
     
+    
+    if (indexPath.section == 0 && indexPath.row == 1) {
+        _partSwitchCell = cell;
+    } else if (indexPath.section == 1 && indexPath.row == 0) {
+        _addChildCell = cell;
+    }
+    
     return cell;
 }
 
@@ -224,6 +266,11 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES]; // 選択状態の解除
+    
+    if ([[self logic]forbiddenSelectForTutorial:indexPath]) {
+        return;
+    }
+    
     switch (indexPath.section) {
         case 0:
             switch (indexPath.row) {
@@ -330,6 +377,7 @@
 
 - (void)openAddChildAddView
 {
+    [tn removeNavigationView];
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     icnvc.isNotFirstTime = YES;
     icnvc.childProperties = _childProperties;
@@ -384,6 +432,8 @@
         // Tutorial中の場合はステージを進める
         if ([Tutorial underTutorial]) {
             [Tutorial updateStage];
+            [tn removeNavigationView];
+            [tn showNavigationView];
         }
         
         // push通知

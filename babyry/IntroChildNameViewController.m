@@ -12,13 +12,16 @@
 #import "ColorUtils.h"
 #import "Logger.h"
 #import "Tutorial.h"
+#import "TutorialNavigator.h"
 #import "ImageCache.h"
 
 @interface IntroChildNameViewController ()
 
 @end
 
-@implementation IntroChildNameViewController
+@implementation IntroChildNameViewController {
+    TutorialNavigator *tn;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -181,6 +184,23 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    if ([Tutorial underTutorial]) {
+        tn = [[TutorialNavigator alloc]init];
+        tn.targetViewController = self;
+        [tn showNavigationView];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    if ([Tutorial underTutorial]) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+}
+
 /*
 #pragma mark - Navigation
 
@@ -284,16 +304,32 @@
                 [child save];
                 
                 // _childPropertiesを更新
-                [_childProperties addObject:child];
+                // TODO childPropertiesはPFObjectじゃなくてdictionaryを保持するようになってる。。。仕様そろえる必要あり
+                NSMutableDictionary *childProperty = [[NSMutableDictionary alloc]init];
+                childProperty[@"objectId"] = child.objectId;
+                childProperty[@"name"] = child[@"name"];
+                childProperty[@"childImageShardIndex"] = child[@"childImageShardIndex"];
+                childProperty[@"commentShardIndex"] = child[@"commentShardIndex"];
+                childProperty[@"createdAt"] = child.createdAt;
+                [_childProperties addObject:childProperty];
             }
             
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
             if ([Tutorial underTutorial]) {
                 [ImageCache removeAllCache];
                 [Tutorial updateStage];
-                // ViewControllerのchildPropertiesからデフォルトのこどもを削除 indexではなくちゃんとobject指定して消した方がいい
-                [_childProperties removeObjectAtIndex:0];
+                // ViewControllerのchildPropertiesからデフォルトのこどもを削除
+                NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+                NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
+                NSArray *tutorialChildObjects = [_childProperties filteredArrayUsingPredicate:p];
+                if (tutorialChildObjects.count > 0) {
+                    [_childProperties removeObject:tutorialChildObjects[0]];
+                }
             }
+            
+            // _pageViewControllerを再読み込み
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
             
             [_hud hide:YES];
             

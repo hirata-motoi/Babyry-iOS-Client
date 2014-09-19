@@ -45,6 +45,8 @@
 #import "PageContentViewController+Logic.h"
 #import "PageContentViewController+Logic+Tutorial.h"
 #import "Tutorial.h"
+#import "TutorialNavigator.h"
+#import "FamilyApplyViewController.h"
 
 @interface PageContentViewController ()
 
@@ -125,6 +127,17 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
+   
+    [_tn removeNavigationView];
+    _tn = [[TutorialNavigator alloc]init];
+    _tn.targetViewController = self;
+    [_tn showNavigationView];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [_tn removeNavigationView];
+    _tn = nil;
 }
 
 - (id)logic
@@ -136,7 +149,6 @@
 
 -(void)setImages
 {
-    //[logic setImages];
     [[self logic] setImages];
 }
 
@@ -222,11 +234,20 @@
         rect.origin.x = 0;
         cell.frame = rect;
     }
+    
+    // for tutorial
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        _cellOfToday = cell;
+    }
+    
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    if ([[self logic] forbiddenSelectCell:indexPath]) {
+        return;
+    }
     // チェックの人がアップ催促する時は何の処理もしない
     if ([_selfRole isEqualToString:@"chooser"] && [[self logic] withinTwoDay:indexPath]) {
         if ([[self logic] isNoImage:indexPath]) {
@@ -862,6 +883,13 @@
                           ];
     [alert show];
 }
+
+- (void)openFamilyApply
+{
+    FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
+    [self.navigationController pushViewController:familyApplyViewController animated:YES];
+}
+
 
 /*
 #pragma mark - Navigation

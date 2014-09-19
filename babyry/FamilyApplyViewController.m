@@ -17,6 +17,7 @@
 #import "ImageCache.h"
 #import "PushNotification.h"
 #import "LogoutIntroduceView.h"
+#import "Tutorial.h"
 
 @interface FamilyApplyViewController ()
 
@@ -108,9 +109,12 @@
             }
             if ([objects count] > 0) {
                 _familyObject = [objects objectAtIndex:0];
-                [self showMessage:@"forFamily"];
-                [_stasusHud hide:YES];
-                return;
+                
+                if (_familyObject[@"chooser"] && ![_familyObject[@"chooser"] isEqualToString:@""] ) {
+                    [self showMessage:@"forFamily"];
+                    [_stasusHud hide:YES];
+                    return;
+                }
             }
             
             PFQuery * applyQuery = [PFQuery queryWithClassName:@"FamilyApply"];
@@ -354,6 +358,7 @@
     familyApply[@"role"] = role;
     
     [familyApply save];
+    [Tutorial updateStage];
     [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply send from:%@ to:%@ role:%@", currentUser[@"userId"], _searchedUserObject[@"userId"], role]];
     // そのうちpush通知送る
     

@@ -7,6 +7,7 @@
 //
 
 #import "PageContentViewController+Logic.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface PageContentViewController_Logic_Tutorial : PageContentViewController_Logic
 

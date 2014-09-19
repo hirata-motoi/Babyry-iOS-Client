@@ -15,5 +15,8 @@
 + (TutorialStage *)currentStage;
 + (TutorialStage *)updateStage;
 + (BOOL)underTutorial;
++ (void)upsertTutorialAttributes:(NSString *)key withValue:(NSString *)value;
++ (NSString *)getTutorialAttributes:(NSString *)key;
++ (BOOL)shouldShowDefaultImage;
 
 @end

@@ -26,6 +26,7 @@
 #import "MultiUploadViewController+Logic.h"
 #import "MultiUploadViewController+Logic+Tutorial.h"
 #import "Tutorial.h"
+#import "TutorialNavigator.h"
 
 @interface MultiUploadViewController ()
 
@@ -50,7 +51,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    if ([Tutorial underTutorial]) {
+    if ([Tutorial shouldShowDefaultImage]) {
         logicTutorial = [[MultiUploadViewController_Logic_Tutorial alloc]init];
         logicTutorial.multiUploadViewController = self;
     } else {
@@ -123,7 +124,10 @@
     _isTimperExecuting = NO;
     _needTimer = YES;
     [_myTimer fire];
-    
+   
+    TutorialNavigator *tn = [[TutorialNavigator alloc]init];
+    tn.targetViewController = self;
+    [tn showNavigationView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -258,6 +262,8 @@
         hud.labelFont = [UIFont systemFontOfSize:12];
     }
     
+    [[self logic] removeGestureForTutorial:cell];
+    
     return cell;
 }
 
@@ -384,6 +390,8 @@
         image:UIImageJPEGRepresentation(thumbImage, 0.7f)
         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
     ];
+    
+    [[self logic] finalizeProcess];
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
@@ -568,7 +576,6 @@
         [_bestShotFixLimitLabel setAttributedText:str];
         [self.view addSubview:_bestShotFixLimitLabel];
     }
-    
 }
 
 - (CGRect)buttonRect

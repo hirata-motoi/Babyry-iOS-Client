@@ -10,6 +10,7 @@
 #import "TutorialStage.h"
 #import "Config.h"
 #import "DateUtils.h"
+#import "TutorialAttributes.h"
 
 @implementation Tutorial
 
@@ -43,6 +44,23 @@
     return ![currentStage.currentStage isEqualToString:@"tutorialFinished"];
 }
 
++ (BOOL)shouldShowDefaultImage
+{
+    TutorialStage *currentStage = [self currentStage];
+    if (!currentStage) {
+        return NO;
+    }
+    
+    if (
+        [currentStage.currentStage isEqualToString:@"chooseByUser"] ||
+        [currentStage.currentStage isEqualToString:@"partChange"]   ||
+        [currentStage.currentStage isEqualToString:@"addChild"]
+    ) {
+        return YES;
+    }
+    return NO;
+}
+
 // 引数が空の場合はexception
 // rowがない場合はexception
 + (TutorialStage *)updateStage
@@ -61,6 +79,26 @@
     }
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     return currentStage;
+}
+
++ (void)upsertTutorialAttributes:(NSString *)key withValue:(NSString *)value
+{
+    TutorialAttributes *attribute = [TutorialAttributes MR_findFirstByAttribute:@"key" withValue:key];
+    if (!attribute) {
+        attribute = [TutorialAttributes MR_createEntity];
+        attribute.key = key;
+    }
+    attribute.value = value;
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (NSString *)getTutorialAttributes:(NSString *)key
+{
+    TutorialAttributes *attribute = [TutorialAttributes MR_findFirstByAttribute:@"key" withValue:key];
+    if (attribute) {
+        return attribute.value;
+    }
+    return @"";
 }
 
 @end

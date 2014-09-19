@@ -12,6 +12,8 @@
 #import "AWSS3Utils.h"
 #import "MBProgressHUD.h"
 #import <AudioToolbox/AudioServices.h>
+#import "TagAlbumCollectionViewCell.h"
+#import "TutorialNavigator.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -50,11 +52,16 @@
 - (NSMutableDictionary *)getYearMonthMap;
 - (void)showAlertMessage;
 - (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
+- (void)openFamilyApply;
 
 @property AWSServiceConfiguration *configuration;
 
 @property MBProgressHUD *hud;
 
 @property NSTimer *tm;
+
+// for tutorial
+@property TagAlbumCollectionViewCell *cellOfToday;
+@property TutorialNavigator *tn;
 
 @end
