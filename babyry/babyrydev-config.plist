@@ -14,6 +14,7 @@
 	<string>https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
 	<key>tutorialStages</key>
 	<array>
+		<string>introduction</string>
 		<string>chooseByUser</string>
 		<string>partChange</string>
 		<string>addChild</string>

@@ -26,15 +26,21 @@
     rect.origin.x = (viewSize.width - rect.size.width) / 2;
     rect.origin.y = 300;
     view.frame = rect;
-    //[self.targetViewController.view addSubview:view];
    
     MultiUploadViewController *vc = (MultiUploadViewController *)self.targetViewController;
     overlay = [[ICTutorialOverlay alloc] init];
     overlay.hideWhenTapped = NO;
     overlay.animated = YES;
     [overlay addHoleWithView:vc.firstCellUnselectedBestShotView padding:3.0f offset:CGSizeZero form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
-    MultiUploadViewController+Logic+Tutorial.m[overlay show];
+    [overlay show];
     [overlay addSubview:view];
+    
+    UIButton *skipButton = [self createTutorialSkipButton];
+    CGRect skipRect = skipButton.frame;
+    skipRect.origin.x = 160;
+    skipRect.origin.y = rect.origin.y + rect.size.height + 10;
+    skipButton.frame = skipRect;
+    [overlay addSubview:skipButton];
 }
 
 - (void)remove

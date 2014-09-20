@@ -37,21 +37,19 @@
     view.frame = rect;
     //[self.targetViewController.view addSubview:view];
     [overlay addSubview:view];
+    
+    UIButton *skipButton = [self createTutorialSkipButton];
+    CGRect skipRect = skipButton.frame;
+    skipRect.origin.x = 160;
+    skipRect.origin.y = rect.origin.y + rect.size.height + 10;
+    skipButton.frame = skipRect;
+    [overlay addSubview:skipButton];
 }
 
 - (void)remove
 {
     [view removeFromSuperview];
     [overlay hide];
-}
-
-- (void)overrideButton
-{
-    NSLog(@"overrideButton %@", self.targetViewController.parentViewController.parentViewController.navigationItem.rightBarButtonItem);
-    UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"CogWheel"] forState:UIControlStateNormal];
-    self.targetViewController.parentViewController.parentViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
-    //self.targetViewController.parentViewController.navigationBar.tintColor = [UIColor whiteColor];
 }
 
 @end

@@ -79,7 +79,9 @@
     [self removeGestureForTutorial:cell];
     
     if (indexPath.row == 0) {
-        [self.multiUploadViewController showTutorialNavigator];
+        // このmethodが呼ばれるのはcellがまだ表示されていないタイミング。なので期待する位置にholeが表示されない
+        // ほんとはcellが表示された時点でblockを実行するような実装にすべきだがちょと手間なのでtimer使う
+        [NSTimer scheduledTimerWithTimeInterval:0.3 target:self.multiUploadViewController selector:@selector(showTutorialNavigator) userInfo:nil repeats:NO];
     }
 }
 

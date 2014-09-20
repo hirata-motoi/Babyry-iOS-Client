@@ -11,6 +11,7 @@
 #import "Config.h"
 #import "DateUtils.h"
 #import "TutorialAttributes.h"
+#import "ImageCache.h"
 
 @implementation Tutorial
 
@@ -99,6 +100,53 @@
         return attribute.value;
     }
     return @"";
+}
+
+// stageがfamilyApply or waitForPartner の場合に真
++ (BOOL)shouldShowFamilyApplyLead
+{
+    TutorialStage *currentStage = [self currentStage];
+    if (!currentStage) {
+        return NO;
+    }
+    if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"waitForPartner"]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (BOOL)shouldShowTutorialIntroduction
+{
+    TutorialStage *currentStage = [self currentStage];
+    if (!currentStage) {
+        return NO;
+    }
+    
+    if ([currentStage.currentStage isEqualToString:@"introduction"]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (void)forwardTutorialStageToLast
+{
+    TutorialStage *currentStage = [self currentStage];
+    currentStage.currentStage = @"tutorialFinished";
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (void)removeDefaultChild:(NSMutableArray *)childProperties
+{
+    [ImageCache removeAllCache];
+    // ViewControllerのchildPropertiesからデフォルトのこどもを削除
+    NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+    NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
+    NSArray *tutorialChildObjects = [childProperties filteredArrayUsingPredicate:p];
+    if (tutorialChildObjects.count > 0) {
+        [childProperties removeObject:tutorialChildObjects[0]];
+    }
+    
+    
 }
 
 @end

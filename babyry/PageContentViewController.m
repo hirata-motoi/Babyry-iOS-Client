@@ -127,11 +127,6 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
-   
-    [_tn removeNavigationView];
-    _tn = [[TutorialNavigator alloc]init];
-    _tn.targetViewController = self;
-    [_tn showNavigationView];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -238,6 +233,9 @@
     // for tutorial
     if (indexPath.section == 0 && indexPath.row == 0) {
         _cellOfToday = cell;
+        
+        // TODO logicに追い出す
+        [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(showTutorialNavigator) userInfo:nil repeats:NO];
     }
     
     return cell;
@@ -886,8 +884,21 @@
 
 - (void)openFamilyApply
 {
+    [Tutorial updateStage];
+    [_tn removeNavigationView];
     FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
     [self.navigationController pushViewController:familyApplyViewController animated:YES];
+}
+
+- (void)showTutorialNavigator
+{
+    if (_tn) {
+        [_tn removeNavigationView];
+        _tn = nil;
+    }
+    _tn = [[TutorialNavigator alloc]init];
+    _tn.targetViewController = self;
+    [_tn showNavigationView];
 }
 
 

@@ -587,7 +587,7 @@
 }
 
 - (void)showTutorialNavigator
-{
+{      
     if (tn) {
         [tn removeNavigationView];
         tn = nil;

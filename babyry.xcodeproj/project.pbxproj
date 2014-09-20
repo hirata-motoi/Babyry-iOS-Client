@@ -180,6 +180,11 @@
 		F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */; };
 		F2B7E0E119C1F3A00052981B /* LogoutIntroduceView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */; };
 		F2B7E0EE19C742520052981B /* PageContentViewController+Logic.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0ED19C742520052981B /* PageContentViewController+Logic.m */; };
+		F2B9697419CD75B000C14201 /* TutorialBestShotSelectedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B9697319CD75B000C14201 /* TutorialBestShotSelectedView.xib */; };
+		F2B9697719CD76BD00C14201 /* TutorialBestShotSelectedView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9697619CD76BD00C14201 /* TutorialBestShotSelectedView.m */; };
+		F2B9697A19CD8F4C00C14201 /* TutorialNavigator+Introduction.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9697919CD8F4C00C14201 /* TutorialNavigator+Introduction.m */; };
+		F2B9697C19CD903900C14201 /* TutorialIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */; };
+		F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */; };
 		F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934EC19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m */; };
 		F2D934F019C78D3B001F33D0 /* MultiUploadViewController+Logic.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934EF19C78D3B001F33D0 /* MultiUploadViewController+Logic.m */; };
 		F2D934F319C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934F219C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m */; };
@@ -494,6 +499,14 @@
 		F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogoutIntroduceView.m; sourceTree = "<group>"; };
 		F2B7E0EC19C742520052981B /* PageContentViewController+Logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PageContentViewController+Logic.h"; sourceTree = "<group>"; };
 		F2B7E0ED19C742520052981B /* PageContentViewController+Logic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PageContentViewController+Logic.m"; sourceTree = "<group>"; };
+		F2B9697319CD75B000C14201 /* TutorialBestShotSelectedView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TutorialBestShotSelectedView.xib; sourceTree = "<group>"; };
+		F2B9697519CD76BD00C14201 /* TutorialBestShotSelectedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialBestShotSelectedView.h; sourceTree = "<group>"; };
+		F2B9697619CD76BD00C14201 /* TutorialBestShotSelectedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialBestShotSelectedView.m; sourceTree = "<group>"; };
+		F2B9697819CD8F4C00C14201 /* TutorialNavigator+Introduction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+Introduction.h"; sourceTree = "<group>"; };
+		F2B9697919CD8F4C00C14201 /* TutorialNavigator+Introduction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+Introduction.m"; sourceTree = "<group>"; };
+		F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TutorialIntroductionView.xib; sourceTree = "<group>"; };
+		F2B9698019CD92D900C14201 /* TutorialIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialIntroductionView.h; sourceTree = "<group>"; };
+		F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialIntroductionView.m; sourceTree = "<group>"; };
 		F2D934EB19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PageContentViewController+Logic+Tutorial.h"; sourceTree = "<group>"; };
 		F2D934EC19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PageContentViewController+Logic+Tutorial.m"; sourceTree = "<group>"; };
 		F2D934EE19C78D3B001F33D0 /* MultiUploadViewController+Logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MultiUploadViewController+Logic.h"; sourceTree = "<group>"; };
@@ -983,6 +996,10 @@
 		F21BBBB219C9ECFC002D4623 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2B9698019CD92D900C14201 /* TutorialIntroductionView.h */,
+				F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */,
+				F2B9697519CD76BD00C14201 /* TutorialBestShotSelectedView.h */,
+				F2B9697619CD76BD00C14201 /* TutorialBestShotSelectedView.m */,
 				F21BBBF719CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.h */,
 				F21BBBF819CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.m */,
 				F21BBBEF19CAD748002D4623 /* TutorialUploadByUserView.h */,
@@ -1014,6 +1031,8 @@
 				F21BBBDF19CA72D7002D4623 /* TutorialAddChildView.xib */,
 				F21BBBED19CAD5D1002D4623 /* TutorialUploadByUserView.xib */,
 				F21BBBF519CAE690002D4623 /* TutorialFamilyApplyIntroduceView.xib */,
+				F2B9697319CD75B000C14201 /* TutorialBestShotSelectedView.xib */,
+				F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -1147,6 +1166,8 @@
 				F2D9350319C97982001F33D0 /* TutorialNavigator.h */,
 				F2D9350419C97982001F33D0 /* TutorialNavigator.m */,
 				F2D9350A19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.h */,
+				F2B9697819CD8F4C00C14201 /* TutorialNavigator+Introduction.h */,
+				F2B9697919CD8F4C00C14201 /* TutorialNavigator+Introduction.m */,
 				F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */,
 				F21BBBBE19C9F9D3002D4623 /* TutorialNavigator+SelectBestShot.h */,
 				F21BBBBF19C9F9D3002D4623 /* TutorialNavigator+SelectBestShot.m */,
@@ -1271,6 +1292,7 @@
 				F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */,
 				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
 				F2A8333019AC591B00E2AB58 /* babyry-secret-config.plist in Resources */,
+				F2B9697419CD75B000C14201 /* TutorialBestShotSelectedView.xib in Resources */,
 				F21BBBCA19CA0265002D4623 /* TutorialUpperArrowView.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
@@ -1279,6 +1301,7 @@
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
 				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
 				F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */,
+				F2B9697C19CD903900C14201 /* TutorialIntroductionView.xib in Resources */,
 				F21BBBB519C9ED45002D4623 /* TutorialShowMultiUploadView.xib in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F21BBBC519CA0037002D4623 /* TutorialPartChangeView.xib in Resources */,
@@ -1343,6 +1366,7 @@
 			files = (
 				F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */,
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
+				F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
 				F21BBBDB19CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.m in Sources */,
 				F2310C22198F43DF00E01DA3 /* DragView.m in Sources */,
@@ -1416,6 +1440,8 @@
 				F2A7EDB419A0BDC700C73D4F /* IntroPageRootViewController.m in Sources */,
 				F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */,
 				F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */,
+				F2B9697A19CD8F4C00C14201 /* TutorialNavigator+Introduction.m in Sources */,
+				F2B9697719CD76BD00C14201 /* TutorialBestShotSelectedView.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				F25D29D2199B228D00CD50D7 /* AcceptableUsePolicyViewController.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
