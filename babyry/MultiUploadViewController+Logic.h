@@ -19,7 +19,7 @@
 - (void)updateBestShot;
 - (void)createNotificationHistory:(NSString *)type;
 - (void)updateBestShotWithChild:(NSMutableDictionary *)childProperty withDate:(NSString *)date;
-- (void)removeGestureForTutorial:(UICollectionViewCell *)cell;
+- (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath;
 - (void)finalizeProcess;
 
 @end

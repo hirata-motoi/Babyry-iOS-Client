@@ -210,7 +210,6 @@
         // ランダムでどれか1つをbestshotに選ぶ
         // TODO arc4random_uniformで得られる数値の範囲を確認
         int bestShotIndex = (int)arc4random_uniform((int)objects.count);
-        NSLog(@"bestShotIndex %d", bestShotIndex);
         for (int i = 0; i < objects.count; i++) {
             PFObject *childImage = objects[i];
             childImage[@"bestFlag"] = (i == bestShotIndex) ? @"choosed" : @"unchoosed";
@@ -275,7 +274,7 @@
     return [_multiUploadViewController.bestImageId isEqualToString:bestImageId];
 }
 
-- (void)removeGestureForTutorial:(UICollectionViewCell *)cell
+- (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath
 {}
 
 - (void)finalizeProcess

@@ -74,6 +74,15 @@
     [Tutorial updateStage];
 }
 
+- (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath
+{
+    [self removeGestureForTutorial:cell];
+    
+    if (indexPath.row == 0) {
+        [self.multiUploadViewController showTutorialNavigator];
+    }
+}
+
 - (void)removeGestureForTutorial:(UICollectionViewCell *)cell
 {
     TutorialStage *currentStage = [Tutorial currentStage];
