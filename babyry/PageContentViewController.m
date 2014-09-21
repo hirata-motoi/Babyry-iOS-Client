@@ -114,6 +114,7 @@
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
     }
+    [[self logic] setupHeaderView];
     
     _selfRole = [FamilyRole selfRole:@"useCache"];
     [_pageContentCollectionView reloadData];

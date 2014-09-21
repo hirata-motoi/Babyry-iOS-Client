@@ -12,6 +12,7 @@
 #import "Tutorial.h"
 #import "TutorialStage.h"
 #import "Config.h"
+#import "TutorialFamilyApplyIntroduceView.h"
 
 @implementation PageContentViewController_Logic_Tutorial
 
@@ -117,6 +118,59 @@
     self.pageContentViewController.tn = [[TutorialNavigator alloc]init];
     self.pageContentViewController.tn.targetViewController = self.pageContentViewController;
     [self.pageContentViewController.tn showNavigationView];
+}
+
+- (void)setupHeaderView
+{
+    TutorialStage *currentStage = [Tutorial currentStage];
+    if ([currentStage.currentStage isEqualToString:@"familyApply"]) {
+        NSLog(@"showFamilyApplyIntroduceView");
+        [self showFamilyApplyIntroduceView];
+    } else {
+        NSLog(@"hideFamilyApplyIntroduceView");
+        [self hideFamilyApplyIntroduceView];
+    }
+}
+
+- (void)showFamilyApplyIntroduceView
+{
+    PageContentViewController *vc = self.pageContentViewController;
+    if (vc.familyApplyIntroduceView) {
+        return;
+    }
+    vc.familyApplyIntroduceView = [TutorialFamilyApplyIntroduceView view];
+    CGRect rect = vc.familyApplyIntroduceView.frame;
+    rect.origin.x = 0;
+    rect.origin.y = 64;
+    vc.familyApplyIntroduceView.frame = rect;
+    
+    // パートナー申請誘導viewの分collection viewを小さくする
+    CGRect collectionRect = vc.pageContentCollectionView.frame;
+    collectionRect.size.height = collectionRect.size.height - rect.size.height;
+    collectionRect.origin.y = collectionRect.origin.y + rect.size.height;
+    vc.pageContentCollectionView.frame = collectionRect;
+    
+    [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+    
+    [vc.view addSubview:vc.familyApplyIntroduceView];
+}
+
+- (void)hideFamilyApplyIntroduceView
+{
+    PageContentViewController *vc = self.pageContentViewController;
+    if (!vc.familyApplyIntroduceView) {
+        return;
+    }
+    
+    // パートナー申請誘導viewの分collection viewを大きくする
+    CGRect rect = vc.familyApplyIntroduceView.frame;
+    CGRect collectionRect = vc.pageContentCollectionView.frame;
+    collectionRect.size.height = collectionRect.size.height + rect.size.height;
+    collectionRect.origin.y = collectionRect.origin.y - rect.size.height;
+    vc.pageContentCollectionView.frame = collectionRect;
+    
+    [vc.familyApplyIntroduceView removeFromSuperview];
+    vc.familyApplyIntroduceView = nil;
 }
 
 @end

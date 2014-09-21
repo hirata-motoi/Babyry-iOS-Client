@@ -14,6 +14,7 @@
 #import <AudioToolbox/AudioServices.h>
 #import "TagAlbumCollectionViewCell.h"
 #import "TutorialNavigator.h"
+#import "TutorialFamilyApplyIntroduceView.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -63,5 +64,6 @@
 // for tutorial
 @property TagAlbumCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;
+@property TutorialFamilyApplyIntroduceView *familyApplyIntroduceView;
 
 @end

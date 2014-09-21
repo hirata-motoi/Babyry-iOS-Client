@@ -404,4 +404,7 @@
 - (void)finalizeProcess
 {}
 
+- (void)setupHeaderView
+{}
+
 @end
