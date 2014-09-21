@@ -44,7 +44,7 @@
 - (void)goAhead
 {
     [self remove];
-    [Tutorial updateStage];
+    [Tutorial forwardStageWithNextStage:@"chooseByUser"];
     PageContentViewController *vc = (PageContentViewController *)self.targetViewController;
     [vc viewDidAppear:YES];
 }

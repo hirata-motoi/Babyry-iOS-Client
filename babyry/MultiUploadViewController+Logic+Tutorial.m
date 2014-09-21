@@ -71,7 +71,7 @@
     tutorialBestShot.imageObjectId = self.multiUploadViewController.bestImageId;
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     
-    [Tutorial updateStage];
+    [Tutorial forwardStageWithNextStage:@"partChange"];
 }
 
 - (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath

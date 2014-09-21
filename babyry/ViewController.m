@@ -254,8 +254,14 @@
             // 二発目以降はbackgroundで引かないとUIが固まる
             [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if(!error) {
-                    // 申請を取り下げた場合に起こりうる
                     if ([objects count] < 1) {
+                        // TODO ここに入ってくるのはtutorialをskipした時だけだと思うが要確認
+                        TutorialStage *currentStage = [Tutorial currentStage];
+                        if ([currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
+                            [self setChildNames];
+                        }
+                        return;
+                        
                         // こどもがいないのでbabyryちゃんのobjectIdをConfigから引く → _childArrayFromParseにセット
                         // TODO babyryちゃんのobjectIdはキャッシュしておきたいなー
                         PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
@@ -279,6 +285,7 @@
                                         _childArrayFoundFromParse = botUsers;
                                         [self setupChildProperties];
                                         [self initializeChildImages];
+                                        [self instantiatePageViewController];
                                     } else {
                                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"No Bot User in Child class objectId:%@", childObjectId]];
                                     }
@@ -369,6 +376,9 @@
 
 - (void)instantiatePageViewController
 {
+    if (_childProperties.count < 1) {
+        return;
+    }
     _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
     _pageViewController.childProperties = _childProperties;
     [self addChildViewController:_pageViewController];
@@ -407,7 +417,9 @@
 -(void)setChildNames
 {
     IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    [self presentViewController:introChildNameViewController animated:YES completion:NULL];
+    introChildNameViewController.childProperties = _childProperties;
+//    [self presentViewController:introChildNameViewController animated:YES completion:NULL];
+    [self.navigationController pushViewController:introChildNameViewController animated:YES];
 }
 
 - (void)initializeChildImages
@@ -426,7 +438,6 @@
 
 - (void)reloadPageViewController
 {
-    NSLog(@"reloadPageViewController childProperties:%@", _childProperties);
     [_pageViewController.view removeFromSuperview];
     [_pageViewController removeFromParentViewController];
     _pageViewController = nil;

@@ -430,7 +430,7 @@
         
         // Tutorial中の場合はステージを進める
         if ([Tutorial underTutorial]) {
-            [Tutorial updateStage];
+            [Tutorial forwardStageWithNextStage:@"addChild"];
             [tn removeNavigationView];
             [tn showNavigationView];
         }

@@ -152,7 +152,7 @@
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
             if ([Tutorial underTutorial] && _isBabyryExist) {
                 [ImageCache removeAllCache];
-                [Tutorial updateStage];
+                [Tutorial forwardStageWithNextStage:@"uploadByUser"];
                 // ViewControllerのchildPropertiesからデフォルトのこどもを削除
                 NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
                 NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];

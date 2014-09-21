@@ -25,6 +25,7 @@
 #import "IntroChildNameViewController.h"
 #import "ICTutorialOverlay.h"
 #import "FamilyRole.h"
+#import "ViewController.h"
 
 @implementation TutorialNavigator {
     TutorialNavigator *navigator_;
@@ -126,11 +127,30 @@
     // tutorial stageを進める
     [Tutorial forwardTutorialStageToLast];
     
+    // overlayを消す
+    [self remove];
+    
     // パートをアップに変更 TODO 失敗した時どうしようかな
     [FamilyRole switchRole:@"uploader"];
     
-    // こどもがbabyryちゃんの場合は情報を削除 TODO implemenMultiUploadViewController.mt
+    // こどもがbabyryちゃんの場合は情報を削除
     //    かつこども追加viewを表示(ViewControllerがやってくれる)
+    NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+    ViewController *vc = [self.targetViewController.navigationController.viewControllers objectAtIndex:0];
+    NSMutableArray *childProperties = vc.childProperties;
+    
+    NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
+    NSArray *tutorialChildObjects = [childProperties filteredArrayUsingPredicate:p];
+    if (tutorialChildObjects.count > 0) {
+        for (NSMutableDictionary *matchedChild in tutorialChildObjects) {
+            [childProperties removeObject:matchedChild];
+        }
+    }
+    // _pageViewControllerを再読み込み
+    NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
+   
+    [self.targetViewController.navigationController popToViewController:vc  animated:YES];
 }
 
 @end

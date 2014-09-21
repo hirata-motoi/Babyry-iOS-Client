@@ -123,11 +123,9 @@
 - (void)setupHeaderView
 {
     TutorialStage *currentStage = [Tutorial currentStage];
-    if ([currentStage.currentStage isEqualToString:@"familyApply"]) {
-        NSLog(@"showFamilyApplyIntroduceView");
+    if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
         [self showFamilyApplyIntroduceView];
     } else {
-        NSLog(@"hideFamilyApplyIntroduceView");
         [self hideFamilyApplyIntroduceView];
     }
 }

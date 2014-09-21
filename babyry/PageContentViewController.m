@@ -885,7 +885,7 @@
 
 - (void)openFamilyApply
 {
-    [Tutorial updateStage];
+    [Tutorial forwardStageWithNextStage:@"familyApplyExec"];
     [_tn removeNavigationView];
     FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
     [self.navigationController pushViewController:familyApplyViewController animated:YES];

@@ -20,6 +20,7 @@
 		<string>addChild</string>
 		<string>uploadByUser</string>
 		<string>familyApply</string>
+		<string>familyApplyExec</string>
 		<string>tutorialFinished</string>
 	</array>
 	<key>FinishedFirstLaunch</key>
