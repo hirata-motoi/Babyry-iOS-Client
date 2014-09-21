@@ -8,6 +8,7 @@
 
 #import "FamilyRole.h"
 #import "PartnerApply.h"
+#import "Logger.h"
 
 @implementation FamilyRole
 
@@ -98,6 +99,7 @@
     [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
     [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in unlinkFamily, can't get FamilyRole : %@", error]];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラーが発生しました"
                                                             message:@"データの更新に失敗しました。\n再度お試しください。"
                                                            delegate:nil
