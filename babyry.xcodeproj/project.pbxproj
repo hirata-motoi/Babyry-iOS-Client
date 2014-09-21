@@ -119,8 +119,6 @@
 		F21BBBD019CA1245002D4623 /* TutorialNavigator+PartChangeExec.m in Sources */ = {isa = PBXBuildFile; fileRef = F21BBBCF19CA1245002D4623 /* TutorialNavigator+PartChangeExec.m */; };
 		F21BBBD219CA6AF1002D4623 /* TutorialPartChangeExecView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F21BBBD119CA6AF1002D4623 /* TutorialPartChangeExecView.xib */; };
 		F21BBBD519CA6B6E002D4623 /* TutorialPartChangeExecView.m in Sources */ = {isa = PBXBuildFile; fileRef = F21BBBD419CA6B6E002D4623 /* TutorialPartChangeExecView.m */; };
-		F21BBBD819CA6CD6002D4623 /* GlobalSettingViewController+Logic.m in Sources */ = {isa = PBXBuildFile; fileRef = F21BBBD719CA6CD6002D4623 /* GlobalSettingViewController+Logic.m */; };
-		F21BBBDB19CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F21BBBDA19CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.m */; };
 		F21BBBDE19CA721A002D4623 /* TutorialNavigator+AddChild.m in Sources */ = {isa = PBXBuildFile; fileRef = F21BBBDD19CA721A002D4623 /* TutorialNavigator+AddChild.m */; };
 		F21BBBE019CA72D7002D4623 /* TutorialAddChildView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F21BBBDF19CA72D7002D4623 /* TutorialAddChildView.xib */; };
 		F21BBBE319CA7359002D4623 /* TutorialAddChildView.m in Sources */ = {isa = PBXBuildFile; fileRef = F21BBBE219CA7359002D4623 /* TutorialAddChildView.m */; };
@@ -402,10 +400,6 @@
 		F21BBBD119CA6AF1002D4623 /* TutorialPartChangeExecView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TutorialPartChangeExecView.xib; sourceTree = "<group>"; };
 		F21BBBD319CA6B6E002D4623 /* TutorialPartChangeExecView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialPartChangeExecView.h; sourceTree = "<group>"; };
 		F21BBBD419CA6B6E002D4623 /* TutorialPartChangeExecView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialPartChangeExecView.m; sourceTree = "<group>"; };
-		F21BBBD619CA6CD6002D4623 /* GlobalSettingViewController+Logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GlobalSettingViewController+Logic.h"; sourceTree = "<group>"; };
-		F21BBBD719CA6CD6002D4623 /* GlobalSettingViewController+Logic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GlobalSettingViewController+Logic.m"; sourceTree = "<group>"; };
-		F21BBBD919CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GlobalSettingViewController+Logic+Tutorial.h"; sourceTree = "<group>"; };
-		F21BBBDA19CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GlobalSettingViewController+Logic+Tutorial.m"; sourceTree = "<group>"; };
 		F21BBBDC19CA721A002D4623 /* TutorialNavigator+AddChild.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+AddChild.h"; sourceTree = "<group>"; };
 		F21BBBDD19CA721A002D4623 /* TutorialNavigator+AddChild.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+AddChild.m"; sourceTree = "<group>"; };
 		F21BBBDF19CA72D7002D4623 /* TutorialAddChildView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TutorialAddChildView.xib; sourceTree = "<group>"; };
@@ -937,10 +931,6 @@
 				889002FA198F5EC7005775B5 /* ChildProfileViewController.m */,
 				889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */,
 				889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */,
-				F21BBBD619CA6CD6002D4623 /* GlobalSettingViewController+Logic.h */,
-				F21BBBD719CA6CD6002D4623 /* GlobalSettingViewController+Logic.m */,
-				F21BBBD919CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.h */,
-				F21BBBDA19CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.m */,
 				88C072C919C60E1600BF6F6F /* UserRegisterViewController.h */,
 				88C072CA19C60E1600BF6F6F /* UserRegisterViewController.m */,
 				88C072CF19C8798000BF6F6F /* PartnerInviteViewController.h */,
@@ -1404,10 +1394,8 @@
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
-				F21BBBDB19CA6E9B002D4623 /* GlobalSettingViewController+Logic+Tutorial.m in Sources */,
 				F2310C22198F43DF00E01DA3 /* DragView.m in Sources */,
 				F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */,
-				F21BBBD819CA6CD6002D4623 /* GlobalSettingViewController+Logic.m in Sources */,
 				88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */,
 				88E2822219B4A8DE00225DD3 /* Child.m in Sources */,
 				88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */,
