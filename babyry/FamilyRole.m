@@ -7,6 +7,7 @@
 //
 
 #import "FamilyRole.h"
+#import "PartnerApply.h"
 
 @implementation FamilyRole
 
@@ -41,11 +42,29 @@
 
 + (void)updateCache
 {
+    PFUser *user = [PFUser currentUser];
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
     query.cachePolicy = kPFCachePolicyNetworkOnly;
-    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){}];
-    // nothing to return because this method is only for updating cache
+    [query whereKey:@"familyId" equalTo:user[@"familyId"]];
+    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (object) {
+            // すべての項目が埋まっているのであれば、CoreDataのひも付け完了フラグをTRUEに更新する
+            if (object[@"uploader"] && ![object[@"uploader"] isEqualToString:@""] && object[@"chooser"] && ![object[@"chooser"] isEqualToString:@""]) {
+                [PartnerApply setLinkComplete];
+            } else {
+                if ([PartnerApply linkComplete]) {
+                    // すべての項目が埋まっていないのに、CoreDataのひも付け完了フラグがTRUEの場合、ひも付けが解除されたと見なせるので完了フラグを落とす
+                    [PartnerApply unsetLinkComplete];
+                    if (![object[@"uploader"] isEqualToString:user[@"userId"]] && ![object[@"chooser"] isEqualToString:user[@"userId"]]) {
+                        // uploaderにもchooserにも自分のidが入っていなければ、Familyひも付けから削除されているので、自分のレコードからFamilyIdを落とす
+                        user[@"familyId"] = @"";
+                        [user saveInBackground];
+                    }
+                }
+            }
+
+        }
+    }];
 }
 
 + (void)createFamilyRole:(NSMutableDictionary *)data
@@ -71,6 +90,45 @@
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
     [query whereKey:@"familyId" equalTo:familyId];
     [query findObjectsInBackgroundWithBlock:block];
+}
+
++ (void) unlinkFamily:(PFBooleanResultBlock)block
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
+    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (error) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラーが発生しました"
+                                                            message:@"データの更新に失敗しました。\n再度お試しください。"
+                                                           delegate:nil
+                                                  cancelButtonTitle:nil
+                                                  otherButtonTitles:@"OK", nil
+                                  ];
+            [alert show];
+            return;
+        }
+        
+        NSString *createdBy = object[@"createdBy"];
+        
+        // createdByがないユーザー = 古いバージョンの時にひも付けがされた人。
+        // この人たちがひも付け解除した場合には、解除をした方の人がFamilyIdを引き継ぐと決める
+        if (!createdBy) {
+            NSString *myId = [PFUser currentUser][@"userId"];
+            object[@"createdBy"] = myId;
+            if ([object[@"uploader"] isEqualToString:myId]) {
+                object[@"chooser"] = @"";
+            } else {
+                object[@"uploader"] = @"";
+            }
+        } else {
+            if ([object[@"uploader"] isEqualToString:createdBy]) {
+                object[@"chooser"] = @"";
+            } else {
+                object[@"uploader"] = @"";
+            }
+        }
+        [object saveInBackgroundWithBlock:block];
+    }];
 }
 
 @end

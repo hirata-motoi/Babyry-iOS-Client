@@ -7,12 +7,53 @@
 //
 
 #import "PartnerApply.h"
+#import "PartnerApplyEntity.h"
+#import "Config.h"
 
 @implementation PartnerApply
 
-+ (NSString *) getApplyStatus
++ (BOOL) linkComplete
 {
-    return @"NoApplying";
+    PartnerApplyEntity *pae = [PartnerApplyEntity MR_findFirst];
+    if (!pae.linkComplete) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
++ (void) setLinkComplete
+{
+    NSString *PartnerApplyEntityKeyName = [Config config][@"PartnerApplyEntityKeyName"];
+    PartnerApplyEntity *pae = [PartnerApplyEntity MR_findFirstByAttribute:@"name" withValue:PartnerApplyEntityKeyName];
+    if ([pae.linkComplete isEqual:[NSNumber numberWithBool:YES]]) {
+        return;
+    }
+    
+    if (pae) {
+        pae.linkComplete = [NSNumber numberWithBool:YES];
+    } else {
+        PartnerApplyEntity *newPae = [PartnerApplyEntity MR_createEntity];
+        newPae.linkComplete = [NSNumber numberWithBool:YES];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (void) unsetLinkComplete
+{
+    NSString *PartnerApplyEntityKeyName = [Config config][@"PartnerApplyEntityKeyName"];
+    PartnerApplyEntity *pae = [PartnerApplyEntity MR_findFirstByAttribute:@"name" withValue:PartnerApplyEntityKeyName];
+    if ([pae.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
+        return;
+    }
+    
+    if (pae) {
+        pae.linkComplete = [NSNumber numberWithBool:NO];
+    } else {
+        PartnerApplyEntity *newPae = [PartnerApplyEntity MR_createEntity];
+        newPae.linkComplete = [NSNumber numberWithBool:NO];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
 + (NSNumber *) issuePinCode

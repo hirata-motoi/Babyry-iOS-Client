@@ -7,6 +7,7 @@
         <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="PartnerApplyEntity" representedClassName="PartnerApplyEntity" syncable="YES">
+        <attribute name="linkComplete" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="pinCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
     </entity>
@@ -30,10 +31,10 @@
     </entity>
     <elements>
         <element name="AppSetting" positionX="-45" positionY="0" width="128" height="105"/>
-        <element name="PartnerApplyEntity" positionX="18" positionY="126" width="128" height="73"/>
+        <element name="PartnerApplyEntity" positionX="18" positionY="126" width="128" height="88"/>
+        <element name="PartnerInvitedEntity" positionX="-9" positionY="90" width="128" height="73"/>
         <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="133"/>
         <element name="TutorialBestShot" positionX="-9" positionY="171" width="128" height="58"/>
         <element name="TutorialStage" positionX="-18" positionY="90" width="128" height="58"/>
-        <element name="PartnerInvitedEntity" positionX="-9" positionY="90" width="128" height="73"/>
     </elements>
 </model>

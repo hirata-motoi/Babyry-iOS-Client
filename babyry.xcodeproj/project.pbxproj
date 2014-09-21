@@ -68,9 +68,9 @@
 		88C072CE19C61C2F00BF6F6F /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072CD19C61C2F00BF6F6F /* Account.m */; };
 		88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */; };
 		88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D319C87A3200BF6F6F /* PartnerApply.m */; };
-		88C072E019C8B03A00BF6F6F /* PartnerApplyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */; };
 		88C072F919CC3A3C00BF6F6F /* InputPinCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072F819CC3A3C00BF6F6F /* InputPinCodeViewController.m */; };
 		88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */; };
+		88C0730819CEE4E900BF6F6F /* PartnerApplyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C0730719CEE4E900BF6F6F /* PartnerApplyEntity.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -280,12 +280,12 @@
 		88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerInviteViewController.m; sourceTree = "<group>"; };
 		88C072D219C87A3200BF6F6F /* PartnerApply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApply.h; sourceTree = "<group>"; };
 		88C072D319C87A3200BF6F6F /* PartnerApply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApply.m; sourceTree = "<group>"; };
-		88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApplyEntity.h; sourceTree = "<group>"; };
-		88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApplyEntity.m; sourceTree = "<group>"; };
 		88C072F719CC3A3C00BF6F6F /* InputPinCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputPinCodeViewController.h; sourceTree = "<group>"; };
 		88C072F819CC3A3C00BF6F6F /* InputPinCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputPinCodeViewController.m; sourceTree = "<group>"; };
 		88C0730019CEAE8F00BF6F6F /* PartnerInvitedEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerInvitedEntity.h; sourceTree = "<group>"; };
 		88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerInvitedEntity.m; sourceTree = "<group>"; };
+		88C0730619CEE4E900BF6F6F /* PartnerApplyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApplyEntity.h; sourceTree = "<group>"; };
+		88C0730719CEE4E900BF6F6F /* PartnerApplyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApplyEntity.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -1002,12 +1002,12 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				88C0730619CEE4E900BF6F6F /* PartnerApplyEntity.h */,
+				88C0730719CEE4E900BF6F6F /* PartnerApplyEntity.m */,
 				88C0730019CEAE8F00BF6F6F /* PartnerInvitedEntity.h */,
 				88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */,
 				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
 				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
-				88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */,
-				88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */,
 				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
 				F2AE04EB19B2EC8500B39C6F /* AppSetting.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
@@ -1211,7 +1211,6 @@
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
-				88C072E019C8B03A00BF6F6F /* PartnerApplyEntity.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
@@ -1251,6 +1250,7 @@
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
 				F25D29D2199B228D00CD50D7 /* AcceptableUsePolicyViewController.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
+				88C0730819CEE4E900BF6F6F /* PartnerApplyEntity.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
 				8881CFA119A0C67800B909C8 /* MyLogInViewController.m in Sources */,

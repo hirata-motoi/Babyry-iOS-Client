@@ -2,7 +2,7 @@
 //  PartnerApplyEntity.h
 //  babyry
 //
-//  Created by Kenji Suzuki on 2014/09/17.
+//  Created by Kenji Suzuki on 2014/09/21.
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
@@ -14,5 +14,6 @@
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * pinCode;
+@property (nonatomic, retain) NSNumber * linkComplete;
 
 @end
