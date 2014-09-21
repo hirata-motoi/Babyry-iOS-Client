@@ -169,6 +169,11 @@
             [[NSNotificationCenter defaultCenter] postNotification:n];
             
             [_hud hide:YES];
+           
+            // tutorial中の場合こども追加が完了したらPageContentViewControllerに戻る
+            if ([Tutorial underTutorial]) {
+                [self.navigationController popToViewController: [self.navigationController.viewControllers objectAtIndex:0] animated:YES];
+            }
         }
     }];
 }
