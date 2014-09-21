@@ -350,8 +350,8 @@
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
--(void)selectBestShot:(id) sender {
-    
+-(void)selectBestShot:(id)sender
+{
     if ( !([_myRole isEqualToString:@"chooser"] && _imageLoadComplete) ) {
         return;
     }

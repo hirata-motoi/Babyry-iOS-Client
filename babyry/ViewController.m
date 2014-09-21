@@ -178,7 +178,13 @@
             familyRole[@"familyId"] = _currentUser[@"familyId"];
             familyRole[@"chooser"]  = _currentUser[@"userId"];
             familyRole[@"uploader"] = @"";
-            [familyRole saveInBackground];
+            [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving FamilyRole:%@", error]];
+                    return;
+                }
+                [FamilyRole updateCache];
+            }];
         }
         
 //        // falimyIdがなければ招待画面をだして先に進めない

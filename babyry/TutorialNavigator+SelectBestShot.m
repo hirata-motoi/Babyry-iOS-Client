@@ -18,7 +18,6 @@
 
 - (void)show
 {
-    
     view = [TutorialSelectBestShotView view];
     
     CGSize viewSize = self.targetViewController.view.frame.size;
