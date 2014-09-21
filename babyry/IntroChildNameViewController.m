@@ -128,7 +128,13 @@
     PFObject *user = [PFUser currentUser];
     [user refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (error) {
-            // アラート？
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
+                                                            message:@"エラーが発生しました。もう一度お試しください。"
+                                                           delegate:nil
+                                                  cancelButtonTitle:nil
+                                                  otherButtonTitles:@"OK", nil
+                                  ];
+            [alert show];
             [_hud hide:YES];
             return;
         }

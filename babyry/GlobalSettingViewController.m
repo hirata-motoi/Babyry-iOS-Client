@@ -331,7 +331,6 @@
 - (void)openAddChildAddView
 {
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    icnvc.isNotFirstTime = YES;
     icnvc.childProperties = _childProperties;
     [self.navigationController pushViewController:icnvc animated:YES];
 }
