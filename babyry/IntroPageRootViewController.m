@@ -13,6 +13,8 @@
 #import "IdIssue.h"
 #import "Logger.h"
 #import "TmpUser.h"
+#import "InputPinCodeViewController.h"
+#import "PartnerInvitedEntity.h"
 
 @interface IntroPageRootViewController ()
 
@@ -37,9 +39,11 @@
     
     self.view.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.6];
 
-    //    if (_invitedButton) {
-    //        [_invitedButton addGestureRecognizer:openLoginView];
-    //    }
+    if (_invitedButton) {
+        UITapGestureRecognizer *showInputPincodeView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(showInputPincodeView)];
+        showInputPincodeView.numberOfTapsRequired = 1;
+        [_invitedButton addGestureRecognizer:showInputPincodeView];
+    }
     if (_registerButton) {
         UITapGestureRecognizer *showRegisterStepCheckView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(showRegisterStepCheckView)];
         showRegisterStepCheckView.numberOfTapsRequired = 1;
@@ -51,6 +55,18 @@
         [_loginButton addGestureRecognizer:openLoginView];
     }
     [self setupSkipAction];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    // CoreDataに招待系のデータが入っていたら会員登録に飛ばす
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        ChooseRegisterStepViewController *chooseRegisterStepViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChooseRegisterStepViewController"];
+        [self presentViewController:chooseRegisterStepViewController animated:YES completion:nil];
+    }
 }
 
 - (void)setupSkipAction
@@ -234,5 +250,12 @@
     ChooseRegisterStepViewController *chooseRegisterStepViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChooseRegisterStepViewController"];
     [self presentViewController:chooseRegisterStepViewController animated:YES completion:nil];
 }
+
+- (void)showInputPincodeView
+{
+    InputPinCodeViewController *inputPinCodeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"InputPinCodeViewController"];
+    [self presentViewController:inputPinCodeViewController animated:YES completion:nil];
+}
+
 
 @end

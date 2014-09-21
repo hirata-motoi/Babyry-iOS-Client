@@ -10,7 +10,9 @@
 
 @interface PartnerApply : NSObject
 
-+ (NSString *) getApplyStatus;
++ (BOOL) linkComplete;
++ (void) setLinkComplete;
++ (void) unsetLinkComplete;
 + (NSNumber *) issuePinCode;
 
 @end

@@ -12,6 +12,7 @@
 #import "Navigation.h"
 #import "PartnerApply.h"
 #import "PartnerInviteViewController.h"
+#import "FamilyRole.h"
 
 @interface ProfileViewController ()
 
@@ -104,8 +105,10 @@
                     break;
                 }
                 case 1: {
-                    if ([[PartnerApply getApplyStatus] isEqualToString:@"NoApplying"]) {
+                    if (![PartnerApply linkComplete]) {
                         cell.textLabel.text = @"パートナー招待";
+                    } else {
+                        cell.textLabel.text = @"パートナーひも付け解除";
                     }
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     break;
@@ -146,8 +149,10 @@
                 case 0:
                     break;
                 case 1:
-                    if ([[PartnerApply getApplyStatus] isEqualToString:@"NoApplying"]) {
+                    if (![PartnerApply linkComplete]) {
                         [self openPartnerApplyView];
+                    } else {
+                        [self openPartnerUnlinkAlert];
                     }
                     break;
                     
@@ -217,15 +222,46 @@
     [self.navigationController pushViewController:partnerInviteViewController animated:YES];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)openPartnerUnlinkAlert
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"パートナーとのひも付けを削除しますか？"
+                                                    message:@""
+                                                   delegate:self
+                                          cancelButtonTitle:@"もどる"
+                                          otherButtonTitles:@"解除する", nil
+                          ];
+    [alert show];
 }
-*/
+
+- (void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    switch (buttonIndex) {
+        case 0:
+        {
+        }
+            break;
+            
+        case 1:
+        {
+            [FamilyRole unlinkFamily:^(BOOL succeeded, NSError *error){
+                if (error) {
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
+                                                                    message:@"エラーが発生しました。\n再度お試しください"
+                                                                   delegate:nil
+                                                          cancelButtonTitle:nil
+                                                          otherButtonTitles:@"OK", nil
+                                          ];
+                    [alert show];
+                    return;
+                }
+                
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
 
 @end

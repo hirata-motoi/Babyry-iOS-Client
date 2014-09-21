@@ -47,4 +47,19 @@
     return [emailTest evaluateWithObject:email];
 }
 
++ (BOOL)validatePincode:(NSString *)pincode
+{
+    if ([pincode length] != 6) {
+        return NO;
+    }
+    
+    NSCharacterSet *digitCharSet = [NSCharacterSet characterSetWithCharactersInString:@"0123456789"];
+    
+    NSScanner *aScanner = [NSScanner localizedScannerWithString:pincode];
+    [aScanner setCharactersToBeSkipped:nil];
+    
+    [aScanner scanCharactersFromSet:digitCharSet intoString:NULL];
+    return [aScanner isAtEnd];
+}
+
 @end

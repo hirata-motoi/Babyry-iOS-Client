@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="AppSetting" representedClassName="AppSetting" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -7,8 +7,13 @@
         <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="PartnerApplyEntity" representedClassName="PartnerApplyEntity" syncable="YES">
+        <attribute name="linkComplete" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="pinCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="PartnerInvitedEntity" representedClassName="PartnerInvitedEntity" syncable="YES">
+        <attribute name="familyId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="inputtedPinCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
     </entity>
     <entity name="TmpUserData" representedClassName="TmpUserData" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
@@ -35,11 +40,12 @@
     </entity>
     <elements>
         <element name="AppSetting" positionX="-45" positionY="0" width="128" height="105"/>
+        <element name="PartnerApplyEntity" positionX="18" positionY="126" width="128" height="88"/>
+        <element name="PartnerInvitedEntity" positionX="-9" positionY="90" width="128" height="73"/>
         <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="133"/>
         <element name="TutorialBestShot" positionX="-9" positionY="171" width="128" height="58"/>
         <element name="TutorialStage" positionX="-18" positionY="90" width="128" height="58"/>
         <element name="TutorialAttributes" positionX="-18" positionY="99" width="128" height="75"/>
-        <element name="PartnerApplyEntity" positionX="18" positionY="126" width="128" height="73"/>
         <element name="TrackingLogEntity" positionX="27" positionY="135" width="128" height="90"/>
     </elements>
 </model>
