@@ -62,6 +62,7 @@
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
     [view addSubview:titleview];
     self.navigationItem.titleView = view;
+    self.navigationController.delegate = self;
     self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0f];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@""
@@ -426,6 +427,11 @@
     _pageViewController = nil;
    
     [self instantiatePageViewController];
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    [Logger writeToTrackingLog:[NSString stringWithFormat:@"%@ %@ %@ %@", [DateUtils setSystemTimezone:[NSDate date]], _currentUser.objectId, _currentUser[@"userId"], NSStringFromClass([viewController class])]];
 }
 
 @end
