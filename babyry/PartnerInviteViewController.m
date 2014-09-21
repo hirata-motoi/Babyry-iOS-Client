@@ -157,7 +157,7 @@
 - (void) savePinCodeToParse
 {
     PFObject *partnerApply = [PFObject objectWithClassName:@"PartnerApply"];
-    partnerApply[@"inviterUserId"] = [PFUser currentUser][@"userId"];
+    partnerApply[@"familyId"] = [PFUser currentUser][@"familyId"];
     partnerApply[@"pinCode"] = _pinCode;
     [partnerApply saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
