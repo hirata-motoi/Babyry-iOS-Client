@@ -38,6 +38,10 @@
     _albumListArray = [[NSMutableArray alloc] init];
     _albumImageAssetsArray = [[NSMutableArray alloc] init];
     _library = [[ALAssetsLibrary alloc] init];
+   
+    if (![self isPhotoAccessEnableWithIsShowAlert:YES]) {
+        return;
+    }
 
     [_library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         if (group) {
@@ -140,6 +144,55 @@
         multiUploadPickerViewController.indexPath = _indexPath;
     }
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
+}
+
+- (BOOL)isPhotoAccessEnableWithIsShowAlert:(BOOL)_isShowAlert {
+    // このアプリの写真への認証状態を取得する
+    ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
+    
+    BOOL isAuthorization = NO;
+    
+    switch (status) {
+        case ALAuthorizationStatusAuthorized: // 写真へのアクセスが許可されている
+            isAuthorization = YES;
+            break;
+        case ALAuthorizationStatusNotDetermined: // 写真へのアクセスを許可するか選択されていない
+            isAuthorization = YES; // 許可されるかわからないがYESにしておく
+            break;
+        case ALAuthorizationStatusRestricted: // 設定 > 一般 > 機能制限で利用が制限されている
+        {
+            isAuthorization = NO;
+            if (_isShowAlert) {
+                UIAlertView *alertView = [[UIAlertView alloc]
+                                          initWithTitle:@"エラー"
+                                          message:@"写真へのアクセスが許可されていません。\n設定 > 一般 > 機能制限で許可してください。"
+                                          delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+                [alertView show];
+            }
+        }
+            break;
+            
+        case ALAuthorizationStatusDenied: // 設定 > プライバシー > 写真で利用が制限されている
+        {
+            isAuthorization = NO;
+            if (_isShowAlert) {
+                UIAlertView *alertView = [[UIAlertView alloc]
+                                          initWithTitle:@"エラー"
+                                          message:@"写真へのアクセスが許可されていません。\n設定 > プライバシー > 写真で許可してください。"
+                                          delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+                [alertView show];
+            }
+        }
+            break;
+            
+        default:
+            break;
+    }
+    return isAuthorization;
 }
 
 /*
