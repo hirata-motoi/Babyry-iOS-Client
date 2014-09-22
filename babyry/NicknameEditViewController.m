@@ -29,17 +29,15 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    [self makeEditField];
+    
     UITapGestureRecognizer *coverViewTapGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeNicknameEdit)];
     coverViewTapGestureRecognizer.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:coverViewTapGestureRecognizer];
     
-    // table cell上に透明のformを出す
-    _nicknameEditTextField.frame = _nicknameCellRect;
-    [_nicknameEditTextField becomeFirstResponder]; // focusをあてる
-    _nicknameEditTextField.text = [PFUser currentUser][@"nickName"];
-    
-    UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonItemStylePlain target:self action:@selector(saveNickname)];
-    self.parentViewController.navigationItem.rightBarButtonItem = button;
+    UITapGestureRecognizer *saveLabelTapGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(saveNickname)];
+    saveLabelTapGestureRecognizer.numberOfTapsRequired = 1;
+    [_nicknameEditSaveLabel addGestureRecognizer:saveLabelTapGestureRecognizer];
 }
 
 - (void)didReceiveMemoryWarning
@@ -71,15 +69,21 @@
 }
 
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void) makeEditField
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    // table cell上に透明のformを出す
+    _nicknameCellContainer.frame = _nicknameCellRect;
+    // textfield高さあわせ
+    CGRect frame = _nicknameEditTextField.frame;
+    frame.size.height = _nicknameCellRect.size.height;
+    _nicknameEditTextField.frame = frame;
+    // 保存ラベルの高さあわせ
+    frame = _nicknameEditSaveLabel.frame;
+    frame.size.height = _nicknameCellRect.size.height;
+    _nicknameEditSaveLabel.frame = frame;
+    
+    [_nicknameEditTextField becomeFirstResponder]; // focusをあてる
+    _nicknameEditTextField.text = [PFUser currentUser][@"nickName"];
 }
-*/
 
 @end
