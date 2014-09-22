@@ -25,4 +25,6 @@
 @property NSIndexPath *indexPath;
 @property NSMutableDictionary *child;
 
+@property BOOL accessAllowed;
+
 @end
