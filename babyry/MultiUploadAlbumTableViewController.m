@@ -40,7 +40,7 @@
     _albumListArray = [[NSMutableArray alloc] init];
     _albumImageAssetsArray = [[NSMutableArray alloc] init];
     _library = [[ALAssetsLibrary alloc] init];
-    
+
     if (![self isPhotoAccessEnableWithIsShowAlert:YES]) {
         return;
     }

@@ -35,6 +35,7 @@
 @implementation MultiUploadViewController {
     MultiUploadViewController_Logic *logic;
     MultiUploadViewController_Logic_Tutorial *logicTutorial;
+    TutorialNavigator *tn;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -124,10 +125,6 @@
     _isTimperExecuting = NO;
     _needTimer = YES;
     [_myTimer fire];
-   
-    TutorialNavigator *tn = [[TutorialNavigator alloc]init];
-    tn.targetViewController = self;
-    [tn showNavigationView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -139,7 +136,8 @@
 {
     // super
     [super viewWillAppear:animated];
-    
+
+    [tn removeNavigationView];
     [_myTimer invalidate];
 }
 
@@ -245,6 +243,11 @@
             UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
             selectBestShotGesture.numberOfTapsRequired = 1;
             [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+           
+            // for tutorial
+            if (indexPath.row == 0) {
+                _firstCellUnselectedBestShotView = unSelectedBestshotView;
+            }
         }
         
         NSArray *tmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
@@ -262,7 +265,7 @@
         hud.labelFont = [UIFont systemFontOfSize:12];
     }
     
-    [[self logic] removeGestureForTutorial:cell];
+    [[self logic] prepareForTutorial:cell withIndexPath:indexPath];
     
     return cell;
 }
@@ -347,8 +350,8 @@
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
--(void)selectBestShot:(id) sender {
-    
+-(void)selectBestShot:(id)sender
+{
     if ( !([_myRole isEqualToString:@"chooser"] && _imageLoadComplete) ) {
         return;
     }
@@ -581,6 +584,17 @@
 - (CGRect)buttonRect
 {
     return CGRectMake(_headerView.frame.size.width - 30 - 5, (_headerView.frame.size.height - 30) / 2, 30, 30);
+}
+
+- (void)showTutorialNavigator
+{      
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+    tn = [[TutorialNavigator alloc]init];
+    tn.targetViewController = self;
+    [tn showNavigationView];
 }
 
 @end

@@ -36,19 +36,12 @@
     
     [overlay addSubview:view];
     
-//    viewArrow = [TutorialUpperArrowView view];
-//    CGRect rectArrow = viewArrow.frame;
-//    rectArrow.origin.x = viewSize.width - rectArrow.size.width - 15;
-//    rectArrow.origin.y = 64;
-//    viewArrow.frame = rectArrow;
-//    [self.targetViewController.view addSubview:viewArrow];
-//    [NSTimer
-//        scheduledTimerWithTimeInterval:0.5f
-//        target:self
-//        selector:@selector(blink:)
-//        userInfo:nil
-//        repeats:YES
-//    ];
+    UIButton *skipButton = [self createTutorialSkipButton];
+    CGRect skipRect = skipButton.frame;
+    skipRect.origin.x = 160;
+    skipRect.origin.y = rect.origin.y + rect.size.height + 10;
+    skipButton.frame = skipRect;
+    [overlay addSubview:skipButton];
 }
 
 - (void)remove

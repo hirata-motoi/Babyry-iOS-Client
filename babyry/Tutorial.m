@@ -11,6 +11,7 @@
 #import "Config.h"
 #import "DateUtils.h"
 #import "TutorialAttributes.h"
+#import "ImageCache.h"
 
 @implementation Tutorial
 
@@ -61,9 +62,7 @@
     return NO;
 }
 
-// 引数が空の場合はexception
-// rowがない場合はexception
-+ (TutorialStage *)updateStage
++ (TutorialStage *)forwardStageWithNextStage:(NSString *)nextStage
 {
     NSArray *tutorialStages = [Config config][@"tutorialStages"];
     TutorialStage *currentStage = [self currentStage];
@@ -71,12 +70,19 @@
         return nil;
     }
    
-    for (int i = 0; i < tutorialStages.count; i++) {
-        if ([currentStage.currentStage isEqualToString: tutorialStages[i]]) {
-            currentStage.currentStage = tutorialStages[i + 1];
-            break;                       
+    BOOL isValidStage = NO;
+    for (NSString *stage in tutorialStages) {
+        if ([stage isEqualToString:nextStage]) {
+            isValidStage = YES;
+            break;
         }
     }
+    if (!isValidStage) {
+        return currentStage.currentStage;
+    }
+    
+    currentStage.currentStage = nextStage;
+   
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     return currentStage;
 }
@@ -99,6 +105,53 @@
         return attribute.value;
     }
     return @"";
+}
+
+// stageがfamilyApply or waitForPartner の場合に真
++ (BOOL)shouldShowFamilyApplyLead
+{
+    TutorialStage *currentStage = [self currentStage];
+    if (!currentStage) {
+        return NO;
+    }
+    if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"waitForPartner"]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (BOOL)shouldShowTutorialIntroduction
+{
+    TutorialStage *currentStage = [self currentStage];
+    if (!currentStage) {
+        return NO;
+    }
+    
+    if ([currentStage.currentStage isEqualToString:@"introduction"]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (void)forwardTutorialStageToLast
+{
+    TutorialStage *currentStage = [self currentStage];
+    currentStage.currentStage = @"familyApplyExec";
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (void)removeDefaultChild:(NSMutableArray *)childProperties
+{
+    [ImageCache removeAllCache];
+    // ViewControllerのchildPropertiesからデフォルトのこどもを削除
+    NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+    NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
+    NSArray *tutorialChildObjects = [childProperties filteredArrayUsingPredicate:p];
+    if (tutorialChildObjects.count > 0) {
+        [childProperties removeObject:tutorialChildObjects[0]];
+    }
+    
+    
 }
 
 @end

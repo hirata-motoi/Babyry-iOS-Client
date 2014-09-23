@@ -7,7 +7,9 @@
 //
 
 #import "TutorialNavigator.h"
+#import "Tutorial.h"
 #import "TutorialStage.h"
+#import "TutorialNavigator+Introduction.h"
 #import "TutorialNavigator+ShowMultiUpload.h"
 #import "TutorialNavigator+SelectBestShot.h"
 #import "TutorialNavigator+PartChange.h"
@@ -21,6 +23,9 @@
 #import "MultiUploadViewController.h"
 #import "GlobalSettingViewController.h"
 #import "IntroChildNameViewController.h"
+#import "ICTutorialOverlay.h"
+#import "FamilyRole.h"
+#import "ViewController.h"
 
 @implementation TutorialNavigator {
     TutorialNavigator *navigator_;
@@ -32,8 +37,15 @@
     if (!stage) {
         return;
     }
-    
-    if ([stage.currentStage isEqualToString:@"chooseByUser"]) {
+   
+    if ([stage.currentStage isEqualToString:@"introduction"]) {
+        if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
+            TutorialNavigator_Introduction *navigator = [[TutorialNavigator_Introduction alloc]init];
+            navigator.targetViewController = _targetViewController;
+            [navigator show];
+            navigator_ = navigator;
+        }
+    } else if ([stage.currentStage isEqualToString:@"chooseByUser"]) {
         if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
             TutorialNavigator_ShowMultiUpload *navigator = [[TutorialNavigator_ShowMultiUpload alloc]init];
             navigator.targetViewController = _targetViewController;
@@ -76,7 +88,7 @@
             [navigator show];
             navigator_ = navigator;
         }
-    } else if ([stage.currentStage isEqualToString:@"tutorialFinished"]) {
+    } else if ([stage.currentStage isEqualToString:@"familyApply"]) {
         if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
             TutorialNavigator_TutorialFinished *navigator = [[TutorialNavigator_TutorialFinished alloc]init];
             navigator.targetViewController = _targetViewController;
@@ -94,6 +106,51 @@
 - (void)remove
 {
     @throw @"this method has to be over written.";
+}
+
+- (UIButton *)createTutorialSkipButton
+{
+    UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [skipButton setTitle:@"チュートリアルをスキップ" forState:UIControlStateNormal];
+    skipButton.frame = CGRectMake(0, 0, 140, 44);
+    skipButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    skipButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
+    skipButton.titleLabel.minimumFontSize = 8;
+    skipButton.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    [skipButton addTarget:self action:@selector(skipTutorial) forControlEvents:UIControlEventTouchUpInside];
+    [skipButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    return skipButton;
+}
+
+- (void)skipTutorial
+{
+    // tutorial stageを進める
+    [Tutorial forwardTutorialStageToLast];
+    
+    // overlayを消す
+    [self remove];
+    
+    // パートをアップに変更 TODO 失敗した時どうしようかな
+    [FamilyRole switchRole:@"uploader"];
+    
+    // こどもがbabyryちゃんの場合は情報を削除
+    //    かつこども追加viewを表示(ViewControllerがやってくれる)
+    NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+    ViewController *vc = [self.targetViewController.navigationController.viewControllers objectAtIndex:0];
+    NSMutableArray *childProperties = vc.childProperties;
+    
+    NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
+    NSArray *tutorialChildObjects = [childProperties filteredArrayUsingPredicate:p];
+    if (tutorialChildObjects.count > 0) {
+        for (NSMutableDictionary *matchedChild in tutorialChildObjects) {
+            [childProperties removeObject:matchedChild];
+        }
+    }
+    // _pageViewControllerを再読み込み
+    NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
+   
+    [self.targetViewController.navigationController popToViewController:vc  animated:YES];
 }
 
 @end

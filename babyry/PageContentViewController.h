@@ -14,6 +14,7 @@
 #import <AudioToolbox/AudioServices.h>
 #import "TagAlbumCollectionViewCell.h"
 #import "TutorialNavigator.h"
+#import "TutorialFamilyApplyIntroduceView.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -53,6 +54,7 @@
 - (void)showAlertMessage;
 - (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
 - (void)openFamilyApply;
+-(void)setImages;
 
 @property AWSServiceConfiguration *configuration;
 
@@ -63,5 +65,6 @@
 // for tutorial
 @property TagAlbumCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;
+@property TutorialFamilyApplyIntroduceView *familyApplyIntroduceView;
 
 @end

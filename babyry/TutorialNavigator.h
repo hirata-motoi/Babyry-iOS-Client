@@ -14,5 +14,6 @@
 
 - (void)showNavigationView;
 - (void)removeNavigationView;
+- (UIButton *)createTutorialSkipButton;
 
 @end

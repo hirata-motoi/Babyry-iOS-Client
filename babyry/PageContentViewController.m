@@ -90,6 +90,7 @@
     // Notification登録
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
 }
 
 - (void)applicationDidBecomeActive
@@ -114,6 +115,7 @@
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
     }
+    [[self logic] setupHeaderView];
     
     _selfRole = [FamilyRole selfRole:@"useCache"];
     [_pageContentCollectionView reloadData];
@@ -127,11 +129,6 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
-   
-    [_tn removeNavigationView];
-    _tn = [[TutorialNavigator alloc]init];
-    _tn.targetViewController = self;
-    [_tn showNavigationView];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -149,7 +146,18 @@
 
 -(void)setImages
 {
-    [[self logic] setImages];
+    if ([Tutorial shouldShowDefaultImage]) {
+        [logicTutorial setImages];
+    } else {
+        if (!logic) {
+            PageContentViewController_Logic *l = [[PageContentViewController_Logic alloc]init];
+            l.pageContentViewController = self;
+            [l setImages];
+        } else {
+            [logic setImages];
+        }
+    }
+    //[[self logic] setImages];
 }
 
 
@@ -238,6 +246,9 @@
     // for tutorial
     if (indexPath.section == 0 && indexPath.row == 0) {
         _cellOfToday = cell;
+        
+        // TODO logicに追い出す
+        [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(showTutorialNavigator) userInfo:nil repeats:NO];
     }
     
     return cell;
@@ -886,8 +897,21 @@
 
 - (void)openFamilyApply
 {
+    [Tutorial forwardStageWithNextStage:@"familyApplyExec"];
+    [_tn removeNavigationView];
     FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
     [self.navigationController pushViewController:familyApplyViewController animated:YES];
+}
+
+- (void)showTutorialNavigator
+{
+    if (_tn) {
+        [_tn removeNavigationView];
+        _tn = nil;
+    }
+    _tn = [[TutorialNavigator alloc]init];
+    _tn.targetViewController = self;
+    [_tn showNavigationView];
 }
 
 

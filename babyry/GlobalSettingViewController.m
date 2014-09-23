@@ -22,8 +22,6 @@
 #import "Logger.h"
 #import "Tutorial.h"
 #import "TutorialNavigator.h"
-#import "GlobalSettingViewController+Logic.h"
-#import "GlobalSettingViewController+Logic+Tutorial.h"
 #import "TmpUser.h"
 #import "UserRegisterViewController.h"
 
@@ -33,8 +31,6 @@
 
 @implementation GlobalSettingViewController {
     TutorialNavigator *tn;
-    GlobalSettingViewController_Logic *logic;
-    GlobalSettingViewController_Logic_Tutorial *logicTutorial;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -49,14 +45,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    if ([Tutorial underTutorial]) {
-        logicTutorial = [[GlobalSettingViewController_Logic_Tutorial alloc]init];
-        logicTutorial.globalSettingViewController = self;
-    } else {
-        logic = [[GlobalSettingViewController_Logic alloc]init];
-        logic.globalSettingViewController = self;
-    }
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@""
@@ -91,13 +79,6 @@
 
 #pragma mark - Table view data source
 
-
-- (id)logic
-{
-    return
-        (logicTutorial) ? logicTutorial :
-        (logic)         ? logic         : nil;
-}
 
 - (void)close
 {
@@ -267,10 +248,6 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES]; // 選択状態の解除
     
-    if ([[self logic]forbiddenSelectForTutorial:indexPath]) {
-        return;
-    }
-    
     switch (indexPath.section) {
         case 0:
             switch (indexPath.row) {
@@ -430,7 +407,7 @@
         
         // Tutorial中の場合はステージを進める
         if ([Tutorial underTutorial]) {
-            [Tutorial updateStage];
+            [Tutorial forwardStageWithNextStage:@"addChild"];
             [tn removeNavigationView];
             [tn showNavigationView];
         }

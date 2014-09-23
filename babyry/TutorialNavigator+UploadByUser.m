@@ -24,6 +24,10 @@
     
     UICollectionViewCell *cell = vc.cellOfToday;
     CGRect rect = cell.frame;
+    if (rect.origin.x == 0 && rect.origin.y == 0) {
+        return;
+    }
+    
     [overlay addHoleWithRect:CGRectMake(10, 64 + 30 + 10, rect.size.width - 20, rect.size.height - 20) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
     [overlay show];
     
@@ -37,6 +41,13 @@
     viewRect.origin.y = 64 + 30 + 10 + rect.size.height;
     view.frame = viewRect;
     [overlay addSubview:view];
+    
+    UIButton *skipButton = [self createTutorialSkipButton];
+    CGRect skipRect = skipButton.frame;
+    skipRect.origin.x = 160;
+    skipRect.origin.y = viewRect.origin.y + viewRect.size.height + 10;
+    skipButton.frame = skipRect;
+    [overlay addSubview:skipButton];
 }
 
 - (void)remove

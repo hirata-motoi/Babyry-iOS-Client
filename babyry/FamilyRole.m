@@ -93,6 +93,31 @@
     [query findObjectsInBackgroundWithBlock:block];
 }
 
++ (void)switchRole:(NSString *)role
+{
+    PFObject *familyRole = [FamilyRole getFamilyRole:@"useCache"];
+    NSString *uploaderUserId = familyRole[@"uploader"];
+    NSString *chooserUserId  = familyRole[@"chooser"];
+    NSString *partnerUserId  = ([uploaderUserId isEqualToString:[PFUser currentUser][@"userId"]]) ? chooserUserId : uploaderUserId;
+
+    if ([role isEqualToString:@"uploader"]) {
+        familyRole[@"uploader"] = [PFUser currentUser][@"userId"];
+        familyRole[@"chooser"]  = partnerUserId;
+    } else {
+        familyRole[@"uploader"] = partnerUserId;
+        familyRole[@"chooser"]  = [PFUser currentUser][@"userId"];
+    }
+    
+    // Segment Controlをdisabled
+    [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in switchRole : %@", error]];
+            return;
+        }
+        [FamilyRole updateCache];
+    }];
+}
+
 + (void) unlinkFamily:(PFBooleanResultBlock)block
 {
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];

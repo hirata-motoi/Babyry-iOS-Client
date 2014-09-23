@@ -358,7 +358,7 @@
     familyApply[@"role"] = role;
     
     [familyApply save];
-    [Tutorial updateStage];
+    [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
     [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"FamilyApply send from:%@ to:%@ role:%@", currentUser[@"userId"], _searchedUserObject[@"userId"], role]];
     // そのうちpush通知送る
     

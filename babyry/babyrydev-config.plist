@@ -14,13 +14,95 @@
 	<string>TmpUserData</string>
 	<key>AppStoreURL</key>
 	<string>https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
+	<key>TutorialImages</key>
+	<array>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>imageFileName</key>
+					<string>TutorialImage_0_0.jpg</string>
+					<key>bestFlag</key>
+					<false/>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>imageFileName</key>
+					<string>TutorialImage_1.jpg</string>
+					<key>bestFlag</key>
+					<true/>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_2.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_3.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_4.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_5.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_6.jpg</string>
+				</dict>
+			</array>
+		</dict>
+	</array>
 	<key>tutorialStages</key>
 	<array>
+		<string>introduction</string>
 		<string>chooseByUser</string>
 		<string>partChange</string>
 		<string>addChild</string>
 		<string>uploadByUser</string>
 		<string>familyApply</string>
+		<string>familyApplyExec</string>
 		<string>tutorialFinished</string>
 	</array>
 	<key>FinishedFirstLaunch</key>

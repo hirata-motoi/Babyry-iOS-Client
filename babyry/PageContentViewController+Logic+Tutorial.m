@@ -12,6 +12,8 @@
 #import "Tutorial.h"
 #import "TutorialStage.h"
 #import "Config.h"
+#import "TutorialFamilyApplyIntroduceView.h"
+#import "ImageCache.h"
 
 @implementation PageContentViewController_Logic_Tutorial
 
@@ -117,6 +119,109 @@
     self.pageContentViewController.tn = [[TutorialNavigator alloc]init];
     self.pageContentViewController.tn.targetViewController = self.pageContentViewController;
     [self.pageContentViewController.tn showNavigationView];
+}
+
+- (void)setupHeaderView
+{
+    TutorialStage *currentStage = [Tutorial currentStage];
+    if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
+        [self showFamilyApplyIntroduceView];
+    } else {
+        [self hideFamilyApplyIntroduceView];
+    }
+}
+
+- (void)showFamilyApplyIntroduceView
+{
+    PageContentViewController *vc = self.pageContentViewController;
+    if (vc.familyApplyIntroduceView) {
+        return;
+    }
+    vc.familyApplyIntroduceView = [TutorialFamilyApplyIntroduceView view];
+    CGRect rect = vc.familyApplyIntroduceView.frame;
+    rect.origin.x = 0;
+    rect.origin.y = 64;
+    vc.familyApplyIntroduceView.frame = rect;
+    
+    // パートナー申請誘導viewの分collection viewを小さくする
+    CGRect collectionRect = vc.pageContentCollectionView.frame;
+    collectionRect.size.height = collectionRect.size.height - rect.size.height;
+    collectionRect.origin.y = collectionRect.origin.y + rect.size.height;
+    vc.pageContentCollectionView.frame = collectionRect;
+    
+    [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+    
+    [vc.view addSubview:vc.familyApplyIntroduceView];
+}
+
+- (void)hideFamilyApplyIntroduceView
+{
+    PageContentViewController *vc = self.pageContentViewController;
+    if (!vc.familyApplyIntroduceView) {
+        return;
+    }
+    
+    // パートナー申請誘導viewの分collection viewを大きくする
+    CGRect rect = vc.familyApplyIntroduceView.frame;
+    CGRect collectionRect = vc.pageContentCollectionView.frame;
+    collectionRect.size.height = collectionRect.size.height + rect.size.height;
+    collectionRect.origin.y = collectionRect.origin.y - rect.size.height;
+    vc.pageContentCollectionView.frame = collectionRect;
+    
+    [vc.familyApplyIntroduceView removeFromSuperview];
+    vc.familyApplyIntroduceView = nil;
+}
+
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
+{
+    // 画像のリストを生成する
+    // [ { date => yyyymmdd, images => {filename => $filename, bestFlag => 1}, ...}, ....]
+    NSMutableArray *dateList = [self dateList];
+    NSMutableArray *imagesSource = [NSMutableArray arrayWithArray: [Config config][@"TutorialImages"]];
+    
+    NSInteger index = [[self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
+    NSMutableDictionary *section = [self.pageContentViewController.childImages objectAtIndex:index];
+    NSMutableArray *images = [section objectForKey:@"images"];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    int i = 0;
+    for (NSMutableDictionary *imageSource in imagesSource) {
+        NSNumber *date = dateList[i];
+        
+        // totalImageNumの設定
+        totalImageNum[i] = [NSNumber numberWithInteger:[imageSource[@"images"] count]];
+                                                   
+        
+        for (NSMutableDictionary *imageDic in imageSource[@"images"]) {
+            if (!imageDic[@"bestFlag"]) {
+                continue;
+            }
+            NSString *imageFileName = imageDic[@"imageFileName"];
+            UIImage *imageThumbnail = [ImageCache makeThumbNail:[UIImage imageNamed:imageFileName]];
+            NSData *imageThumbnailData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(imageThumbnail, 1.0f)];
+           [ImageCache setCache:[date stringValue] image:imageThumbnailData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
+        }
+        i++;
+    }
+    
+    self.pageContentViewController.isLoading = NO;
+    [self.pageContentViewController.hud hide:YES];
+    self.pageContentViewController.isFirstLoad = 0;
+}
+
+- (NSMutableArray *)dateList
+{
+    NSMutableArray *dateList = [[NSMutableArray alloc]init];
+    NSDateComponents *comps = [DateUtils dateCompsFromDate:[NSDate date]];
+    
+    for (NSInteger i = 0; i < 7; i++) {
+        NSString *dateStr = [NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day];
+        NSNumber *date = [NSNumber numberWithInteger:[dateStr integerValue]];
+        [dateList addObject:date];
+        
+        comps = [DateUtils addDateComps:comps withUnit:@"day" withValue:-1];
+    }
+    return dateList;
 }
 
 @end

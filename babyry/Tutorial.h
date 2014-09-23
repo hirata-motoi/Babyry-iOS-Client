@@ -13,10 +13,14 @@
 
 + (void)initializeTutorialStage:(BOOL)hasFamilyId;
 + (TutorialStage *)currentStage;
-+ (TutorialStage *)updateStage;
++ (TutorialStage *)forwardStageWithNextStage:(NSString *)nextStage;
 + (BOOL)underTutorial;
 + (void)upsertTutorialAttributes:(NSString *)key withValue:(NSString *)value;
 + (NSString *)getTutorialAttributes:(NSString *)key;
 + (BOOL)shouldShowDefaultImage;
++ (BOOL)shouldShowFamilyApplyLead;
++ (BOOL)shouldShowTutorialIntroduction;
++ (void)forwardTutorialStageToLast;
++ (void)removeDefaultChild:(NSMutableArray *)childProperties;
 
 @end
