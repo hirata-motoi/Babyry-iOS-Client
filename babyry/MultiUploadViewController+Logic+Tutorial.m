@@ -125,7 +125,12 @@
     }
 }
 
-- (void)finalizeProcess
+- (void)finalizeSelectBestShot
+{
+    [self.multiUploadViewController showTutorialNavigator];
+    
+}
+- (void)forwardNextTutorial
 {
     [self.multiUploadViewController.navigationController popViewControllerAnimated:YES];
 }
