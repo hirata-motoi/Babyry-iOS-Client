@@ -243,39 +243,6 @@
                             [self setChildNames];
                         }
                         return;
-                        
-                        // こどもがいないのでbabyryちゃんのobjectIdをConfigから引く → _childArrayFromParseにセット
-                        // TODO babyryちゃんのobjectIdはキャッシュしておきたいなー
-                        PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
-                        [query whereKey:@"key" equalTo:@"tutorialChild"];
-                        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                            if (error) {
-                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting tutorialChild : %@", error]];
-                                // TODO ネットワークを確認してねというメッセージ出す
-                            }
-                            if (objects.count > 0) {
-                                NSString *childObjectId = objects[0][@"value"];
-                                [Tutorial upsertTutorialAttributes:@"tutorialChildObjectId" withValue:childObjectId];
-                                // Childからbotのrowをひく
-                                PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
-                                [botQuery whereKey:@"objectId" equalTo:childObjectId];
-                                [botQuery findObjectsInBackgroundWithBlock:^(NSArray *botUsers, NSError *error) {
-                                    if (error) {
-                                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting tutorialBotChild from Child objectId:%@", childObjectId]];
-                                    }
-                                    if (botUsers.count > 0) {
-                                        _childArrayFoundFromParse = botUsers;
-                                        [self setupChildProperties];
-                                        [self initializeChildImages];
-                                        [self instantiatePageViewController];
-                                    } else {
-                                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"No Bot User in Child class objectId:%@", childObjectId]];
-                                    }
-                                }];
-                            } else {
-                                [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
-                            }
-                        }];
                     }
                 } else {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
