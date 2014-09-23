@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD706194DBE8500BC3CDA /* Sequence.m */; };
-		84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */; };
 		88008C8919ADD693005FE04F /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88008C8819ADD693005FE04F /* AddressBook.framework */; };
 		88008C8B19ADD698005FE04F /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88008C8A19ADD698005FE04F /* AddressBookUI.framework */; };
 		88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */; };
@@ -89,8 +88,6 @@
 		88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF5091999367F00B56481 /* ImageToolbarCommentIcon.m */; };
 		88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF50C1999FA1F00B56481 /* ColorUtils.m */; };
 		88CFF52D199B68E400B56481 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF52F199B68E400B56481 /* Localizable.strings */; };
-		88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */; };
-		88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */; };
 		88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2821E19B48B8900225DD3 /* FamilyApply.m */; };
 		88E2822219B4A8DE00225DD3 /* Child.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2822119B4A8DE00225DD3 /* Child.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
@@ -218,8 +215,6 @@
 		83E1B3929686498094BDC25D /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		84ABD705194DBE8500BC3CDA /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
 		84ABD706194DBE8500BC3CDA /* Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sequence.m; sourceTree = "<group>"; };
-		84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApplyViewController.h; sourceTree = "<group>"; };
-		84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApplyViewController.m; sourceTree = "<group>"; };
 		88008C8819ADD693005FE04F /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		88008C8A19ADD698005FE04F /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		88008C8C19AF1169005FE04F /* NotEmailVerifiedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotEmailVerifiedViewController.h; sourceTree = "<group>"; };
@@ -357,9 +352,6 @@
 		88CFF50C1999FA1F00B56481 /* ColorUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtils.m; sourceTree = "<group>"; };
 		88CFF52E199B68E400B56481 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88CFF530199B68F100B56481 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
-		88E2821819B4858E00225DD3 /* WaitPartnerAcceptView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitPartnerAcceptView.h; sourceTree = "<group>"; };
-		88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaitPartnerAcceptView.m; sourceTree = "<group>"; };
-		88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WaitPartnerAcceptView.xib; sourceTree = "<group>"; };
 		88E2821D19B48B8900225DD3 /* FamilyApply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyApply.h; sourceTree = "<group>"; };
 		88E2821E19B48B8900225DD3 /* FamilyApply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyApply.m; sourceTree = "<group>"; };
 		88E2822019B4A8DE00225DD3 /* Child.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Child.h; sourceTree = "<group>"; };
@@ -937,8 +929,6 @@
 			children = (
 				F20F764A196BF86B00FD2529 /* GlobalSettingViewController.h */,
 				F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */,
-				84ABD70B194DDF3B00BC3CDA /* FamilyApplyViewController.h */,
-				84ABD70C194DDF3B00BC3CDA /* FamilyApplyViewController.m */,
 				F261A87F196418990072BBD2 /* FamilyApplyListViewController.h */,
 				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
 				F215DDD619766ECC0092C712 /* ProfileViewController.h */,
@@ -1181,7 +1171,6 @@
 			isa = PBXGroup;
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
-				88E2821B19B485BA00225DD3 /* WaitPartnerAcceptView.xib */,
 				F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */,
 			);
 			name = Xib;
@@ -1192,8 +1181,6 @@
 			children = (
 				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
 				F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */,
-				88E2821819B4858E00225DD3 /* WaitPartnerAcceptView.h */,
-				88E2821919B4858E00225DD3 /* WaitPartnerAcceptView.m */,
 				F2B7E0DF19C1F3A00052981B /* LogoutIntroduceView.h */,
 				F2B7E0E019C1F3A00052981B /* LogoutIntroduceView.m */,
 			);
@@ -1377,7 +1364,6 @@
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F21BBBC519CA0037002D4623 /* TutorialPartChangeView.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
-				88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */,
 				F285516919D15F0A00347BB6 /* TutorialImage_4.jpg in Resources */,
 				F285516A19D15F0A00347BB6 /* TutorialImage_5.jpg in Resources */,
 				F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */,
@@ -1470,7 +1456,6 @@
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88C072CE19C61C2F00BF6F6F /* Account.m in Sources */,
-				88E2821A19B4858E00225DD3 /* WaitPartnerAcceptView.m in Sources */,
 				F21BBBCD19CA0351002D4623 /* TutorialUpperArrowView.m in Sources */,
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
@@ -1564,7 +1549,6 @@
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */,
 				F21BBBC019C9F9D3002D4623 /* TutorialNavigator+SelectBestShot.m in Sources */,
-				84ABD70D194DDF3B00BC3CDA /* FamilyApplyViewController.m in Sources */,
 				F230522C19907927000F5E32 /* PageViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

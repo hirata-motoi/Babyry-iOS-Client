@@ -10,7 +10,6 @@
 #import "ImageCache.h"
 #import "GlobalSettingViewController.h"
 #import "IdIssue.h"
-#import "FamilyApplyViewController.h"
 #import "FamilyRole.h"
 #import "MaintenanceViewController.h"
 #import "Config.h"
