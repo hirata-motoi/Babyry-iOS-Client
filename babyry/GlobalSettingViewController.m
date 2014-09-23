@@ -7,7 +7,6 @@
 //
 
 #import "GlobalSettingViewController.h"
-#import "FamilyApplyViewController.h"
 #import "FamilyApplyListViewController.h"
 #import "FamilyRole.h"
 #import "ImageCache.h"
@@ -338,18 +337,6 @@
 {
     UserRegisterViewController * userRegisterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
     [self.navigationController pushViewController:userRegisterViewController animated:YES];
-}
-
-- (void)openFamilyApply
-{
-    FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-    [self.navigationController pushViewController:familyApplyViewController animated:YES];
-}
-
-- (void)openFamilyApplyList
-{
-    FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-    [self.navigationController pushViewController:familyApplyListViewController animated:YES];
 }
 
 - (void)openAddChildAddView

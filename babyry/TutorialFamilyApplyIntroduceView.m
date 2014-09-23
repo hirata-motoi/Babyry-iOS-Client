@@ -7,7 +7,6 @@
 //
 
 #import "TutorialFamilyApplyIntroduceView.h"
-#import "FamilyApplyViewController.h"
 
 @implementation TutorialFamilyApplyIntroduceView
 
