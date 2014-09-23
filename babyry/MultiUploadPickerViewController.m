@@ -296,7 +296,7 @@
                 [self saveToParseInBackground];
                 
                 if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUser"]) {
-                    [Tutorial forwardStageWithNextStage:@"familyApply"];
+                    [Tutorial forwardStageWithNextStage:@"uploadByUserFinished"];
                 }
                 [self dismissViewControllerAnimated:YES completion:NULL];
                 

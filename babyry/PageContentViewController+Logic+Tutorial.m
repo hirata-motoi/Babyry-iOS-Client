@@ -211,4 +211,12 @@
     return dateList;
 }
 
+- (void)forwardNextTutorial
+{
+    [Tutorial forwardStageWithNextStage:@"familyApply"];
+    [self setupHeaderView];
+    [self.pageContentViewController viewDidAppear:YES];
+    [self.pageContentViewController showTutorialNavigator];
+}
+
 @end

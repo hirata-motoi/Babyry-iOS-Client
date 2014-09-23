@@ -421,5 +421,8 @@
     vc.familyApplyIntroduceView = nil;
 }
 
+- (void)forwardNextTutorial
+{}
+
 
 @end

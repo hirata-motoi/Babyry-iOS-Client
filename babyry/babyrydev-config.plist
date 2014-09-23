@@ -101,6 +101,7 @@
 		<string>partChange</string>
 		<string>addChild</string>
 		<string>uploadByUser</string>
+		<string>uploadByUserFinished</string>
 		<string>familyApply</string>
 		<string>familyApplyExec</string>
 		<string>tutorialFinished</string>

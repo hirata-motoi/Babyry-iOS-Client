@@ -18,6 +18,7 @@
 #import "TutorialNavigator+AddChild.h"
 #import "TutorialNavigator+AddChildExec.h"
 #import "TutorialNavigator+UploadByUser.h"
+#import "TutorialNavigator+ImageUploadFinished.h"
 #import "TutorialNavigator+TutorialFinished.h"
 #import "Config.h"
 #import "PageContentViewController.h"
@@ -90,6 +91,13 @@
     } else if ([stage.currentStage isEqualToString:@"uploadByUser"]) {
         if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
             TutorialNavigator_UploadByUser *navigator = [[TutorialNavigator_UploadByUser alloc]init];
+            navigator.targetViewController = _targetViewController;
+            [navigator show];
+            navigator_ = navigator;
+        }
+    } else if ([stage.currentStage isEqualToString:@"uploadByUserFinished"]) {
+        if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
+            TutorialNavigator_ImageUploadFinished *navigator = [[TutorialNavigator_ImageUploadFinished alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
