@@ -11,6 +11,7 @@
 #import "Account.h"
 #import "TmpUser.h"
 #import <Parse/Parse.h>
+#import <ParseFacebookUtils/PFFacebookUtils.h>
 #import "Logger.h"
 #import "MBProgressHUD.h"
 

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+#import <ParseFacebookUtils/PFFacebookUtils.h>
 #import "MySignUpViewController.h"
 
 @interface ChooseRegisterStepViewController : UIViewController<PFSignUpViewControllerDelegate>

@@ -341,7 +341,7 @@ static FBSession *g_activeSession = nil;
             // valid behavior; no-op.
             break;
         default:
-            [FBLogger singleShotLogEntry:FBLoggingBehaviorDeveloperErrors formatString:@"%d is not a valid FBSessionLoginBehavior. Ignoring open call.", behavior];
+            [FBLogger singleShotLogEntry:FBLoggingBehaviorDeveloperErrors formatString:@"%lu is not a valid FBSessionLoginBehavior. Ignoring open call.", (unsigned long)behavior];
             return;
     }
     if (!(self.state == FBSessionStateCreated ||
@@ -364,7 +364,7 @@ static FBSession *g_activeSession = nil;
 
     if ([FBSettings restrictedTreatment] == FBRestrictedTreatmentYES) {
         NSError *error = [self errorLoginFailedWithReason:FBErrorLoginFailedReasonOtherError
-                                                errorCode:[@(FBErrorOperationDisallowedForRestrictedTreament) stringValue]
+                                                errorCode:[@(FBErrorOperationDisallowedForRestrictedTreatment) stringValue]
                                                innerError:nil];
         [self transitionAndCallHandlerWithState:FBSessionStateClosedLoginFailed
                                           error:error

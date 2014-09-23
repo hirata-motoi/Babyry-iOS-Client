@@ -14,7 +14,8 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "AZNetworking.h"
+#import <CommonCrypto/CommonHMAC.h>
+#import "AWSNetworking.h"
 
 @class AWSEndpoint;
 
@@ -26,10 +27,11 @@
 + (NSString *)hashString:(NSString *)stringToHash;
 + (NSData *)hash:(NSData *)dataToHash;
 + (NSString *)hexEncode:(NSString *)string;
++ (NSString *)HMACSign:(NSData *)data withKey:(NSString *)key usingAlgorithm:(CCHmacAlgorithm)algorithm;
 
 @end
 
-@interface AWSSignatureV4Signer : NSObject <AZNetworkingRequestInterceptor>
+@interface AWSSignatureV4Signer : NSObject <AWSNetworkingRequestInterceptor>
 
 @property (nonatomic, strong, readonly) id<AWSCredentialsProvider> credentialsProvider;
 
@@ -41,7 +43,7 @@
 
 @end
 
-@interface AWSSignatureV2Signer : NSObject <AZNetworkingRequestInterceptor>
+@interface AWSSignatureV2Signer : NSObject <AWSNetworkingRequestInterceptor>
 
 @property (nonatomic, strong, readonly) id<AWSCredentialsProvider> credentialsProvider;
 
