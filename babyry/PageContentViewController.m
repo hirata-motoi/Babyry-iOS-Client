@@ -41,12 +41,11 @@
 #import "Config.h"
 #import "Logger.h"
 #import "AppSetting.h"
-#import "WaitPartnerAcceptView.h"
 #import "PageContentViewController+Logic.h"
 #import "PageContentViewController+Logic+Tutorial.h"
 #import "Tutorial.h"
 #import "TutorialNavigator.h"
-#import "FamilyApplyViewController.h"
+#import "PartnerInviteViewController.h"
 
 @interface PageContentViewController ()
 
@@ -899,8 +898,8 @@
 {
     [Tutorial forwardStageWithNextStage:@"familyApplyExec"];
     [_tn removeNavigationView];
-    FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-    [self.navigationController pushViewController:familyApplyViewController animated:YES];
+    PartnerInviteViewController * partnerInviteViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerInviteViewController"];
+    [self.navigationController pushViewController:partnerInviteViewController animated:YES];
 }
 
 - (void)showTutorialNavigator

@@ -8,7 +8,6 @@
 
 #import "IntroFirstViewController.h"
 #import "UIViewController+MJPopupViewController.h"
-#import "FamilyApplyViewController.h"
 #import "FamilyApplyListViewController.h"
 #import "IdIssue.h"
 #import "IntroPageRootViewController.h"
