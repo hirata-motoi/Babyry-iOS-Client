@@ -53,6 +53,7 @@
     }
     
     if (
+        [currentStage.currentStage isEqualToString:@"introduction"] ||
         [currentStage.currentStage isEqualToString:@"chooseByUser"] ||
         [currentStage.currentStage isEqualToString:@"partChange"]   ||
         [currentStage.currentStage isEqualToString:@"addChild"]
