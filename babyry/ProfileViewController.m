@@ -62,9 +62,14 @@
         case 0:
             numberOfRows = 1;
             break;
-        case 1:
-            numberOfRows = 2;
+        case 1: {
+            if (![PartnerApply linkComplete]) {
+                numberOfRows = 2;
+            } else {
+                numberOfRows = 1; // TODO 紐付け解除機能を実装すれば2にする
+            }
             break;
+        }
         case 2:
             numberOfRows = [_childProperties count];
             break;
