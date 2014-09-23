@@ -401,7 +401,6 @@
 {
     IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     introChildNameViewController.childProperties = _childProperties;
-//    [self presentViewController:introChildNameViewController animated:YES completion:NULL];
     [self.navigationController pushViewController:introChildNameViewController animated:YES];
 }
 
