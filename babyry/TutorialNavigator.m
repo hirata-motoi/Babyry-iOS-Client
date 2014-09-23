@@ -151,6 +151,7 @@
     [[NSNotificationCenter defaultCenter] postNotification:n];
    
     [self.targetViewController.navigationController popToViewController:vc  animated:YES];
+    [vc viewDidAppear:YES];
 }
 
 @end
