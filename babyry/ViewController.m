@@ -202,6 +202,10 @@
         if (_only_first_load == 1) {
             NSArray *childList = [childQuery findObjects];
             if (childList.count < 1) {
+                if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApplyExec"]) {
+                    [self setChildNames];
+                    return;
+                }
                 // こどもがいないのでbabyryちゃんのobjectIdをConfigから引く → _childArrayFromParseにセット
                 // ここは同期で処理する
                 PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
@@ -237,7 +241,6 @@
             [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if(!error) {
                     if ([objects count] < 1) {
-                        // TODO ここに入ってくるのはtutorialをskipした時だけだと思うが要確認
                         TutorialStage *currentStage = [Tutorial currentStage];
                         if ([currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
                             [self setChildNames];
