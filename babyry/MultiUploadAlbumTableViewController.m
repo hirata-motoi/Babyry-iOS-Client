@@ -32,13 +32,15 @@
     
     [Navigation setTitle:self.navigationItem withTitle:@"アルバム一覧" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
+    _accessAllowed = NO;
+    
     // フォトアルバムからリスト取得しておく
     NSMutableArray *albumListAll = [[NSMutableArray alloc]init];
     
     _albumListArray = [[NSMutableArray alloc] init];
     _albumImageAssetsArray = [[NSMutableArray alloc] init];
     _library = [[ALAssetsLibrary alloc] init];
-   
+
     if (![self isPhotoAccessEnableWithIsShowAlert:YES]) {
         return;
     }
@@ -66,7 +68,8 @@
                             [_albumListArray addObject:group];
                         }
                     }
-                    
+                    [self createAlbumTable];
+                    _accessAllowed = YES;
                 }
             } failureBlock:nil];
         }
@@ -82,7 +85,14 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    if (_accessAllowed) {
+        [self createAlbumTable];
+    }
+}
 
+- (void) createAlbumTable
+{
     _albumTableView = [[UITableView alloc] init];
     _albumTableView.delegate = self;
     _albumTableView.dataSource = self;
@@ -146,8 +156,8 @@
     [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
 }
 
+// このアプリの写真への認証状態を取得する
 - (BOOL)isPhotoAccessEnableWithIsShowAlert:(BOOL)_isShowAlert {
-    // このアプリの写真への認証状態を取得する
     ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
     
     BOOL isAuthorization = NO;

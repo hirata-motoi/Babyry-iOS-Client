@@ -18,5 +18,6 @@
 + (void)createFamilyRoleWithBlock:(NSMutableDictionary *)data withBlock:(PFBooleanResultBlock)block;
 + (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block;
 + (void)switchRole:(NSString *)role;
++ (void) unlinkFamily:(PFBooleanResultBlock)block;
 
 @end

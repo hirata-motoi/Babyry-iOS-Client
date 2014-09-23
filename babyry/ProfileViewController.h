@@ -11,7 +11,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "NicknameEditViewController.h"
 
-@interface ProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, NicknameEditViewDelegate>
+@interface ProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, NicknameEditViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *profileTableView;
 @property NSInteger numberOfChild;

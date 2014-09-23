@@ -12,7 +12,7 @@
 #import "MBProgressHUD.h"
 #import "PageViewController.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController<UINavigationControllerDelegate>
 
 //- (IBAction)startWalkthrough:(id)sender;
 

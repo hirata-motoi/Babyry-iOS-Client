@@ -68,10 +68,13 @@
 		88C072CE19C61C2F00BF6F6F /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072CD19C61C2F00BF6F6F /* Account.m */; };
 		88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */; };
 		88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072D319C87A3200BF6F6F /* PartnerApply.m */; };
-		88C072E019C8B03A00BF6F6F /* PartnerApplyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */; };
+		88C072E919C9E58D00BF6F6F /* TrackingLogEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072E819C9E58D00BF6F6F /* TrackingLogEntity.m */; };
 		88C072F119CAB50100BF6F6F /* ChildListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072F019CAB50100BF6F6F /* ChildListCell.m */; };
 		88C072F319CAB64500BF6F6F /* ChildListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88C072F219CAB64500BF6F6F /* ChildListCell.xib */; };
 		88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072F519CC107800BF6F6F /* ParseUtils.m */; };
+		88C072F919CC3A3C00BF6F6F /* InputPinCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072F819CC3A3C00BF6F6F /* InputPinCodeViewController.m */; };
+		88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */; };
+		88C0730B19CF4BDF00BF6F6F /* PartnerApplyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C0730A19CF4BDF00BF6F6F /* PartnerApplyEntity.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
@@ -319,13 +322,19 @@
 		88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerInviteViewController.m; sourceTree = "<group>"; };
 		88C072D219C87A3200BF6F6F /* PartnerApply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApply.h; sourceTree = "<group>"; };
 		88C072D319C87A3200BF6F6F /* PartnerApply.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApply.m; sourceTree = "<group>"; };
-		88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApplyEntity.h; sourceTree = "<group>"; };
-		88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApplyEntity.m; sourceTree = "<group>"; };
+		88C072E719C9E58D00BF6F6F /* TrackingLogEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackingLogEntity.h; sourceTree = "<group>"; };
+		88C072E819C9E58D00BF6F6F /* TrackingLogEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackingLogEntity.m; sourceTree = "<group>"; };
 		88C072EF19CAB50100BF6F6F /* ChildListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildListCell.h; sourceTree = "<group>"; };
 		88C072F019CAB50100BF6F6F /* ChildListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildListCell.m; sourceTree = "<group>"; };
 		88C072F219CAB64500BF6F6F /* ChildListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildListCell.xib; sourceTree = "<group>"; };
 		88C072F419CC107800BF6F6F /* ParseUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseUtils.h; sourceTree = "<group>"; };
 		88C072F519CC107800BF6F6F /* ParseUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseUtils.m; sourceTree = "<group>"; };
+		88C072F719CC3A3C00BF6F6F /* InputPinCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputPinCodeViewController.h; sourceTree = "<group>"; };
+		88C072F819CC3A3C00BF6F6F /* InputPinCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputPinCodeViewController.m; sourceTree = "<group>"; };
+		88C0730019CEAE8F00BF6F6F /* PartnerInvitedEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerInvitedEntity.h; sourceTree = "<group>"; };
+		88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerInvitedEntity.m; sourceTree = "<group>"; };
+		88C0730919CF4BDF00BF6F6F /* PartnerApplyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerApplyEntity.h; sourceTree = "<group>"; };
+		88C0730A19CF4BDF00BF6F6F /* PartnerApplyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerApplyEntity.m; sourceTree = "<group>"; };
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
@@ -1005,6 +1014,8 @@
 				88008C8D19AF1169005FE04F /* NotEmailVerifiedViewController.m */,
 				88C072A219C17FEC00BF6F6F /* ChooseRegisterStepViewController.h */,
 				88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */,
+				88C072F719CC3A3C00BF6F6F /* InputPinCodeViewController.h */,
+				88C072F819CC3A3C00BF6F6F /* InputPinCodeViewController.m */,
 			);
 			name = Intro;
 			sourceTree = "<group>";
@@ -1198,12 +1209,20 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				88C0730919CF4BDF00BF6F6F /* PartnerApplyEntity.h */,
+				88C0730A19CF4BDF00BF6F6F /* PartnerApplyEntity.m */,
 				F2D9350019C95DA8001F33D0 /* TutorialAttributes.h */,
 				F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */,
 				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
 				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
-				88C072DE19C8B03A00BF6F6F /* PartnerApplyEntity.h */,
-				88C072DF19C8B03A00BF6F6F /* PartnerApplyEntity.m */,
+				88C072E719C9E58D00BF6F6F /* TrackingLogEntity.h */,
+				88C072E819C9E58D00BF6F6F /* TrackingLogEntity.m */,
+				88C0730019CEAE8F00BF6F6F /* PartnerInvitedEntity.h */,
+				88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */,
+				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
+				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
+				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
+				F2AE04EB19B2EC8500B39C6F /* AppSetting.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
 				88C072C319C4599900BF6F6F /* TmpUserData.m */,
 				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
@@ -1451,7 +1470,6 @@
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
-				88C072E019C8B03A00BF6F6F /* PartnerApplyEntity.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				F21BBBB819C9EEA7002D4623 /* TutorialShowMultiUploadView.m in Sources */,
 				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
@@ -1492,6 +1510,7 @@
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				F2B7E0DC19C166D20052981B /* Tutorial.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
+				88C0730B19CF4BDF00BF6F6F /* PartnerApplyEntity.m in Sources */,
 				88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */,
 				F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */,
 				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
@@ -1526,7 +1545,9 @@
 				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
+				88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */,
 				F2B7E0D919C1666F0052981B /* TutorialStage.m in Sources */,
+				88C072E919C9E58D00BF6F6F /* TrackingLogEntity.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
 				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
@@ -1542,6 +1563,7 @@
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
 				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
+				88C072F919CC3A3C00BF6F6F /* InputPinCodeViewController.m in Sources */,
 				F2AD4F15199FD5F200037C72 /* ImageRequestIntroductionView.m in Sources */,
 				F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */,
 				F2B7E0E119C1F3A00052981B /* LogoutIntroduceView.m in Sources */,

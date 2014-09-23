@@ -18,6 +18,8 @@
 #import "MyLogInViewController.h"
 #import "MySignUpViewController.h"
 #import "Logger.h"
+#import "PartnerInvitedEntity.h"
+#import "ChooseRegisterStepViewController.h"
 
 @interface IntroFirstViewController ()
 

@@ -62,6 +62,7 @@
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(176, 0, 130, 38)];
     [view addSubview:titleview];
     self.navigationItem.titleView = view;
+    self.navigationController.delegate = self;
     self.navigationController.navigationBar.barTintColor = [UIColor_Hex colorWithHexString:@"f4c510" alpha:1.0f];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@""
@@ -178,6 +179,7 @@
             familyRole[@"familyId"] = _currentUser[@"familyId"];
             familyRole[@"chooser"]  = _currentUser[@"userId"];
             familyRole[@"uploader"] = @"";
+            familyRole[@"createdBy"] = _currentUser[@"userId"];
             [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving FamilyRole:%@", error]];
@@ -186,25 +188,6 @@
                 [FamilyRole updateCache];
             }];
         }
-        
-//        // falimyIdがなければ招待画面をだして先に進めない
-//        if (!_currentUser[@"familyId"] || [_currentUser[@"familyId"] isEqualToString:@""]) {
-//            // パートナー検索画面を出す
-//            FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-//            familyApplyViewController.viewController = self;
-//            [self.navigationController pushViewController:familyApplyViewController animated:YES];
-//            return;
-//        }
-//        
-//        // roleがundefの場合パートナーひも付けされてないからパートナー招待画面を出す
-//        if (![FamilyRole selfRole:@"cachekOnly"]) {
-//            if (![FamilyRole selfRole:@"noCache"]) {
-//                // パートナー検索画面を出す
-//                FamilyApplyViewController *familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-//                [self.navigationController pushViewController:familyApplyViewController animated:YES];
-//                return;
-//            }
-//        }
         
         // roleを更新
         [FamilyRole updateCache];
@@ -443,6 +426,11 @@
     _pageViewController = nil;
    
     [self instantiatePageViewController];
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    [Logger writeToTrackingLog:[NSString stringWithFormat:@"%@ %@ %@ %@", [DateUtils setSystemTimezone:[NSDate date]], _currentUser.objectId, _currentUser[@"userId"], NSStringFromClass([viewController class])]];
 }
 
 @end

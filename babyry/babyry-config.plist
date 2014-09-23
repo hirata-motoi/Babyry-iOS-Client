@@ -8,6 +8,8 @@
 	<string>あなたのパートナーからBabyryへの招待が届いています。\n以下のURLからアプリをインストール後、招待コード %pinCode を入力してください。\n\nhttps://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
 	<key>InviteLineTextWithPinCode</key>
 	<string>あなたのパートナーからBabyryへの招待が届いています。 以下のURLからアプリをインストール後、招待コード %pinCode を入力してください。  https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
+	<key>TrackingLogKeyName</key>
+	<string>TrackingLog</string>
 	<key>TmpUserDataKeyName</key>
 	<string>TmpUserData</string>
 	<key>AppStoreURL</key>

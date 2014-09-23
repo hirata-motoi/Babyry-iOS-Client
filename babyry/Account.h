@@ -12,5 +12,6 @@
 
 + (NSString *) checkEmailRegisterFields:(NSString *)email password:(NSString *)password passwordConfirm:(NSString *)passwordConfirm;
 + (BOOL)validateEmailWithString:(NSString*)email;
++ (BOOL)validatePincode:(NSString *)pincode;
 
 @end
