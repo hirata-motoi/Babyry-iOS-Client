@@ -226,7 +226,8 @@
 - (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
     //NSLog(@"Failed to log in...");
     [[[UIAlertView alloc] initWithTitle:@"ログインエラー"
-                                message:@"ログインエラーが発生しました。メールアドレスとパスワードを確認してください。"
+                                //message:@"ログインエラーが発生しました。メールアドレスとパスワードを確認してください。"
+                                message:[NSString stringWithFormat:@"%@", error]
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];
