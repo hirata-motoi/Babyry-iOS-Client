@@ -13,6 +13,7 @@
 #import "TutorialStage.h"
 #import "Config.h"
 #import "TutorialFamilyApplyIntroduceView.h"
+#import "ImageCache.h"
 
 @implementation PageContentViewController_Logic_Tutorial
 
@@ -169,6 +170,58 @@
     
     [vc.familyApplyIntroduceView removeFromSuperview];
     vc.familyApplyIntroduceView = nil;
+}
+
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
+{
+    // 画像のリストを生成する
+    // [ { date => yyyymmdd, images => {filename => $filename, bestFlag => 1}, ...}, ....]
+    NSMutableArray *dateList = [self dateList];
+    NSMutableArray *imagesSource = [NSMutableArray arrayWithArray: [Config config][@"TutorialImages"]];
+    
+    NSInteger index = [[self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
+    NSMutableDictionary *section = [self.pageContentViewController.childImages objectAtIndex:index];
+    NSMutableArray *images = [section objectForKey:@"images"];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    int i = 0;
+    for (NSMutableDictionary *imageSource in imagesSource) {
+        NSNumber *date = dateList[i];
+        
+        // totalImageNumの設定
+        totalImageNum[i] = [NSNumber numberWithInteger:[imageSource[@"images"] count]];
+                                                   
+        
+        for (NSMutableDictionary *imageDic in imageSource[@"images"]) {
+            if (!imageDic[@"bestFlag"]) {
+                continue;
+            }
+            NSString *imageFileName = imageDic[@"imageFileName"];
+            UIImage *image = [UIImage imageNamed:imageFileName];
+            NSData *imageThumbnailData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 0.7f)];
+           [ImageCache setCache:[date stringValue] image:imageThumbnailData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
+        }
+        i++;
+    }
+    
+    self.pageContentViewController.isLoading = NO;
+    [self.pageContentViewController.hud hide:YES];
+    self.pageContentViewController.isFirstLoad = 0;
+}
+
+- (NSMutableArray *)dateList
+{
+    NSMutableArray *dateList = [[NSMutableArray alloc]init];
+    NSDateComponents *comps = [DateUtils dateCompsFromDate:[NSDate date]];
+    
+    for (NSInteger i = 0; i < 7; i++) {
+        NSString *dateStr = [NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day];
+        NSNumber *date = [NSNumber numberWithInteger:[dateStr integerValue]];
+        [dateList addObject:date];
+        
+        comps = [DateUtils addDateComps:comps withUnit:@"day" withValue:-1];
+    }
+    return dateList;
 }
 
 @end

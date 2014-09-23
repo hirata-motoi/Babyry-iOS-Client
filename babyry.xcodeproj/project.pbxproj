@@ -159,6 +159,13 @@
 		F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694B021983A232008239F6 /* ImagePageViewController.m */; };
 		F271B31B1998CC2200C9952A /* Sharding.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31A1998CC2200C9952A /* Sharding.m */; };
 		F271B31E1999E5E800C9952A /* Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31D1999E5E800C9952A /* Badge.m */; };
+		F285516519D15F0A00347BB6 /* TutorialImage_0_0.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F285515E19D15F0A00347BB6 /* TutorialImage_0_0.jpg */; };
+		F285516619D15F0A00347BB6 /* TutorialImage_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F285515F19D15F0A00347BB6 /* TutorialImage_1.jpg */; };
+		F285516719D15F0A00347BB6 /* TutorialImage_2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F285516019D15F0A00347BB6 /* TutorialImage_2.jpg */; };
+		F285516919D15F0A00347BB6 /* TutorialImage_4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F285516219D15F0A00347BB6 /* TutorialImage_4.jpg */; };
+		F285516A19D15F0A00347BB6 /* TutorialImage_5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F285516319D15F0A00347BB6 /* TutorialImage_5.jpg */; };
+		F285517119D160A500347BB6 /* TutorialImage_3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F285517019D160A500347BB6 /* TutorialImage_3.jpg */; };
+		F285517319D160AC00347BB6 /* TutorialImage_6.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F285517219D160AC00347BB6 /* TutorialImage_6.jpg */; };
 		F2A7EDB419A0BDC700C73D4F /* IntroPageRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2A7EDB319A0BDC700C73D4F /* IntroPageRootViewController.m */; };
 		F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2A8332419AAC28600E2AB58 /* babyrydev-Info.plist */; };
 		F2A8332A19AB0F0F00E2AB58 /* babyrydev-config.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2A8332919AB0F0F00E2AB58 /* babyrydev-config.plist */; };
@@ -469,6 +476,13 @@
 		F271B31A1998CC2200C9952A /* Sharding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sharding.m; sourceTree = "<group>"; };
 		F271B31C1999E5E800C9952A /* Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Badge.h; sourceTree = "<group>"; };
 		F271B31D1999E5E800C9952A /* Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Badge.m; sourceTree = "<group>"; };
+		F285515E19D15F0A00347BB6 /* TutorialImage_0_0.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_0_0.jpg; sourceTree = "<group>"; };
+		F285515F19D15F0A00347BB6 /* TutorialImage_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_1.jpg; sourceTree = "<group>"; };
+		F285516019D15F0A00347BB6 /* TutorialImage_2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_2.jpg; sourceTree = "<group>"; };
+		F285516219D15F0A00347BB6 /* TutorialImage_4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_4.jpg; sourceTree = "<group>"; };
+		F285516319D15F0A00347BB6 /* TutorialImage_5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_5.jpg; sourceTree = "<group>"; };
+		F285517019D160A500347BB6 /* TutorialImage_3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_3.jpg; sourceTree = "<group>"; };
+		F285517219D160AC00347BB6 /* TutorialImage_6.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_6.jpg; sourceTree = "<group>"; };
 		F2A7EDB219A0BDC700C73D4F /* IntroPageRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroPageRootViewController.h; sourceTree = "<group>"; };
 		F2A7EDB319A0BDC700C73D4F /* IntroPageRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroPageRootViewController.m; sourceTree = "<group>"; };
 		F2A8332419AAC28600E2AB58 /* babyrydev-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "babyrydev-Info.plist"; path = "Babyry/babyrydev-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -748,6 +762,7 @@
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
 				88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */,
 				88B18C8E193814CF00ED630C /* Images.xcassets */,
+				F285514919D123E800347BB6 /* TutorialImages */,
 				88B18C7D193814CE00ED630C /* Supporting Files */,
 				88CFF52F199B68E400B56481 /* Localizable.strings */,
 			);
@@ -1108,6 +1123,20 @@
 			name = PageView;
 			sourceTree = "<group>";
 		};
+		F285514919D123E800347BB6 /* TutorialImages */ = {
+			isa = PBXGroup;
+			children = (
+				F285515E19D15F0A00347BB6 /* TutorialImage_0_0.jpg */,
+				F285515F19D15F0A00347BB6 /* TutorialImage_1.jpg */,
+				F285516019D15F0A00347BB6 /* TutorialImage_2.jpg */,
+				F285517019D160A500347BB6 /* TutorialImage_3.jpg */,
+				F285516219D15F0A00347BB6 /* TutorialImage_4.jpg */,
+				F285516319D15F0A00347BB6 /* TutorialImage_5.jpg */,
+				F285517219D160AC00347BB6 /* TutorialImage_6.jpg */,
+			);
+			name = TutorialImages;
+			sourceTree = "<group>";
+		};
 		F2AD4F06199F96A700037C72 /* Badge */ = {
 			isa = PBXGroup;
 			children = (
@@ -1312,12 +1341,14 @@
 				88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */,
 				88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */,
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
+				F285517119D160A500347BB6 /* TutorialImage_3.jpg in Resources */,
 				F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
 				F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */,
 				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
 				F2A8333019AC591B00E2AB58 /* babyry-secret-config.plist in Resources */,
 				F2B9697419CD75B000C14201 /* TutorialBestShotSelectedView.xib in Resources */,
+				F285517319D160AC00347BB6 /* TutorialImage_6.jpg in Resources */,
 				F21BBBCA19CA0265002D4623 /* TutorialUpperArrowView.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
@@ -1328,15 +1359,20 @@
 				F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */,
 				F2B9697C19CD903900C14201 /* TutorialIntroductionView.xib in Resources */,
 				F21BBBB519C9ED45002D4623 /* TutorialShowMultiUploadView.xib in Resources */,
+				F285516619D15F0A00347BB6 /* TutorialImage_1.jpg in Resources */,
 				88C072F319CAB64500BF6F6F /* ChildListCell.xib in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F21BBBC519CA0037002D4623 /* TutorialPartChangeView.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 				88E2821C19B485BA00225DD3 /* WaitPartnerAcceptView.xib in Resources */,
+				F285516919D15F0A00347BB6 /* TutorialImage_4.jpg in Resources */,
+				F285516A19D15F0A00347BB6 /* TutorialImage_5.jpg in Resources */,
 				F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
+				F285516519D15F0A00347BB6 /* TutorialImage_0_0.jpg in Resources */,
 				88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */,
+				F285516719D15F0A00347BB6 /* TutorialImage_2.jpg in Resources */,
 				F233421519A114E900928101 /* FamilyApplyListCell.xib in Resources */,
 				F2A8332E19AC585100E2AB58 /* babyrydev-secret-config.plist in Resources */,
 			);

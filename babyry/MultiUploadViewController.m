@@ -218,6 +218,8 @@
     NSArray *splitForTmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
     NSString *splitForTmp = [splitForTmpArray lastObject];
     
+    NSLog(@"childCachedImageArray : %@", _childCachedImageArray);
+    
     if (![splitForTmp isEqualToString:@"tmp"]) {
         NSData *tmpImageData = [ImageCache
                                 getCache:[_childCachedImageArray objectAtIndex:indexPath.row]

@@ -60,17 +60,11 @@
     query.limit = 1000;
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
     
-    if (year > 0 && month > 0) {
-        [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 1] integerValue]]];
-        [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 31] integerValue]]];
-    }
+    [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 1] integerValue]]];
+    [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 31] integerValue]]];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
-            
-            [self compensateDateOfChildImage:objects];
-            [self compensateBestFlagOfChildImage:objects];
-            
             NSInteger index = [[self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
             NSMutableDictionary *section = [self.pageContentViewController.childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];

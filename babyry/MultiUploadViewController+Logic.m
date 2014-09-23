@@ -213,7 +213,9 @@
         for (int i = 0; i < objects.count; i++) {
             PFObject *childImage = objects[i];
             childImage[@"bestFlag"] = (i == bestShotIndex) ? @"choosed" : @"unchoosed";
-            [childImage saveInBackground];
+            [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                [[NSNotificationCenter defaultCenter] postNotification: [NSNotification notificationWithName:@"didUpdatedChildImageInfo" object:self]];
+            }];
         }
     }];
 }

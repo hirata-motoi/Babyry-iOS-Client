@@ -90,6 +90,7 @@
     // Notification登録
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
 }
 
 - (void)applicationDidBecomeActive
@@ -145,7 +146,18 @@
 
 -(void)setImages
 {
-    [[self logic] setImages];
+    if ([Tutorial shouldShowDefaultImage]) {
+        [logicTutorial setImages];
+    } else {
+        if (!logic) {
+            PageContentViewController_Logic *l = [[PageContentViewController_Logic alloc]init];
+            l.pageContentViewController = self;
+            [l setImages];
+        } else {
+            [logic setImages];
+        }
+    }
+    //[[self logic] setImages];
 }
 
 
