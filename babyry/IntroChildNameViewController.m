@@ -170,8 +170,8 @@
             
             [_hud hide:YES];
            
-            // tutorial中の場合こども追加が完了したらPageContentViewControllerに戻る
-            if ([Tutorial underTutorial]) {
+            // tutorial中でBabyryちゃんに対して操作している場合こども追加が完了したらPageContentViewControllerに戻る
+            if ([Tutorial shouldShowDefaultImage]) {
                 [self.navigationController popToViewController: [self.navigationController.viewControllers objectAtIndex:0] animated:YES];
             }
         }
