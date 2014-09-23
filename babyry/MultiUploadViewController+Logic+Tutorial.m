@@ -28,8 +28,8 @@
         NSString *imageFileName = imageDic[@"imageFileName"];
         
         UIImage *image = [UIImage imageNamed:imageFileName];
-        NSData *imageThumbnailData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 0.7f)];
-        NSData *imageFullsizeData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 1.0f)];
+        NSData *imageThumbnailData = [[NSData alloc] initWithData:UIImageJPEGRepresentation([ImageCache makeThumbNail:image], 1.0f)];
+        NSData *imageFullsizeData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 0.7f)];
         [ImageCache setCache:imageFileName image:imageThumbnailData dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", self.multiUploadViewController.childObjectId, self.multiUploadViewController.date]];
         [ImageCache setCache:imageFileName image:imageFullsizeData dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", self.multiUploadViewController.childObjectId, self.multiUploadViewController.date]];
     }

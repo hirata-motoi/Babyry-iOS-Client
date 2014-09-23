@@ -197,8 +197,8 @@
                 continue;
             }
             NSString *imageFileName = imageDic[@"imageFileName"];
-            UIImage *image = [UIImage imageNamed:imageFileName];
-            NSData *imageThumbnailData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(image, 0.7f)];
+            UIImage *imageThumbnail = [ImageCache makeThumbNail:[UIImage imageNamed:imageFileName]];
+            NSData *imageThumbnailData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(imageThumbnail, 1.0f)];
            [ImageCache setCache:[date stringValue] image:imageThumbnailData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
         }
         i++;
