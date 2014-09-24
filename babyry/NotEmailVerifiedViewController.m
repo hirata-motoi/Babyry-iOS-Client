@@ -57,22 +57,6 @@
 
 -(void)setLabel
 {
-    // ログアウトラベル
-    _logOutLabel.userInteractionEnabled = YES;
-    _logOutLabel.layer.cornerRadius = 5;
-    _logOutLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    _logOutLabel.layer.borderWidth = 1.0f;
-    
-    UITapGestureRecognizer *stgr1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logOut)];
-    stgr1.numberOfTapsRequired = 1;
-    [_logOutLabel addGestureRecognizer:stgr1];
-    
-    // メール再送信ラベル
-    _resendLabel.userInteractionEnabled = YES;
-    _resendLabel.layer.cornerRadius = 5;
-    _resendLabel.layer.borderColor = [UIColor orangeColor].CGColor;
-    _resendLabel.layer.borderWidth = 1;
-    
     UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(resend)];
     stgr2.numberOfTapsRequired = 1;
     [_resendLabel addGestureRecognizer:stgr2];
