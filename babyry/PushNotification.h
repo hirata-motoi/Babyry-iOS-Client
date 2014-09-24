@@ -14,6 +14,7 @@ typedef void (^PushNotificationBlock)();
 @interface PushNotification : NSObject
 
 + (void)sendInBackground:(NSString *)event withOptions:(NSDictionary *)options;
++ (void)sendToSpecificUserInBackground:(NSString *)event withOptions:(NSDictionary *)options targetUserId:(NSString *)targetUserId;
 + (void)setupPushNotificationInstallation;
 + (void)removeSelfUserIdFromChannels:(PushNotificationBlock)block;
 

@@ -86,6 +86,48 @@
     }];
 }
 
+// 特定ユーザーに対しておくる
+// 一緒のメソッドにしても良かったが、影響し合うと良くないので
++ (void)sendToSpecificUserInBackground:(NSString *)event withOptions:(NSDictionary *)options targetUserId:(NSString *)targetUserId
+{
+    // eventから送信メッセージを取得(これはDBで変えれるように)
+    PFQuery *query = [PFQuery queryWithClassName:@"PushNotificationEvent"];
+    [query whereKey:@"event" equalTo:event];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error && objects.count > 0) { // 存在しないイベントの場合は通知を送らない
+            PFObject *eventInfo = [objects objectAtIndex:0];
+            
+            NSString *message = eventInfo[@"message"];
+            if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
+                message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
+            }
+            PFPush *push = [[PFPush alloc]init];
+            
+            NSMutableArray *targetUserIds = [[NSMutableArray alloc]init];
+            [targetUserIds addObject:[NSString stringWithFormat:@"userId_%@", targetUserId]];
+            
+            [push setChannels:targetUserIds];
+            NSMutableDictionary *data = options[@"data"];
+            if (!data) {
+                data = [[NSMutableDictionary alloc]init];
+            }
+            // オプションでdataが指定された場合はセット(eventを元にセットされたメッセージは上書きされる)
+            if (!data[@"alert"]) {
+                data[@"alert"] = message;
+            }
+            if (!data[@"sound"]) {
+                // デフォルトの着信音
+                data[@"sound"] = @"";
+            }
+            [push setData:[options objectForKey:@"data"]];
+            // 送信
+            [push sendPushInBackground];
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get PushNotificationEvent : %@", error]];
+        }
+    }];
+}
+
 // このdeviceが自分以外に紐づいている場合は上書きする
 + (void)setupPushNotificationInstallation
 {

@@ -10,6 +10,7 @@
 #import "PartnerInviteEntity.h"
 #import "PartnerInvitedEntity.h"
 #import "Config.h"
+#import "PushNotification.h"
 
 @implementation PartnerApply
 
@@ -84,7 +85,26 @@
         PFObject *object = [PFObject objectWithClassName:@"PartnerApplyList"];
         object[@"familyId"] = pie.familyId;
         object[@"applyingUserId"] = [PFUser currentUser][@"userId"];
-        [object saveInBackground];
+        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (succeeded) {
+                // 保存に成功したらpush通知送る
+                PFQuery *partner = [PFQuery queryWithClassName:@"_User"];
+                [partner whereKey:@"familyId" equalTo:pie.familyId];
+                [partner findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                    if (objects) {
+                        for (PFObject *object in objects) {
+                            NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+                            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+                            NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
+                            options[@"data"] = data;
+                            if (![object[@"userId"] isEqualToString:[PFUser currentUser][@"userId"]]) {
+                                [PushNotification sendToSpecificUserInBackground:@"receiveApply" withOptions:options targetUserId:object[@"userId"]];
+                            }
+                        }
+                    }
+                }];
+            }
+        }];
     }
 }
 
