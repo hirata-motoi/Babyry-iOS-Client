@@ -48,6 +48,10 @@
         if (tud.isRegistered) {
             return;
         }
+        // username passowrdが無くても飛ばす
+        if (!tud.username || !tud.password){
+            return;
+        }
         PFUser *user = [PFUser logInWithUsername:tud.username password:tud.password];
         if (user) {
             [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Login as %@", tud.username]];
@@ -72,11 +76,19 @@
     NSString *TmpUserDataKeyName = [Config config][@"TmpUserDataKeyName"];
     TmpUserData *tud = [TmpUserData MR_findFirstByAttribute:@"name" withValue:TmpUserDataKeyName];
     if (tud){
-        // ここは簡易ログイン後のみ呼ばれるので tudが無いことは無い
         tud.isRegistered = [NSNumber numberWithBool:YES];
         tud.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
-        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+        tud.username = nil;
+        tud.password = nil;
+    } else {
+        TmpUserData *newTud = [TmpUserData MR_createEntity];
+        newTud.name = TmpUserDataKeyName;
+        newTud.isRegistered = [NSNumber numberWithBool:YES];
+        newTud.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+        newTud.username = nil;
+        newTud.password = nil;
     }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
 @end

@@ -235,7 +235,11 @@
             rowCount = 3;
             break;
         case 3:
-            rowCount = 1;
+            if ([TmpUser checkRegistered]) {
+                rowCount = 1;
+            } else {
+                rowCount = 0;
+            }
             break;
         default:
             break;
