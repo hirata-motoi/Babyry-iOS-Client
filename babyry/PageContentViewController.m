@@ -115,6 +115,13 @@
     
     _selfRole = [FamilyRole selfRole:@"useCache"];
     [_pageContentCollectionView reloadData];
+ 
+    // ベストショット選択を促すとき(chooseByUser)と写真のアップロードを促す時(uploadByUser)は
+    // cellにholeをあてるためcell表示後にoverlayを出す必要がある
+    TutorialStage *currentStage = [Tutorial currentStage];
+    if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) ) {
+        [self showTutorialNavigator];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -262,9 +269,15 @@
     // for tutorial
     if (indexPath.section == 0 && indexPath.row == 0) {
         _cellOfToday = cell;
-        
-        // TODO logicに追い出す
-        [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(showTutorialNavigator) userInfo:nil repeats:NO];
+       
+        // chooseByUser、uploadByUser以外はviewWillAppearでoverlayを表示
+        TutorialStage *currentStage = [Tutorial currentStage];
+        if ([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]){
+            
+            // cellが表示されてからでないと位置を取得できないため、
+            // 0.3秒後(cellが表示されてるであろうタイミング)でoverlayの表示をする
+            [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(showTutorialNavigator) userInfo:nil repeats:NO];
+        }
     }
     
     return cell;
