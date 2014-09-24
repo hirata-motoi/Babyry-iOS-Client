@@ -59,6 +59,8 @@
 
 - (void)remove
 {
+    PageContentViewController *vc = (PageContentViewController *)self.targetViewController;
+    [vc.pageContentCollectionView setScrollEnabled:YES];
     [overlay hide];
 }
 
