@@ -133,22 +133,28 @@
 
 - (void)showFamilyApplyIntroduceView
 {
+
     PageContentViewController *vc = self.pageContentViewController;
     if (vc.familyApplyIntroduceView) {
-        return;
+        [vc.familyApplyIntroduceView removeFromSuperview];
+        NSArray *targes = [vc.familyApplyIntroduceView.openFamilyApplyButton actionsForTarget:vc forControlEvent:UIControlEventTouchUpInside];
+        for (NSString *target in targes) {
+            [vc.familyApplyIntroduceView.openFamilyApplyButton removeTarget:vc action:NSSelectorFromString(target) forControlEvents:UIControlEventTouchUpInside];
+        }
+    } else {
+        vc.familyApplyIntroduceView = [TutorialFamilyApplyIntroduceView view];
+        CGRect rect = vc.familyApplyIntroduceView.frame;
+        rect.origin.x = 0;
+        rect.origin.y = 64;
+        vc.familyApplyIntroduceView.frame = rect;
+        
+        // パートナー申請誘導viewの分collection viewを小さくする
+        CGRect collectionRect = vc.pageContentCollectionView.frame;
+        collectionRect.size.height = collectionRect.size.height - rect.size.height;
+        collectionRect.origin.y = collectionRect.origin.y + rect.size.height;
+        vc.pageContentCollectionView.frame = collectionRect;
     }
-    vc.familyApplyIntroduceView = [TutorialFamilyApplyIntroduceView view];
-    CGRect rect = vc.familyApplyIntroduceView.frame;
-    rect.origin.x = 0;
-    rect.origin.y = 64;
-    vc.familyApplyIntroduceView.frame = rect;
-    
-    // パートナー申請誘導viewの分collection viewを小さくする
-    CGRect collectionRect = vc.pageContentCollectionView.frame;
-    collectionRect.size.height = collectionRect.size.height - rect.size.height;
-    collectionRect.origin.y = collectionRect.origin.y + rect.size.height;
-    vc.pageContentCollectionView.frame = collectionRect;
-
+        
     // 承認がきているかどうか
     [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (object) {
