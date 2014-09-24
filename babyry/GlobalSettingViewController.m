@@ -393,7 +393,7 @@
         [FamilyRole updateCache];
         
         // Tutorial中の場合はステージを進める
-        if ([Tutorial underTutorial]) {
+        if ([[Tutorial currentStage].currentStage isEqualToString:@"partChange"]) {
             [Tutorial forwardStageWithNextStage:@"addChild"];
             [tn removeNavigationView];
             [tn showNavigationView];
