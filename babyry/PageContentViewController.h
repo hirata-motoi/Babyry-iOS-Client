@@ -54,7 +54,8 @@
 - (void)showAlertMessage;
 - (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
 - (void)openFamilyApply;
--(void)setImages;
+- (void)setImages;
+- (void)showTutorialNavigator;
 
 @property AWSServiceConfiguration *configuration;
 

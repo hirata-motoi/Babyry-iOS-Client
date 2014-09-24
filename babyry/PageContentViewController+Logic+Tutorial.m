@@ -14,6 +14,7 @@
 #import "Config.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 #import "ImageCache.h"
+#import "PartnerApply.h"
 
 @implementation PageContentViewController_Logic_Tutorial
 
@@ -125,7 +126,11 @@
 {
     TutorialStage *currentStage = [Tutorial currentStage];
     if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
-        [self showFamilyApplyIntroduceView];
+        if (![PartnerApply linkComplete]) {
+            [self showFamilyApplyIntroduceView];
+        } else {
+            [self hideFamilyApplyIntroduceView];
+        }
     } else {
         [self hideFamilyApplyIntroduceView];
     }
@@ -152,24 +157,6 @@
     [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
     
     [vc.view addSubview:vc.familyApplyIntroduceView];
-}
-
-- (void)hideFamilyApplyIntroduceView
-{
-    PageContentViewController *vc = self.pageContentViewController;
-    if (!vc.familyApplyIntroduceView) {
-        return;
-    }
-    
-    // パートナー申請誘導viewの分collection viewを大きくする
-    CGRect rect = vc.familyApplyIntroduceView.frame;
-    CGRect collectionRect = vc.pageContentCollectionView.frame;
-    collectionRect.size.height = collectionRect.size.height + rect.size.height;
-    collectionRect.origin.y = collectionRect.origin.y - rect.size.height;
-    vc.pageContentCollectionView.frame = collectionRect;
-    
-    [vc.familyApplyIntroduceView removeFromSuperview];
-    vc.familyApplyIntroduceView = nil;
 }
 
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
@@ -222,6 +209,14 @@
         comps = [DateUtils addDateComps:comps withUnit:@"day" withValue:-1];
     }
     return dateList;
+}
+
+- (void)forwardNextTutorial
+{
+    [Tutorial forwardStageWithNextStage:@"familyApply"];
+    [self setupHeaderView];
+    [self.pageContentViewController viewDidAppear:YES];
+    [self.pageContentViewController showTutorialNavigator];
 }
 
 @end

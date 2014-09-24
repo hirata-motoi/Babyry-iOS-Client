@@ -75,5 +75,7 @@
 
 
 - (void)showTutorialNavigator;
+- (void)removeNavigationView;
+- (void)forwardNextTutorial;
 
 @end

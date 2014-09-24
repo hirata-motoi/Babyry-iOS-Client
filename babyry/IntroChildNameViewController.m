@@ -146,7 +146,10 @@
             child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
             child[@"commentShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"Comment"]];
             [child save];
-            
+
+            // 誕生日変更時に落ちるため一旦現在時刻をいれておく)
+            child[@"createdAt"] = [NSDate date];
+            child[@"birthday"] = [NSDate distantFuture];
             [_childProperties addObject:[ParseUtils pfObjectToDic:child]];
             
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
@@ -170,8 +173,8 @@
             
             [_hud hide:YES];
            
-            // tutorial中の場合こども追加が完了したらPageContentViewControllerに戻る
-            if ([Tutorial underTutorial]) {
+            // tutorial中でBabyryちゃんに対して操作している場合こども追加が完了したらPageContentViewControllerに戻る
+            if ([Tutorial shouldShowDefaultImage]) {
                 [self.navigationController popToViewController: [self.navigationController.viewControllers objectAtIndex:0] animated:YES];
             }
         }

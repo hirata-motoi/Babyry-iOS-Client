@@ -394,7 +394,7 @@
         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
     ];
     
-    [[self logic] finalizeProcess];
+    [[self logic] finalizeSelectBestShot];
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
@@ -595,6 +595,19 @@
     tn = [[TutorialNavigator alloc]init];
     tn.targetViewController = self;
     [tn showNavigationView];
+}
+
+- (void)removeNavigationView
+{
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+}
+
+- (void)forwardNextTutorial
+{
+    [[self logic] forwardNextTutorial];
 }
 
 @end

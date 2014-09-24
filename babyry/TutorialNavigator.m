@@ -12,11 +12,13 @@
 #import "TutorialNavigator+Introduction.h"
 #import "TutorialNavigator+ShowMultiUpload.h"
 #import "TutorialNavigator+SelectBestShot.h"
+#import "TutorialNavigator+SelectBestShotFinished.h"
 #import "TutorialNavigator+PartChange.h"
 #import "TutorialNavigator+PartChangeExec.h"
 #import "TutorialNavigator+AddChild.h"
 #import "TutorialNavigator+AddChildExec.h"
 #import "TutorialNavigator+UploadByUser.h"
+#import "TutorialNavigator+ImageUploadFinished.h"
 #import "TutorialNavigator+TutorialFinished.h"
 #import "Config.h"
 #import "PageContentViewController.h"
@@ -58,7 +60,12 @@
             navigator_ = navigator;
         }
     } else if ([stage.currentStage isEqualToString:@"partChange"]) {
-        if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
+        if ([_targetViewController isKindOfClass:[MultiUploadViewController class]]) {
+            TutorialNavigator_SelectBestShotFinished *navigator = [[TutorialNavigator_SelectBestShotFinished alloc]init];
+            navigator.targetViewController = _targetViewController;
+            [navigator show];
+            navigator_ = navigator;
+        } else if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
             TutorialNavigator_PartChange *navigator = [[TutorialNavigator_PartChange alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
@@ -84,6 +91,13 @@
     } else if ([stage.currentStage isEqualToString:@"uploadByUser"]) {
         if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
             TutorialNavigator_UploadByUser *navigator = [[TutorialNavigator_UploadByUser alloc]init];
+            navigator.targetViewController = _targetViewController;
+            [navigator show];
+            navigator_ = navigator;
+        }
+    } else if ([stage.currentStage isEqualToString:@"uploadByUserFinished"]) {
+        if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
+            TutorialNavigator_ImageUploadFinished *navigator = [[TutorialNavigator_ImageUploadFinished alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
@@ -151,6 +165,7 @@
     [[NSNotificationCenter defaultCenter] postNotification:n];
    
     [self.targetViewController.navigationController popToViewController:vc  animated:YES];
+    [vc viewDidAppear:YES];
 }
 
 @end

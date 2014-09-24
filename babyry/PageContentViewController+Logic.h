@@ -25,6 +25,7 @@
 - (BOOL)isBestImageFixed:(NSIndexPath *)indexPath;
 - (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath;
 - (void)setupHeaderView;
+- (void)hideFamilyApplyIntroduceView;
 
 @property PageContentViewController *pageContentViewController;
 

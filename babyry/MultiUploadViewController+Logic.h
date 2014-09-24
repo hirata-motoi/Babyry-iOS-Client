@@ -20,6 +20,7 @@
 - (void)createNotificationHistory:(NSString *)type;
 - (void)updateBestShotWithChild:(NSMutableDictionary *)childProperty withDate:(NSString *)date;
 - (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath;
-- (void)finalizeProcess;
+- (void)finalizeSelectBestShot;
+- (void)forwardNextTutorial;
 
 @end

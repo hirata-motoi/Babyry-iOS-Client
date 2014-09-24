@@ -279,7 +279,10 @@
 - (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath
 {}
 
-- (void)finalizeProcess
+- (void)finalizeSelectBestShot
+{}
+
+- (void)forwardNextTutorial
 {}
 
 @end

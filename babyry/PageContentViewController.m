@@ -149,6 +149,11 @@
         [logicTutorial setImages];
     } else {
         if (!logic) {
+            if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUserFinished"]) {
+                _hud.hidden = YES;
+                return;
+            }
+            
             PageContentViewController_Logic *l = [[PageContentViewController_Logic alloc]init];
             l.pageContentViewController = self;
             [l setImages];
@@ -156,7 +161,6 @@
             [logic setImages];
         }
     }
-    //[[self logic] setImages];
 }
 
 
@@ -911,6 +915,11 @@
     _tn = [[TutorialNavigator alloc]init];
     _tn.targetViewController = self;
     [_tn showNavigationView];
+}
+
+- (void)forwardNextTutorial
+{
+    [[self logic] forwardNextTutorial];
 }
 
 
