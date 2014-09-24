@@ -69,13 +69,10 @@
 {
     [super viewDidLoad];
   
-    if ([Tutorial underTutorial]) {
-        logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
-        logicTutorial.pageContentViewController = self;
-    } else {
-        logic = [[PageContentViewController_Logic alloc]init];
-        logic.pageContentViewController = self;
-    }
+    logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
+    logicTutorial.pageContentViewController = self;
+    logic = [[PageContentViewController_Logic alloc]init];
+    logic.pageContentViewController = self;
     
     // Do any additional setup after loading the view.
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
@@ -114,7 +111,7 @@
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
     }
-    [[self logic] setupHeaderView];
+    [[self logic:@"setupHeaderView"] setupHeaderView];
     
     _selfRole = [FamilyRole selfRole:@"useCache"];
     [_pageContentCollectionView reloadData];
@@ -136,31 +133,42 @@
     _tn = nil;
 }
 
-- (id)logic
+- (id)logic:(NSString *)methodName
 {
-    return
-        (logicTutorial) ? logicTutorial :
-        (logic)         ? logic         : nil;
+    TutorialStage *currentStage = [Tutorial currentStage];
+    
+    if ([methodName isEqualToString:@"setupHeaderView"]) {
+        if ([Tutorial shouldShowFamilyApplyLead]) {
+            return logicTutorial;
+        }
+    } else if ([methodName isEqualToString:@"setImages"]) {
+        if ([Tutorial shouldShowDefaultImage]) {
+            return logicTutorial;
+        }
+    } else if ([methodName isEqualToString:@"forbiddenSelectCell"]) {
+        if ([Tutorial shouldShowDefaultImage] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) {
+            return logicTutorial;
+        }
+    } else if ([methodName isEqualToString:@"getChildImagesWithYear"]) {
+        if ([Tutorial shouldShowDefaultImage]) {
+            return logicTutorial;
+        }
+    } else {
+        // underTutorialでロジックを判断
+        if ([Tutorial underTutorial]) {
+            return logicTutorial;
+        }
+    }
+    return logic;
 }
 
 -(void)setImages
 {
-    if ([Tutorial shouldShowDefaultImage]) {
-        [logicTutorial setImages];
-    } else {
-        if (!logic) {
-            if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUserFinished"]) {
-                _hud.hidden = YES;
-                return;
-            }
-            
-            PageContentViewController_Logic *l = [[PageContentViewController_Logic alloc]init];
-            l.pageContentViewController = self;
-            [l setImages];
-        } else {
-            [logic setImages];
-        }
+    if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUserFinished"]) {
+        _hud.hidden = YES;
+        return;
     }
+    [[self logic:@"setImages"] setImages];
 }
 
 
@@ -196,7 +204,7 @@
 // セルの大きさを指定するメソッド
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     float width = self.view.frame.size.width;
-    if ([[self logic] isToday:indexPath.section withRow:indexPath.row]) {
+    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
         return  CGSizeMake(width, self.view.frame.size.height - 44 - 20  - width*2/3); // TODO magic number
     }
     return CGSizeMake(width/3 - 2, width/3 - 2);
@@ -233,7 +241,7 @@
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] stringValue];
    
-    NSString *imageCachePath = ([[self logic] isToday:indexPath.section withRow:indexPath.row])
+    NSString *imageCachePath = ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row])
         ? [NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId , ymd]
         : [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId , ymd];
 
@@ -264,19 +272,19 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([[self logic] forbiddenSelectCell:indexPath]) {
+    if ([[self logic:@"forbiddenSelectCell"] forbiddenSelectCell:indexPath]) {
         return;
     }
     // チェックの人がアップ催促する時は何の処理もしない
-    if ([_selfRole isEqualToString:@"chooser"] && [[self logic] withinTwoDay:indexPath]) {
-        if ([[self logic] isNoImage:indexPath]) {
+    if ([_selfRole isEqualToString:@"chooser"] && [[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+        if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             return;
         }
     }
     
     // チェック側、2日より前の時にも何もしない(No Image)
-    if ([_selfRole isEqualToString:@"chooser"] && ![[self logic] withinTwoDay:indexPath]) {
-        if ([[self logic] isNoImage:indexPath]) {
+    if ([_selfRole isEqualToString:@"chooser"] && ![[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+        if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             return;
         }
     }
@@ -287,8 +295,8 @@
     //    BS選択
     // uploader
     //    +ボタンがないパターン
-    if ([[self logic] shouldShowMultiUploadView:indexPath]) {
-        if ([[self logic] isNoImage:indexPath]) {
+    if ([[self logic:@"shouldShowMultiUploadView"] shouldShowMultiUploadView:indexPath]) {
+        if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
             multiUploadAlbumTableViewController.childObjectId = _childObjectId;
             multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] stringValue];
@@ -324,7 +332,7 @@
         return;
     }
     
-    if (![[self logic] isBestImageFixed:indexPath]) {
+    if (![[self logic:@"isBestImageFixed"] isBestImageFixed:indexPath]) {
         // ベストショット決まってなければ即Pickerを開く
         UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
         uploadPickerViewController.month = [[tappedChildImage[@"date"]  stringValue ] substringWithRange:NSMakeRange(0, 6)];
@@ -343,9 +351,9 @@
     }
    
     ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
-    pageViewController.childImages = [[self logic] screenSavedChildImages];
+    pageViewController.childImages = [[self logic:@"screenSavedChildImages"] screenSavedChildImages];
     pageViewController.currentSection = indexPath.section;
-    pageViewController.currentRow = [[self logic] currentIndexRowInSavedChildImages:indexPath];
+    pageViewController.currentRow = [[self logic:@"currentIndexRowInSavedChildImages"] currentIndexRowInSavedChildImages:indexPath];
     pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
@@ -389,7 +397,7 @@
 
     // カレンダーラベル組み立て
     CalenderLabel *calLabelView = [CalenderLabel view];
-    if ([[self logic] isToday:indexPath.section withRow:indexPath.row]) {
+    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
         calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/6, cellHeight/6);
     } else {
         calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/4, cellHeight/4);
@@ -457,7 +465,7 @@
             return;
         }
         _dateComp = [DateUtils addDateComps:_dateComp withUnit:@"month" withValue:-1];
-        NSDate *firstDate = [[self logic] getCollectionViewFirstDay];
+        NSDate *firstDate = [[self logic:@"getCollectionViewFirstDay"] getCollectionViewFirstDay];
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyyMM"];
         NSString *firstDateString = [dateFormatter stringFromDate:firstDate];
@@ -466,8 +474,8 @@
         int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
         
         if (firstDateInt <= nextLoadInt) {
-            [[self logic] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
-        }
+            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
+        }                  
     }
 }
 
@@ -521,10 +529,10 @@
     
     NSCalendar *cal = [NSCalendar currentCalendar];
     
-    NSDate *firstDate = [[self logic] getCollectionViewFirstDay];
-    
+    NSDate *firstDate = [[self logic:@"getCollectionViewFirstDay"] getCollectionViewFirstDay];
+                                       
     // 現在
-    NSDateComponents *todayComps = [[self logic] dateComps];
+    NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
     NSDate *today = [NSDate date];
     
     NSMutableDictionary *childImagesDic = [[NSMutableDictionary alloc]init];
@@ -660,9 +668,9 @@
             // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
             // それ以外 : アップアイコン
             
-            if([[self logic] withinTwoDay:indexPath] && [[self logic] isNoImage:indexPath]) {
+            if([[self logic:@"withinTwoDay"] withinTwoDay:indexPath] && [[self logic:@"isNoImage"] isNoImage:indexPath]) {
                 // チョイス催促をいれてもいいけど、いまは UP PHOTO アイコンをはめている
-                if ([[self logic] isToday:indexPath.section withRow:indexPath.row]) {
+                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
                     CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
                     CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                     backgroundView.frame = rect;
@@ -677,7 +685,7 @@
                 }
             } else {
                 // アップアイコン
-                if ([[self logic] isToday:indexPath.section withRow:indexPath.row]) {
+                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
                     CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
                     CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                     backgroundView.frame = rect;
@@ -696,10 +704,10 @@
             // 今日 or 昨日
             //// アップ済み : チョイス催促、　未アップ : アップ催促
             // ２日以上たったらNoImage
-            if ([[self logic] withinTwoDay:indexPath]) {
+            if ([[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
                 // アップ催促
-                if ([[self logic] isNoImage:indexPath]) {
-                    if ([[self logic] isToday:indexPath.section withRow:indexPath.row]) {
+                if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
+                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
                         CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
@@ -719,7 +727,7 @@
                 } else {
                     // チョイス促進アイコン貼る
                     NSNumber *uploadedNum = [totalImageNum objectAtIndex:indexPath.row];
-                    if ([[self logic] isToday:indexPath.section withRow:indexPath.row]) {
+                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
                         CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
                         CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
                         backgroundView.frame = rect;
@@ -749,7 +757,7 @@
     }
     
     // best shotが既に選択済の場合は普通に写真を表示
-    if ([[self logic] isToday:indexPath.section withRow:indexPath.row]) {
+    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
@@ -924,7 +932,7 @@
 
 - (void)forwardNextTutorial
 {
-    [[self logic] forwardNextTutorial];
+    [[self logic:@"forwardNextTutorial"] forwardNextTutorial];
 }
 
 
