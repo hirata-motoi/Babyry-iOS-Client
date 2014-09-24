@@ -1,8 +1,8 @@
 //
-//  PartnerApplyEntity.h
+//  PartnerInviteEntity.h
 //  babyry
 //
-//  Created by Kenji Suzuki on 2014/09/22.
+//  Created by Kenji Suzuki on 2014/09/24.
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 #import <CoreData/CoreData.h>
 
 
-@interface PartnerApplyEntity : NSManagedObject
+@interface PartnerInviteEntity : NSManagedObject
 
 @property (nonatomic, retain) NSNumber * linkComplete;
 @property (nonatomic, retain) NSString * name;

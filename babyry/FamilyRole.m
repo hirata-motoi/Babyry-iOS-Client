@@ -9,6 +9,7 @@
 #import "FamilyRole.h"
 #import "PartnerApply.h"
 #import "Logger.h"
+#import "Tutorial.h"
 
 @implementation FamilyRole
 
@@ -63,7 +64,34 @@
                     }
                 }
             }
-
+        } else {
+            // FamilyRoleは持ってないが、自分以外のFamilyIdにひもづくFamilyRoleに自分がいる場合
+            // この場合は、お互いにチュートリアルをすませたなどしてFamilyIdを別々に持っている人同士がくっついたケース
+            // 対応するFamilyRoleからFamilyIdを抜いてきて、userにセットし、ひも付け完了フラグをCoreDataにセット
+            NSLog(@"aaaaaaaaaaaaaaaaa %@", user[@"userId"]);
+            PFQuery *uploader = [PFQuery queryWithClassName:@"FamilyRole"];
+            [uploader whereKey:@"uploader" equalTo:user[@"userId"]];
+            [uploader whereKey:@"familyId" notEqualTo:user[@"familyId"]];
+            PFObject *object = [uploader getFirstObject];
+            if (object) {
+                NSLog(@"object found in uploader");
+                user[@"familyId"] = object[@"familyId"];
+                [user save];
+                [PartnerApply setLinkComplete];
+                return;
+            }
+            PFQuery *chooser = [PFQuery queryWithClassName:@"FamilyRole"];
+            [chooser whereKey:@"chooser" equalTo:user[@"userId"]];
+            [chooser whereKey:@"familyId" notEqualTo:user[@"familyId"]];
+            object = [chooser getFirstObject];
+            if (object) {
+                NSLog(@"object found in chooser");
+                user[@"familyId"] = object[@"familyId"];
+                [user save];
+                [PartnerApply setLinkComplete];
+                return;
+            }
+            NSLog(@"bbbbbbbbbbbbbbbb");
         }
     }];
 }

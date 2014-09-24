@@ -7,15 +7,16 @@
 //
 
 #import "PartnerApply.h"
-#import "PartnerApplyEntity.h"
+#import "PartnerInviteEntity.h"
+#import "PartnerInvitedEntity.h"
 #import "Config.h"
 
 @implementation PartnerApply
 
 + (BOOL) linkComplete
 {
-    PartnerApplyEntity *pae = [PartnerApplyEntity MR_findFirst];
-    if (!pae.linkComplete) {
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
+    if (!pie.linkComplete) {
         return NO;
     } else {
         return YES;
@@ -24,34 +25,34 @@
 
 + (void) setLinkComplete
 {
-    NSString *PartnerApplyEntityKeyName = [Config config][@"PartnerApplyEntityKeyName"];
-    PartnerApplyEntity *pae = [PartnerApplyEntity MR_findFirstByAttribute:@"name" withValue:PartnerApplyEntityKeyName];
-    if ([pae.linkComplete isEqual:[NSNumber numberWithBool:YES]]) {
+    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    if ([pie.linkComplete isEqual:[NSNumber numberWithBool:YES]]) {
         return;
     }
     
-    if (pae) {
-        pae.linkComplete = [NSNumber numberWithBool:YES];
+    if (pie) {
+        pie.linkComplete = [NSNumber numberWithBool:YES];
     } else {
-        PartnerApplyEntity *newPae = [PartnerApplyEntity MR_createEntity];
-        newPae.linkComplete = [NSNumber numberWithBool:YES];
+        PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
+        newPie.linkComplete = [NSNumber numberWithBool:YES];
     }
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
 + (void) unsetLinkComplete
 {
-    NSString *PartnerApplyEntityKeyName = [Config config][@"PartnerApplyEntityKeyName"];
-    PartnerApplyEntity *pae = [PartnerApplyEntity MR_findFirstByAttribute:@"name" withValue:PartnerApplyEntityKeyName];
-    if ([pae.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
+    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    if ([pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
         return;
     }
     
-    if (pae) {
-        pae.linkComplete = [NSNumber numberWithBool:NO];
+    if (pie) {
+        pie.linkComplete = [NSNumber numberWithBool:NO];
     } else {
-        PartnerApplyEntity *newPae = [PartnerApplyEntity MR_createEntity];
-        newPae.linkComplete = [NSNumber numberWithBool:NO];
+        PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
+        newPie.linkComplete = [NSNumber numberWithBool:NO];
     }
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
@@ -72,6 +73,39 @@
         }
     }
     return [NSNumber numberWithInt:[pinCode intValue]];
+}
+
++ (void) registerApplyList
+{
+    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        // PartnerApplyListにレコードを突っ込む
+        PFObject *object = [PFObject objectWithClassName:@"PartnerApplyList"];
+        object[@"familyId"] = pie.familyId;
+        object[@"applyingUserId"] = [PFUser currentUser][@"userId"];
+        [object saveInBackground];
+    }
+}
+
++ (void) removeApplyList
+{
+    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        PFQuery *apply = [PFQuery queryWithClassName:@"PartnerApplyList"];
+        [apply whereKey:@"familyId" equalTo:pie.familyId];
+        [apply findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if ([objects count] > 0) {
+                for (PFObject *object in objects) {
+                    [object deleteInBackground];
+                }
+            }
+            pie.familyId = nil;
+            pie.inputtedPinCode = nil;
+            [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+        }];
+    }
 }
 
 @end

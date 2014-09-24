@@ -9,6 +9,8 @@
 #import "IntroMyNicknameViewController.h"
 #import "MBProgressHUD.h"
 #import "Logger.h"
+#import "PartnerInvitedEntity.h"
+#import "PartnerApply.h"
 
 @interface IntroMyNicknameViewController ()
 
@@ -136,7 +138,8 @@
                     [hud hide:YES];
                     return;
                 }
-               
+                
+                [PartnerApply registerApplyList];
                 [hud hide:YES];
                 if ([self.navigationController isViewLoaded]) {
                     [self.navigationController popToRootViewControllerAnimated:YES];

@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>PartnerApplyEntityKeyName</key>
-	<string>partnerApplyEntity</string>
+	<key>PartnerInviteEntityKeyName</key>
+	<string>partnerInviteEntity</string>
 	<key>InviteMailTextWithPinCode</key>
 	<string>あなたのパートナーからBabyryへの招待が届いています。\n以下のURLからアプリをインストール後、招待コード %pinCode を入力してください。\n\nhttps://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
 	<key>InviteLineTextWithPinCode</key>

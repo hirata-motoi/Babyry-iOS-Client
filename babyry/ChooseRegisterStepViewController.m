@@ -135,8 +135,6 @@
     [user save];
     [user refresh];
     
-    [self registerFamilyRole];
-    
     // 本登録完了なのでCoreDataのisRegisteredをtureにする
     [TmpUser registerComplete];
     
@@ -172,45 +170,11 @@
     [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
             [TmpUser setTmpUserToCoreData:user.username password:(NSString *)user.password];
-            [self registerFamilyRole];
             [self dismissViewControllerAnimated:YES completion:nil];
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in continueWithNoLogin : %@", error]];
         }
     }];
-}
-
-- (void)registerFamilyRole
-{
-    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-    if (pie.familyId) {
-        // 先に進んでほしくないから全部フォアグラウンドで
-        PFUser *user = [PFUser currentUser];
-        user[@"familyId"] = pie.familyId;
-        [user save];
-        
-        PFQuery *familyRole = [PFQuery queryWithClassName:@"FamilyRole"];
-        [familyRole whereKey:@"familyId" equalTo:pie.familyId];
-        PFObject *object = [familyRole getFirstObject];
-        if (object) {
-            object[@"chooser"] = user[@"userId"];
-            [object save];
-        }
-        
-        PFQuery *partnerApply = [PFQuery queryWithClassName:@"PartnerApply"];
-        [partnerApply whereKey:@"familyId" equalTo:pie.familyId];
-        [partnerApply findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if ([objects count] > 0) {
-                for (PFObject *object in objects) {
-                    [object deleteInBackground];
-                }
-                
-                pie.familyId = nil;
-                pie.inputtedPinCode = nil;
-                [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-            }
-        }];
-    }
 }
 
 @end
