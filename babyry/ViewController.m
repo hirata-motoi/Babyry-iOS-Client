@@ -161,9 +161,9 @@
             }
         }
         
-        // 招待されて認証コードを入力した人はここで承認まで待つ
+        // 招待されて認証コードを入力した人はここで承認まで待つ (ただし、familyIdがある人はチュートリアルをやったか、一回ひも付けが解除されている人なので除外)
         PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-        if (pie.inputtedPinCode) {
+        if (pie.inputtedPinCode && !_currentUser[@"familyId"]) {
             PartnerWaitViewController *partnerWaitViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerWaitViewController"];
             [self presentViewController:partnerWaitViewController animated:YES completion:NULL];
             return;

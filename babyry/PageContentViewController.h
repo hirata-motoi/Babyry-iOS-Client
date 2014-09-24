@@ -55,6 +55,7 @@
 - (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
 - (void)openFamilyApply;
 - (void)openFamilyApplyList;
+- (void)openPartnerWait;
 -(void)setImages;
 
 @property AWSServiceConfiguration *configuration;
@@ -67,5 +68,6 @@
 @property TagAlbumCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;
 @property TutorialFamilyApplyIntroduceView *familyApplyIntroduceView;
+@property NSTimer *instructionTimer;
 
 @end

@@ -191,17 +191,45 @@
             return;
         }
         
-        // 基本的に招待された側はchooser
-        object[@"chooser"] = [inviterUsers objectAtIndex:index][@"userId"];
+        // 自分と逆側に相手をセット
+        if ([object[@"chooser"] isEqualToString:[PFUser currentUser][@"userId"]]) {
+            object[@"uploader"] = [inviterUsers objectAtIndex:index][@"userId"];
+        } else {
+            object[@"chooser"] = [inviterUsers objectAtIndex:index][@"userId"];
+        }
         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (error) {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update chooser : %@", error]];
                 [_hud hide:YES];
                 return;
             }
+            // PartnerApplyListから削除
             for (id key in [familyApplys keyEnumerator]) {
                 [[familyApplys objectForKey:key] deleteInBackground];
             }
+            // pincodeListから削除
+            PFQuery *pincodeList = [PFQuery queryWithClassName:@"PincodeList"];
+            [pincodeList whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+            [pincodeList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                if (objects) {
+                    for (PFObject *object in objects) {
+                        [object deleteInBackground];
+                    }
+                }
+            }];
+            // パートナーがFamilyRoleを持っていたら削除 (チュートリアルを進んだパートナーを招待した場合)
+            if ([inviterUsers objectAtIndex:index][@"familyId"]) {
+                PFQuery *partner = [PFQuery queryWithClassName:@"FamilyRole"];
+                [partner whereKey:@"familyId" equalTo:[inviterUsers objectAtIndex:index][@"familyId"]];
+                [partner findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                    if (objects) {
+                        for (PFObject *object in objects) {
+                            [object deleteInBackground];
+                        }
+                    }
+                }];
+            }
+            
             [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
             [_hud hide:YES];
             [self closeFamilyApplyList];

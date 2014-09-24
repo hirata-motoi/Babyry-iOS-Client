@@ -47,6 +47,8 @@
 #import "TutorialNavigator.h"
 #import "PartnerInviteViewController.h"
 #import "FamilyApplyListViewController.h"
+#import "PartnerWaitViewController.h"
+#import "PartnerApply.h"
 
 @interface PageContentViewController ()
 
@@ -115,8 +117,24 @@
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
     }
-    [[self logic] setupHeaderView];
     
+    if ([PartnerApply linkComplete]) {
+        [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
+    } else {
+        if (!_instructionTimer || ![_instructionTimer isValid]){
+            _instructionTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(reloadView) userInfo:nil repeats:YES];
+        }
+    }
+    [self reloadView];
+}
+
+- (void)reloadView
+{
+    if ([PartnerApply linkComplete]) {
+        [_instructionTimer invalidate];
+    }
+    
+    [[self logic] setupHeaderView];
     _selfRole = [FamilyRole selfRole:@"useCache"];
     [_pageContentCollectionView reloadData];
 }
@@ -133,6 +151,8 @@
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [_instructionTimer invalidate];
+    
     [_tn removeNavigationView];
     _tn = nil;
 }
@@ -908,6 +928,13 @@
     [_tn removeNavigationView];
     FamilyApplyListViewController * familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
     [self.navigationController pushViewController:familyApplyListViewController animated:YES];
+}
+
+- (void)openPartnerWait
+{
+    [_tn removeNavigationView];
+    PartnerWaitViewController * partnerWaitViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerWaitViewController"];
+    [self.navigationController pushViewController:partnerWaitViewController animated:YES];
 }
 
 - (void)showTutorialNavigator

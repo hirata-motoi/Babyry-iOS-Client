@@ -14,6 +14,7 @@
 #import "Config.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 #import "ImageCache.h"
+#import "PartnerInvitedEntity.h"
 
 @implementation PageContentViewController_Logic_Tutorial
 
@@ -133,7 +134,6 @@
 
 - (void)showFamilyApplyIntroduceView
 {
-
     PageContentViewController *vc = self.pageContentViewController;
     if (vc.familyApplyIntroduceView) {
         [vc.familyApplyIntroduceView removeFromSuperview];
@@ -164,10 +164,23 @@
                 if ([objects count] > 0) {
                     vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"申請が来ています";
                     [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
-                } else {
-                    // エラーでもこれを表示する
-                    [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+                    return;
                 }
+                // 自分が承認依頼を出しているかどうかをみる
+                PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+                if (pie.familyId){
+                    PFQuery *applyByMe = [PFQuery queryWithClassName:@"PartnerApplyList"];
+                    [applyByMe whereKey:@"familyId" equalTo:pie.familyId];
+                    [applyByMe findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                        if ([objects count] > 0) {
+                            vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"承認待ちです";
+                            [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openPartnerWait) forControlEvents:UIControlEventTouchUpInside];
+                        }
+                    }];
+                    return;
+                }
+                // すべてがエラーの場合でもチュートリアル中はこれを出しておく
+                [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
             }];
         }
     }];

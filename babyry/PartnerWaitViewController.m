@@ -11,6 +11,7 @@
 #import "PartnerInvitedEntity.h"
 #import "Logger.h"
 #import "Tutorial.h"
+#import "PartnerApply.h"
 
 @interface PartnerWaitViewController ()
 
@@ -31,7 +32,11 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-
+    
+    UITapGestureRecognizer *withdrawGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(withdrawGesture)];
+    withdrawGesture.numberOfTapsRequired = 1;
+    [_withdrawLabel addGestureRecognizer:withdrawGesture];
+    
     _isTimerRunning = NO;
 }
 
@@ -84,15 +89,34 @@
     }
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)withdrawGesture
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"申請を取り下げますか？"
+                                                    message:nil
+                                                   delegate:self
+                                          cancelButtonTitle:@"キャンセル"
+                                          otherButtonTitles:@"取り下げる", nil
+                          ];
+    [alert show];
 }
-*/
+
+- (void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    switch (buttonIndex) {
+        case 0:
+        {
+        }
+            break;
+        case 1:
+        {
+            [PartnerApply removeApplyList];
+            if ([self.navigationController isViewLoaded]) {
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            } else {
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
+        }
+            break;
+    }
+}
 
 @end

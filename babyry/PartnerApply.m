@@ -8,6 +8,7 @@
 
 #import "PartnerApply.h"
 #import "PartnerInviteEntity.h"
+#import "PartnerInvitedEntity.h"
 #import "Config.h"
 
 @implementation PartnerApply
@@ -72,6 +73,39 @@
         }
     }
     return [NSNumber numberWithInt:[pinCode intValue]];
+}
+
++ (void) registerApplyList
+{
+    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        // PartnerApplyListにレコードを突っ込む
+        PFObject *object = [PFObject objectWithClassName:@"PartnerApplyList"];
+        object[@"familyId"] = pie.familyId;
+        object[@"applyingUserId"] = [PFUser currentUser][@"userId"];
+        [object saveInBackground];
+    }
+}
+
++ (void) removeApplyList
+{
+    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        PFQuery *apply = [PFQuery queryWithClassName:@"PartnerApplyList"];
+        [apply whereKey:@"familyId" equalTo:pie.familyId];
+        [apply findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if ([objects count] > 0) {
+                for (PFObject *object in objects) {
+                    [object deleteInBackground];
+                }
+            }
+            pie.familyId = nil;
+            pie.inputtedPinCode = nil;
+            [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+        }];
+    }
 }
 
 @end

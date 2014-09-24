@@ -14,5 +14,7 @@
 + (void) setLinkComplete;
 + (void) unsetLinkComplete;
 + (NSNumber *) issuePinCode;
++ (void) registerApplyList;
++ (void) removeApplyList;
 
 @end

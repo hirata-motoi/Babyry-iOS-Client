@@ -12,5 +12,6 @@
 
 @property NSTimer *tm;
 @property BOOL isTimerRunning;
+@property (strong, nonatomic) IBOutlet UILabel *withdrawLabel;
 
 @end

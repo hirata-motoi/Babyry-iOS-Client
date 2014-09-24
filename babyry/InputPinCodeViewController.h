@@ -15,4 +15,6 @@
 @property (strong, nonatomic) IBOutlet UITextField *pincodeField;
 @property (strong, nonatomic) IBOutlet UILabel *startRegisterButton;
 
+@property BOOL inputForRegisteredUser;
+
 @end

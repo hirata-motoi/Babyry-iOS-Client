@@ -13,6 +13,7 @@
 #import "Logger.h"
 #import "PartnerInviteEntity.h"
 #import "DateUtils.h"
+#import "InputPinCodeViewController.h"
 
 @interface PartnerInviteViewController ()
 
@@ -43,6 +44,10 @@
     UITapGestureRecognizer *inviteByMailGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(inviteByMailGesture)];
     inviteByMailGesture.numberOfTapsRequired = 1;
     [_inviteByMail addGestureRecognizer:inviteByMailGesture];
+    
+    UITapGestureRecognizer *inviteRegisterdUserGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(inviteRegisterdUserGesture)];
+    inviteRegisterdUserGesture.numberOfTapsRequired = 1;
+    [_inviteAlreadyRegisterdUser addGestureRecognizer:inviteRegisterdUserGesture];
     
     _pinCodeSaveRetryMaxCount = 2;
     _pinCodeSaveRetryCount = 0;
@@ -100,6 +105,13 @@
                               ];
         [alert show];
     }
+}
+
+- (void)inviteRegisterdUserGesture
+{
+    InputPinCodeViewController *inputPinCodeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"InputPinCodeViewController"];
+    inputPinCodeViewController.inputForRegisteredUser = YES;
+    [self.navigationController pushViewController:inputPinCodeViewController animated:YES];
 }
 
 - (NSDictionary *) makeInviteBody:(NSString *)type
