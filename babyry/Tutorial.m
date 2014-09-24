@@ -108,7 +108,7 @@
     return @"";
 }
 
-// stageがfamilyApply or waitForPartner の場合に真
+// stageがfamilyApply or familyApplyExec の場合に真
 + (BOOL)shouldShowFamilyApplyLead
 {
     TutorialStage *currentStage = [self currentStage];
