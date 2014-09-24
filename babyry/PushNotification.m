@@ -74,6 +74,7 @@
                     
                     // 送信
                     [push sendPushInBackground];
+                    [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"PushNotification is send : %@", event]];
                 } else {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in Get Pertner info in PushNotificationEvent : %@", error]];
                 }
@@ -122,6 +123,7 @@
             [push setData:[options objectForKey:@"data"]];
             // 送信
             [push sendPushInBackground];
+            [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"PushNotification is send : %@", event]];
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get PushNotificationEvent : %@", error]];
         }
