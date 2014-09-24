@@ -32,6 +32,8 @@
 #import "Tutorial.h"
 #import "TutorialAttributes.h"
 #import "DateUtils.h"
+#import "PartnerInvitedEntity.h"
+#import "PartnerWaitViewController.h"
 
 @interface ViewController ()
 
@@ -97,6 +99,7 @@
     [TmpUser loginTmpUserByCoreData];
     
     _currentUser = [PFUser currentUser];
+
     if (!_currentUser) { // No user logged in
         
         [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
@@ -156,6 +159,14 @@
                     return;
                 }
             }
+        }
+        
+        // 招待されて認証コードを入力した人はここで承認まで待つ
+        PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+        if (pie.inputtedPinCode) {
+            PartnerWaitViewController *partnerWaitViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerWaitViewController"];
+            [self presentViewController:partnerWaitViewController animated:YES completion:NULL];
+            return;
         }
       
         // familyIdを発行する前に呼び出す必要がある

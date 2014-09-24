@@ -148,8 +148,23 @@
     collectionRect.size.height = collectionRect.size.height - rect.size.height;
     collectionRect.origin.y = collectionRect.origin.y + rect.size.height;
     vc.pageContentCollectionView.frame = collectionRect;
-    
-    [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+
+    // 承認がきているかどうか
+    [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (object) {
+            PFQuery *applyList = [PFQuery queryWithClassName:@"PartnerApplyList"];
+            [applyList whereKey:@"familyId" equalTo:object[@"familyId"]];
+            [applyList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                if ([objects count] > 0) {
+                    vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"申請が来ています";
+                    [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
+                } else {
+                    // エラーでもこれを表示する
+                    [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+                }
+            }];
+        }
+    }];
     
     [vc.view addSubview:vc.familyApplyIntroduceView];
 }

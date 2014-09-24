@@ -83,7 +83,7 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"申請コード確認";
     
-    PFQuery *query = [PFQuery queryWithClassName:@"PartnerApply"];
+    PFQuery *query = [PFQuery queryWithClassName:@"PincodeList"];
     [query whereKey:@"pinCode" equalTo:[NSNumber numberWithInt:[_pincodeField.text intValue]]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (error) {

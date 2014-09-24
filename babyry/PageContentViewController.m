@@ -46,6 +46,7 @@
 #import "Tutorial.h"
 #import "TutorialNavigator.h"
 #import "PartnerInviteViewController.h"
+#import "FamilyApplyListViewController.h"
 
 @interface PageContentViewController ()
 
@@ -900,6 +901,13 @@
     [_tn removeNavigationView];
     PartnerInviteViewController * partnerInviteViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerInviteViewController"];
     [self.navigationController pushViewController:partnerInviteViewController animated:YES];
+}
+
+- (void)openFamilyApplyList
+{
+    [_tn removeNavigationView];
+    FamilyApplyListViewController * familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
+    [self.navigationController pushViewController:familyApplyListViewController animated:YES];
 }
 
 - (void)showTutorialNavigator

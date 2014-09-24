@@ -9,6 +9,7 @@
 #import "IntroMyNicknameViewController.h"
 #import "MBProgressHUD.h"
 #import "Logger.h"
+#import "PartnerInvitedEntity.h"
 
 @interface IntroMyNicknameViewController ()
 
@@ -136,7 +137,8 @@
                     [hud hide:YES];
                     return;
                 }
-               
+                
+                [self registerApplyList];
                 [hud hide:YES];
                 if ([self.navigationController isViewLoaded]) {
                     [self.navigationController popToRootViewControllerAnimated:YES];
@@ -147,6 +149,19 @@
         }
     } else {
         [self.view endEditing:YES];
+    }
+}
+
+- (void) registerApplyList
+{
+    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        // PartnerApplyListにレコードを突っ込む
+        PFObject *object = [PFObject objectWithClassName:@"PartnerApplyList"];
+        object[@"familyId"] = pie.familyId;
+        object[@"applyingUserId"] = [PFUser currentUser][@"userId"];
+        [object saveInBackground];
     }
 }
 

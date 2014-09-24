@@ -11,7 +11,7 @@
 #import "Config.h"
 #import "PartnerApply.h"
 #import "Logger.h"
-#import "PartnerApplyEntity.h"
+#import "PartnerInviteEntity.h"
 #import "DateUtils.h"
 
 @interface PartnerInviteViewController ()
@@ -49,15 +49,15 @@
     
     // pinCodeのロジック
     // 招待ボタンを押した時に、pinCode発行 -> 招待メッセージ送信、という流れにすると他アプリ(LINE, Mailer)とのトランザクションは書けないので、pinCode発行したのに招待を送らない状況が起きる。
-    // その為、基本的にはしょっぱなでpinCodeを発行 & PartnerApply(Parse)にレコード追加しておく (つまり、最初は1ユーザーに必ず1レコードが出来る)
+    // その為、基本的にはしょっぱなでpinCodeを発行 & PincodeList(Parse)にレコード追加しておく (つまり、最初は1ユーザーに必ず1レコードが出来る)
     // パートナーひも付けが完了した場合にこのレコードは削除する
-    // PartnerApplyに書き込んだらCoreDataに、消したらCoreDataに書き込んでおく
-    NSString *PartnerApplyEntityKeyName = [Config config][@"PartnerApplyEntityKeyName"];
-    PartnerApplyEntity *pae = [PartnerApplyEntity MR_findFirstByAttribute:@"name" withValue:PartnerApplyEntityKeyName];
-    if (!pae || !pae.pinCode || [pae.pinCode isEqualToNumber:[NSNumber numberWithInt:0]]) {
+    // PincodeListに書き込んだらCoreDataに書き込んでおく、消したらCoreDataから消す
+    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    if (!pie || !pie.pinCode || [pie.pinCode isEqualToNumber:[NSNumber numberWithInt:0]]) {
         [self issuePinCode];
     } else {
-        _pinCode = pae.pinCode;
+        _pinCode = pie.pinCode;
         _displayedPinCode.text = [NSString stringWithFormat:@"%@", _pinCode];
     }
 }
@@ -129,9 +129,9 @@
 
 - (void) checkDuplicatePinCode
 {
-    PFQuery *partnerApply = [PFQuery queryWithClassName:@"PartnerApply"];
-    [partnerApply whereKey:@"pinCode" equalTo:_pinCode];
-    [partnerApply findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+    PFQuery *pincodeList = [PFQuery queryWithClassName:@"PincodeList"];
+    [pincodeList whereKey:@"pinCode" equalTo:_pinCode];
+    [pincodeList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (error) {
             UIAlertView *alert = [[UIAlertView alloc]
                                   initWithTitle:@"エラーが発生しました"
@@ -156,10 +156,10 @@
 
 - (void) savePinCodeToParse
 {
-    PFObject *partnerApply = [PFObject objectWithClassName:@"PartnerApply"];
-    partnerApply[@"familyId"] = [PFUser currentUser][@"familyId"];
-    partnerApply[@"pinCode"] = _pinCode;
-    [partnerApply saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+    PFObject *pincodeList = [PFObject objectWithClassName:@"PincodeList"];
+    pincodeList[@"familyId"] = [PFUser currentUser][@"familyId"];
+    pincodeList[@"pinCode"] = _pinCode;
+    [pincodeList saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in savePinCodeToParse : %@", error]];
             if (_pinCodeSaveRetryCount < _pinCodeSaveRetryMaxCount) {
@@ -168,9 +168,9 @@
             }
         }
         
-        PartnerApplyEntity *pae = [PartnerApplyEntity MR_createEntity];
-        pae.name = [Config config][@"PartnerApplyEntityKeyName"];
-        pae.pinCode = _pinCode;
+        PartnerInviteEntity *pie = [PartnerInviteEntity MR_createEntity];
+        pie.name = [Config config][@"PartnerInviteEntityKeyName"];
+        pie.pinCode = _pinCode;
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }];
 }
