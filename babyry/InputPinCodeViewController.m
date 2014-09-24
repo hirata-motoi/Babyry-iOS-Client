@@ -118,9 +118,15 @@
         
         [hud hide:YES];
         
-        PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_createEntity];
-        pie.familyId = [objects objectAtIndex:0][@"familyId"];
-        pie.inputtedPinCode = [objects objectAtIndex:0][@"pinCode"];
+        PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+        if (pie) {
+            pie.familyId = [objects objectAtIndex:0][@"familyId"];
+            pie.inputtedPinCode = [objects objectAtIndex:0][@"pinCode"];
+        } else {
+            PartnerInvitedEntity *newPie = [PartnerInvitedEntity MR_createEntity];
+            newPie.familyId = [objects objectAtIndex:0][@"familyId"];
+            newPie.inputtedPinCode = [objects objectAtIndex:0][@"pinCode"];
+        }
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
      
         if (!_inputForRegisteredUser) {
