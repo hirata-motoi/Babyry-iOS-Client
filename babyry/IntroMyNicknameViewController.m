@@ -11,6 +11,7 @@
 #import "Logger.h"
 #import "PartnerInvitedEntity.h"
 #import "PartnerApply.h"
+#import "DateUtils.h"
 
 @interface IntroMyNicknameViewController ()
 
@@ -41,6 +42,20 @@
     UITapGestureRecognizer *stgr2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     stgr2.numberOfTapsRequired = 1;
     [_introMyNicknameSendLabel addGestureRecognizer:stgr2];
+    
+    UITapGestureRecognizer *stgr3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openDatePicker)];
+    stgr3.numberOfTapsRequired = 1;
+    [_birthdayLabel addGestureRecognizer:stgr3];
+    
+    // set date
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat = @"yyyy/MM/dd";
+    _birthdayLabel.text = [df stringFromDate:_datePicker.date];
+
+    _datePickerContainer.hidden = YES;
+    
+    _datePicker.maximumDate = [NSDate date];
+    [_datePicker addTarget:self action:@selector(action:forEvent:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)didReceiveMemoryWarning
@@ -110,7 +125,14 @@
 -(void)handleSingleTap:(id) sender
 {
     if ([sender view].tag == 2) {
-        if (!_introMyNicknameField.text || [_introMyNicknameField.text isEqualToString:@""]) {
+        if (!_introMyNicknameField.text || [_introMyNicknameField.text isEqualToString:@""] || !_birthdayLabel.text) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"未記入の項目があります"
+                                                            message:@""
+                                                           delegate:nil
+                                                  cancelButtonTitle:nil
+                                                  otherButtonTitles:@"OK", nil
+                                  ];
+            [alert show];
         } else {
             
             PFObject *user = [PFUser currentUser];
@@ -121,6 +143,8 @@
             } else {
                 user[@"sex"] = @"female";
             }
+            
+            user[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
             
             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             hud.labelText = @"データ保存中";
@@ -149,8 +173,21 @@
             }];
         }
     } else {
+        _datePickerContainer.hidden = YES;
         [self.view endEditing:YES];
     }
+}
+
+- (void)openDatePicker
+{
+    _datePickerContainer.hidden = NO;
+}
+
+- (void)action:(id)sender forEvent:(UIEvent *)event
+{
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat = @"yyyy/MM/dd";
+    _birthdayLabel.text = [df stringFromDate:_datePicker.date];
 }
 
 @end
