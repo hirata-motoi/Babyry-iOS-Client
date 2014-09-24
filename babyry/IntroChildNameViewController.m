@@ -146,7 +146,10 @@
             child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
             child[@"commentShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"Comment"]];
             [child save];
-            
+
+            // 誕生日変更時に落ちるため一旦現在時刻をいれておく)
+            child[@"createdAt"] = [NSDate date];
+            child[@"birthday"] = [NSDate distantFuture];
             [_childProperties addObject:[ParseUtils pfObjectToDic:child]];
             
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
