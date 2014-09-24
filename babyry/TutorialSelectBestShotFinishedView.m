@@ -30,7 +30,7 @@
     NSString *className = NSStringFromClass([self class]);
     TutorialSelectBestShotFinishedView *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
     view.backgroundColor = [UIColor clearColor];
-    view.forwardButton.layer.cornerRadius = 5.0f;
+    view.forwardButton.layer.cornerRadius = 2.0f;
     view.forwardButton.backgroundColor = [ColorUtils getBabyryColor];
          
     return view;

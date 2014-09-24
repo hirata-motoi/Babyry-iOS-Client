@@ -115,7 +115,7 @@
     if (!currentStage) {
         return NO;
     }
-    if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"waitForPartner"]) {
+    if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
         return YES;
     }
     return NO;

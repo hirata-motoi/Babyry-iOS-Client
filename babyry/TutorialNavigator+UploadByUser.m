@@ -34,12 +34,17 @@
     TutorialUploadByUserView *view = [TutorialUploadByUserView view];
     
     NSMutableDictionary *childProperty = vc.childProperty;
-    view.message.text = [NSString stringWithFormat:@"%@ちゃんの登録が完了しました。\n次に写真のアップロードを行いましょう", childProperty[@"name"]];
+    view.message.text = [NSString stringWithFormat:@"%@ちゃんの登録が完了しました。\n次に写真をアップロードしましょう。", childProperty[@"name"]];
     [view.message sizeToFit];
     CGRect viewRect = view.frame;
     viewRect.origin.x = (rect.size.width - viewRect.size.width) / 2;
     viewRect.origin.y = 64 + 30 + 10 + rect.size.height;
     view.frame = viewRect;
+    
+    CGRect labelRect = view.message.frame;
+    labelRect.origin.x = (viewRect.size.width - labelRect.size.width) / 2;
+    view.message.frame = labelRect;
+    
     [overlay addSubview:view];
     
     UIButton *skipButton = [self createTutorialSkipButton];

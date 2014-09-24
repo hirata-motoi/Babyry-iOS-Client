@@ -23,7 +23,7 @@
     CGSize viewSize = self.targetViewController.view.frame.size;
     CGRect rect = view.frame;
     rect.origin.x = (viewSize.width - rect.size.width) / 2;
-    rect.origin.y = 300;
+    rect.origin.y = 340;
     view.frame = rect;
     
     GlobalSettingViewController *vc = (GlobalSettingViewController *)self.targetViewController;

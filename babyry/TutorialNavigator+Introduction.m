@@ -31,7 +31,7 @@
     rect.origin.x = (viewSize.width - rect.size.width) / 2;
     rect.origin.y = 100;
     view.frame = rect;
-    [view.goAheadButton addTarget:self action:@selector(goAhead) forControlEvents:UIControlEventTouchUpInside];
+    [view.forwardButton addTarget:self action:@selector(forwardNextTutorial) forControlEvents:UIControlEventTouchUpInside];
     
     [overlay addSubview:view];    
 }
@@ -41,8 +41,8 @@
     [overlay hide];
 }
 
-- (void)goAhead
-{
+- (void)forwardNextTutorial
+{       
     [self remove];
     [Tutorial forwardStageWithNextStage:@"chooseByUser"];
     PageContentViewController *vc = (PageContentViewController *)self.targetViewController;
