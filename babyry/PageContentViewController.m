@@ -222,6 +222,11 @@
     for (UIView *view in [cell subviews]) {
         [view removeFromSuperview];
     }
+    for (UIGestureRecognizer *gesture in [cell gestureRecognizers]) {
+        if ([gesture isKindOfClass:[UITapGestureRecognizer class]]) {
+            [cell removeGestureRecognizer:gesture];
+        }
+    }
 
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     
