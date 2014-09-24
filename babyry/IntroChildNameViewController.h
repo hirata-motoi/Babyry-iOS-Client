@@ -26,6 +26,10 @@
 @property (strong, nonatomic) IBOutlet UITextField *childNameField;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *childSexSegment;
 @property (strong, nonatomic) IBOutlet UILabel *childAddButton;
+@property (strong, nonatomic) IBOutlet UILabel *birthdayLabel;
+
+@property (strong, nonatomic) IBOutlet UIView *datePickerContainer;
+@property (strong, nonatomic) IBOutlet UIDatePicker *datePicker;
 
 @property (strong, nonatomic) IBOutlet UIScrollView *childListContainer;
 

@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) IBOutlet UILabel *childName;
 @property (strong, nonatomic) IBOutlet UILabel *childDeleteLabel;
+@property (strong, nonatomic) IBOutlet UILabel *childBirthday;
 
 @property NSString *childObjectId;
 

@@ -16,6 +16,7 @@
 #import "ImageCache.h"
 #import "ChildListCell.h"
 #import "ParseUtils.h"
+#import "DateUtils.h"
 
 @interface IntroChildNameViewController ()
 
@@ -49,7 +50,21 @@
     addChildGesture.numberOfTapsRequired = 1;
     [_childAddButton addGestureRecognizer:addChildGesture];
     
+    UITapGestureRecognizer *stgr3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openDatePicker)];
+    stgr3.numberOfTapsRequired = 1;
+    [_birthdayLabel addGestureRecognizer:stgr3];
+    
     [self refreshChildList];
+    
+    // set date
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat = @"yyyy/MM/dd";
+    _birthdayLabel.text = [df stringFromDate:_datePicker.date];
+    
+    _datePickerContainer.hidden = YES;
+    
+    _datePicker.maximumDate = [NSDate date];
+    [_datePicker addTarget:self action:@selector(action:forEvent:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)didReceiveMemoryWarning
@@ -98,7 +113,14 @@
 
 -(void)addChild
 {
-    if (!_childNameField.text || [_childNameField.text isEqualToString:@""]) {
+    if (!_childNameField.text || [_childNameField.text isEqualToString:@""]|| !_birthdayLabel.text) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"未記入の項目があります"
+                                                        message:@""
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        [alert show];
         return;
     }
     
@@ -143,13 +165,14 @@
             child[@"name"] = _childNameField.text;
             child[@"familyId"] = object[@"familyId"];
             child[@"sex"] = childSex;
+            child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
             child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
             child[@"commentShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"Comment"]];
             [child save];
 
             // 誕生日変更時に落ちるため一旦現在時刻をいれておく)
             child[@"createdAt"] = [NSDate date];
-            child[@"birthday"] = [NSDate distantFuture];
+            child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
             [_childProperties addObject:[ParseUtils pfObjectToDic:child]];
             
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
@@ -205,6 +228,13 @@
             childListView.childObjectId = childDic[@"objectId"];
             
             childListView.childName.text = childDic[@"name"];
+            if(childDic[@"birthday"]) {
+                NSLog(@"%@", childDic[@"birthday"]);
+                NSDateFormatter *df = [[NSDateFormatter alloc] init];
+                df.dateFormat = @"yyyy/MM/dd";
+                childListView.childBirthday.text = [df stringFromDate:childDic[@"birthday"]];
+            }
+            
             CGRect frame = childListView.frame;
             frame.origin.y = lastY;
             childListView.frame = frame;
@@ -218,6 +248,7 @@
 
 -(void)handleSingleTap:(id) sender
 {
+    _datePickerContainer.hidden = YES;
     [self.view endEditing:YES];
 }
 
@@ -295,6 +326,18 @@
         }
     }
     return count;
+}
+
+- (void)openDatePicker
+{
+    _datePickerContainer.hidden = NO;
+}
+
+- (void)action:(id)sender forEvent:(UIEvent *)event
+{
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat = @"yyyy/MM/dd";
+    _birthdayLabel.text = [df stringFromDate:_datePicker.date];
 }
 
 @end

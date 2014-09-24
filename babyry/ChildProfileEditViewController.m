@@ -35,6 +35,8 @@
     UITapGestureRecognizer *childBirthdaySaveGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(saveProfile)];
     childBirthdaySaveGestureRecognizer.numberOfTapsRequired = 1;
     [_childBirthdaySaveLabel addGestureRecognizer:childBirthdaySaveGestureRecognizer];
+    
+    _childBirthdayDatePicker.maximumDate = [NSDate date];
 }
 
 - (void)didReceiveMemoryWarning
