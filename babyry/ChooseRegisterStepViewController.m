@@ -272,6 +272,7 @@
                                                       ];
                                 [alert show];
                                 [PFUser logOut];
+                                return;
                             }
                             [TmpUser registerComplete];
                         }];
