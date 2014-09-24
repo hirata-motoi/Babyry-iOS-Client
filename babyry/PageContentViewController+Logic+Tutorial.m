@@ -219,4 +219,8 @@
     [self.pageContentViewController showTutorialNavigator];
 }
 
+// Tutorial中はnotification出さない
+- (void)setupNotificationHistory
+{}
+
 @end
