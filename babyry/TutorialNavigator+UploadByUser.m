@@ -18,6 +18,8 @@
 - (void)show
 {
     PageContentViewController *vc = (PageContentViewController *)self.targetViewController;
+    [vc.pageContentCollectionView setScrollEnabled:NO];
+    
     overlay = [[ICTutorialOverlay alloc]init];
     overlay.hideWhenTapped = NO;
     overlay.animated = YES;
