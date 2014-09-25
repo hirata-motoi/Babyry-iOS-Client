@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface TutorialIntroductionView : UIView
-@property (weak, nonatomic) IBOutlet UIButton *goAheadButton;
+@property (weak, nonatomic) IBOutlet UIButton *forwardButton;
 
 + (instancetype)view;
 

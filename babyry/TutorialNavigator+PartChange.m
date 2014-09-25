@@ -31,14 +31,14 @@
     CGSize viewSize = self.targetViewController.view.frame.size;
     CGRect rect = view.frame;
     rect.origin.x = (viewSize.width - rect.size.width) / 2;
-    rect.origin.y = 300;
+    rect.origin.y = 270;
     view.frame = rect;
     
     [overlay addSubview:view];
     
     UIButton *skipButton = [self createTutorialSkipButton];
     CGRect skipRect = skipButton.frame;
-    skipRect.origin.x = 160;
+    skipRect.origin.x = 140;
     skipRect.origin.y = rect.origin.y + rect.size.height + 10;
     skipButton.frame = skipRect;
     [overlay addSubview:skipButton];

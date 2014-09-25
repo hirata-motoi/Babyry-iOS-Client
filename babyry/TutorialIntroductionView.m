@@ -8,6 +8,7 @@
 
 #import "TutorialIntroductionView.h"
 #import "UIColor+Hex.h"
+#import "ColorUtils.h"
 
 @implementation TutorialIntroductionView
 
@@ -30,6 +31,8 @@
     NSString *className = NSStringFromClass([self class]);
     TutorialIntroductionView *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
     view.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.0f];
+    view.forwardButton.backgroundColor = [ColorUtils getBabyryColor];
+    view.forwardButton.layer.cornerRadius = 2.0f;
     
     return view;
 }

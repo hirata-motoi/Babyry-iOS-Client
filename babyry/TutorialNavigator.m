@@ -126,10 +126,10 @@
 {
     UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [skipButton setTitle:@"チュートリアルをスキップ" forState:UIControlStateNormal];
-    skipButton.frame = CGRectMake(0, 0, 140, 44);
+    skipButton.frame = CGRectMake(0, 0, 160, 44);
     skipButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     skipButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
-    skipButton.titleLabel.minimumFontSize = 8;
+    skipButton.titleLabel.minimumFontSize = 12;
     skipButton.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
     [skipButton addTarget:self action:@selector(skipTutorial) forControlEvents:UIControlEventTouchUpInside];
     [skipButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];

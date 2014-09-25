@@ -98,7 +98,7 @@
     [TmpUser loginTmpUserByCoreData];
     
     _currentUser = [PFUser currentUser];
-
+    
     if (!_currentUser) { // No user logged in
         
         [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
@@ -157,8 +157,9 @@
         }
       
         // familyIdを発行する前に呼び出す必要がある
-        BOOL hasFamilyId = (_currentUser[@"familyId"]) ? YES : NO;
-        [Tutorial initializeTutorialStage:hasFamilyId];
+        if (_only_first_load) {
+            [self initializeTutorialStage];
+        }
         
         // familyIdがなければ新規にfamilyIdを発行
         if (!_currentUser[@"familyId"]) {
@@ -390,6 +391,68 @@
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
     [Logger writeToTrackingLog:[NSString stringWithFormat:@"%@ %@ %@ %@", [DateUtils setSystemTimezone:[NSDate date]], _currentUser.objectId, _currentUser[@"userId"], NSStringFromClass([viewController class])]];
+}
+
+- (BOOL)hasStartedTutorial
+{
+    BOOL hasStartedTutorial = NO;
+    if (_currentUser && _currentUser[@"userId"]) {
+        PFQuery *query = [PFQuery queryWithClassName:@"TutorialMap"];
+        [query whereKey:@"userId" equalTo:_currentUser[@"userId"]];
+        NSArray *objects = [query findObjects];
+        hasStartedTutorial = (objects.count > 0);
+    }
+    return hasStartedTutorial;
+}
+
+- (void)initializeTutorialStage
+{
+    // 既にTutorialStageがあったらreturn
+    if ([Tutorial currentStage]) {
+        return;
+    }
+    
+    // TutorialMapの情報
+    BOOL hasStartedTutorial = [self hasStartedTutorial];
+    
+    // パートナーのuserId取得
+    NSString *partnerUserId;
+    if (_currentUser[@"familyId"]) {
+        PFObject *familyRole = [FamilyRole getFamilyRole:@"NetworkFirst"];
+        partnerUserId = ([familyRole[@"uploader"] isEqualToString:_currentUser[@"userId"]]) ? familyRole[@"chooser"] : familyRole[@"uploader"];
+    }
+    
+    [Tutorial initializeTutorialStage:_currentUser[@"familyId"] hasStartedTutorial:hasStartedTutorial partnerUserId:partnerUserId];
+    
+    if (_currentUser[@"familyId"]) {
+        return;
+    }
+    
+    // familyIdがなければ新規にfamilyIdを発行
+    IdIssue *idIssue = [[IdIssue alloc]init];
+    _currentUser[@"familyId"] = [idIssue issue:@"family"];
+    [_currentUser saveInBackground];
+    
+    // その上でbotと紐付けをする TutorialMapにデータを保存
+    if (!hasStartedTutorial) {
+        PFObject *tutorialMap = [PFObject objectWithClassName:@"TutorialMap"];
+        tutorialMap[@"userId"] = _currentUser[@"userId"];
+        [tutorialMap saveInBackground];
+    }
+    
+    // chooserに設定
+    PFObject *familyRole = [PFObject objectWithClassName:@"FamilyRole"];
+    familyRole[@"familyId"] = _currentUser[@"familyId"];
+    familyRole[@"chooser"]  = _currentUser[@"userId"];
+    familyRole[@"uploader"] = @"";
+    familyRole[@"createdBy"] = _currentUser[@"userId"];
+    [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving FamilyRole:%@", error]];
+            return;
+        }
+        [FamilyRole updateCache];
+    }];
 }
 
 @end

@@ -1085,18 +1085,18 @@
 		F21BBBB319C9ED02002D4623 /* Xib */ = {
 			isa = PBXGroup;
 			children = (
+				F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */,
 				F21BBBB419C9ED45002D4623 /* TutorialShowMultiUploadView.xib */,
 				F21BBBB919C9F8B5002D4623 /* TutorialSelectBestShotView.xib */,
 				F226590E19D22575003A62BD /* TutorialSelectBestShotFinishedView.xib */,
-				F21BBBD119CA6AF1002D4623 /* TutorialPartChangeExecView.xib */,
 				F21BBBC419CA0037002D4623 /* TutorialPartChangeView.xib */,
-				F226591619D22F88003A62BD /* TutorialImageUploadFinishedView.xib */,
-				F21BBBC919CA0265002D4623 /* TutorialUpperArrowView.xib */,
+				F21BBBD119CA6AF1002D4623 /* TutorialPartChangeExecView.xib */,
 				F21BBBDF19CA72D7002D4623 /* TutorialAddChildView.xib */,
 				F21BBBED19CAD5D1002D4623 /* TutorialUploadByUserView.xib */,
+				F226591619D22F88003A62BD /* TutorialImageUploadFinishedView.xib */,
 				F21BBBF519CAE690002D4623 /* TutorialFamilyApplyIntroduceView.xib */,
 				F2B9697319CD75B000C14201 /* TutorialBestShotSelectedView.xib */,
-				F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */,
+				F21BBBC919CA0265002D4623 /* TutorialUpperArrowView.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
