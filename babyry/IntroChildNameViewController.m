@@ -213,7 +213,9 @@
     }
     
     // BabyryちゃんのobjectIdを取得
-    NSString *babyryId = @"aI1Lo7FXhH";
+    //NSString *babyryId = @"aI1Lo7FXhH";
+    NSString *babyryId = @"0HJFGtSrzN";
+    
     _isBabyryExist = NO;
     
     float lastY = 0;
@@ -318,7 +320,8 @@
 
 - (int) countChildProperty
 {
-    NSString *babyryId = @"aI1Lo7FXhH";
+//    NSString *babyryId = @"aI1Lo7FXhH";
+    NSString *babyryId = @"0HJFGtSrzN";
 
     int count = 0;
     for (NSDictionary *childDic in _childProperties) {
