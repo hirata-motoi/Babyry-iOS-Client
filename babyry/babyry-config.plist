@@ -110,7 +110,7 @@
 	<array>
 		<string>introduction</string>
 		<string>chooseByUser</string>
-		<string>partChange </string>
+		<string>partChange</string>
 		<string>addChild</string>
 		<string>uploadByUser</string>
 		<string>uploadByUserFinished</string>
