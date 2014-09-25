@@ -168,7 +168,7 @@
             [applyList whereKey:@"familyId" equalTo:object[@"familyId"]];
             [applyList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                 if ([objects count] > 0) {
-                    vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"申請が来ています";
+                    vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"承認待ちユーザーがいます";
                     vc.familyApplyIntroduceView.backgroundColor = [ColorUtils getSatDayCalColor];
                     [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
                     return;

@@ -231,7 +231,6 @@
             
             childListView.childName.text = childDic[@"name"];
             if(childDic[@"birthday"]) {
-                NSLog(@"%@", childDic[@"birthday"]);
                 NSDateFormatter *df = [[NSDateFormatter alloc] init];
                 df.dateFormat = @"yyyy/MM/dd";
                 childListView.childBirthday.text = [df stringFromDate:childDic[@"birthday"]];
