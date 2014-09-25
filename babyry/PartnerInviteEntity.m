@@ -1,15 +1,15 @@
 //
-//  PartnerApplyEntity.m
+//  PartnerInviteEntity.m
 //  babyry
 //
-//  Created by Kenji Suzuki on 2014/09/22.
+//  Created by Kenji Suzuki on 2014/09/24.
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
-#import "PartnerApplyEntity.h"
+#import "PartnerInviteEntity.h"
 
 
-@implementation PartnerApplyEntity
+@implementation PartnerInviteEntity
 
 @dynamic linkComplete;
 @dynamic name;

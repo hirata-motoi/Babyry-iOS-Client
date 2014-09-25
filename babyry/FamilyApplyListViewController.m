@@ -11,6 +11,7 @@
 #import "Navigation.h"
 #import "FamilyApplyListCell.h"
 #import "Logger.h"
+#import "Tutorial.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -61,22 +62,22 @@
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"申請データ確認";
     familyApplys = [[NSMutableDictionary alloc]init];
-    PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
-    [query whereKey:@"inviteeUserId" equalTo:[PFUser currentUser][@"userId"]];
+    PFQuery *query = [PFQuery queryWithClassName:@"PartnerApplyList"];
+    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (objects.count < 1) {
             [self showNoApplyMessage];
         } else {
-            NSMutableArray * inviterUserIds = [[NSMutableArray alloc] init];
+            NSMutableArray * applyingUserIds = [[NSMutableArray alloc] init];
             for (int i = 0; i < objects.count; i++) {
-                NSString *inviterUserId = objects[i][@"userId"];
-                [inviterUserIds addObject:inviterUserId];
+                NSString *applyingUserId = objects[i][@"applyingUserId"];
+                [applyingUserIds addObject:applyingUserId];
                 
                 // 後からfamilyApplyのレコードを参照できるように保持しておく
-                [familyApplys setObject:objects[i] forKey:inviterUserId];
+                [familyApplys setObject:objects[i] forKey:applyingUserId];
             }
             
-            [self setupInviterUsers:inviterUserIds];
+            [self setupInviterUsers:applyingUserIds];
         }
         if (error) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in showFamilyApplyList : %@", error]];
@@ -121,7 +122,7 @@
         cell = [[FamilyApplyListCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:CellIdentifier];
     }
-    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"emailCommon"];
+    cell.emailLabel.text = self.inviterUsers[indexPath.row][@"nickName"];
     cell.emailLabel.font = [UIFont systemFontOfSize:18];
     cell.emailLabel.numberOfLines = 0;
     CGSize bounds = CGSizeMake(cell.emailLabel.frame.size.width, tableView.frame.size.height);
@@ -178,59 +179,59 @@
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ更新";
     
-    // 自分の行のfamilyIdを更新
-    PFObject *inviterUser = [inviterUsers objectAtIndex:index];
-    NSString *familyId = inviterUser[@"familyId"];
-
-    // そのうちこの辺りの処理はすべてFamilyRole classに隠蔽したい
-    NSString *inviterRole = [familyApplys objectForKey:inviterUser[@"userId"]][@"role"];
-    NSString *uploader;
-    NSString *chooser;
-    if ([inviterRole isEqualToString:@"uploader"]) {
-        uploader = inviterUser[@"userId"];
-        chooser  = [PFUser currentUser][@"userId"];
-    } else {
-        uploader  = [PFUser currentUser][@"userId"];
-        chooser = inviterUser[@"userId"];
-    }
-    
-    PFUser *selfUser = [PFUser currentUser];
-    selfUser[@"familyId"] = familyId;
-    [selfUser save];
-
-    // FamilyRoleにinsert
-    NSArray *objects = [[NSArray alloc]initWithObjects:familyId, uploader, chooser , nil];
-    NSArray *keys    = [[NSArray alloc]initWithObjects:@"familyId", @"uploader", @"chooser", nil];
-    NSMutableDictionary *familyRoleData = [[NSMutableDictionary alloc]initWithObjects:objects forKeys:keys];
-    [FamilyRole createFamilyRoleWithBlock:familyRoleData withBlock:^(BOOL succeeded, NSError *error) {
+    // FamilyRoleのchooserにapplyingUserIdを突っ込む
+    PFQuery *familyRole = [PFQuery queryWithClassName:@"FamilyRole"];
+    [familyRole whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+    [familyRole getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in createFamilyRoleWithBlock : %@", error]];
+            // かならず一つが見つかるはず
+            // エラーならレコード作るでも良いけど、やり過ぎな気はする
+            [Logger writeOneShot:@"cirt" message:[NSString stringWithFormat:@"Error in find familyRole : %@", error]];
             [_hud hide:YES];
             return;
         }
         
-        [FamilyRole updateCache]; // 非同期でキャッシュを更新しておく
-        
-        // FamilyApplyから消す TODO FamilyApply classへの委譲
-        PFQuery *query = [PFQuery queryWithClassName:@"FamilyApply"];
-        [query whereKey:@"inviteeUserId" equalTo:selfUser[@"userId"]];
-        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if(error) {
-                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in removing FamilyApply record : %@", error]];
+        // 自分と逆側に相手をセット
+        if ([object[@"chooser"] isEqualToString:[PFUser currentUser][@"userId"]]) {
+            object[@"uploader"] = [inviterUsers objectAtIndex:index][@"userId"];
+        } else {
+            object[@"chooser"] = [inviterUsers objectAtIndex:index][@"userId"];
+        }
+        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update chooser : %@", error]];
                 [_hud hide:YES];
                 return;
             }
-            
-            for (int i = 0; i < objects.count; i++) {
-                PFObject *row = [objects objectAtIndex:i];
-                [row deleteInBackground];
+            // PartnerApplyListから削除
+            for (id key in [familyApplys keyEnumerator]) {
+                [[familyApplys objectForKey:key] deleteInBackground];
+            }
+            // pincodeListから削除
+            PFQuery *pincodeList = [PFQuery queryWithClassName:@"PincodeList"];
+            [pincodeList whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+            [pincodeList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                if (objects) {
+                    for (PFObject *object in objects) {
+                        [object deleteInBackground];
+                    }
+                }
+            }];
+            // パートナーがFamilyRoleを持っていたら削除 (チュートリアルを進んだパートナーを招待した場合)
+            if ([inviterUsers objectAtIndex:index][@"familyId"]) {
+                PFQuery *partner = [PFQuery queryWithClassName:@"FamilyRole"];
+                [partner whereKey:@"familyId" equalTo:[inviterUsers objectAtIndex:index][@"familyId"]];
+                [partner findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                    if (objects) {
+                        for (PFObject *object in objects) {
+                            [object deleteInBackground];
+                        }
+                    }
+                }];
             }
             
+            [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
             [_hud hide:YES];
-            
-            [Logger
-             writeOneShot:@"info"
-             message:[NSString stringWithFormat:@"FamilyApply admit from:%@ to:%@ familyid:%@", inviterUser[@"userId"], [PFUser currentUser][@"userId"], familyId]];
             [self closeFamilyApplyList];
         }];
     }];

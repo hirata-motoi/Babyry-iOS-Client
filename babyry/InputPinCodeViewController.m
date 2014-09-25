@@ -11,6 +11,7 @@
 #import "ChooseRegisterStepViewController.h"
 #import "MBProgressHUD.h"
 #import "PartnerInvitedEntity.h"
+#import "PartnerApply.h"
 
 @interface InputPinCodeViewController ()
 
@@ -33,6 +34,10 @@
     // Do any additional setup after loading the view.
     
     [self makeDismisButton];
+    
+    if (_inputForRegisteredUser) {
+        _startRegisterButton.text = @"完了";
+    }
     
     UITapGestureRecognizer *inputPincodeGstr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(inputPincodeGstr)];
     inputPincodeGstr.numberOfTapsRequired = 1;
@@ -83,7 +88,7 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"申請コード確認";
     
-    PFQuery *query = [PFQuery queryWithClassName:@"PartnerApply"];
+    PFQuery *query = [PFQuery queryWithClassName:@"PincodeList"];
     [query whereKey:@"pinCode" equalTo:[NSNumber numberWithInt:[_pincodeField.text intValue]]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (error) {
@@ -117,7 +122,15 @@
         pie.inputtedPinCode = [objects objectAtIndex:0][@"pinCode"];
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
      
-        [self dismissViewControllerAnimated:YES completion:nil];
+        if (!_inputForRegisteredUser) {
+            // 招待コード入力のところから会員登録している人
+            [self dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            // 会員登録したあとに招待コードを入力する人
+            [PartnerApply registerApplyList];
+            [self dismissViewControllerAnimated:YES completion:nil];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
     }];
 }
 

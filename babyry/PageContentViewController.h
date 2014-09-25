@@ -56,6 +56,8 @@
 - (void)openFamilyApply;
 - (void)setImages;
 - (void)showTutorialNavigator;
+- (void)openFamilyApplyList;
+- (void)openPartnerWait;
 
 @property AWSServiceConfiguration *configuration;
 
@@ -67,5 +69,6 @@
 @property TagAlbumCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;
 @property TutorialFamilyApplyIntroduceView *familyApplyIntroduceView;
+@property NSTimer *instructionTimer;
 
 @end

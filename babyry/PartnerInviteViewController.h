@@ -14,6 +14,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *inviteByLine;
 @property (strong, nonatomic) IBOutlet UILabel *inviteByMail;
 @property (strong, nonatomic) IBOutlet UILabel *displayedPinCode;
+@property (strong, nonatomic) IBOutlet UILabel *inviteAlreadyRegisterdUser;
 
 @property NSNumber *pinCode;
 @property int pinCodeSaveRetryMaxCount;
