@@ -160,7 +160,7 @@
                     [cell addSubview:_roleControl];
                     break;
                 case 2:
-                    if ([TmpUser checkRegistered]) {
+                    if (![TmpUser checkRegistered]) {
                         cell.textLabel.text = @"本登録を完了する";
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     } else {
@@ -230,10 +230,10 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
-            if ([_emailVerified isEqualToString:@"noNeed"]) {
-                rowCount = 2;
-            } else {
+            if (![TmpUser checkRegistered] || ![_emailVerified isEqualToString:@"noNeed"]) {
                 rowCount = 3;
+            } else {
+                rowCount = 2;
             }
             break;
         case 1:
@@ -268,7 +268,7 @@
                 case 1:
                     break;
                 case 2:
-                    if ([TmpUser checkRegistered]) {
+                    if (![TmpUser checkRegistered]) {
                         [self openRegisterView];
                     } else {
                         [self openEmailVerifiedView];

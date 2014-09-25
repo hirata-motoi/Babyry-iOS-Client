@@ -81,6 +81,8 @@
 
 - (void)keyboardWillShow:(NSNotification*)notification
 {
+    _datePickerContainer.hidden = YES;
+    
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -229,7 +231,6 @@
             
             childListView.childName.text = childDic[@"name"];
             if(childDic[@"birthday"]) {
-                NSLog(@"%@", childDic[@"birthday"]);
                 NSDateFormatter *df = [[NSDateFormatter alloc] init];
                 df.dateFormat = @"yyyy/MM/dd";
                 childListView.childBirthday.text = [df stringFromDate:childDic[@"birthday"]];
@@ -330,6 +331,7 @@
 
 - (void)openDatePicker
 {
+    [self.view endEditing:YES];
     _datePickerContainer.hidden = NO;
 }
 

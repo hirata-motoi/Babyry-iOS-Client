@@ -7,7 +7,6 @@
 //
 
 #import "Account.h"
-#import <Parse/Parse.h>
 
 @implementation Account
 
@@ -27,16 +26,30 @@
         errorMessage = @"パスワードは8文字以上を設定してください";
     } else if (![password isEqualToString:passwordConfirm]){
         errorMessage = @"確認用パスワードが一致しません";
-    } else {
-        PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
-        [emailQuery whereKey:@"emailCommon" equalTo:email];
-        PFObject *object = [emailQuery getFirstObject];
-        if(object) {
-            errorMessage = @"既に登録済みのメールアドレスです";
-        }
     }
     
     return errorMessage;
+}
+
++ (NSString *)checkDuplicateEmail:(NSString *)email
+{
+    NSString *errorMessage = @"";
+    
+    PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
+    [emailQuery whereKey:@"emailCommon" equalTo:email];
+    PFObject *object = [emailQuery getFirstObject];
+    if (object) {
+        errorMessage = @"登録済みのメールアドレスです";
+    }
+    
+    return errorMessage;
+}
+
++ (void)checkDuplicateEmailWithBlock:(NSString *)email withBlock:(PFArrayResultBlock)block
+{
+    PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
+    [emailQuery whereKey:@"emailCommon" equalTo:email];
+    [emailQuery findObjectsInBackgroundWithBlock:block];
 }
 
 
