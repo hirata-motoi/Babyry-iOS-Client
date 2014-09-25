@@ -123,6 +123,7 @@
         }
     }
     [self reloadView];
+    
 }
 
 - (void)reloadView
@@ -294,10 +295,7 @@
         // chooseByUser、uploadByUser以外はviewWillAppearでoverlayを表示
         TutorialStage *currentStage = [Tutorial currentStage];
         if ([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]){
-            
-            // cellが表示されてからでないと位置を取得できないため、
-            // 0.3秒後(cellが表示されてるであろうタイミング)でoverlayの表示をする
-            [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(showTutorialNavigator) userInfo:nil repeats:NO];
+            [self showTutorialNavigator];
         }
     }
     

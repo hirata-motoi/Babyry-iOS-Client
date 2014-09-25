@@ -26,9 +26,6 @@
     
     UICollectionViewCell *cell = vc.cellOfToday;
     CGRect rect = cell.frame;
-    if (rect.origin.x == 0 && rect.origin.y == 0) {
-        return;
-    }
     
     [overlay addHoleWithRect:CGRectMake(10, 64 + 30 + 10, rect.size.width - 20, rect.size.height - 20) form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
     [overlay show];

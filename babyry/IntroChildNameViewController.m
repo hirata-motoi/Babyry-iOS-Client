@@ -113,7 +113,6 @@
 
 -(void)addChild
 {
-    if (!_childNameField.text || [_childNameField.text isEqualToString:@""]) {
     if (!_childNameField.text || [_childNameField.text isEqualToString:@""]|| !_birthdayLabel.text) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"未記入の項目があります"
                                                         message:@""
