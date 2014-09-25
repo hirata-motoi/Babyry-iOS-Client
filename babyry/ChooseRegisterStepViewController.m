@@ -200,7 +200,7 @@
         } else {
             if (!user.isNew) {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"登録済みのアカウントです"
-                                                                message:@"既に登録頂いているアカウントですので、ログインしました。"
+                                                                message:@"既に登録済みのアカウントです。\n新規登録はせずログインします。"
                                                                delegate:nil
                                                       cancelButtonTitle:nil
                                                       otherButtonTitles:@"OK", nil];
@@ -215,6 +215,11 @@
             }
             
             if (user[@"email"] && ![user[@"email"] isEqualToString:@""]) {
+                [self dismissViewControllerAnimated:YES completion:NULL];
+                return;
+            }
+            
+            if (user[@"emailCommon"] && ![user[@"emailCommon"] isEqualToString:@""]) {
                 [self dismissViewControllerAnimated:YES completion:NULL];
                 return;
             }
