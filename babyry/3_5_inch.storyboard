@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="aNE-hl-s3s">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="aNE-hl-s3s">
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -1385,6 +1385,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                     </view>
                     <connections>
                         <outlet property="dismisButton" destination="8gS-oj-eEI" id="rLY-jt-ZeG"/>
+                        <outlet property="facebookLoginButton" destination="VrH-9l-KEH" id="oA1-m3-Sql"/>
                         <outlet property="noRegisterButton" destination="PKc-q7-vze" id="rfR-wZ-A2Y"/>
                         <outlet property="registerButton" destination="wRg-GT-ENp" id="wWN-5u-gYC"/>
                     </connections>
