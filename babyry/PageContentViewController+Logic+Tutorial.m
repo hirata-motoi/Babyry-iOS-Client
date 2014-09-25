@@ -160,7 +160,7 @@
         collectionRect.origin.y = collectionRect.origin.y + rect.size.height;
         vc.pageContentCollectionView.frame = collectionRect;
     }
-        
+    
     // 承認がきているかどうか
     [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (object) {
@@ -189,6 +189,10 @@
                 }
                 // すべてがエラーの場合でもチュートリアル中はこれを出しておく
                 [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+                
+                // 暫定対応
+                // !(承認待ちユーザがいる || 承認待ち) の場合はviewの背景を戻す
+                vc.familyApplyIntroduceView.backgroundColor = [ColorUtils getPastelRedColor];
             }];
         }
     }];

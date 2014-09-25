@@ -26,4 +26,6 @@
 
 +(UIColor *) getLoginViewBackColor;
 
++(UIColor *)getPastelRedColor;
+
 @end
