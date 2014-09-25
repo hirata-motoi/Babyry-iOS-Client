@@ -169,7 +169,7 @@
             [applyList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                 if ([objects count] > 0) {
                     vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"申請が来ています";
-                    vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.backgroundColor = [ColorUtils getSatDayCalColor];
+                    vc.familyApplyIntroduceView.backgroundColor = [ColorUtils getSatDayCalColor];
                     [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
                     return;
                 }
@@ -180,8 +180,8 @@
                     [applyByMe whereKey:@"familyId" equalTo:pie.familyId];
                     [applyByMe findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                         if ([objects count] > 0) {
-                            vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.backgroundColor = [ColorUtils getSatDayCalColor];
                             vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"パートナー承認待ち";
+                            vc.familyApplyIntroduceView.backgroundColor = [ColorUtils getSatDayCalColor];
                             [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openPartnerWait) forControlEvents:UIControlEventTouchUpInside];
                         }
                     }];
