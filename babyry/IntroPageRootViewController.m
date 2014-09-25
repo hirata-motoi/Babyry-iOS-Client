@@ -225,10 +225,9 @@
 // Sent to the delegate when the log in attempt fails.
 // ログインが失敗したら
 - (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
-    //NSLog(@"Failed to log in...");
+    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to login Error:%@", error]];
     [[[UIAlertView alloc] initWithTitle:@"ログインエラー"
-                                //message:@"ログインエラーが発生しました。メールアドレスとパスワードを確認してください。"
-                                message:[NSString stringWithFormat:@"%@", error]
+                                message:@"ログインエラーが発生しました。メールアドレスとパスワードを確認してください。"
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];
