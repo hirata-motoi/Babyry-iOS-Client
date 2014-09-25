@@ -542,6 +542,23 @@
 // limitの時刻 + 文言
 - (void)showBestShotFixLimitLabel
 {
+    if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApplyExec"]) {
+        for (UIView *view in _headerView.subviews) {
+            [view removeFromSuperview];
+        }
+        _headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
+        UILabel *tutorialLabel = [[UILabel alloc] init];
+        tutorialLabel.frame = _headerView.frame;
+        tutorialLabel.textColor = [ColorUtils getSunDayCalColor];
+        tutorialLabel.textAlignment = NSTextAlignmentCenter;
+        tutorialLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+        tutorialLabel.numberOfLines = 2;
+        tutorialLabel.text = @"パートナーと利用開始するまでは、\nベストショットは自動に決定されます";
+        [_headerView addSubview:tutorialLabel];
+        
+        return;
+    }
+    
     // 帯の色設定
     _headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
     
