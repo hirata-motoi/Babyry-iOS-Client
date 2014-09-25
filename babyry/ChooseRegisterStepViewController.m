@@ -12,6 +12,7 @@
 #import "Logger.h"
 #import "Account.h"
 #import "PartnerInvitedEntity.h"
+#import "Logger.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -42,6 +43,10 @@
     UITapGestureRecognizer *continueWithNoLogin = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(continueWithNoLogin)];
     continueWithNoLogin.numberOfTapsRequired = 1;
     [_noRegisterButton addGestureRecognizer:continueWithNoLogin];
+    
+    UITapGestureRecognizer *facebookLogin = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(facebookLogin)];
+    facebookLogin.numberOfTapsRequired = 1;
+    [_facebookLoginButton addGestureRecognizer:facebookLogin];
     
     _isSignUpCompleted = NO;
 }
@@ -173,6 +178,113 @@
             [self dismissViewControllerAnimated:YES completion:nil];
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in continueWithNoLogin : %@", error]];
+        }
+    }];
+}
+
+- (void)facebookLogin
+{
+    NSArray *permissionsArray = [NSArray arrayWithObjects:@"public_profile", @"email", @"user_friends", nil];
+
+    [PFFacebookUtils logInWithPermissions:permissionsArray block:^(PFUser *user, NSError *error) {
+        if (!user) {
+            if (error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in facebookLogin : %@", error]];
+            }
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラーが発生しました"
+                                                            message:@"Facebookアカウントでの会員登録に失敗しました。\n再度お試し頂くか、メールアドレスでの登録をお願いします。"
+                                                           delegate:nil
+                                                  cancelButtonTitle:nil
+                                                  otherButtonTitles:@"OK", nil];
+            [alert show];
+        } else {
+            if (!user.isNew) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"登録済みのアカウントです"
+                                                                message:@"既に登録済みのアカウントです。\n新規登録はせずログインします。"
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"OK", nil];
+                [alert show];
+            }
+
+            // ここは、IntroPageRootViewControllerからのコピペ
+            // PFLogInViewControllerDelegateのメソッドなのでとりあえずコピペで
+            if (user[@"userId"] == nil) {
+                user[@"userId"] = [[[IdIssue alloc]init]issue:@"user"];
+                [user save];
+            }
+            
+            if (user[@"email"] && ![user[@"email"] isEqualToString:@""]) {
+                [self dismissViewControllerAnimated:YES completion:NULL];
+                return;
+            }
+            
+            if (user[@"emailCommon"] && ![user[@"emailCommon"] isEqualToString:@""]) {
+                [self dismissViewControllerAnimated:YES completion:NULL];
+                return;
+            }
+            
+            [FBRequestConnection startForMeWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get facebook email : %@", error]];
+                    return;
+                }
+                if (![result objectForKey:@"email"]) {
+                    [Logger writeOneShot:@"crit" message:@"There is no email in facebook"];
+                    return;
+                }
+                
+                // email重複チェック
+                PFQuery *emailQuery = [PFQuery queryWithClassName:@"_User"];
+                [emailQuery whereKey:@"emailCommon" equalTo:[result objectForKey:@"email"]];
+                [emailQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                    if (error) {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in check duplicate email. Email:%@ Error:%@", result[@"email"], error]];
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                        message:@"電波状況のよい場所で再度お試しください。"
+                                                                       delegate:nil
+                                                              cancelButtonTitle:nil
+                                                              otherButtonTitles:@"OK", nil
+                                              ];
+                        [alert show];
+                        [PFUser logOut];
+                        [self dismissViewControllerAnimated:YES completion:nil];
+                        return;
+                    }
+                    
+                    if([objects count] > 0) {
+                        [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Warn in Email Duplicate Check. Duplicate Count:%d, Email:%@", objects.count, result[@"email"]]];
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                        message:@"このfacebookアカウントで使用しているメールアドレスは既に登録済みです。"
+                                                                       delegate:nil
+                                                              cancelButtonTitle:nil
+                                                              otherButtonTitles:@"OK", nil
+                                              ];
+                        [alert show];
+                        [PFUser logOut];
+                        [self dismissViewControllerAnimated:YES completion:nil];
+                    } else {
+                        user[@"emailCommon"] = [result objectForKey:@"email"];
+                        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                            if (error) {
+                                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save email saving : %@", error]];
+                                
+                                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"メールアドレスの保存に\n失敗しました"
+                                                                                message:@"ネットワークエラーの可能性がありますので、しばらくしてからお試しください。"
+                                                                               delegate:nil
+                                                                      cancelButtonTitle:nil
+                                                                      otherButtonTitles:@"OK", nil
+                                                      ];
+                                [alert show];
+                                [PFUser logOut];
+                                return;
+                            }
+                            [TmpUser registerComplete];
+                        }];
+                    }
+                }];
+            }];
+            [self dismissViewControllerAnimated:YES completion:NULL];
         }
     }];
 }

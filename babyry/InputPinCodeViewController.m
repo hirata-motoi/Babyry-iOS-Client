@@ -90,6 +90,9 @@
     
     PFQuery *query = [PFQuery queryWithClassName:@"PincodeList"];
     [query whereKey:@"pinCode" equalTo:[NSNumber numberWithInt:[_pincodeField.text intValue]]];
+    if ([PFUser currentUser] && [PFUser currentUser][@"familyId"]) {
+        [query whereKey:@"familyId" notEqualTo:[PFUser currentUser][@"familyId"]];
+    }
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (error) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
@@ -117,9 +120,15 @@
         
         [hud hide:YES];
         
-        PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_createEntity];
-        pie.familyId = [objects objectAtIndex:0][@"familyId"];
-        pie.inputtedPinCode = [objects objectAtIndex:0][@"pinCode"];
+        PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+        if (pie) {
+            pie.familyId = [objects objectAtIndex:0][@"familyId"];
+            pie.inputtedPinCode = [objects objectAtIndex:0][@"pinCode"];
+        } else {
+            PartnerInvitedEntity *newPie = [PartnerInvitedEntity MR_createEntity];
+            newPie.familyId = [objects objectAtIndex:0][@"familyId"];
+            newPie.inputtedPinCode = [objects objectAtIndex:0][@"pinCode"];
+        }
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
      
         if (!_inputForRegisteredUser) {

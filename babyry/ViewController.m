@@ -26,7 +26,6 @@
 #import "Partner.h"
 #import "Sharding.h"
 #import "Logger.h"
-#import "NotEmailVerifiedViewController.h"
 #import "CheckAppVersion.h"
 #import "TmpUser.h"
 #import "Tutorial.h"
@@ -146,18 +145,6 @@
             if (![_currentUser objectForKey:@"nickName"] || [[_currentUser objectForKey:@"nickName"] isEqualToString:@""]) {
                 [self setMyNickNamePage];
                 return;
-            }
-        }
-
-        // facebook連携していない場合、emailが確認されているか
-        // まずはキャッシュからとる(verifiledされていればここで終わりなのでParseにとりにいかない)
-        if ([_currentUser objectForKey:@"emailVerified"]) {
-            if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-                [_currentUser refresh];
-                if (![[_currentUser objectForKey:@"emailVerified"] boolValue]) {
-                    [self setNotVerifiedPage];
-                    return;
-                }
             }
         }
         
@@ -358,13 +345,6 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
 }
-
--(void)setNotVerifiedPage
-{
-    NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
-    [self presentViewController:emailVerifiedViewController animated:YES completion:nil];
-}
-
 
 -(void)logOut
 {

@@ -71,4 +71,7 @@
 @property TutorialFamilyApplyIntroduceView *familyApplyIntroduceView;
 @property NSTimer *instructionTimer;
 
+// CoreDataに移動したら消す
+@property NSMutableArray *childProperties;
+
 @end

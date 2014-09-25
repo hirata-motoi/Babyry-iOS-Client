@@ -92,7 +92,7 @@
 - (void)withdrawGesture
 {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"申請を取り下げますか？"
-                                                    message:nil
+                                                    message:@"申請を取り下げた場合、\n入力済みの承認コードは無効となり\n再度パートナー申請が必要となります。"
                                                    delegate:self
                                           cancelButtonTitle:@"キャンセル"
                                           otherButtonTitles:@"取り下げる", nil

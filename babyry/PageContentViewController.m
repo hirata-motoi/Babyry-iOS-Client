@@ -49,6 +49,7 @@
 #import "FamilyApplyListViewController.h"
 #import "PartnerWaitViewController.h"
 #import "PartnerApply.h"
+#import "ParseUtils.h"
 
 @interface PageContentViewController ()
 
@@ -85,7 +86,7 @@
     [self initializeChildImages];
     [self createCollectionView];
     //[self setupScrollBarView];
-    
+        
     // Notification登録
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
@@ -115,9 +116,7 @@
         _hud.labelText = @"データ同期中";
     }
     
-    if ([PartnerApply linkComplete]) {
-        [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
-    } else {
+    if (![PartnerApply linkComplete]) {
         if (!_instructionTimer || ![_instructionTimer isValid]){
             _instructionTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(reloadView) userInfo:nil repeats:YES];
         }
@@ -128,10 +127,29 @@
 
 - (void)reloadView
 {
-    if ([PartnerApply linkComplete]) {
+    if ([PartnerApply linkComplete] && [_instructionTimer isValid]) {
+        // この処理は一回だけで良し
+        [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
         [_instructionTimer invalidate];
+        
+        // childPropertiesを更新してViewを更新
+        //NSMutableArray *tmpProperties = [[NSMutableArray alloc] init];
+        PFQuery *child = [PFQuery queryWithClassName:@"Child"];
+        [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+        [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if (objects) {
+                [_childProperties removeAllObjects];
+                for (PFObject *object in objects) {
+                    [_childProperties addObject:[ParseUtils pfObjectToDic:object]];
+                }
+                NSLog(@"after %@", _childProperties);
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }
+        }];
     }
     
+    [FamilyRole updateCache];
     [[self logic:@"setupHeaderView"] setupHeaderView];
     _selfRole = [FamilyRole selfRole:@"useCache"];
     [_pageContentCollectionView reloadData];
