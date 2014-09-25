@@ -90,7 +90,9 @@
     
     PFQuery *query = [PFQuery queryWithClassName:@"PincodeList"];
     [query whereKey:@"pinCode" equalTo:[NSNumber numberWithInt:[_pincodeField.text intValue]]];
-    [query whereKey:@"familyId" notEqualTo:[PFUser currentUser][@"familyId"]];
+    if ([PFUser currentUser] && [PFUser currentUser][@"familyId"]) {
+        [query whereKey:@"familyId" notEqualTo:[PFUser currentUser][@"familyId"]];
+    }
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (error) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
