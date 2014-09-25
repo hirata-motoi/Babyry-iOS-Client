@@ -75,10 +75,13 @@
 
 - (void)registerByEmail
 {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"アカウント作成中";
     NSString *errorMessage = [Account checkEmailRegisterFields:_mailAddressField.text password:_passwordField.text passwordConfirm:_passwordComfirmField.text];
     
     // Display an alert if a field wasn't completed
     if (![errorMessage isEqualToString:@""]) {
+        [hud hide:YES];
         [[[UIAlertView alloc] initWithTitle:@""
                                     message:errorMessage
                                    delegate:nil
@@ -87,17 +90,10 @@
         return;
     }
     
-    PFUser *user = [PFUser currentUser];
-    user.username = _mailAddressField.text;
-    user.password = _passwordField.text;
-    user[@"emailCommon"] = _mailAddressField.text;
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"データ保存";
-    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-        if (error){
+    [Account checkDuplicateEmailWithBlock:_mailAddressField.text withBlock:^(NSArray *objects, NSError *error){
+        if (error) {
             [hud hide:YES];
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in registerByEmail : %@", error]];
-            [[[UIAlertView alloc] initWithTitle:@"データの保存に失敗しました"
+            [[[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
                                         message:@"ネットワークエラーが発生しました。もう一度お試しください。"
                                        delegate:nil
                               cancelButtonTitle:@"ok"
@@ -105,14 +101,42 @@
             return;
         }
         
-        [hud hide:YES];
-        [TmpUser registerComplete];
-        [[[UIAlertView alloc] initWithTitle:@"登録が完了しました"
-                                    message:@"入力されたメールアドレスに確認メールをお送りしましたので、本文に記載されているURLをクリックしてメールアドレスを有効化してください。"
-                                   delegate:nil
-                          cancelButtonTitle:@"ok"
-                          otherButtonTitles:nil] show];
-        [self.navigationController popViewControllerAnimated:YES];
+        if ([objects count] > 0) {
+            [hud hide:YES];
+            [[[UIAlertView alloc] initWithTitle:@"既に登録済みのメールアドレスです"
+                                        message:@"メールアドレスをご確認ください"
+                                       delegate:nil
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
+            return;
+        }
+        
+        PFUser *user = [PFUser currentUser];
+        user.username = _mailAddressField.text;
+        user.password = _passwordField.text;
+        user[@"emailCommon"] = _mailAddressField.text;
+        
+        [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (error){
+                [hud hide:YES];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in registerByEmail : %@", error]];
+                [[[UIAlertView alloc] initWithTitle:@"データの保存に失敗しました"
+                                            message:@"ネットワークエラーが発生しました。もう一度お試しください。"
+                                           delegate:nil
+                                  cancelButtonTitle:@"ok"
+                                  otherButtonTitles:nil] show];
+                return;
+            }
+            
+            [hud hide:YES];
+            [TmpUser registerComplete];
+            [[[UIAlertView alloc] initWithTitle:@"登録が完了しました"
+                                        message:@"入力されたメールアドレスに確認メールをお送りしましたので、本文に記載されているURLをクリックしてメールアドレスを有効化してください。"
+                                       delegate:nil
+                              cancelButtonTitle:@"ok"
+                              otherButtonTitles:nil] show];
+            [self.navigationController popViewControllerAnimated:YES];
+        }];
     }];
 }
 

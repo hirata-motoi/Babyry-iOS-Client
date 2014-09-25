@@ -110,6 +110,10 @@
     
     errorMessage = [Account checkEmailRegisterFields:[info objectForKey:@"username"] password:[info objectForKey:@"password"] passwordConfirm:[info objectForKey:@"additional"]];
     
+    if ([errorMessage isEqualToString:@""]){
+        errorMessage = [Account checkDuplicateEmail:[info objectForKey:@"username"]];
+    }
+    
     // Display an alert if a field wasn't completed
     if (![errorMessage isEqualToString:@""]) {
         informationComplete = NO;

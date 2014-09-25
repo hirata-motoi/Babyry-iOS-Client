@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Parse/Parse.h>
 
 @interface Account : NSObject
 
 + (NSString *) checkEmailRegisterFields:(NSString *)email password:(NSString *)password passwordConfirm:(NSString *)passwordConfirm;
++ (void)checkDuplicateEmailWithBlock:(NSString *)email withBlock:(PFArrayResultBlock)block;
++ (NSString *)checkDuplicateEmail:(NSString *)email;
 + (BOOL)validateEmailWithString:(NSString*)email;
 + (BOOL)validatePincode:(NSString *)pincode;
 

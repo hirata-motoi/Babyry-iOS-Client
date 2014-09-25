@@ -142,7 +142,6 @@
                 for (PFObject *object in objects) {
                     [_childProperties addObject:[ParseUtils pfObjectToDic:object]];
                 }
-                NSLog(@"after %@", _childProperties);
                 NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
                 [[NSNotificationCenter defaultCenter] postNotification:n];
             }
