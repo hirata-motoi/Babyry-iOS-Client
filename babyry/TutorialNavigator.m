@@ -164,8 +164,7 @@
     NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] postNotification:n];
    
-    [self.targetViewController.navigationController popToViewController:vc  animated:YES];
-    [vc viewDidAppear:YES];
+    [self.targetViewController.navigationController popToRootViewControllerAnimated:YES];
 }
 
 @end
