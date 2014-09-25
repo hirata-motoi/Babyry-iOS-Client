@@ -48,6 +48,13 @@
     [_birthdayLabel addGestureRecognizer:stgr3];
     
     // set date
+    NSCalendar* calendar = [NSCalendar currentCalendar];
+    NSDateComponents* components = [[NSDateComponents alloc] init];
+    components.year = 1984;
+    components.month = 1;
+    components.day = 1;
+    
+    _datePicker.date = [calendar dateFromComponents:components];
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"yyyy/MM/dd";
     _birthdayLabel.text = [df stringFromDate:_datePicker.date];
@@ -92,6 +99,8 @@
 
 - (void)keyboardWillShow:(NSNotification*)notification
 {
+    _datePickerContainer.hidden = YES;
+    
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -180,6 +189,7 @@
 
 - (void)openDatePicker
 {
+    [self.view endEditing:YES];
     _datePickerContainer.hidden = NO;
 }
 

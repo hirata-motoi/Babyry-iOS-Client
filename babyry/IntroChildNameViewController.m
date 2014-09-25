@@ -81,6 +81,8 @@
 
 - (void)keyboardWillShow:(NSNotification*)notification
 {
+    _datePickerContainer.hidden = YES;
+    
     // Get userInfo
     NSDictionary *userInfo;
     userInfo = [notification userInfo];
@@ -330,6 +332,7 @@
 
 - (void)openDatePicker
 {
+    [self.view endEditing:YES];
     _datePickerContainer.hidden = NO;
 }
 
