@@ -12,6 +12,7 @@
 #import "FamilyApplyListCell.h"
 #import "Logger.h"
 #import "Tutorial.h"
+#import "PushNotification.h"
 
 @interface FamilyApplyListViewController ()
 
@@ -233,6 +234,13 @@
             [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
             [_hud hide:YES];
             [self closeFamilyApplyList];
+            
+            // push通知
+            NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+            NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
+            options[@"data"] = data;
+            [PushNotification sendToSpecificUserInBackground:@"admitApply" withOptions:options targetUserId:[inviterUsers objectAtIndex:index][@"userId"]];
         }];
     }];
 }
