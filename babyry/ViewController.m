@@ -427,6 +427,11 @@
 
 - (void)initializeTutorialStage
 {
+    // 既にTutorialStageがあったらreturn
+    if ([Tutorial currentStage]) {
+        return;
+    }
+    
     // TutorialMapの情報
     BOOL hasStartedTutorial = [self hasStartedTutorial];
     

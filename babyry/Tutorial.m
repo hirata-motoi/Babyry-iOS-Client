@@ -17,12 +17,7 @@
 
 + (NSString *)initializeTutorialStage:(NSString *)familyId hasStartedTutorial:(BOOL)hasStartedTutorial partnerUserId:(NSString *)partnerUserId
 {
-    TutorialStage *tutorialStage = [TutorialStage MR_findFirst];
-    if (tutorialStage) {
-        return tutorialStage.currentStage;
-    }
-   
-    tutorialStage = [TutorialStage MR_createEntity];
+    TutorialStage *tutorialStage = [TutorialStage MR_createEntity];
     if (hasStartedTutorial) {
         if (familyId) {
             if ([partnerUserId isEqualToString:@""]) {
