@@ -86,6 +86,9 @@
     pageContentViewController.childProperty = _childProperties[index];
     pageContentViewController.childObjectId = [[_childProperties objectAtIndex:index] objectForKey:@"objectId"];
     
+    // PageContentViewから更新するために暫定 (CoreDataに入れたら消す)
+    pageContentViewController.childProperties = _childProperties;
+    
     _currentPageIndex = index;
     _currentDisplayedPageContentViewController = pageContentViewController;
     
