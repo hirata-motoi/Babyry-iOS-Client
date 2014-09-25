@@ -25,6 +25,18 @@
 					<key>bestFlag</key>
 					<false/>
 				</dict>
+				<dict>
+					<key>bestFlag</key>
+					<false/>
+					<key>imageFileName</key>
+					<string>TutorialImage_0_1.jpg</string>
+				</dict>
+				<dict>
+					<key>imageFileName</key>
+					<string>TutorialImage_0_2.jpg</string>
+					<key>bestFlag</key>
+					<false/>
+				</dict>
 			</array>
 		</dict>
 		<dict>

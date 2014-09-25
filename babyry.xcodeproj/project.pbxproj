@@ -135,6 +135,8 @@
 		F226591719D22F88003A62BD /* TutorialImageUploadFinishedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F226591619D22F88003A62BD /* TutorialImageUploadFinishedView.xib */; };
 		F226591A19D23003003A62BD /* TutorialImageUploadFinishedView.m in Sources */ = {isa = PBXBuildFile; fileRef = F226591919D23003003A62BD /* TutorialImageUploadFinishedView.m */; };
 		F226591D19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m in Sources */ = {isa = PBXBuildFile; fileRef = F226591C19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m */; };
+		F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F226591E19D434C3003A62BD /* TutorialImage_0_1.jpg */; };
+		F226592119D434C3003A62BD /* TutorialImage_0_2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F226591F19D434C3003A62BD /* TutorialImage_0_2.jpg */; };
 		F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */; };
 		F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */; };
 		F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F230520B198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m */; };
@@ -441,6 +443,8 @@
 		F226591919D23003003A62BD /* TutorialImageUploadFinishedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialImageUploadFinishedView.m; sourceTree = "<group>"; };
 		F226591B19D2314D003A62BD /* TutorialNavigator+ImageUploadFinished.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+ImageUploadFinished.h"; sourceTree = "<group>"; };
 		F226591C19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+ImageUploadFinished.m"; sourceTree = "<group>"; };
+		F226591E19D434C3003A62BD /* TutorialImage_0_1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_0_1.jpg; sourceTree = "<group>"; };
+		F226591F19D434C3003A62BD /* TutorialImage_0_2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_0_2.jpg; sourceTree = "<group>"; };
 		F22C976A198B7E2A00A5BD19 /* ArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtils.h; sourceTree = "<group>"; };
 		F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArrayUtils.m; sourceTree = "<group>"; };
 		F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToEncourageUpload.xib; path = ../CellBackgroundViewToEncourageUpload.xib; sourceTree = "<group>"; };
@@ -1149,6 +1153,8 @@
 			isa = PBXGroup;
 			children = (
 				F285515E19D15F0A00347BB6 /* TutorialImage_0_0.jpg */,
+				F226591E19D434C3003A62BD /* TutorialImage_0_1.jpg */,
+				F226591F19D434C3003A62BD /* TutorialImage_0_2.jpg */,
 				F285515F19D15F0A00347BB6 /* TutorialImage_1.jpg */,
 				F285516019D15F0A00347BB6 /* TutorialImage_2.jpg */,
 				F285517019D160A500347BB6 /* TutorialImage_3.jpg */,
@@ -1400,7 +1406,9 @@
 				F285516919D15F0A00347BB6 /* TutorialImage_4.jpg in Resources */,
 				F285516A19D15F0A00347BB6 /* TutorialImage_5.jpg in Resources */,
 				F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */,
+				F226592119D434C3003A62BD /* TutorialImage_0_2.jpg in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
+				F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
 				F285516519D15F0A00347BB6 /* TutorialImage_0_0.jpg in Resources */,
 				88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */,
