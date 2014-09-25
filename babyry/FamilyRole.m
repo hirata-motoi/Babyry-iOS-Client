@@ -68,7 +68,6 @@
             // FamilyRoleは持ってないが、自分以外のFamilyIdにひもづくFamilyRoleに自分がいる場合
             // この場合は、お互いにチュートリアルをすませたなどしてFamilyIdを別々に持っている人同士がくっついたケース
             // 対応するFamilyRoleからFamilyIdを抜いてきて、userにセットし、ひも付け完了フラグをCoreDataにセット
-            NSLog(@"aaaaaaaaaaaaaaaaa %@", user[@"userId"]);
             PFQuery *uploader = [PFQuery queryWithClassName:@"FamilyRole"];
             [uploader whereKey:@"uploader" equalTo:user[@"userId"]];
             [uploader whereKey:@"familyId" notEqualTo:user[@"familyId"]];
@@ -91,7 +90,6 @@
                 [PartnerApply setLinkComplete];
                 return;
             }
-            NSLog(@"bbbbbbbbbbbbbbbb");
         }
     }];
 }

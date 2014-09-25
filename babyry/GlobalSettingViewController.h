@@ -21,6 +21,8 @@
 @property UIViewController *viewController;
 @property NSMutableArray *childProperties;
 
+@property NSString *emailVerified;
+
 // for tutorial
 @property UITableViewCell *partSwitchCell;
 @property UITableViewCell *addChildCell;

@@ -23,6 +23,7 @@
 #import "TutorialNavigator.h"
 #import "TmpUser.h"
 #import "UserRegisterViewController.h"
+#import "NotEmailVerifiedViewController.h"
 
 @interface GlobalSettingViewController ()
 
@@ -55,6 +56,8 @@
     
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
+    
+    [self checkEmailVerified];
 }
 
 - (void)didReceiveMemoryWarning
@@ -74,6 +77,20 @@
 {
     [tn removeNavigationView];
     tn = nil;
+}
+
+- (void) checkEmailVerified
+{
+    PFUser *user = [PFUser currentUser];
+    if (user[@"emailVerified"]) {
+        if ([user[@"emailVerified"] boolValue]) {
+            _emailVerified = @"done";
+        } else {
+            _emailVerified = @"notYet";
+        }
+    } else {
+        _emailVerified = @"noNeed";
+    }
 }
 
 #pragma mark - Table view data source
@@ -125,44 +142,34 @@
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
     }
     cell.textLabel.numberOfLines = 0;
     
     switch (indexPath.section) {
         case 0:
-            if ([TmpUser checkRegistered]) {
-                switch (indexPath.row) {
-                    case 0:
-                        cell.textLabel.text = @"プロフィール";
-                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                        break;
-                    case 1:
-                        cell.textLabel.text = @"あなたのパート";
-                        _roleControl = [self createRoleSwitchSegmentControl];
-                        [cell addSubview:_roleControl];
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                switch (indexPath.row) {
-                    case 0:
-                        cell.textLabel.text = @"プロフィール";
-                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                        break;
-                    case 1:
-                        cell.textLabel.text = @"あなたのパート";
-                        _roleControl = [self createRoleSwitchSegmentControl];
-                        [cell addSubview:_roleControl];
-                        break;
-                    case 2:
+            switch (indexPath.row) {
+                case 0:
+                    cell.textLabel.text = @"プロフィール";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    break;
+                case 1:
+                    cell.textLabel.text = @"あなたのパート";
+                    _roleControl = [self createRoleSwitchSegmentControl];
+                    [cell addSubview:_roleControl];
+                    break;
+                case 2:
+                    if ([TmpUser checkRegistered]) {
                         cell.textLabel.text = @"本登録を完了する";
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                        break;
-                    default:
-                        break;
-                }
+                    } else {
+                        cell.textLabel.text = @"メールアドレス確認";
+                        cell.detailTextLabel.text = _emailVerified;
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    }
+                    break;
+                default:
+                    break;
             }
             break;
         case 1:
@@ -222,7 +229,7 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
-            if ([TmpUser checkRegistered]) {
+            if ([_emailVerified isEqualToString:@"noNeed"]) {
                 rowCount = 2;
             } else {
                 rowCount = 3;
@@ -235,7 +242,11 @@
             rowCount = 3;
             break;
         case 3:
-            rowCount = 1;
+            if ([TmpUser checkRegistered]) {
+                rowCount = 1;
+            } else {
+                rowCount = 0;
+            }
             break;
         default:
             break;
@@ -256,7 +267,11 @@
                 case 1:
                     break;
                 case 2:
-                    [self openRegisterView];
+                    if ([TmpUser checkRegistered]) {
+                        [self openRegisterView];
+                    } else {
+                        [self openEmailVerifiedView];
+                    }
                     break;
                 default:
                     break;
@@ -511,64 +526,10 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)openEmailVerifiedView
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier: forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
-    return cell;
+    NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
+    [self.navigationController pushViewController:emailVerifiedViewController animated:YES];
 }
-*/
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
