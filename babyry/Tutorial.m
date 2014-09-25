@@ -15,19 +15,39 @@
 
 @implementation Tutorial
 
-+ (void)initializeTutorialStage:(BOOL)hasFamilyId
++ (NSString *)initializeTutorialStage:(NSString *)familyId hasStartedTutorial:(BOOL)hasStartedTutorial partnerUserId:(NSString *)partnerUserId
 {
     TutorialStage *tutorialStage = [TutorialStage MR_findFirst];
     if (tutorialStage) {
-        return;
+        return tutorialStage.currentStage;
     }
+   
+    tutorialStage = [TutorialStage MR_createEntity];
+    if (hasStartedTutorial) {
+        if (familyId) {
+            if ([partnerUserId isEqualToString:@""]) {
+                // botと紐づいている状態
+                tutorialStage.currentStage = @"familyApplyExec";
+            } else {
+                tutorialStage.currentStage = @"tutorialFinished";
+            }
+        } else {
+            // チュートリアルを経験していてfamilyIdがないケースは現状の仕様ではない
+            // 今後紐付け解除が実装されれば出てくるかも
+            tutorialStage.currentStage = @"familyApplyExec";
+        }
+    } else {
+        if (familyId) {
+            // tutorialをやっていないがfamilyIdがあるユーザ == 招待されたユーザ
+            tutorialStage.currentStage = @"tutorialFinished";
+        } else {
+            // 始めたばかりのユーザ
+            tutorialStage.currentStage = @"introduction";
+        }
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     
-    // tutorial stageがない かつ familyIdがない → tutorial未開始のユーザ → tutorial必要
-    // tutorial stageがない かつ familyIdがある → tutorial実装前のアプリで始めたユーザ → tutorialは不要
-    NSArray *tutorialStages = [Config config][@"tutorialStages"];
-    NSString *firstStage = (hasFamilyId) ? tutorialStages[tutorialStages.count - 1] : tutorialStages[0];
-    TutorialStage *newTutorialStage = [TutorialStage MR_createEntity];
-    newTutorialStage.currentStage = firstStage;
+    return tutorialStage.currentStage;
 }
 
 + (TutorialStage *)currentStage
@@ -151,8 +171,13 @@
     if (tutorialChildObjects.count > 0) {
         [childProperties removeObject:tutorialChildObjects[0]];
     }
-    
-    
+}
+
++ (void)removeTutorialStage
+{
+    TutorialStage *currentStage = [Tutorial currentStage];
+    [currentStage MR_deleteEntity];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
 @end

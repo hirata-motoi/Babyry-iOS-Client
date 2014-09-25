@@ -111,6 +111,7 @@
         case 1:
         {
             [self.navigationController popViewControllerAnimated:YES];
+            [Tutorial removeTutorialStage];
             [ImageCache removeAllCache];
             [PushNotification removeSelfUserIdFromChannels:^(){
                 [PFUser logOut];

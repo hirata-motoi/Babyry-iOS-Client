@@ -11,7 +11,7 @@
 
 @interface Tutorial : NSObject
 
-+ (void)initializeTutorialStage:(BOOL)hasFamilyId;
++ (NSString *)initializeTutorialStage:(NSString *)familyId hasStartedTutorial:(BOOL)hasStartedTutorial partnerUserId:(NSString *)partnerUserId;
 + (TutorialStage *)currentStage;
 + (TutorialStage *)forwardStageWithNextStage:(NSString *)nextStage;
 + (BOOL)underTutorial;
@@ -22,5 +22,6 @@
 + (BOOL)shouldShowTutorialIntroduction;
 + (void)forwardTutorialStageToLast;
 + (void)removeDefaultChild:(NSMutableArray *)childProperties;
++ (void)removeTutorialStage;
 
 @end
