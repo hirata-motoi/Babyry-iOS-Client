@@ -407,6 +407,10 @@
 {
     PageContentViewController *vc = self.pageContentViewController;
     if (!vc.familyApplyIntroduceView) {
+        // 暫定対応
+        // notification centerでheader viewを強制的に全て隠す
+        NSNotification *n = [NSNotification notificationWithName:@"didExecutedHideHeaderView" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotification:n];
         return;
     }
     
