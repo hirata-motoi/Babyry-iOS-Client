@@ -24,7 +24,9 @@
     overlay = [[ICTutorialOverlay alloc] init];
     overlay.hideWhenTapped = NO;
     overlay.animated = YES;
-    [overlay addHoleWithView:vc.familyApplyIntroduceView.openFamilyApplyButton padding:4.0f offset:CGSizeZero form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
+    
+    TutorialFamilyApplyIntroduceView *headerView = (TutorialFamilyApplyIntroduceView *)vc.familyApplyIntroduceView;
+    [overlay addHoleWithView:headerView.openFamilyApplyButton padding:4.0f offset:CGSizeZero form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
     [overlay show];
     
     messageView = [TutorialBestShotSelectedView view];

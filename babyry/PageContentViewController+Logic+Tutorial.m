@@ -13,12 +13,18 @@
 #import "TutorialStage.h"
 #import "Config.h"
 #import "TutorialFamilyApplyIntroduceView.h"
+#import "TutorialReceivedApplyView.h"
+#import "TutorialSentApplyView.h"
 #import "ImageCache.h"
 #import "PartnerApply.h"
 #import "PartnerInvitedEntity.h"
 #import "ColorUtils.h"
 
-@implementation PageContentViewController_Logic_Tutorial
+@implementation PageContentViewController_Logic_Tutorial {
+    NSString *receivedApply;
+    NSString *sentApply;
+    
+}
 
 - (void)showChildImages
 {
@@ -138,65 +144,103 @@
     }
 }
 
+
 - (void)showFamilyApplyIntroduceView
 {
     PageContentViewController *vc = self.pageContentViewController;
-    if (vc.familyApplyIntroduceView) {
-        [vc.familyApplyIntroduceView removeFromSuperview];
-        NSArray *targes = [vc.familyApplyIntroduceView.openFamilyApplyButton actionsForTarget:vc forControlEvent:UIControlEventTouchUpInside];
-        for (NSString *target in targes) {
-            [vc.familyApplyIntroduceView.openFamilyApplyButton removeTarget:vc action:NSSelectorFromString(target) forControlEvents:UIControlEventTouchUpInside];
-        }
-    } else {
-        vc.familyApplyIntroduceView = [TutorialFamilyApplyIntroduceView view];
-        CGRect rect = vc.familyApplyIntroduceView.frame;
-        rect.origin.x = 0;
-        rect.origin.y = 64;
-        vc.familyApplyIntroduceView.frame = rect;
+    if (!vc.familyApplyIntroduceView) {
+        TutorialFamilyApplyIntroduceView *headerView = [TutorialFamilyApplyIntroduceView view];
+        [headerView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+        vc.familyApplyIntroduceView = headerView;
+        [self setRectToHeaderView:vc.familyApplyIntroduceView];
         
         // パートナー申請誘導viewの分collection viewを小さくする
         CGRect collectionRect = vc.pageContentCollectionView.frame;
-        collectionRect.size.height = collectionRect.size.height - rect.size.height;
-        collectionRect.origin.y = collectionRect.origin.y + rect.size.height;
+        collectionRect.size.height = collectionRect.size.height - vc.familyApplyIntroduceView.frame.size.height;
+        collectionRect.origin.y = collectionRect.origin.y + vc.familyApplyIntroduceView.frame.size.height;
         vc.pageContentCollectionView.frame = collectionRect;
+        
+        [vc.view addSubview:vc.familyApplyIntroduceView];
+        return;
     }
     
-    // 承認がきているかどうか
     [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
         if (object) {
+            
+            // initialize
+            receivedApply = nil;
+            sentApply = nil;
+            
             PFQuery *applyList = [PFQuery queryWithClassName:@"PartnerApplyList"];
             [applyList whereKey:@"familyId" equalTo:object[@"familyId"]];
             [applyList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                 if ([objects count] > 0) {
-                    vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"承認待ちユーザーがいます";
-                    vc.familyApplyIntroduceView.backgroundColor = [ColorUtils getSatDayCalColor];
-                    [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
-                    return;
+                    receivedApply = @"YES";
+                } else {
+                    receivedApply = @"NO";
                 }
-                // 自分が承認依頼を出しているかどうかをみる
-                PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-                if (pie.familyId){
-                    PFQuery *applyByMe = [PFQuery queryWithClassName:@"PartnerApplyList"];
-                    [applyByMe whereKey:@"familyId" equalTo:pie.familyId];
-                    [applyByMe findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                        if ([objects count] > 0) {
-                            vc.familyApplyIntroduceView.openFamilyApplyButton.titleLabel.text = @"パートナー承認待ち";
-                            vc.familyApplyIntroduceView.backgroundColor = [ColorUtils getSatDayCalColor];
-                            [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openPartnerWait) forControlEvents:UIControlEventTouchUpInside];
-                        }
-                    }];
-                    return;
+                [self switchHeaderView:vc];
+                return;
+            }];
+            
+            PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+            if (!pie.familyId){
+                sentApply = @"NO";
+                [self switchHeaderView:vc];
+                return;
+            }
+            PFQuery *applyByMe = [PFQuery queryWithClassName:@"PartnerApplyList"];
+            [applyByMe whereKey:@"familyId" equalTo:pie.familyId];
+            [applyByMe findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                if ([objects count] > 0) {
+                    sentApply = @"YES";
+                } else {
+                    sentApply = @"NO";
                 }
-                // すべてがエラーの場合でもチュートリアル中はこれを出しておく
-                [vc.familyApplyIntroduceView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
-                
-                // 暫定対応
-                // !(承認待ちユーザがいる || 承認待ち) の場合はviewの背景を戻す
-                vc.familyApplyIntroduceView.backgroundColor = [ColorUtils getPastelRedColor];
+                [self switchHeaderView:vc];
+                return;
             }];
         }
     }];
+}
+
+- (void)setRectToHeaderView:(UIView *)headerView
+{
+    CGRect rect = headerView.frame;
+    rect.origin.x = 0;
+    rect.origin.y = 64;
+    headerView.frame = rect;
+}
+
+- (void)switchHeaderView:(PageContentViewController *)vc
+{
+    if (receivedApply == nil || sentApply == nil) {
+        return;
+    }
     
+    if ([receivedApply isEqualToString:@"YES"]) {
+        // viewを「申請がきています」viewに変更
+        TutorialReceivedApplyView *headerView = [TutorialReceivedApplyView view];
+        [headerView.openReceivedApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
+        vc.familyApplyIntroduceView = headerView;
+        [self setRectToHeaderView:vc.familyApplyIntroduceView];
+        [vc.view addSubview:vc.familyApplyIntroduceView];
+        return;
+    }
+    if ([sentApply isEqualToString:@"YES"]) {
+        // viewを 「承認待ちです」viewに変更
+        TutorialSentApplyView *headerView = [TutorialSentApplyView view];
+        [headerView.openPartnerApplyListButton addTarget:vc action:@selector(openPartnerWait) forControlEvents:UIControlEventTouchUpInside];
+        vc.familyApplyIntroduceView = headerView;
+        [self setRectToHeaderView:vc.familyApplyIntroduceView];
+        [vc.view addSubview:vc.familyApplyIntroduceView];
+        return;
+    }
+    // viewを「パートナーと始める」viewに変更
+    TutorialFamilyApplyIntroduceView *headerView = [TutorialFamilyApplyIntroduceView view];
+    [headerView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+    vc.familyApplyIntroduceView = headerView;
+    [self setRectToHeaderView:vc.familyApplyIntroduceView];
     [vc.view addSubview:vc.familyApplyIntroduceView];
 }
 

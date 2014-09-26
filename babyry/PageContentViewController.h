@@ -68,7 +68,7 @@
 // for tutorial
 @property TagAlbumCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;
-@property TutorialFamilyApplyIntroduceView *familyApplyIntroduceView;
+@property UIView *familyApplyIntroduceView;
 @property NSTimer *instructionTimer;
 
 // CoreDataに移動したら消す
