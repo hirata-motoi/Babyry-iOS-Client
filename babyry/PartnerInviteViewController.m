@@ -90,7 +90,7 @@
     }
 }
 
-- (void)inviteByMailGestured
+- (void)inviteByMailGesture
 {
     NSDictionary *mailInfo = [self makeInviteBody:@"mail"];
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[NSString stringWithFormat:@"mailto:?Subject=%@&body=%@", mailInfo[@"title"], mailInfo[@"text"]]]]) {
