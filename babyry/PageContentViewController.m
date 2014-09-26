@@ -91,7 +91,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeHeaderView) name:@"didExecutedHideHeaderView" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
 }
 
 - (void)applicationDidBecomeActive
@@ -999,12 +999,10 @@
     [[self logic:@"forwardNextTutorial"] forwardNextTutorial];
 }
 
-- (void)removeHeaderView
+- (void)hideHeaderView
 {
-    [_familyApplyIntroduceView removeFromSuperview];
-    _familyApplyIntroduceView = nil;
+    [[self logic:@"hideFamilyApplyIntroduceView"] hideFamilyApplyIntroduceView];
 }
-
 
 /*
 #pragma mark - Navigation

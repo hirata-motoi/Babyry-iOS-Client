@@ -222,6 +222,8 @@
         // viewを「申請がきています」viewに変更
         TutorialReceivedApplyView *headerView = [TutorialReceivedApplyView view];
         [headerView.openReceivedApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
+        [vc.familyApplyIntroduceView removeFromSuperview];
+        vc.familyApplyIntroduceView = nil;
         vc.familyApplyIntroduceView = headerView;
         [self setRectToHeaderView:vc.familyApplyIntroduceView];
         [vc.view addSubview:vc.familyApplyIntroduceView];
@@ -231,6 +233,8 @@
         // viewを 「承認待ちです」viewに変更
         TutorialSentApplyView *headerView = [TutorialSentApplyView view];
         [headerView.openPartnerApplyListButton addTarget:vc action:@selector(openPartnerWait) forControlEvents:UIControlEventTouchUpInside];
+        [vc.familyApplyIntroduceView removeFromSuperview];
+        vc.familyApplyIntroduceView = nil;
         vc.familyApplyIntroduceView = headerView;
         [self setRectToHeaderView:vc.familyApplyIntroduceView];
         [vc.view addSubview:vc.familyApplyIntroduceView];
@@ -239,6 +243,8 @@
     // viewを「パートナーと始める」viewに変更
     TutorialFamilyApplyIntroduceView *headerView = [TutorialFamilyApplyIntroduceView view];
     [headerView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
+    [vc.familyApplyIntroduceView removeFromSuperview];
+    vc.familyApplyIntroduceView = nil;
     vc.familyApplyIntroduceView = headerView;
     [self setRectToHeaderView:vc.familyApplyIntroduceView];
     [vc.view addSubview:vc.familyApplyIntroduceView];

@@ -233,7 +233,6 @@
             
             [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
             [_hud hide:YES];
-            [self closeFamilyApplyList];
             
             // push通知
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
@@ -241,6 +240,11 @@
             NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
             options[@"data"] = data;
             [PushNotification sendToSpecificUserInBackground:@"admitApply" withOptions:options targetUserId:[inviterUsers objectAtIndex:index][@"userId"]];
+            
+            NSNotification *n = [NSNotification notificationWithName:@"didAdmittedPartnerApply" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+            
+            [self closeFamilyApplyList];
         }];
     }];
 }
