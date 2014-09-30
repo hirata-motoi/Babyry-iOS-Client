@@ -13,6 +13,10 @@
 @property (strong, nonatomic) IBOutlet UITextField *introMyNicknameField;
 @property (strong, nonatomic) IBOutlet UILabel *introMyNicknameSendLabel;
 @property (strong, nonatomic) IBOutlet UIView *editingView;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *selectSexController;
+@property (strong, nonatomic) IBOutlet UIView *datePickerContainer;
+@property (strong, nonatomic) IBOutlet UIDatePicker *datePicker;
+@property (strong, nonatomic) IBOutlet UILabel *birthdayLabel;
 
 @property BOOL keyboradObserving;
 

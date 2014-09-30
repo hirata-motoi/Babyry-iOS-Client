@@ -11,5 +11,6 @@
 
 @interface IdIssue : NSObject
 - (NSString *)issue: (NSString*)type;
+- (NSString *)randomStringWithLength: (int)length;
 @property NSString *issuedId;
 @end

@@ -23,12 +23,20 @@
 #import "ColorUtils.h"
 #import "Config.h"
 #import "Logger.h"
+#import "MultiUploadViewController+Logic.h"
+#import "MultiUploadViewController+Logic+Tutorial.h"
+#import "Tutorial.h"
+#import "TutorialNavigator.h"
 
 @interface MultiUploadViewController ()
 
 @end
 
-@implementation MultiUploadViewController
+@implementation MultiUploadViewController {
+    MultiUploadViewController_Logic *logic;
+    MultiUploadViewController_Logic_Tutorial *logicTutorial;
+    TutorialNavigator *tn;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,6 +51,14 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    if ([Tutorial shouldShowDefaultImage]) {
+        logicTutorial = [[MultiUploadViewController_Logic_Tutorial alloc]init];
+        logicTutorial.multiUploadViewController = self;
+    } else {
+        logic = [[MultiUploadViewController_Logic alloc]init];
+        logic.multiUploadViewController = self;
+    }
     
     // role で出し分けるものたち
     _myRole = [[NSString alloc] init];
@@ -67,8 +83,7 @@
     
     // Draw collectionView
     [self createCollectionView];
-    [self showCacheImages];
-    
+    [[self logic] showCacheImages];
     
     // set label
     NSString *yyyy = [_month substringToIndex:4];
@@ -85,8 +100,7 @@
     
     _bestImageId = @"";
    
-    [self disableNotificationHistory];
-    //[self setupBestShotReply];
+    [[self logic] disableNotificationHistory];
 }
 
 - (void)didReceiveMemoryWarning
@@ -111,7 +125,6 @@
     _isTimperExecuting = NO;
     _needTimer = YES;
     [_myTimer fire];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -123,7 +136,8 @@
 {
     // super
     [super viewWillAppear:animated];
-    
+
+    [tn removeNavigationView];
     [_myTimer invalidate];
 }
 
@@ -132,11 +146,18 @@
     if (!_isTimperExecuting) {
         _isTimperExecuting = YES;
         if (_needTimer) {
-            [self updateImagesFromParse];
+            [[self logic] updateImagesFromParse];
         } else {
             [_myTimer invalidate];
         }
     }
+}
+
+- (id)logic
+{
+    return
+        (logicTutorial) ? logicTutorial :
+        (logic)         ? logic         : nil;
 }
 
 /*
@@ -149,13 +170,6 @@
     // Pass the selected object to the new view controller.
 }
 */
-
-- (void) showCacheImages
-{
-    // その日のcandidate画像数のファイル名を返せばいい
-    _childCachedImageArray = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]]];
-    [_multiUploadedImages reloadData];
-}
 
 -(void)createCollectionView
 {
@@ -229,6 +243,11 @@
             UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
             selectBestShotGesture.numberOfTapsRequired = 1;
             [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+           
+            // for tutorial
+            if (indexPath.row == 0) {
+                _firstCellUnselectedBestShotView = unSelectedBestshotView;
+            }
         }
         
         NSArray *tmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
@@ -246,61 +265,9 @@
         hud.labelFont = [UIFont systemFontOfSize:12];
     }
     
-    return cell;
-}
-
--(void)updateImagesFromParse
-{
-    // Parseから画像をとる
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
-    childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
-    [childImageQuery orderByAscending:@"createdAt"];
-    [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if(!error) {
-            [_totalImageNum replaceObjectAtIndex:_indexPath.row withObject:[NSNumber numberWithInt:[objects count]]];
-            
-            // objectにあるけどキャッシュに無い = 新しい画像
-            NSMutableArray *newImages = [[NSMutableArray alloc] init];
-            for (PFObject *object in objects) {
-                if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
-                    _bestImageId = object.objectId;
-                }
-                if (![ImageCache getCache:object.objectId dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]]) {
-                    [newImages addObject:object];
-                }
-            }
-            // キャッシュにあるけどobjectにない = 消された画像
-            for (NSString *cache in _childCachedImageArray) {
-                BOOL isExist = NO;
-                for (PFObject *object in objects) {
-                    if ([cache isEqualToString:object.objectId]) {
-                        isExist = YES;
-                    }
-                }
-                if (!isExist) {
-                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", _childObjectId, _date, cache]];
-                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/fullsize/%@", _childObjectId, _date, cache]];
-                }
-            }
-            
-            // 注意 : ここは深いコピーをしないとだめ
-            _childImageArray = [[NSMutableArray alloc] initWithArray:objects];
-
-            //再起的にgetDataしてキャッシュを保存する
-            _indexForCache = 0;
-            _tmpCacheCount = 0;
-            
-            _imageLoadComplete = NO;
-            [self setCacheOfParseImage:[[NSMutableArray alloc] initWithArray:newImages]];
-        } else {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting Image Data from Parse : %@", error]];
-        }
-    }];
+    [[self logic] prepareForTutorial:cell withIndexPath:indexPath];
     
-    // 不要なdirの削除
-    [self removePastCandidateDir];
+    return cell;
 }
 
 -(void)setCacheOfParseImage:(NSMutableArray *)objects
@@ -319,7 +286,7 @@
             
             _indexForCache++;
             [objects removeObjectAtIndex:0];
-            [self setCacheOfParseImage:objects];
+            [[self logic] setCacheOfParseImage:objects];
         } else {
             AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
             getRequest.bucket = [Config config][@"AWSBucketName"];
@@ -343,7 +310,7 @@
                     
                     _indexForCache++;
                     [objects removeObjectAtIndex:0];
-                    [self setCacheOfParseImage:objects];
+                    [[self logic] setCacheOfParseImage:objects];
                 } else {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest to S3 : %@", task.error]];
                 }
@@ -352,7 +319,7 @@
         }
     } else {
         _imageLoadComplete = YES;
-        [self showCacheImages];
+        [[self logic] showCacheImages];
         
         if (_tmpCacheCount == 0){
             _needTimer = NO;
@@ -383,12 +350,13 @@
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
--(void)selectBestShot:(id) sender {
-    
+-(void)selectBestShot:(id)sender
+{
     if ( !([_myRole isEqualToString:@"chooser"] && _imageLoadComplete) ) {
         return;
     }
-        
+    
+    // この辺りもmethodに切り出ししたい
     // _multiUploadedImagesにのってるパネルにBestshot付ける
     for (UIView *view in _multiUploadedImages.subviews) {
         if (view.tag == [[sender view] tag] && [view isKindOfClass:[UICollectionViewCell class]]) {
@@ -403,44 +371,9 @@
     
     // bestshotId更新
     _bestImageId = [[[_childCachedImageArray objectAtIndex:[sender view].tag] componentsSeparatedByString:@"-"] lastObject];
-    
-    // update Parse
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
-    childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;                                                   
-    [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-    [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
-    [childImageQuery orderByAscending:@"createdAt"];
-    [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if(!error) {
-            int index = 0;
-            for (PFObject *object in objects) {
-                if ([object.objectId isEqualToString:_bestImageId]) {
-                    if (![object[@"bestFlag"] isEqualToString:@"choosed"]) {
-                        object[@"bestFlag"] =  @"choosed";
-                        [object saveInBackground];
-                    }
-                } else {
-                    if (![object[@"bestFlag"] isEqualToString:@"unchoosed"]) {
-                        object[@"bestFlag"] =  @"unchoosed";
-                        [object saveInBackground];
-                    }
-                }
-                index++;
-            }
-            PFObject *partner = (PFUser *)[Partner partnerUser];
-            if (partner != nil) {
-                NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
-                options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
-                [PushNotification sendInBackground:@"bestShotChosen" withOptions:options];
-                [self createNotificationHistory:@"bestShotChanged"];
-            }
-            
-        } else {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get images : %@", error]];
-        }
-    }];
 
+    [[self logic] updateBestShot];
+    
     // set image cache
     NSData *fullsizeImageData = [ImageCache
                                  getCache:_bestImageId
@@ -460,6 +393,8 @@
         image:UIImageJPEGRepresentation(thumbImage, 0.7f)
         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
     ];
+    
+    [[self logic] finalizeSelectBestShot];
 }
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
@@ -525,19 +460,6 @@
     [self viewDidAppear:(BOOL)YES];
 }
 
-- (void)createNotificationHistory:(NSString *)type
-{
-    [NSThread detachNewThreadSelector:@selector(executeNotificationHistory:) toTarget:self withObject:[[NSMutableDictionary alloc]initWithObjects:@[type] forKeys:@[@"type"]]];
-    
-}
-
-- (void)executeNotificationHistory:(id)param
-{
-    NSString *type = [param objectForKey:@"type"];
-    PFObject *partner = (PFUser *)[Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
-}
-
 - (void)setupBestShotReply
 {
     if (![_myRole isEqualToString:@"uploader"]) {
@@ -601,7 +523,7 @@
             options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
             [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
     
-            [self createNotificationHistory:@"bestShotReply"];
+            [[self logic] createNotificationHistory:@"bestShotReply"];
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in sendBestShotReply %@", error]];
         }
@@ -616,25 +538,27 @@
     [self.view addSubview:iv];
 }
 
-// imageUploaded, bestShotChanged, bestShotReplyはページを開いた時点で無効にする
-- (void)disableNotificationHistory
-{
-    NSArray *targetTypes = [NSArray arrayWithObjects:@"imageUploaded", @"bestShotChanged", @"bestShotReply", nil];
-    
-    for (NSString *type in targetTypes) {
-        if (_notificationHistoryByDay && _notificationHistoryByDay[type]) {
-            for (PFObject *notificationHistory in _notificationHistoryByDay[type]) {
-                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
-            }
-            [_notificationHistoryByDay[type] removeAllObjects];
-        }
-    }
-}
-
 // bestShotFixLimitLabelを更新
 // limitの時刻 + 文言
 - (void)showBestShotFixLimitLabel
 {
+    if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApplyExec"]) {
+        for (UIView *view in _headerView.subviews) {
+            [view removeFromSuperview];
+        }
+        _headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
+        UILabel *tutorialLabel = [[UILabel alloc] init];
+        tutorialLabel.frame = _headerView.frame;
+        tutorialLabel.textColor = [ColorUtils getSunDayCalColor];
+        tutorialLabel.textAlignment = NSTextAlignmentCenter;
+        tutorialLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+        tutorialLabel.numberOfLines = 2;
+        tutorialLabel.text = @"パートナーと利用開始するまでは、\nベストショットは自動に決定されます";
+        [_headerView addSubview:tutorialLabel];
+        
+        return;
+    }
+    
     // 帯の色設定
     _headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
     
@@ -672,7 +596,6 @@
         [_bestShotFixLimitLabel setAttributedText:str];
         [self.view addSubview:_bestShotFixLimitLabel];
     }
-    
 }
 
 - (CGRect)buttonRect
@@ -680,20 +603,28 @@
     return CGRectMake(_headerView.frame.size.width - 30 - 5, (_headerView.frame.size.height - 30) / 2, 30, 30);
 }
 
-// 昨日より前のcandidate dirは不要なので削除
-- (void)removePastCandidateDir
-{
-    NSDateComponents *todayComps = [DateUtils dateCompsFromDate:nil];
-    NSDateComponents *yesterdayComps = [DateUtils addDateComps:todayComps withUnit:@"day" withValue:-1];
-    NSString *today = [NSString stringWithFormat:@"%ld%02ld%02ld", todayComps.year, todayComps.month, todayComps.day];
-    NSString *yesterday = [NSString stringWithFormat:@"%ld%02ld%02ld", yesterdayComps.year, yesterdayComps.month, yesterdayComps.day];
-    
-    NSArray *dateDirList = [ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate", _childObjectId]];
-    for (NSString *dirName in dateDirList) {
-        if ( ![dirName isEqualToString:today] && ![dirName isEqualToString:yesterday] ) {
-            [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@", _childObjectId, dirName]];
-        }
+- (void)showTutorialNavigator
+{      
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
     }
+    tn = [[TutorialNavigator alloc]init];
+    tn.targetViewController = self;
+    [tn showNavigationView];
+}
+
+- (void)removeNavigationView
+{
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+}
+
+- (void)forwardNextTutorial
+{
+    [[self logic] forwardNextTutorial];
 }
 
 @end

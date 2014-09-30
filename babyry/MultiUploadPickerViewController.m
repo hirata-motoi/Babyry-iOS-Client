@@ -16,6 +16,8 @@
 #import "PushNotification.h"
 #import "Config.h"
 #import "Logger.h"
+#import "Tutorial.h"
+#import "MultiUploadViewController+Logic.h"
 
 @interface MultiUploadPickerViewController ()
 
@@ -292,6 +294,10 @@
                 }
                 _uploadedImageCount = 0; // initialize
                 [self saveToParseInBackground];
+                
+                if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUser"]) {
+                    [Tutorial forwardStageWithNextStage:@"uploadByUserFinished"];
+                }
                 [self dismissViewControllerAnimated:YES completion:NULL];
                 
                 //アルバム表示のViewも消す
@@ -382,7 +388,7 @@
                                     _uploadedImageCount++;
                                     [self saveToParseInBackground];
                                 } else {
-                                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %", task.error]];
+                                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %@", task.error]];
                                 }
                                 return nil;
                             }];
@@ -414,6 +420,12 @@
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
             options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
             [PushNotification sendInBackground:@"imageUpload" withOptions:options];
+           
+            if ([Tutorial underTutorial]) {
+                // best shotを選んであげる
+                MultiUploadViewController_Logic *logic = [[MultiUploadViewController_Logic alloc]init];
+                [logic updateBestShotWithChild:_child withDate:_date];
+            }
         }
     }
 }

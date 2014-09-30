@@ -7,7 +7,6 @@
 //
 
 #import "GlobalSettingViewController.h"
-#import "FamilyApplyViewController.h"
 #import "FamilyApplyListViewController.h"
 #import "FamilyRole.h"
 #import "ImageCache.h"
@@ -20,12 +19,19 @@
 #import "PrivacyPolicyViewController.h"
 #import "Config.h"
 #import "Logger.h"
+#import "Tutorial.h"
+#import "TutorialNavigator.h"
+#import "TmpUser.h"
+#import "UserRegisterViewController.h"
+#import "NotEmailVerifiedViewController.h"
 
 @interface GlobalSettingViewController ()
 
 @end
 
-@implementation GlobalSettingViewController
+@implementation GlobalSettingViewController {
+    TutorialNavigator *tn;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -48,14 +54,10 @@
     _settingTableView.delegate = self;
     _settingTableView.dataSource = self;
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    //[self.closeButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
+    
+    [self checkEmailVerified];
 }
 
 - (void)didReceiveMemoryWarning
@@ -64,21 +66,35 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    tn = [[TutorialNavigator alloc]init];
+    tn.targetViewController = self;
+    [tn showNavigationView];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [tn removeNavigationView];
+    tn = nil;
+}
+
+- (void) checkEmailVerified
+{
+    PFUser *user = [PFUser currentUser];
+    if (user[@"emailVerified"]) {
+        if ([user[@"emailVerified"] boolValue]) {
+            _emailVerified = @"done";
+        } else {
+            _emailVerified = @"notYet";
+        }
+    } else {
+        _emailVerified = @"noNeed";
+    }
+}
+
 #pragma mark - Table view data source
 
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-//{
-//#warning Potentially incomplete method implementation.
-//    // Return the number of sections.
-//    return 1;
-//}
-//
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-//{
-//#warning Incomplete method implementation.
-//    // Return the number of rows in the section.
-//    return 1;
-//}
 
 - (void)close
 {
@@ -112,6 +128,7 @@
         case 1:
         {
             [self.navigationController popViewControllerAnimated:YES];
+            [Tutorial removeTutorialStage];
             [ImageCache removeAllCache];
             [PushNotification removeSelfUserIdFromChannels:^(){
                 [PFUser logOut];
@@ -126,7 +143,7 @@
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
     }
     cell.textLabel.numberOfLines = 0;
     
@@ -141,6 +158,16 @@
                     cell.textLabel.text = @"あなたのパート";
                     _roleControl = [self createRoleSwitchSegmentControl];
                     [cell addSubview:_roleControl];
+                    break;
+                case 2:
+                    if (![TmpUser checkRegistered]) {
+                        cell.textLabel.text = @"本登録を完了する";
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    } else {
+                        cell.textLabel.text = @"メールアドレス確認";
+                        cell.detailTextLabel.text = _emailVerified;
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    }
                     break;
                 default:
                     break;
@@ -188,6 +215,13 @@
             break;
     }
     
+    
+    if (indexPath.section == 0 && indexPath.row == 1) {
+        _partSwitchCell = cell;
+    } else if (indexPath.section == 1 && indexPath.row == 0) {
+        _addChildCell = cell;
+    }
+    
     return cell;
 }
 
@@ -196,7 +230,11 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
-            rowCount = 2;
+            if (![TmpUser checkRegistered] || ![_emailVerified isEqualToString:@"noNeed"]) {
+                rowCount = 3;
+            } else {
+                rowCount = 2;
+            }
             break;
         case 1:
             rowCount = 1;
@@ -205,7 +243,11 @@
             rowCount = 3;
             break;
         case 3:
-            rowCount = 1;
+            if ([TmpUser checkRegistered]) {
+                rowCount = 1;
+            } else {
+                rowCount = 0;
+            }
             break;
         default:
             break;
@@ -216,6 +258,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES]; // 選択状態の解除
+    
     switch (indexPath.section) {
         case 0:
             switch (indexPath.row) {
@@ -223,6 +266,13 @@
                     [self openProfileEdit];
                     break;
                 case 1:
+                    break;
+                case 2:
+                    if (![TmpUser checkRegistered]) {
+                        [self openRegisterView];
+                    } else {
+                        [self openEmailVerifiedView];
+                    }
                     break;
                 default:
                     break;
@@ -299,25 +349,16 @@
     }
 }
 
-
-- (void)openFamilyApply
+- (void)openRegisterView
 {
-    FamilyApplyViewController * familyApplyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyViewController"];
-    //[self presentViewController:familyApplyViewController animated:true completion:nil];
-    [self.navigationController pushViewController:familyApplyViewController animated:YES];
-}
-
-- (void)openFamilyApplyList
-{
-    FamilyApplyListViewController *familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
-    //[self presentViewController:familyApplyListViewController animated:true completion:nil];
-    [self.navigationController pushViewController:familyApplyListViewController animated:YES];
+    UserRegisterViewController * userRegisterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
+    [self.navigationController pushViewController:userRegisterViewController animated:YES];
 }
 
 - (void)openAddChildAddView
 {
+    [tn removeNavigationView];
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    icnvc.isNotFirstTime = YES;
     icnvc.childProperties = _childProperties;
     [self.navigationController pushViewController:icnvc animated:YES];
 }
@@ -366,6 +407,13 @@
         }
         self.roleControl.enabled = TRUE;
         [FamilyRole updateCache];
+        
+        // Tutorial中の場合はステージを進める
+        if ([[Tutorial currentStage].currentStage isEqualToString:@"partChange"]) {
+            [Tutorial forwardStageWithNextStage:@"addChild"];
+            [tn removeNavigationView];
+            [tn showNavigationView];
+        }
         
         // push通知
         NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
@@ -479,64 +527,10 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 }
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)openEmailVerifiedView
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier: forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
-    return cell;
+    NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
+    [self.navigationController pushViewController:emailVerifiedViewController animated:YES];
 }
-*/
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

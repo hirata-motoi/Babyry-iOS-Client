@@ -70,4 +70,12 @@
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
 
+// for tutorial
+@property UIView *firstCellUnselectedBestShotView;
+
+
+- (void)showTutorialNavigator;
+- (void)removeNavigationView;
+- (void)forwardNextTutorial;
+
 @end

@@ -21,8 +21,12 @@
     id<ChildProfileEditViewDelegate>delegate;
 }
 @property (nonatomic, assign) id<ChildProfileEditViewDelegate> delegate;
+@property (strong, nonatomic) IBOutlet UIView *childNicknameCellContainer;
 @property (strong, nonatomic) IBOutlet UITextField *childNicknameEditTextField;
+@property (strong, nonatomic) IBOutlet UILabel *childNicknameSaveLabel;
+
 @property (strong, nonatomic) IBOutlet UIDatePicker *childBirthdayDatePicker;
+@property (strong, nonatomic) IBOutlet UILabel *childBirthdaySaveLabel;
 @property (strong, nonatomic) IBOutlet UIView *childBirthdayDatePickerContainer;
 
 @property NSString *childObjectId;

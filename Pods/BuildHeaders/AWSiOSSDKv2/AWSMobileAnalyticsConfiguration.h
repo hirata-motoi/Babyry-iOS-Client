@@ -1,1 +1,1 @@
-../../AWSiOSSDKv2/AWSCore/MobileAnalytics/include/core/configuration/AWSMobileAnalyticsConfiguration.h
+../../AWSiOSSDKv2/AWSCore/MobileAnalytics/AZCommon/AWSMobileAnalyticsConfiguration.h

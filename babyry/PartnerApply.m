@@ -1,0 +1,131 @@
+//
+//  PartnerApply.m
+//  babyry
+//
+//  Created by Kenji Suzuki on 2014/09/16.
+//  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
+//
+
+#import "PartnerApply.h"
+#import "PartnerInviteEntity.h"
+#import "PartnerInvitedEntity.h"
+#import "Config.h"
+#import "PushNotification.h"
+
+@implementation PartnerApply
+
++ (BOOL) linkComplete
+{
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
+    if (!pie.linkComplete) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
++ (void) setLinkComplete
+{
+    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    if ([pie.linkComplete isEqual:[NSNumber numberWithBool:YES]]) {
+        return;
+    }
+    
+    if (pie) {
+        pie.linkComplete = [NSNumber numberWithBool:YES];
+    } else {
+        PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
+        newPie.linkComplete = [NSNumber numberWithBool:YES];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (void) unsetLinkComplete
+{
+    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    if ([pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
+        return;
+    }
+    
+    if (pie) {
+        pie.linkComplete = [NSNumber numberWithBool:NO];
+    } else {
+        PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
+        newPie.linkComplete = [NSNumber numberWithBool:NO];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (NSNumber *) issuePinCode
+{
+    int digit = 6;
+    NSString *numbers = @"0123456789";
+    NSString *topDigit = @"123456789";
+    NSMutableString *pinCode = [NSMutableString stringWithCapacity:digit];
+    
+    for (int i = 0; i < digit; i++) {
+        if (i == 0) {
+            // topの桁は0にすると何かと嫌らしいので
+            [pinCode appendFormat:@"%C", [topDigit characterAtIndex:arc4random() % [topDigit length]]];
+        } else {
+            [pinCode appendFormat:@"%C", [numbers characterAtIndex:arc4random() % [numbers length]]];
+        }
+    }
+    return [NSNumber numberWithInt:[pinCode intValue]];
+}
+
++ (void) registerApplyList
+{
+    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        // PartnerApplyListにレコードを突っ込む
+        PFObject *object = [PFObject objectWithClassName:@"PartnerApplyList"];
+        object[@"familyId"] = pie.familyId;
+        object[@"applyingUserId"] = [PFUser currentUser][@"userId"];
+        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (succeeded) {
+                // 保存に成功したらpush通知送る
+                PFQuery *partner = [PFQuery queryWithClassName:@"_User"];
+                [partner whereKey:@"familyId" equalTo:pie.familyId];
+                [partner findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+                    if (objects) {
+                        for (PFObject *object in objects) {
+                            NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+                            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+                            NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
+                            options[@"data"] = data;
+                            if (![object[@"userId"] isEqualToString:[PFUser currentUser][@"userId"]]) {
+                                [PushNotification sendToSpecificUserInBackground:@"receiveApply" withOptions:options targetUserId:object[@"userId"]];
+                            }
+                        }
+                    }
+                }];
+            }
+        }];
+    }
+}
+
++ (void) removeApplyList
+{
+    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    if (pie.familyId) {
+        PFQuery *apply = [PFQuery queryWithClassName:@"PartnerApplyList"];
+        [apply whereKey:@"familyId" equalTo:pie.familyId];
+        [apply findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if ([objects count] > 0) {
+                for (PFObject *object in objects) {
+                    [object deleteInBackground];
+                }
+            }
+            pie.familyId = nil;
+            pie.inputtedPinCode = nil;
+            [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+        }];
+    }
+}
+
+@end

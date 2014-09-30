@@ -51,4 +51,9 @@
     return [UIColor colorWithRed:(float)245/256 green:(float)226/256 blue:(float)151/256 alpha:1.0];
 }
 
++(UIColor *)getPastelRedColor
+{
+    return [UIColor_Hex colorWithHexString:@"ff77a1" alpha:1.0];
+}
+
 @end

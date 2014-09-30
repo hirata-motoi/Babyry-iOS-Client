@@ -33,7 +33,7 @@
     } else if ([attributeValue isKindOfClass:[NSData class]]) {
         self.B = attributeValue;
     } else if ([attributeValue isKindOfClass:[NSArray class]]
-               && [attributeValue length] > 0) {
+               && [(NSArray *)attributeValue count] > 0) {
         id firstObject = [attributeValue firstObject];
         if ([firstObject isKindOfClass:[NSString class]]) {
             self.SS = attributeValue;
@@ -90,16 +90,25 @@
 @implementation AWSDynamoDBObjectMapper
 
 + (instancetype)defaultDynamoDBObjectMapper {
-    AWSDynamoDBObjectMapper *dynamoDBObjectMapper = [[AWSDynamoDBObjectMapper alloc] initWithDynamoDB:[AWSDynamoDB defaultDynamoDB]
-                                                                                        configuration:[AWSDynamoDBObjectMapperConfiguration new]];
-    return dynamoDBObjectMapper;
+    if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
+        return nil;
+    }
+    
+    static AWSDynamoDBObjectMapper *_dynamoDBObjectMapper  = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _dynamoDBObjectMapper = [[AWSDynamoDBObjectMapper alloc] initWithConfiguration:[AWSServiceManager defaultServiceManager].defaultServiceConfiguration
+                                                             objectMapperConfiguration:[AWSDynamoDBObjectMapperConfiguration new]];
+    });
+    
+    return _dynamoDBObjectMapper;
 }
 
-- (instancetype)initWithDynamoDB:(AWSDynamoDB *)dynamoDB
-                   configuration:(AWSDynamoDBObjectMapperConfiguration *)configuration {
+- (instancetype)initWithConfiguration:(AWSServiceConfiguration *)configuration
+            objectMapperConfiguration:(AWSDynamoDBObjectMapperConfiguration *)objectMapperConfiguration {
     if (self = [super init]) {
-        _dynamoDB = dynamoDB;
-        _configuration = [configuration copy];
+        _dynamoDB = [[AWSDynamoDB alloc] initWithConfiguration:configuration];
+        _configuration = [objectMapperConfiguration copy];
     }
 
     return self;
@@ -227,6 +236,7 @@
     queryInput.limit = expression.limit;
     queryInput.scanIndexForward = expression.scanIndexForward;
     queryInput.exclusiveStartKey = expression.exclusiveStartKey;
+    queryInput.indexName = expression.indexName;
 
     AWSDynamoDBAttributeValue *hashAttributeValue = [AWSDynamoDBAttributeValue new];
     [hashAttributeValue aws_setAttributeValue:expression.hashKeyValues];
@@ -333,7 +343,7 @@
     if ([self respondsToSelector:@selector(rangeKeyAttribute)]) {
         [keyArray addObject:[[self class] performSelector:@selector(rangeKeyAttribute)]];
     }
-    NSDictionary *dictionaryValue = [self dictionaryValue];
+    NSDictionary *dictionaryValue = [MTLJSONAdapter JSONDictionaryFromModel:self];
 
     for (id key in dictionaryValue) {
         if ([keyArray containsObject:key]) {
@@ -355,7 +365,7 @@
 - (NSDictionary *)itemForUpdateItemInput {
     NSMutableDictionary *item = [NSMutableDictionary new];
     NSArray *keyArray = [[self key] allKeys];
-    NSDictionary *dictionaryValue = [self dictionaryValue];
+    NSDictionary *dictionaryValue = [MTLJSONAdapter JSONDictionaryFromModel:self];
 
     for (id key in dictionaryValue) {
         if (![keyArray containsObject:key]) {
@@ -379,7 +389,7 @@
     if ([[self class] respondsToSelector:@selector(rangeKeyAttribute)]) {
         [keyArray addObject:[[self class] performSelector:@selector(rangeKeyAttribute)]];
     }
-    NSDictionary *dictionaryValue = [self dictionaryValue];
+    NSDictionary *dictionaryValue = [MTLJSONAdapter JSONDictionaryFromModel:self];
 
     for (id key in keyArray) {
         // For key attributes

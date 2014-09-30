@@ -2,8 +2,122 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>PartnerInviteEntityKeyName</key>
+	<string>partnerInviteEntity</string>
+	<key>InviteMailTextWithPinCode</key>
+	<string>あなたのパートナーからBabyryへの招待が届いています。\n以下のURLからアプリをインストール後、招待コード %pinCode を入力してください。\n\nhttps://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
+	<key>InviteLineTextWithPinCode</key>
+	<string>あなたのパートナーからBabyryへの招待が届いています。 以下のURLからアプリをインストール後、招待コード %pinCode を入力してください。  https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
+	<key>TrackingLogKeyName</key>
+	<string>TrackingLog</string>
+	<key>TmpUserDataKeyName</key>
+	<string>TmpUserData</string>
 	<key>AppStoreURL</key>
 	<string>https://itunes.apple.com/jp/app/babyry/id910129660?mt=8</string>
+	<key>TutorialImages</key>
+	<array>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>imageFileName</key>
+					<string>TutorialImage_0_0.jpg</string>
+					<key>bestFlag</key>
+					<false/>
+				</dict>
+				<dict>
+					<key>bestFlag</key>
+					<false/>
+					<key>imageFileName</key>
+					<string>TutorialImage_0_1.jpg</string>
+				</dict>
+				<dict>
+					<key>bestFlag</key>
+					<false/>
+					<key>imageFileName</key>
+					<string>TutorialImage_0_2.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>imageFileName</key>
+					<string>TutorialImage_1.jpg</string>
+					<key>bestFlag</key>
+					<true/>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_2.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_3.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_4.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_5.jpg</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>images</key>
+			<array>
+				<dict>
+					<key>bestFlag</key>
+					<true/>
+					<key>imageFileName</key>
+					<string>TutorialImage_6.jpg</string>
+				</dict>
+			</array>
+		</dict>
+	</array>
+	<key>tutorialStages</key>
+	<array>
+		<string>introduction</string>
+		<string>chooseByUser</string>
+		<string>partChange</string>
+		<string>addChild</string>
+		<string>uploadByUser</string>
+		<string>uploadByUserFinished</string>
+		<string>familyApply</string>
+		<string>familyApplyExec</string>
+		<string>tutorialFinished</string>
+	</array>
 	<key>FinishedFirstLaunch</key>
 	<string>finishedFirstLaunch</string>
 	<key>UUIDKeyName</key>
@@ -17,7 +131,7 @@
 	<key>InquiryEmail</key>
 	<string>info@meaning.co.jp</string>
 	<key>AppVersion</key>
-	<string>1.0.2</string>
+	<string>1.0.3</string>
 	<key>AWSBucketName</key>
 	<string>babyry-images</string>
 </dict>

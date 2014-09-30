@@ -12,6 +12,9 @@
 #import "AWSS3Utils.h"
 #import "MBProgressHUD.h"
 #import <AudioToolbox/AudioServices.h>
+#import "TagAlbumCollectionViewCell.h"
+#import "TutorialNavigator.h"
+#import "TutorialFamilyApplyIntroduceView.h"
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -48,11 +51,27 @@
 
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
+- (void)showAlertMessage;
+- (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
+- (void)openFamilyApply;
+- (void)setImages;
+- (void)showTutorialNavigator;
+- (void)openFamilyApplyList;
+- (void)openPartnerWait;
 
 @property AWSServiceConfiguration *configuration;
 
 @property MBProgressHUD *hud;
 
 @property NSTimer *tm;
+
+// for tutorial
+@property TagAlbumCollectionViewCell *cellOfToday;
+@property TutorialNavigator *tn;
+@property UIView *familyApplyIntroduceView;
+@property NSTimer *instructionTimer;
+
+// CoreDataに移動したら消す
+@property NSMutableArray *childProperties;
 
 @end

@@ -7,6 +7,9 @@
 //
 
 #import "FamilyRole.h"
+#import "PartnerApply.h"
+#import "Logger.h"
+#import "Tutorial.h"
 
 @implementation FamilyRole
 
@@ -41,11 +44,54 @@
 
 + (void)updateCache
 {
+    PFUser *user = [PFUser currentUser];
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
     query.cachePolicy = kPFCachePolicyNetworkOnly;
-    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){}];
-    // nothing to return because this method is only for updating cache
+    [query whereKey:@"familyId" equalTo:user[@"familyId"]];
+    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (object) {
+            // すべての項目が埋まっているのであれば、CoreDataのひも付け完了フラグをTRUEに更新する
+            if (object[@"uploader"] && ![object[@"uploader"] isEqualToString:@""] && object[@"chooser"] && ![object[@"chooser"] isEqualToString:@""]) {
+                [PartnerApply setLinkComplete];
+            } else {
+                if ([PartnerApply linkComplete]) {
+                    // すべての項目が埋まっていないのに、CoreDataのひも付け完了フラグがTRUEの場合、ひも付けが解除されたと見なせるので完了フラグを落とす
+                    [PartnerApply unsetLinkComplete];
+                    if (![object[@"uploader"] isEqualToString:user[@"userId"]] && ![object[@"chooser"] isEqualToString:user[@"userId"]]) {
+                        // uploaderにもchooserにも自分のidが入っていなければ、Familyひも付けから削除されているので、自分のレコードからFamilyIdを落とす
+                        user[@"familyId"] = @"";
+                        [user saveInBackground];
+                    }
+                }
+            }
+        } else {
+            // FamilyRoleは持ってないが、自分以外のFamilyIdにひもづくFamilyRoleに自分がいる場合
+            // この場合は、お互いにチュートリアルをすませたなどしてFamilyIdを別々に持っている人同士がくっついたケース
+            // 対応するFamilyRoleからFamilyIdを抜いてきて、userにセットし、ひも付け完了フラグをCoreDataにセット
+            PFQuery *uploader = [PFQuery queryWithClassName:@"FamilyRole"];
+            [uploader whereKey:@"uploader" equalTo:user[@"userId"]];
+            [uploader whereKey:@"familyId" notEqualTo:user[@"familyId"]];
+            PFObject *object = [uploader getFirstObject];
+            if (object) {
+                NSLog(@"object found in uploader");
+                user[@"familyId"] = object[@"familyId"];
+                [user save];
+                [PartnerApply setLinkComplete];
+                return;
+            }
+            PFQuery *chooser = [PFQuery queryWithClassName:@"FamilyRole"];
+            [chooser whereKey:@"chooser" equalTo:user[@"userId"]];
+            [chooser whereKey:@"familyId" notEqualTo:user[@"familyId"]];
+            object = [chooser getFirstObject];
+            if (object) {
+                NSLog(@"object found in chooser");
+                user[@"familyId"] = object[@"familyId"];
+                [user save];
+                [PartnerApply setLinkComplete];
+                return;
+            }
+        }
+    }];
 }
 
 + (void)createFamilyRole:(NSMutableDictionary *)data
@@ -71,6 +117,71 @@
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
     [query whereKey:@"familyId" equalTo:familyId];
     [query findObjectsInBackgroundWithBlock:block];
+}
+
++ (void)switchRole:(NSString *)role
+{
+    PFObject *familyRole = [FamilyRole getFamilyRole:@"useCache"];
+    NSString *uploaderUserId = familyRole[@"uploader"];
+    NSString *chooserUserId  = familyRole[@"chooser"];
+    NSString *partnerUserId  = ([uploaderUserId isEqualToString:[PFUser currentUser][@"userId"]]) ? chooserUserId : uploaderUserId;
+
+    if ([role isEqualToString:@"uploader"]) {
+        familyRole[@"uploader"] = [PFUser currentUser][@"userId"];
+        familyRole[@"chooser"]  = partnerUserId;
+    } else {
+        familyRole[@"uploader"] = partnerUserId;
+        familyRole[@"chooser"]  = [PFUser currentUser][@"userId"];
+    }
+    
+    // Segment Controlをdisabled
+    [familyRole saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in switchRole : %@", error]];
+            return;
+        }
+        [FamilyRole updateCache];
+    }];
+}
+
++ (void) unlinkFamily:(PFBooleanResultBlock)block
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
+    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in unlinkFamily, can't get FamilyRole : %@", error]];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"エラーが発生しました"
+                                                            message:@"データの更新に失敗しました。\n再度お試しください。"
+                                                           delegate:nil
+                                                  cancelButtonTitle:nil
+                                                  otherButtonTitles:@"OK", nil
+                                  ];
+            [alert show];
+            return;
+        }
+        
+        NSString *createdBy = object[@"createdBy"];
+        
+        // createdByがないユーザー = 古いバージョンの時にひも付けがされた人。
+        // この人たちがひも付け解除した場合には、解除をした方の人がFamilyIdを引き継ぐと決める
+        if (!createdBy) {
+            NSString *myId = [PFUser currentUser][@"userId"];
+            object[@"createdBy"] = myId;
+            if ([object[@"uploader"] isEqualToString:myId]) {
+                object[@"chooser"] = @"";
+            } else {
+                object[@"uploader"] = @"";
+            }
+        } else {
+            if ([object[@"uploader"] isEqualToString:createdBy]) {
+                object[@"chooser"] = @"";
+            } else {
+                object[@"uploader"] = @"";
+            }
+        }
+        [object saveInBackgroundWithBlock:block];
+    }];
 }
 
 @end

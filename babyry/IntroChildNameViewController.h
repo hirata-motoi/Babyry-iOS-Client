@@ -11,38 +11,26 @@
 #import "MBProgressHUD.h"
 
 @interface IntroChildNameViewController : UIViewController
-@property (strong, nonatomic) IBOutlet UIView *editingView;
-@property (strong, nonatomic) IBOutlet UITextField *childNameField1;
-@property (strong, nonatomic) IBOutlet UITextField *childNameField2;
-@property (strong, nonatomic) IBOutlet UITextField *childNameField3;
-@property (strong, nonatomic) IBOutlet UITextField *childNameField4;
-@property (strong, nonatomic) IBOutlet UITextField *childNameField5;
-@property (strong, nonatomic) IBOutlet UILabel *childNameSendLabel;
-@property (weak, nonatomic) IBOutlet UIScrollView *textFieldContainerScrollView;
-@property (weak, nonatomic) IBOutlet UIView *textFieldContainerView;
 
 @property BOOL keyboradObserving;
 
-@property BOOL isNotFirstTime;
-//@property int currentChildNum;
-@property int addableChildNum;
 
 @property NSMutableArray *childProperties;
 
 @property MBProgressHUD *hud;
 
-@property UILabel *childLabel1;
-@property UILabel *childLabel2;
-@property UILabel *childLabel3;
-@property UILabel *childLabel4;
-@property UILabel *childLabel5;
-
-@property UIButton *childButton1;
-@property UIButton *childButton2;
-@property UIButton *childButton3;
-@property UIButton *childButton4;
-@property UIButton *childButton5;
-
 @property int removeTarget;
+
+@property BOOL isBabyryExist;
+
+@property (strong, nonatomic) IBOutlet UITextField *childNameField;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *childSexSegment;
+@property (strong, nonatomic) IBOutlet UILabel *childAddButton;
+@property (strong, nonatomic) IBOutlet UILabel *birthdayLabel;
+
+@property (strong, nonatomic) IBOutlet UIView *datePickerContainer;
+@property (strong, nonatomic) IBOutlet UIDatePicker *datePicker;
+
+@property (strong, nonatomic) IBOutlet UIScrollView *childListContainer;
 
 @end

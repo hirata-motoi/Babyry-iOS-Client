@@ -1,5 +1,5 @@
 PODS:
-  - AWSiOSSDKv2 (2.0.5):
+  - AWSiOSSDKv2 (2.0.7):
     - AWSiOSSDKv2/AutoScaling
     - AWSiOSSDKv2/AWSCore
     - AWSiOSSDKv2/CloudWatch
@@ -13,136 +13,122 @@ PODS:
     - AWSiOSSDKv2/SNS
     - AWSiOSSDKv2/SQS
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/AutoScaling (2.0.5):
+  - AWSiOSSDKv2/AutoScaling (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/AWSCore (2.0.5):
+  - AWSiOSSDKv2/AWSCore (2.0.7):
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/CloudWatch (2.0.5):
+  - AWSiOSSDKv2/CloudWatch (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/DynamoDB (2.0.5):
+  - AWSiOSSDKv2/DynamoDB (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/EC2 (2.0.5):
+  - AWSiOSSDKv2/EC2 (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/ElasticLoadBalancing (2.0.5):
+  - AWSiOSSDKv2/ElasticLoadBalancing (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/Kinesis (2.0.5):
+  - AWSiOSSDKv2/Kinesis (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/S3 (2.0.5):
+  - AWSiOSSDKv2/S3 (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SES (2.0.5):
+  - AWSiOSSDKv2/SES (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SimpleDB (2.0.5):
+  - AWSiOSSDKv2/SimpleDB (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SNS (2.0.5):
+  - AWSiOSSDKv2/SNS (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SQS (2.0.5):
+  - AWSiOSSDKv2/SQS (2.0.7):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
-    - CSURITemplate (~> 0.3.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
     - Reachability (~> 3.1.1)
-    - TMCache (~> 1.2.0)
+    - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
   - Bolts (1.1.2)
-  - CrittercismSDK (4.3.4)
-  - CSURITemplate (0.3)
-  - Facebook-iOS-SDK (3.16.2):
+  - CrittercismSDK (4.3.7)
+  - Facebook-iOS-SDK (3.18.0):
     - Bolts
   - GZIP (1.0.3)
   - MagicalRecord (2.2):
@@ -151,26 +137,37 @@ PODS:
   - Mantle (1.4.1):
     - Mantle/extobjc
   - Mantle/extobjc (1.4.1)
+  - Parse (1.3.0):
+    - Facebook-iOS-SDK (~> 3.17)
+  - Parse-iOS (1.3.0.1):
+    - Bolts (~> 1.1.2)
+  - ParseFacebookUtils (1.3.0):
+    - Facebook-iOS-SDK (~> 3.9.0)
+    - Parse-iOS (~> 1.3.0)
   - Reachability (3.1.1)
   - TMCache (1.2.1)
   - UICKeyChainStore (1.0.5)
   - XMLDictionary (1.4)
 
 DEPENDENCIES:
-  - AWSiOSSDKv2
-  - CrittercismSDK
-  - Facebook-iOS-SDK
-  - MagicalRecord
+  - AWSiOSSDKv2 (= 2.0.7)
+  - CrittercismSDK (= 4.3.7)
+  - Facebook-iOS-SDK (= 3.18)
+  - MagicalRecord (= 2.2)
+  - Parse (= 1.3)
+  - ParseFacebookUtils (= 1.3)
 
 SPEC CHECKSUMS:
-  AWSiOSSDKv2: be7410b9aff414ad2516b7a61425c4f0abf168a8
+  AWSiOSSDKv2: b27b5a62c1cab8cfbbe973d800dc835aecd8a289
   Bolts: 2635e8698a630774689441047f3465d78c48d485
-  CrittercismSDK: d32f9f730158e3e646c445b752d7851710a1fed2
-  CSURITemplate: a0708251b4453338dea48bf1ebdeee2bec6f6fe9
-  Facebook-iOS-SDK: 34eef640c2cc4c8618ba0f574ad2b290e07f1b4e
+  CrittercismSDK: 4da8d0e407fb1ef29eef98678c1f90be4943b85e
+  Facebook-iOS-SDK: fa12c51cc57bfb6f92e47793c9d4d2c65bc92741
   GZIP: f27c434ffee5e9a9b34f4e9c19e91350fa8bbde1
   MagicalRecord: 2b471584fc9e3137f3d0a56967917baa4979e224
   Mantle: 1ca9c0fa84d3d3fc98524e7229f30489b6dd44e5
+  Parse: 8ffeef385de83a6bef0c23cdf25f939635b53f5e
+  Parse-iOS: 92c08e7a60ee29dd499e3ab187f14d58027f98da
+  ParseFacebookUtils: d57d7d8dcd0ea941acd5a673b8d056d271b176d5
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   TMCache: ed936c5b4684e4ea15113d46fba8829ed3baadad
   UICKeyChainStore: 4f9719600cc70025064e26f28f1210bcfc3b0c35

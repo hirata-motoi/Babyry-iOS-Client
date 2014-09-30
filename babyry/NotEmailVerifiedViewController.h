@@ -14,7 +14,6 @@
 @property NSTimer *tm;
 @property BOOL isTimerRunning;
 
-@property (strong, nonatomic) IBOutlet UILabel *logOutLabel;
 @property (strong, nonatomic) IBOutlet UILabel *resendLabel;
 
 
