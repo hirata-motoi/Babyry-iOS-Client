@@ -72,7 +72,16 @@
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:newDeviceToken];
     currentInstallation[@"badge"] = [NSNumber numberWithInt:0];
-    [currentInstallation saveInBackground];
+    [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting device token %@", error]];
+        }
+    }];
+}
+
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)err{
+    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"failed to get device token %@", err]];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
