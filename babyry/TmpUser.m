@@ -39,6 +39,19 @@
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
++ (void)removeTmpUserFromCoreData
+{
+    NSString *TmpUserDataKeyName = [Config config][@"TmpUserDataKeyName"];
+    TmpUserData *tud = [TmpUserData MR_findFirstByAttribute:@"name" withValue:TmpUserDataKeyName];
+    
+    if (!tud) {
+        return;
+    }
+    
+    [tud MR_deleteEntity];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
 + (void) loginTmpUserByCoreData
 {
     NSString *TmpUserDataKeyName = [Config config][@"TmpUserDataKeyName"];
