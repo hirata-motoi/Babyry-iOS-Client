@@ -18,9 +18,7 @@
 #import "ParseUtils.h"
 #import "ImageRequestIntroductionView.h"
 
-@implementation PageContentViewController_Logic {
-    BOOL introductionViewShown;
-}
+@implementation PageContentViewController_Logic
 
 -(void)setImages
 {
@@ -243,7 +241,7 @@
     if ([self.pageContentViewController.selfRole isEqualToString:@"uploader"]) {
         return;
     }
-    
+
     // チョイスとしての初load以外ならreturn
     AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedFirstLaunch"]];
     if (appSetting) {
@@ -456,7 +454,7 @@
                 [properties addObject:[ParseUtils pfObjectToDic:object]];
             }
             
-            if (![self updatedChildProperties:properties]) {
+            if (![self hasUpdatedChildProperties:properties]) {
                 [self showIntroductionOfPageFlick];
                 return;
             }
@@ -471,7 +469,7 @@
     }];
 }
 
-- (BOOL)updatedChildProperties:(NSArray *)properties
+- (BOOL)hasUpdatedChildProperties:(NSArray *)properties
 {
     if (properties.count != self.pageContentViewController.childProperties.count) {
         return YES;
