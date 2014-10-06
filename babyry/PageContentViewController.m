@@ -361,23 +361,7 @@
             
             [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
         } else {
-            MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
-            multiUploadViewController.name = [_childProperty objectForKey:@"name"];
-            multiUploadViewController.childObjectId = [_childProperty objectForKey:@"objectId"];
-            multiUploadViewController.date = [tappedChildImage[@"date"] stringValue];
-            multiUploadViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
-            multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            multiUploadViewController.child = _childProperty;
-            multiUploadViewController.notificationHistoryByDay = _notificationHistory[[[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 8)]];
-            NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
-            NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-            multiUploadViewController.totalImageNum = totalImageNum;
-            multiUploadViewController.indexPath = indexPath;
-            if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-                [self.navigationController pushViewController:multiUploadViewController animated:YES];
-            } else {
-                // TODO インターネット接続がありません的なメッセージいるかも
-            }
+            [self moveToMultiUploadViewController:[tappedChildImage[@"date"] stringValue] index:indexPath];
         }
         return;
     }
@@ -432,6 +416,28 @@
     [headerView addSubview:header];
     
     return headerView;
+}
+
+- (void) moveToMultiUploadViewController:(NSString *)date index:(NSIndexPath *)indexPath
+{
+    MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
+    multiUploadViewController.name = [_childProperty objectForKey:@"name"];
+    multiUploadViewController.childObjectId = [_childProperty objectForKey:@"objectId"];
+    multiUploadViewController.date = date;
+    multiUploadViewController.month = [date substringWithRange:NSMakeRange(0, 6)];
+    multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    multiUploadViewController.child = _childProperty;
+    multiUploadViewController.notificationHistoryByDay = _notificationHistory[[date substringWithRange:NSMakeRange(0, 8)]];
+    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    multiUploadViewController.totalImageNum = totalImageNum;
+    multiUploadViewController.indexPath = indexPath;
+    
+    if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
+        [self.navigationController pushViewController:multiUploadViewController animated:YES];
+    } else {
+        // TODO インターネット接続がありません的なメッセージいるかも
+    }
 }
 
 - (UIView *) makeCalenderLabel:(NSIndexPath *)indexPath cellFrame:(CGRect)cellFrame
@@ -1002,6 +1008,57 @@
 - (void)hideHeaderView
 {
     [[self logic:@"hideFamilyApplyIntroduceView"] hideFamilyApplyIntroduceView];
+}
+
+- (void) dispatchForPushReceivedTransition
+{
+    // push通知のInfoから日付組み立て
+    NSDictionary *info = [TransitionByPushNotification getInfo];
+    PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
+    
+    // 以後の処理を進めるのはフロントに表示されているものだけ (PageViewは最大3枚表示されるので、前後のページの処理が行われるとばぐる)
+    // 今のページのindex(childIdからもとめる)がCoreDataと一致していなければreturn
+    int i = 0;
+    for (NSMutableDictionary *dic in _childProperties) {
+        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
+            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
+                return;
+            }
+        }
+        i++;
+    }
+    
+    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:[childImage[@"date"] stringValue]];
+    
+    if (!tsnInfo[@"nextVC"]) {
+        return;
+    }
+    
+    if ([tsnInfo[@"nextVC"] isEqualToString:@"MultiUploadViewController"]) {
+        [self moveToMultiUploadViewController:tsnInfo[@"date"] index:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
+        return;
+    }
+    
+    if ([tsnInfo[@"nextVC"] isEqualToString:@"movePageContentViewController"]) {
+        
+        // ださいけど、childPropertiesからターゲットのchildIdのindexをみつける
+        int i = 0;
+        for (NSMutableDictionary *dic in _childProperties) {
+            if ([dic[@"objectId"] isEqualToString:tsnInfo[@"childObjectId"]]) {
+                [TransitionByPushNotification setCurrentPageIndex:i];
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+                return;
+            }
+            i++;
+        }
+        return;
+    }
+    
+    if ([tsnInfo[@"nextVC"] isEqualToString:@"RootViewController"]) {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+        return;
+    }
 }
 
 /*

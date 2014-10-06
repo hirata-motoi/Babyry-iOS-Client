@@ -391,6 +391,9 @@
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
     [Logger writeToTrackingLog:[NSString stringWithFormat:@"%@ %@ %@ %@", [DateUtils setSystemTimezone:[NSDate date]], _currentUser.objectId, _currentUser[@"userId"], NSStringFromClass([viewController class])]];
+    
+    // 動的に[self.navigationController topViewController]とかでとるとタイミングによってnullが帰ってくるので、TransitionByPushNotificationのclass変数に格納
+    [TransitionByPushNotification setCurrentViewController:NSStringFromClass([viewController class])];
 }
 
 - (BOOL)hasStartedTutorial

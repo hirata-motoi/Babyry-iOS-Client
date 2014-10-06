@@ -417,8 +417,17 @@
             [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
         
             // push通知
+            // message以外にも、タップしたところが分かる情報を飛ばす
+            NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+            transitionInfoDic[@"event"] = @"imageUpload";
+            transitionInfoDic[@"date"] = _date;
+            transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+            transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+            transitionInfoDic[@"childObjectId"] = _childObjectId;
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+            options[@"data"] = [[NSMutableDictionary alloc]
+                                initWithObjects:@[@"Increment", transitionInfoDic]
+                                forKeys:@[@"badge", @"transitionInfo"]];
             [PushNotification sendInBackground:@"imageUpload" withOptions:options];
            
             if ([Tutorial underTutorial]) {

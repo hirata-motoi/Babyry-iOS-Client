@@ -112,7 +112,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+        
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ同期中";
     
@@ -625,6 +625,20 @@
 - (void)forwardNextTutorial
 {
     [[self logic] forwardNextTutorial];
+}
+
+- (void) dispatchForPushReceivedTransition
+{
+    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
+    if (!tsnInfo) {
+        return;
+    }
+        
+    if ([tsnInfo[@"nextVC"] isEqualToString:@"RootViewController"]) {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+        return;
+    }
+
 }
 
 @end

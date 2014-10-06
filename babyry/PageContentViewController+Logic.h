@@ -27,6 +27,7 @@
 - (void)setupHeaderView;
 - (void)hideFamilyApplyIntroduceView;
 
-@property PageContentViewController *pageContentViewController;
+// 循環参照(メモリリーク)が起きるので、弱参照にしないと駄目
+@property (weak) PageContentViewController *pageContentViewController;
 
 @end
