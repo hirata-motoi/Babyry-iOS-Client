@@ -219,6 +219,17 @@
     return _uploadedImageView;
 }
 
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
+{
+    CGRect rect = view.frame;
+    if (rect.size.height < scrollView.frame.size.height) {
+        rect.origin.y = (scrollView.frame.size.height - rect.size.height)/2;
+    } else {
+        rect.origin.y = 0;
+    }
+    view.frame = rect;
+}
+
 - (void)disableNotificationHistories
 {
     NSString *type = @"imageUploaded";
