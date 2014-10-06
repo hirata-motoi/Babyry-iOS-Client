@@ -212,6 +212,8 @@
 		F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */; };
 		F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350419C97982001F33D0 /* TutorialNavigator.m */; };
 		F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */; };
+		F2FAA56219DC4ABB00546669 /* PageFlickIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */; };
+		F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -568,6 +570,9 @@
 		F2D9350419C97982001F33D0 /* TutorialNavigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialNavigator.m; sourceTree = "<group>"; };
 		F2D9350A19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+ShowMultiUpload.h"; sourceTree = "<group>"; };
 		F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+ShowMultiUpload.m"; sourceTree = "<group>"; };
+		F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PageFlickIntroductionView.xib; sourceTree = "<group>"; };
+		F2FAA56319DC576300546669 /* PageFlickIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageFlickIntroductionView.h; sourceTree = "<group>"; };
+		F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageFlickIntroductionView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1220,6 +1225,7 @@
 			isa = PBXGroup;
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
+				F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */,
 				F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */,
 			);
 			name = Xib;
@@ -1228,6 +1234,8 @@
 		F2AD4F10199FD37E00037C72 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2FAA56319DC576300546669 /* PageFlickIntroductionView.h */,
+				F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */,
 				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
 				F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */,
 				F2B7E0DF19C1F3A00052981B /* LogoutIntroduceView.h */,
@@ -1397,6 +1405,7 @@
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				F285517119D160A500347BB6 /* TutorialImage_3.jpg in Resources */,
 				F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */,
+				F2FAA56219DC4ABB00546669 /* PageFlickIntroductionView.xib in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
 				F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */,
 				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
@@ -1484,6 +1493,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */,
 				F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */,
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */,

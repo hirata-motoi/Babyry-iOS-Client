@@ -73,7 +73,6 @@
             [uploader whereKey:@"familyId" notEqualTo:user[@"familyId"]];
             PFObject *object = [uploader getFirstObject];
             if (object) {
-                NSLog(@"object found in uploader");
                 user[@"familyId"] = object[@"familyId"];
                 [user save];
                 [PartnerApply setLinkComplete];
@@ -84,7 +83,6 @@
             [chooser whereKey:@"familyId" notEqualTo:user[@"familyId"]];
             object = [chooser getFirstObject];
             if (object) {
-                NSLog(@"object found in chooser");
                 user[@"familyId"] = object[@"familyId"];
                 [user save];
                 [PartnerApply setLinkComplete];
