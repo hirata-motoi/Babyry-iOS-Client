@@ -452,6 +452,7 @@
             choosedYMD[ [childImage[@"date"] stringValue] ] = [NSNumber numberWithBool:YES];
         }
         
+        BOOL shouldReload = NO;
         for (NSString *ymd in [self.pageContentViewController.notificationHistory allKeys]) {
             if (choosedYMD[ymd]) {
                 continue;
@@ -465,6 +466,9 @@
             
             // choosedの画像がないにも関わらずnotificationが残っている日のnotificationはdisable
             [self disableNotificationHistory:ymd];
+            shouldReload = YES;
+        }
+        if (shouldReload) {
             [self.pageContentViewController.pageContentCollectionView reloadData];
         }
     }];
