@@ -11,6 +11,7 @@
 #import "ViewController.h"
 #import "PageViewController.h"
 #import "PageContentViewController.h"
+#import "UploadViewController.h"
 
 static NSMutableDictionary *transitionInfo;
 static NSMutableDictionary *currentViewController;
@@ -111,40 +112,61 @@ static NSMutableDictionary *returnDic;
         currentViewController[@"viewController"] = @"ViewController";
     }
     
-    if ([transitionInfo[@"section"] isEqualToString:@"0"] && ([transitionInfo[@"row"] isEqualToString:@"0"] || [transitionInfo[@"row"] isEqualToString:@"1"])) {
-        // section = 0 で row = 0,1の場合はMultiUpload
-        if ([currentViewController[@"viewController"] isEqualToString:@"ViewController"]) {
-            if ([transitionInfo[@"childObjectId"] isEqualToString:currentChildObjectId]) {
-                returnDic[@"nextVC"] = @"MultiUploadViewController";
-                // 遷移はこれで終わりなので、transitionInfoを初期化
-                [self removeInfo];
-            } else {
-                returnDic[@"nextVC"] = @"movePageContentViewController";
-                transitionInfo[@"isMoving"] = [NSNumber numberWithBool:YES];
-            }
-            return returnDic;
-        } else if ([currentViewController[@"viewController"] isEqualToString:@"MultiUploadViewController"]) {
-            if ([currentDate isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
-                
-                // ここでMultiUploadViewControllerのうまいreloadの仕方が思いつかない
-                // notificationの方がまだましな気がしてきた
-                MultiUploadViewController *vC = (MultiUploadViewController *)[viewController.navigationController topViewController];
-                if (vC && [NSStringFromClass([vC class]) isEqualToString:@"MultiUploadViewController"]) {
-                    [vC viewDidAppear:YES];
-                }
-                
-                [self removeInfo];
-                return nil;
-            }
-            [self returnToRoot:viewController];
-            return nil;
+    if ([currentViewController[@"viewController"] isEqualToString:@"ViewController"]) {
+        if ([transitionInfo[@"childObjectId"] isEqualToString:currentChildObjectId]) {
+            returnDic[@"nextVC"] = [self uploadType];
+            // 遷移はこれで終わりなので、transitionInfoを初期化
+            [self removeInfo];
         } else {
-            [self returnToRoot:viewController];
+            returnDic[@"nextVC"] = @"movePageContentViewController";
+            transitionInfo[@"isMoving"] = [NSNumber numberWithBool:YES];
+        }
+        return returnDic;
+    } else if ([currentViewController[@"viewController"] isEqualToString:@"MultiUploadViewController"]) {
+        if ([currentDate isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
+            
+            // ここでMultiUploadViewControllerのうまいreloadの仕方が思いつかない
+            // notificationの方がまだましな気がしてきた
+            MultiUploadViewController *vC = (MultiUploadViewController *)[viewController.navigationController topViewController];
+            if (vC && [NSStringFromClass([vC class]) isEqualToString:@"MultiUploadViewController"]) {
+                [vC viewDidAppear:YES];
+            }
+            
+            [self removeInfo];
             return nil;
         }
+        [self returnToRoot:viewController];
+        return nil;
+    } else if ([currentViewController[@"viewController"] isEqualToString:@"ImagePageViewController"]) {
+        if ([currentDate isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
+            
+            // MultiUploadと同様
+            // notificationの方がまだましな気がしてきた
+            UploadViewController *vC = (UploadViewController *)[viewController.navigationController topViewController];
+            if (vC && [NSStringFromClass([vC class]) isEqualToString:@"UploadViewController"]) {
+                [vC viewDidLoad];
+            }
+            
+            [self removeInfo];
+            return nil;
+        }
+        [self returnToRoot:viewController];
+        return nil;
+    } else {
+        [self returnToRoot:viewController];
+        return nil;
     }
     
     return nil;
+}
+
++ (NSString *)uploadType
+{
+    if ([transitionInfo[@"section"] isEqualToString:@"0"] && ([transitionInfo[@"row"] isEqualToString:@"0"] || [transitionInfo[@"row"] isEqualToString:@"1"])) {
+        return @"MultiUploadViewController";
+    } else {
+        return @"UploadViewController";
+    }
 }
 
 // ここの処理は毎回同じなので、受け取っているviewControllerで処理してしまう

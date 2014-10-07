@@ -68,7 +68,10 @@
         [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
             if (!task.error && task.result) {
                 AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                _uploadedImageView.image = [UIImage imageWithData:getResult.body];
+                UIImage *s3Image = [UIImage imageWithData:getResult.body];
+                _uploadedImageView.image = s3Image;
+                CGRect imageRect = [self getUploadedImageFrame:s3Image];
+                _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
             } else {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController : %@", task.error]];
             }

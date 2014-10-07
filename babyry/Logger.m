@@ -77,6 +77,11 @@
 
 + (void) writeToTrackingLog:(NSString *)message
 {
+    // prodでなければログに出す
+    if(![[app env] isEqualToString:@"prod"]) {
+        NSLog(@"%@", message);
+    }
+    
     NSString *TrackingLogKeyName = [Config config][@"TrackingLogKeyName"];
     TrackingLogEntity *entity = [TrackingLogEntity MR_findFirstByAttribute:@"name" withValue:TrackingLogKeyName];
     if (!entity.logName) {

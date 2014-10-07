@@ -384,17 +384,7 @@
         return;
     }
    
-    ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
-    pageViewController.childImages = [[self logic:@"screenSavedChildImages"] screenSavedChildImages];
-    pageViewController.currentSection = indexPath.section;
-    pageViewController.currentRow = [[self logic:@"currentIndexRowInSavedChildImages"] currentIndexRowInSavedChildImages:indexPath];
-    pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
-    pageViewController.childObjectId = _childObjectId;
-    pageViewController.imagesCountDic = _imagesCountDic;
-    pageViewController.child = _childProperty;
-    pageViewController.notificationHistory = _notificationHistory;
-    [self.navigationController setNavigationBarHidden:YES];
-    [self.navigationController pushViewController:pageViewController animated:YES];
+    [self moveToImagePageViewController:indexPath];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
@@ -438,6 +428,21 @@
     } else {
         // TODO インターネット接続がありません的なメッセージいるかも
     }
+}
+
+- (void) moveToImagePageViewController:(NSIndexPath *)indexPath
+{
+    ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
+    pageViewController.childImages = [[self logic:@"screenSavedChildImages"] screenSavedChildImages];
+    pageViewController.currentSection = indexPath.section;
+    pageViewController.currentRow = [[self logic:@"currentIndexRowInSavedChildImages"] currentIndexRowInSavedChildImages:indexPath];
+    pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
+    pageViewController.childObjectId = _childObjectId;
+    pageViewController.imagesCountDic = _imagesCountDic;
+    pageViewController.child = _childProperty;
+    pageViewController.notificationHistory = _notificationHistory;
+    [self.navigationController setNavigationBarHidden:YES];
+    [self.navigationController pushViewController:pageViewController animated:YES];
 }
 
 - (UIView *) makeCalenderLabel:(NSIndexPath *)indexPath cellFrame:(CGRect)cellFrame
@@ -1031,8 +1036,10 @@
     NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:[childImage[@"date"] stringValue]];
     
     if (!tsnInfo[@"nextVC"]) {
+        NSLog(@"tsnInfoがねえぞ！");
         return;
     }
+    NSLog(@"%@", tsnInfo);
     
     if ([tsnInfo[@"nextVC"] isEqualToString:@"MultiUploadViewController"]) {
         [self moveToMultiUploadViewController:tsnInfo[@"date"] index:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
@@ -1040,7 +1047,6 @@
     }
     
     if ([tsnInfo[@"nextVC"] isEqualToString:@"movePageContentViewController"]) {
-        
         // ださいけど、childPropertiesからターゲットのchildIdのindexをみつける
         int i = 0;
         for (NSMutableDictionary *dic in _childProperties) {
@@ -1052,6 +1058,11 @@
             }
             i++;
         }
+        return;
+    }
+    
+    if ([tsnInfo[@"nextVC"] isEqualToString:@"UploadViewController"]) {
+        [self moveToImagePageViewController:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
         return;
     }
     
