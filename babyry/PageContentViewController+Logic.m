@@ -449,7 +449,7 @@
         
         NSMutableDictionary *choosedYMD = [[NSMutableDictionary alloc]init];
         for (PFObject *childImage in objects) {
-            choosedYMD[ [childImage[@"date"] stringValue] ] = @"";
+            choosedYMD[ [childImage[@"date"] stringValue] ] = [NSNumber numberWithBool:YES];
         }
         
         for (NSString *ymd in [self.pageContentViewController.notificationHistory allKeys]) {
