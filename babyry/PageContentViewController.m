@@ -27,6 +27,7 @@
 #import "CellBackgroundViewToWaitUpload.h"
 #import "CellBackgroundViewToWaitUploadLarge.h"
 #import "CellBackgroundViewNoImage.h"
+#import "AddMonthToCalendarView.h"
 #import "CalenderLabel.h"
 #import "PushNotification.h"
 #import "UploadPickerViewController.h"
@@ -240,12 +241,15 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [[[_childImages objectAtIndex:section] objectForKey:@"images"] count];
+    if (section == _childImages.count - 1) {
+        return [_childImages[section][@"images"] count] + 1;
+    }
+    return [_childImages[section][@"images"] count];
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return [_childImages count];
+    return _childImages.count;
 }
 
 // セルの大きさを指定するメソッド
@@ -259,13 +263,11 @@
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
-    
     return 2.0;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
 {
-    
     return 1.0;
 }
 
@@ -282,12 +284,17 @@
             [cell removeGestureRecognizer:gesture];
         }
     }
+   
+    // カレンダー追加用cell
+    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
+        [self setBackgroundViewOfCell:cell withImageCachePath:@"" withIndexPath:indexPath];
+        return cell;
+    }
 
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] stringValue];
-   
     NSString *imageCachePath = ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row])
         ? [NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId , ymd]
         : [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId , ymd];
@@ -337,6 +344,12 @@
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             return;
         }
+    }
+   
+    // カレンダー追加cell
+    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
+        [[self logic:@"addMonthToCalendar"] addMonthToCalendar:indexPath];
+        return;
     }
     
     PFObject *tappedChildImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
@@ -713,7 +726,17 @@
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     if (!imageCacheData) {
-        if ([role isEqualToString:@"uploader"]) {
+        if ([section[@"images"] count] <= indexPath.row) {
+            // カレンダー追加用のcell
+            PFObject *oldestChildImage = section[@"images"][indexPath.row - 1];
+            NSNumber *oldestChildImageDate = oldestChildImage[@"date"];
+            NSDateComponents *comps = [[self logic:@"compsToAdd"] compsToAdd:oldestChildImageDate];
+            AddMonthToCalendarView *backgroundView = [AddMonthToCalendarView view];
+            CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+            backgroundView.frame = rect;
+            backgroundView.messageLabel.text = [NSString stringWithFormat:@"カレンダー追加\n(%d月分)", comps.month];
+            [cell addSubview:backgroundView];
+        } else if ([role isEqualToString:@"uploader"]) {
             // アップの出し分け
             // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
             // それ以外 : アップアイコン
@@ -1002,6 +1025,18 @@
 - (void)hideHeaderView
 {
     [[self logic:@"hideFamilyApplyIntroduceView"] hideFamilyApplyIntroduceView];
+}
+
+- (BOOL)alreadyDisplayedDialog
+{
+    NSArray *views = [self.view subviews];
+    for (int i = 0; i < views.count; i++) {
+        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
+            [views[i] isKindOfClass:[PageFlickIntroductionView class]]) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 /*

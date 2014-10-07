@@ -425,4 +425,113 @@
 {}
 
 
+- (NSDateComponents *)compsToAdd:(NSNumber *)oldestChildImageDate
+{
+    NSDateComponents *comps = [DateUtils compsFromNumber:oldestChildImageDate];
+    if (comps.day == 1) {
+        // 月初であれば前の月
+        NSDateComponents *preMonthComps = [DateUtils addDateComps:comps withUnit:@"month" withValue:-1];
+        return preMonthComps;
+    } else {
+        // 月初でなければその月
+        comps.day = 1;
+        return comps;
+    }
+}
+
+- (void)addMonthToCalendar:(NSIndexPath *)indexPath
+{
+    PFObject *oldestChildImage = self.pageContentViewController.childImages[indexPath.section][@"images"][indexPath.row - 1];
+    NSNumber *date = oldestChildImage[@"date"];
+    NSDateComponents *compsToAdd = [self compsToAdd:date];
+    
+    // Child.calendarStartDateを保存
+    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
+    [query whereKey:@"objectId" equalTo:self.pageContentViewController.childObjectId];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
+            // TODO ネットワークを確かめてalertを表示
+            return;
+        }
+        
+        if (objects.count == 0) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Cannot find Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
+            return;
+        }
+        
+        if (objects.count > 0) {
+            NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", compsToAdd.year, compsToAdd.month, compsToAdd.day];
+            NSNumber *calenarStartDate = [NSNumber numberWithInteger:[ymd integerValue]];
+            PFObject *child = objects[0];
+            child[@"calendarStartDate"] = calenarStartDate;
+            [child saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save Child.calendarStartDate Child.objectId:%@ calendarStartDate:%@", self.pageContentViewController.childObjectId, calenarStartDate]];
+                    // TODO ネットワークを確かめてalertを表示
+                    return;
+                }
+                // _childImagesにPFObjectを追加
+                [self addEmptyChildImages:compsToAdd];
+                // PageContentViewControllerをreload
+                [self.pageContentViewController.pageContentCollectionView reloadData];
+            }];
+        }
+    }];
+}
+
+// compsToAddまでのchildImageを追加する
+- (void)addEmptyChildImages:(NSDateComponents *)compsToAdd
+{
+    NSMutableArray *childImages = self.pageContentViewController.childImages;
+    NSMutableDictionary *oldestSection = childImages[childImages.count - 1];
+    
+    NSInteger oldestSectionYear  = [oldestSection[@"year"] integerValue];
+    NSInteger oldestSectionMonth = [oldestSection[@"month"] integerValue];
+   
+    NSMutableArray *images;
+    NSMutableDictionary *section;
+    if (oldestSectionYear == compsToAdd.year && oldestSectionMonth == compsToAdd.month) {
+        // 最初のカレンダー追加時はその月の月初までを追加する
+        images = oldestSection[@"images"];
+        section = oldestSection;
+        
+    } else {
+        // 一ヶ月分のカレンダーを追加
+        section = [[NSMutableDictionary alloc]init];
+        images = [[NSMutableArray alloc]init];
+        section[@"images"] = images;
+        section[@"totalImageNum"] = [[NSMutableArray alloc]init];
+        section[@"weekdays"]      = [[NSMutableArray alloc]init];
+        section[@"year"]          = [NSString stringWithFormat:@"%ld", (long)compsToAdd.year];
+        section[@"month"]         = [NSString stringWithFormat:@"%02ld", (long)compsToAdd.month];
+        [childImages addObject:section];
+    }
+    
+    PFObject *oldestChildImage = oldestSection[@"images"][ [oldestSection[@"images"] count] - 1 ];
+    NSString *oldestChildImageDate = oldestChildImage[@"date"];
+    NSDateComponents *oldestComps = [DateUtils compsFromNumber:[NSNumber numberWithInteger:[oldestChildImageDate integerValue]]];
+  
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *dateToAdd = [DateUtils setSystemTimezone:[cal dateFromComponents:compsToAdd]];
+    NSDate *oldestDateToAdd = [DateUtils setSystemTimezone:[cal dateFromComponents:oldestComps]];
+    
+    int i = 0; // safty
+    while ([oldestDateToAdd compare:dateToAdd] == NSOrderedDescending) {
+        oldestComps = [DateUtils addDateComps:oldestComps withUnit:@"day" withValue:-1];
+        oldestDateToAdd = [cal dateFromComponents:oldestComps];
+        
+        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[self.pageContentViewController.childProperty[@"childImageShardIndex"] integerValue]]];
+        childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)oldestComps.year, (long)oldestComps.month, (long)oldestComps.day] integerValue]];
+        [images addObject:childImage];
+        [section[@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
+        [section[@"weekdays"] addObject: [NSNumber numberWithInteger:oldestComps.weekday]];
+        
+        i++;
+        if (i >= 31) {
+            break;
+        }
+    }
+}
+
 @end

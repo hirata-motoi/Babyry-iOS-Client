@@ -212,6 +212,10 @@
 		F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */; };
 		F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350419C97982001F33D0 /* TutorialNavigator.m */; };
 		F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */; };
+		F2FAA56219DC4ABB00546669 /* PageFlickIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */; };
+		F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */; };
+		F2FAA56719E2DBF600546669 /* AddMonthToCalendarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */; };
+		F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -568,6 +572,12 @@
 		F2D9350419C97982001F33D0 /* TutorialNavigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialNavigator.m; sourceTree = "<group>"; };
 		F2D9350A19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+ShowMultiUpload.h"; sourceTree = "<group>"; };
 		F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+ShowMultiUpload.m"; sourceTree = "<group>"; };
+		F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PageFlickIntroductionView.xib; sourceTree = "<group>"; };
+		F2FAA56319DC576300546669 /* PageFlickIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageFlickIntroductionView.h; sourceTree = "<group>"; };
+		F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageFlickIntroductionView.m; sourceTree = "<group>"; };
+		F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddMonthToCalendarView.xib; sourceTree = "<group>"; };
+		F2FAA56819E2DE6300546669 /* AddMonthToCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddMonthToCalendarView.h; sourceTree = "<group>"; };
+		F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddMonthToCalendarView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -861,6 +871,8 @@
 		88CFF4E21997AC6700B56481 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2FAA56819E2DE6300546669 /* AddMonthToCalendarView.h */,
+				F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */,
 				F2ABB121197D295B009E35CB /* CommentTableViewCell.h */,
 				F2ABB122197D295B009E35CB /* CommentTableViewCell.m */,
 				F2305214198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.h */,
@@ -894,6 +906,7 @@
 				F230520D198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib */,
 				F2305218198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib */,
 				88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */,
+				F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */,
 				F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */,
 				F233421419A114E900928101 /* FamilyApplyListCell.xib */,
 			);
@@ -1403,6 +1416,7 @@
 				F2A8333019AC591B00E2AB58 /* babyry-secret-config.plist in Resources */,
 				F2B9697419CD75B000C14201 /* TutorialBestShotSelectedView.xib in Resources */,
 				F285517319D160AC00347BB6 /* TutorialImage_6.jpg in Resources */,
+				F2FAA56719E2DBF600546669 /* AddMonthToCalendarView.xib in Resources */,
 				F21BBBCA19CA0265002D4623 /* TutorialUpperArrowView.xib in Resources */,
 				F226590F19D22575003A62BD /* TutorialSelectBestShotFinishedView.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
@@ -1576,6 +1590,7 @@
 				F226591A19D23003003A62BD /* TutorialImageUploadFinishedView.m in Sources */,
 				88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */,
 				88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */,
+				F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */,
 				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,

@@ -26,6 +26,9 @@
 - (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath;
 - (void)setupHeaderView;
 - (void)hideFamilyApplyIntroduceView;
+- (void)setupImagesCount;
+- (NSDateComponents *)compsToAdd:(NSNumber *)oldestChildImageDate;
+- (void)addMonthToCalendar:(NSIndexPath *)indexPath;
 
 @property PageContentViewController *pageContentViewController;
 
