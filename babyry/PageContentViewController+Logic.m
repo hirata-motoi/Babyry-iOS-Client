@@ -448,6 +448,10 @@
     PFQuery *child = [PFQuery queryWithClassName:@"Child"];
     [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
     [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to update childProperties userId:%@ error:%@", [PFUser currentUser][@"userId"], error]];
+            return;
+        }
         if (objects) {
             NSMutableArray *properties = [[NSMutableArray alloc]init];
             for (PFObject *object in objects) {
