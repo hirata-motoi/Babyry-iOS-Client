@@ -12,6 +12,11 @@
 #import "PartnerInvitedEntity.h"
 #import "PartnerApply.h"
 #import "DateUtils.h"
+#import "CloseButtonView.h"
+#import "Tutorial.h"
+#import "ImageCache.h"
+#import "PushNotification.h"
+#import "TmpUser.h"
 
 @interface IntroMyNicknameViewController ()
 
@@ -63,6 +68,9 @@
     
     _datePicker.maximumDate = [NSDate date];
     [_datePicker addTarget:self action:@selector(action:forEvent:) forControlEvents:UIControlEventValueChanged];
+    
+    // logout button
+    [self setupLogoutButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -198,6 +206,33 @@
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"yyyy/MM/dd";
     _birthdayLabel.text = [df stringFromDate:_datePicker.date];
+}
+
+- (void)setupLogoutButton
+{
+    CloseButtonView *view = [CloseButtonView view];
+    CGRect rect = view.frame;
+    rect.origin.x = 10;
+    rect.origin.y = 30;
+    view.frame = rect;
+    
+    UITapGestureRecognizer *logoutGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(logout)];
+    logoutGesture.numberOfTapsRequired = 1;
+    [view addGestureRecognizer:logoutGesture];
+    
+    [self.view addSubview:view];
+}
+
+- (void)logout
+{
+    [TmpUser removeTmpUserFromCoreData];
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [Tutorial removeTutorialStage];
+    [ImageCache removeAllCache];
+    [PushNotification removeSelfUserIdFromChannels:^(){
+        NSLog(@"logout executed");
+        [PFUser logOut];
+    }];
 }
 
 @end

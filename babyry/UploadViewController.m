@@ -219,16 +219,28 @@
     return _uploadedImageView;
 }
 
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
+{
+    CGRect rect = view.frame;
+    if (rect.size.height < scrollView.frame.size.height) {
+        rect.origin.y = (scrollView.frame.size.height - rect.size.height)/2;
+    } else {
+        rect.origin.y = 0;
+    }
+    view.frame = rect;
+}
+
 - (void)disableNotificationHistories
 {
-    NSString *type = @"imageUploaded";
-    if (_notificationHistoryByDay[type] && [_notificationHistoryByDay[type] count] > 0) {
-        for (PFObject *notification in _notificationHistoryByDay[type]) {
-            [NotificationHistory disableDisplayedNotificationsWithObject:notification];
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged"];
+    
+    for (NSString *type in notificationTypes) {
+        if (_notificationHistoryByDay[type] && [_notificationHistoryByDay[type] count] > 0) {
+            for (PFObject *notification in _notificationHistoryByDay[type]) {
+                [NotificationHistory disableDisplayedNotificationsWithObject:notification];
+            }
+            [_notificationHistoryByDay[type] removeAllObjects];
         }
-        //[_notificationHistoryByDay[@"commentPosted"] removeAllObjects];
-        PFObject *obj = [[PFObject alloc]initWithClassName:@"NotificationHistory"];
-        [_notificationHistoryByDay[type] addObject:obj];
     }
 }
 
