@@ -26,6 +26,7 @@
 - (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath;
 - (void)setupHeaderView;
 - (void)hideFamilyApplyIntroduceView;
+- (void)setupImagesCount;
 
 @property PageContentViewController *pageContentViewController;
 

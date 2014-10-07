@@ -15,6 +15,8 @@
 #import "Config.h"
 #import "AppSetting.h"
 #import "NotificationHistory.h"
+#import "ParseUtils.h"
+#import "ImageRequestIntroductionView.h"
 
 @implementation PageContentViewController_Logic
 
@@ -23,6 +25,7 @@
     [self showChildImages];
     [self setupImagesCount];
     [self setupNotificationHistory];
+    [self updateChildProperties];
 }
 
 - (void)showChildImages
@@ -238,13 +241,13 @@
     if ([self.pageContentViewController.selfRole isEqualToString:@"uploader"]) {
         return;
     }
-    
+
     // チョイスとしての初load以外ならreturn
     AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedFirstLaunch"]];
     if (appSetting) {
         return;
     }
-
+    
     AppSetting *newAppSetting = [AppSetting MR_createEntity];
     newAppSetting.name = [Config config][@"FinishedFirstLaunch"];
     newAppSetting.value = @"";
@@ -252,6 +255,22 @@
     newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntrodutionOfImageRequestView:) userInfo:nil repeats:NO];
+}
+
+- (void)showIntroductionOfPageFlick
+{
+    // 初回のみ
+    AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
+    if (appSetting || self.pageContentViewController.childProperties.count < 2 ) {
+        return;
+    }
+    AppSetting *newAppSetting = [AppSetting MR_createEntity];
+    newAppSetting.name = [Config config][@"FinishedIntroductionOfPageFlick"];
+    newAppSetting.value = @"";
+    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntroductionOfPageFlickView:) userInfo:nil repeats:NO];
 }
 
 - (void)removeUnnecessaryFullsizeCache
@@ -425,6 +444,36 @@
 - (void)forwardNextTutorial
 {}
 
+- (void)updateChildProperties
+{
+    PFQuery *child = [PFQuery queryWithClassName:@"Child"];
+    [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+    [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to update childProperties userId:%@ error:%@", [PFUser currentUser][@"userId"], error]];
+            return;
+        }
+        if (objects) {
+            NSMutableArray *properties = [[NSMutableArray alloc]init];
+            for (PFObject *object in objects) {
+                [properties addObject:[ParseUtils pfObjectToDic:object]];
+            }
+            
+            if (![self hasUpdatedChildProperties:properties]) {
+                [self showIntroductionOfPageFlick];
+                return;
+            }
+            
+            [self.pageContentViewController.childProperties removeAllObjects];
+            for (NSMutableDictionary *childProperty in properties) {
+                [self.pageContentViewController.childProperties addObject:childProperty];
+            }
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
+    }];
+}
+
 // notification historyの過去のバグで、notificationがつく → 画像を消す とすると
 // notificationがついたままになってしまうので、
 // notificationがあるけども画像がない -> notificationをdisableする
@@ -474,6 +523,38 @@
     }];
 }
 
+- (BOOL)hasUpdatedChildProperties:(NSArray *)properties
+{
+    if (properties.count != self.pageContentViewController.childProperties.count) {
+        return YES;
+    }
+    
+    NSMutableDictionary *childPropertiesDic = [[NSMutableDictionary alloc]init];
+    for (NSMutableDictionary *childProperty in self.pageContentViewController.childProperties) {
+        childPropertiesDic[childProperty[@"objectId"]] = childProperty;
+    }
+    
+    for (NSMutableDictionary *child in properties) {
+        NSString *objectId = child[@"objectId"];
+        if (![self isEqualDictionary:child withCompare:childPropertiesDic[objectId]]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (BOOL)isEqualDictionary:(NSDictionary *)child1 withCompare:(NSDictionary *)child2
+{
+    // createdByはPFUser objectのポインタが入っている
+    // Parseから取得する度に別のポインタをとるので異なるobjectと判定されるためここでは無視する
+    NSMutableDictionary *dic1 = [[NSMutableDictionary alloc]initWithDictionary:child1];
+    [dic1 removeObjectForKey:@"createdBy"];
+    NSMutableDictionary *dic2 = [[NSMutableDictionary alloc]initWithDictionary:child2];
+    [dic2 removeObjectForKey:@"createdBy"];
+    
+    return [dic1 isEqualToDictionary:dic2];
+}
+
 - (NSIndexPath *)indexPathFromYMD:(NSString *)ymd
 {
     NSNumber *ymdNumber = [NSNumber numberWithInteger:[ymd integerValue]];
@@ -502,6 +583,5 @@
         [self.pageContentViewController.notificationHistory[ymd][type] removeAllObjects];
     }
 }
-
 
 @end

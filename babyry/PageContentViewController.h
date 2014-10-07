@@ -53,6 +53,7 @@
 - (NSMutableDictionary *)getYearMonthMap;
 - (void)showAlertMessage;
 - (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
+- (void)addIntrodutionOfPageFlickView:(NSTimer *)timer;
 - (void)openFamilyApply;
 - (void)setImages;
 - (void)showTutorialNavigator;
