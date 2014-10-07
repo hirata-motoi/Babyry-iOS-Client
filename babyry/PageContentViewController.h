@@ -81,7 +81,4 @@
 
 @property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
 
-// 今月と先月のgetChildImagesWithYearを読み込んだフラグ
-@property BOOL loadCompletBothMonth;
-
 @end

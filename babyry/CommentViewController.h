@@ -31,5 +31,6 @@
 @property NSMutableDictionary *child;
 
 @property PFObject *imageInfo;
+@property NSIndexPath *indexPath;
 
 @end

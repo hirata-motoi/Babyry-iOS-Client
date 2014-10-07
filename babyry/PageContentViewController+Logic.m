@@ -27,7 +27,7 @@
 
 - (void)showChildImages
 {
-    self.pageContentViewController.loadCompletBothMonth = NO;
+    _loadCompletBothMonth = NO;
     
     // 今月
     NSDateComponents *comp = [self dateComps];
@@ -137,10 +137,11 @@
             self.pageContentViewController.isFirstLoad = 0;
             [self finalizeProcess];
             
-            if (self.pageContentViewController.loadCompletBothMonth == YES) {
+            NSLog(@"month %d %d", month, self.pageContentViewController.pageIndex);
+            if (_loadCompletBothMonth == YES) {
                 [self.pageContentViewController dispatchForPushReceivedTransition];
             }
-            self.pageContentViewController.loadCompletBothMonth = YES;
+            _loadCompletBothMonth = YES;
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [self.pageContentViewController.hud hide:YES];

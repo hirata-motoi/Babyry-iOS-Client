@@ -96,7 +96,8 @@
 
 - (void)applicationDidBecomeActive
 {
-    [self viewDidAppear:YES];
+    // 不要かも(ViewDidAppearが2回呼ばれて変な事になった)。もろもろ検証終わって要らなかったら削除
+    //[self viewDidAppear:YES];
 }
 
 - (void)applicationDidReceiveRemoteNotification
@@ -164,6 +165,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    NSLog(@"viewDidAppear in PageContentViewController %d", _pageIndex);
     [super viewDidAppear:animated];
     
     [self setImages];
@@ -410,6 +412,9 @@
 
 - (void) moveToMultiUploadViewController:(NSString *)date index:(NSIndexPath *)indexPath
 {
+    // 遷移完了しないと入らないので、後続の処理の為にここで先立って入れておく
+    [TransitionByPushNotification setCurrentViewController:@"MultiUploadViewController"];
+    
     MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
     multiUploadViewController.name = [_childProperty objectForKey:@"name"];
     multiUploadViewController.childObjectId = [_childProperty objectForKey:@"objectId"];
@@ -441,6 +446,7 @@
     pageViewController.imagesCountDic = _imagesCountDic;
     pageViewController.child = _childProperty;
     pageViewController.notificationHistory = _notificationHistory;
+    pageViewController.indexPath = indexPath;
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
 }
@@ -1066,10 +1072,10 @@
         return;
     }
     
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"RootViewController"]) {
-        [self.navigationController popToRootViewControllerAnimated:YES];
-        return;
-    }
+//    if ([tsnInfo[@"nextVC"] isEqualToString:@"RootViewController"]) {
+//        [self.navigationController popToRootViewControllerAnimated:YES];
+//        return;
+//    }
 }
 
 /*

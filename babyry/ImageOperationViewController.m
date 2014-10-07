@@ -124,6 +124,7 @@
     commentViewController.month = _month;
     commentViewController.imageInfo = _imageInfo;
     commentViewController.child = _child;
+    commentViewController.indexPath = _indexPath;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
     _commentView.frame = CGRectMake(self.view.frame.size.width, self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height -44 -20 -44);
@@ -159,6 +160,7 @@
     imageToolbarViewController.uploadViewController = _uploadViewController;
     imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
     imageToolbarViewController.child = _child;
+    imageToolbarViewController.openCommentView = _openCommentView;
     
     _toolbarView = imageToolbarViewController.view;
     _toolbarView.hidden = NO;

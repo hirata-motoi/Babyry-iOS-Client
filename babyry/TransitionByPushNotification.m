@@ -79,6 +79,9 @@ static NSMutableDictionary *returnDic;
 
 + (NSMutableDictionary *) dispatch:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
 {
+    NSLog(@"Load From %@", NSStringFromClass([viewController class]));
+    NSLog(@"CurrentViewController %@", currentViewController[@"viewController"]);
+    
     // 遷移中の場合は何もしない
     if ([transitionInfo[@"isMoving"] isEqualToNumber:[NSNumber numberWithBool:YES]]) {
         return nil;
@@ -98,61 +101,89 @@ static NSMutableDictionary *returnDic;
     // インスタントに使う用にreturnDicとして深いコピー
     returnDic = [[NSMutableDictionary alloc] initWithDictionary:transitionInfo];
     
-    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
-        returnDic = [self dispatchForImageUpload:viewController childObjectId:currentChildObjectId selectedDate:currentDate];
-    }
-    
-    return returnDic;
-}
-
-+ (NSMutableDictionary *)dispatchForImageUpload:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
-{
     // 起動一発目は値が入らない かつ 一発目は必ずtopのViewControllerが入るので
     if (!currentViewController[@"viewController"]) {
         currentViewController[@"viewController"] = @"ViewController";
     }
     
+    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
+        returnDic = [self dispatchForImageUploadOrComment:viewController childObjectId:currentChildObjectId selectedDate:currentDate];
+    }
+    
+    return returnDic;
+}
+
++ (NSMutableDictionary *)dispatchForImageUploadOrComment:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
+{
     if ([currentViewController[@"viewController"] isEqualToString:@"ViewController"]) {
+        NSLog(@"もしviewControllerだったら");
         if ([transitionInfo[@"childObjectId"] isEqualToString:currentChildObjectId]) {
+            NSLog(@"もしこどもが一致していたら");
             returnDic[@"nextVC"] = [self uploadType];
-            // 遷移はこれで終わりなので、transitionInfoを初期化
-            [self removeInfo];
+            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
+                // 画像アップロードの場合、遷移はこれで終わりなのでtransitionInfoを初期化
+                [self removeInfo];
+            }
         } else {
+            NSLog(@"もしこどもが一致していなかったら");
             returnDic[@"nextVC"] = @"movePageContentViewController";
             transitionInfo[@"isMoving"] = [NSNumber numberWithBool:YES];
         }
         return returnDic;
     } else if ([currentViewController[@"viewController"] isEqualToString:@"MultiUploadViewController"]) {
+        NSLog(@"もしMultiUploadViewControllerだったら");
         if ([currentDate isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
-            
-            // ここでMultiUploadViewControllerのうまいreloadの仕方が思いつかない
-            // notificationの方がまだましな気がしてきた
-            MultiUploadViewController *vC = (MultiUploadViewController *)[viewController.navigationController topViewController];
-            if (vC && [NSStringFromClass([vC class]) isEqualToString:@"MultiUploadViewController"]) {
-                [vC viewDidAppear:YES];
+            NSLog(@"もし日付とこどもが一致していたら");
+            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
+                NSLog(@"imageUploadなら");
+                // ここでMultiUploadViewControllerのうまいreloadの仕方が思いつかない
+                // notificationの方がまだましな気がしてきた
+                MultiUploadViewController *vC = (MultiUploadViewController *)[viewController.navigationController topViewController];
+                if (vC && [NSStringFromClass([vC class]) isEqualToString:@"MultiUploadViewController"]) {
+                    [vC viewDidAppear:YES];
+                }
+                
+                [self removeInfo];
+                return nil;
             }
             
-            [self removeInfo];
-            return nil;
+            if ([transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
+                NSLog(@"commentPostedなら");
+                // 対象の日付、対象のこどものMultiUploadViewが開かれている状態
+                // ベストショットがあればベストショット、決まってなければ最初の画像を開く
+                NSLog(@"ベストショットがあればベストショット、決まってなければ最初の画像を開く");
+                returnDic[@"nextVC"] = @"CommentViewController";
+                return returnDic;
+            }
         }
         [self returnToRoot:viewController];
         return nil;
     } else if ([currentViewController[@"viewController"] isEqualToString:@"ImagePageViewController"]) {
+        NSLog(@"もしImagePageViewControllerだったら");
         if ([currentDate isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
-            
-            // MultiUploadと同様
-            // notificationの方がまだましな気がしてきた
-            UploadViewController *vC = (UploadViewController *)[viewController.navigationController topViewController];
-            if (vC && [NSStringFromClass([vC class]) isEqualToString:@"UploadViewController"]) {
-                [vC viewDidLoad];
+            NSLog(@"もし日付とこどもが一致していたら");
+            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
+                NSLog(@"imageUploadなら");
+                // MultiUploadと同様
+                // notificationの方がまだましな気がしてきた
+                UploadViewController *vC = (UploadViewController *)[viewController.navigationController topViewController];
+                if (vC && [NSStringFromClass([vC class]) isEqualToString:@"UploadViewController"]) {
+                    [vC viewDidLoad];
+                }
+                
+                [self removeInfo];
+                return nil;
+            } else if ([transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
+                NSLog(@"commentPostedなら");
+                // 対象の日付、対象のこどものMultiUploadViewが開かれている状態
+                // コメントを開く
+                NSLog(@"コメントを開く");
             }
-            
-            [self removeInfo];
-            return nil;
         }
         [self returnToRoot:viewController];
         return nil;
     } else {
+        NSLog(@"その他のViewControllerなら");
         [self returnToRoot:viewController];
         return nil;
     }
@@ -172,6 +203,7 @@ static NSMutableDictionary *returnDic;
 // ここの処理は毎回同じなので、受け取っているviewControllerで処理してしまう
 + (void) returnToRoot:(UIViewController *)viewController
 {
+    NSLog(@"topにもどろう");
     if (![transitionInfo[@"isMoving"] isEqualToNumber:[NSNumber numberWithBool:YES]]) {
         transitionInfo[@"isMoving"] = [NSNumber numberWithBool:YES];
         [viewController.navigationController setNavigationBarHidden:NO];

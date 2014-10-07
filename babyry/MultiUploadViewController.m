@@ -111,6 +111,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    NSLog(@"viewDidAppear in MultiUploadViewController");
     [super viewDidAppear:animated];
         
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -399,10 +400,10 @@
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
     _detailImageIndex = [[sender view] tag];
-    [self openImagePageView:_detailImageIndex];
+    [self openImagePageView:_detailImageIndex forceOpenBestShot:NO];
 }
 
-- (void) openImagePageView:(int)detailImageIndex
+- (void) openImagePageView:(int)detailImageIndex forceOpenBestShot:(BOOL)forceOpenBestShot
 {
     // _childImageArrayを_childImageCacheArrayのならびにそろえる (ソートの関係でそろわない可能性あり)
     // ついでにtmp省く
@@ -435,7 +436,11 @@
         ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
         pageViewController.childImages = childImages;
         pageViewController.currentSection = 0;
-        pageViewController.currentRow = detailImageIndex;
+        if (forceOpenBestShot && bestIndex != -1) {
+            pageViewController.currentRow = bestIndex;
+        } else {
+            pageViewController.currentRow = detailImageIndex;
+        }
         pageViewController.childObjectId = _childObjectId;
         pageViewController.fromMultiUpload = YES;
         pageViewController.myRole = _myRole;
@@ -629,13 +634,15 @@
 
 - (void) dispatchForPushReceivedTransition
 {
+    NSLog(@"dispatchForPushReceivedTransition in MultiUploadViewController");
     NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
     if (!tsnInfo) {
         return;
     }
         
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"RootViewController"]) {
-        [self.navigationController popToRootViewControllerAnimated:YES];
+    if ([tsnInfo[@"nextVC"] isEqualToString:@"CommentViewController"]) {
+        NSLog(@"コメント出すぞ！");
+        [self openImagePageView:0 forceOpenBestShot:YES];
         return;
     }
 

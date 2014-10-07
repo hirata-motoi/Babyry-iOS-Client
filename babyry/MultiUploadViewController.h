@@ -73,9 +73,11 @@
 // for tutorial
 @property UIView *firstCellUnselectedBestShotView;
 
+@property int totalNewCacheNum;
 
 - (void)showTutorialNavigator;
 - (void)removeNavigationView;
 - (void)forwardNextTutorial;
+- (void) dispatchForPushReceivedTransition;
 
 @end

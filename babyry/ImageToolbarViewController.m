@@ -66,6 +66,14 @@
     }                    
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    if (_openCommentView) {
+        [self imageComment];
+        [TransitionByPushNotification removeInfo];
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

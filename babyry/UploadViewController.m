@@ -178,6 +178,14 @@
     _operationViewController.bestImageIndexArray = _bestImageIndexArray;
     _operationViewController.pageIndex = _pageIndex;
     _operationViewController.myRole = _myRole;
+    _operationViewController.indexPath = _indexPath;
+    
+    // push通知でここに来た場合には、コメントを開く為のフラグをたてる
+    if ([[TransitionByPushNotification getInfo][@"event"] isEqualToString:@"commentPosted"]) {
+        _operationViewController.openCommentView = YES;
+    } else {
+        _operationViewController.openCommentView = NO;
+    }
     
     [self addChildViewController:_operationViewController];
     [_operationViewController didMoveToParentViewController:self];
