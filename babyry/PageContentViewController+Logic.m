@@ -424,6 +424,69 @@
 - (void)forwardNextTutorial
 {}
 
+// TODO oldestChildImageDateの更新をここでもやる
+// ChildPropertiesというクラスを作った方がいいかな
+- (void)updateChildProperties
+{
+    PFQuery *child = [PFQuery queryWithClassName:@"Child"];
+    [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+    [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to update childProperties userId:%@ error:%@", [PFUser currentUser][@"userId"], error]];
+            return;
+        }
+        if (objects) {
+            NSMutableArray *properties = [[NSMutableArray alloc]init];
+            for (PFObject *object in objects) {
+                [properties addObject:[ParseUtils pfObjectToDic:object]];
+            }
+            
+            if (![self hasUpdatedChildProperties:properties]) {
+                [self showIntroductionOfPageFlick];
+                return;
+            }
+            
+            [self.pageContentViewController.childProperties removeAllObjects];
+            for (NSMutableDictionary *childProperty in properties) {
+                [self.pageContentViewController.childProperties addObject:childProperty];
+            }
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
+    }];
+}
+
+- (BOOL)hasUpdatedChildProperties:(NSArray *)properties
+{
+    if (properties.count != self.pageContentViewController.childProperties.count) {
+        return YES;
+    }
+    
+    NSMutableDictionary *childPropertiesDic = [[NSMutableDictionary alloc]init];
+    for (NSMutableDictionary *childProperty in self.pageContentViewController.childProperties) {
+        childPropertiesDic[childProperty[@"objectId"]] = childProperty;
+    }
+    
+    for (NSMutableDictionary *child in properties) {
+        NSString *objectId = child[@"objectId"];
+        if (![self isEqualDictionary:child withCompare:childPropertiesDic[objectId]]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (BOOL)isEqualDictionary:(NSDictionary *)child1 withCompare:(NSDictionary *)child2
+{
+    // createdByはPFUser objectのポインタが入っている
+    // Parseから取得する度に別のポインタをとるので異なるobjectと判定されるためここでは無視する
+    NSMutableDictionary *dic1 = [[NSMutableDictionary alloc]initWithDictionary:child1];
+    [dic1 removeObjectForKey:@"createdBy"];
+    NSMutableDictionary *dic2 = [[NSMutableDictionary alloc]initWithDictionary:child2];
+    [dic2 removeObjectForKey:@"createdBy"];
+    
+    return [dic1 isEqualToDictionary:dic2];
+}
 
 - (NSDateComponents *)compsToAdd:(NSNumber *)oldestChildImageDate
 {

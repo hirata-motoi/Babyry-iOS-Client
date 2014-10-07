@@ -38,7 +38,9 @@
 
 @end
 
-@implementation ViewController
+@implementation ViewController {
+    NSMutableDictionary *oldestChildImageDate;
+}
 
 - (void)viewDidLoad
 {
@@ -230,6 +232,7 @@
                 }
             }
             _childArrayFoundFromParse = childList;
+            [self setupOldestChildImageDate];
             [self setupChildProperties];
             _only_first_load = 0;
             
@@ -281,6 +284,19 @@
         childSubDic[@"createdAt"] = c.createdAt;
         [_childProperties addObject:childSubDic];
     }
+    
+    // 各こどもの最も古い写真の日付を保持
+    NSLog(@"oldestChildImageDate:%@", oldestChildImageDate);
+    for (NSString *childObjectId in [oldestChildImageDate allKeys]) {
+        [_childProperties enumerateObjectsUsingBlock:^(NSMutableDictionary *childProperty, NSUInteger idx, BOOL *stop) {
+            
+            if ([childProperty[@"objectId"] isEqualToString:childObjectId]) {
+                childProperty[@"oldestChildImageDate"] = oldestChildImageDate[childObjectId];
+                *stop = YES;
+            }   
+        }];
+    }
+    NSLog(@"end of setupChildProperties");
 }
 
 -(void) showPageViewController
@@ -326,6 +342,7 @@
 
 - (void)instantiatePageViewController
 {
+    NSLog(@"instantiatePageViewController childProperties:%@", _childProperties);
     if (_childProperties.count < 1) {
         return;
     }
@@ -444,6 +461,35 @@
         }
         [FamilyRole updateCache];
     }];
+}
+
+// 不本意ではあるが同期処理でloadする(複数回リクエストを投げるのでそこは並列処理する)
+// first loadの時だけ使う
+- (void)setupOldestChildImageDate
+{
+    if (!oldestChildImageDate) {
+        oldestChildImageDate = [[NSMutableDictionary alloc]init];
+    }
+    [oldestChildImageDate removeAllObjects]; // initialize
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        for (PFObject *child in _childArrayFoundFromParse ) {
+            PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
+            [query whereKey:@"imageOf" equalTo:child.objectId];
+            [query orderByAscending:@"date"];
+            PFObject *oldestChildImage = [query getFirstObject];
+            if (oldestChildImage) {
+                oldestChildImageDate[child.objectId] = oldestChildImage[@"date"];
+            }
+            NSLog(@"load oldestChildImageDate childObjectId:%@", child.objectId);
+        }
+        dispatch_semaphore_signal(semaphore);
+    });
+    
+    NSLog(@"wait...");
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    NSLog(@"wait...finished");
 }
 
 @end

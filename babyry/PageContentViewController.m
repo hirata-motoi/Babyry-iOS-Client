@@ -587,77 +587,104 @@
 
 - (void)initializeChildImages
 {
-    NSMutableDictionary *child = _childProperty;
-    // 現在日時と子供の誕生日の間のオブジェクトをとりあえず全部作る
-    
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    
-    NSDate *firstDate = [[self logic:@"getCollectionViewFirstDay"] getCollectionViewFirstDay];
-                                       
-    // 現在
+    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
     NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
-    NSDate *today = [NSDate date];
     
-    NSMutableDictionary *childImagesDic = [[NSMutableDictionary alloc]init];
-    while ([today compare:firstDate] == NSOrderedDescending) {
-        NSDateComponents *c = [cal components:
-            NSYearCalendarUnit  |
-            NSMonthCalendarUnit |
-            NSDayCalendarUnit   |
-            NSWeekdayCalendarUnit
-        fromDate:today];
-        
-        NSString *ym = [NSString stringWithFormat:@"%ld%02ld", (long)c.year, (long)c.month];
-        
-        NSMutableDictionary *section;
-        if ([childImagesDic objectForKey:ym]) {
-            section = [childImagesDic objectForKey:ym];
-        } else {     
-            section = [[NSMutableDictionary alloc]init];
-            [section setObject:[[NSMutableArray alloc]init] forKey:@"images"];
-            [section setObject:[[NSMutableArray alloc]init] forKey:@"totalImageNum"];
-            [section setObject:[[NSMutableArray alloc]init] forKey:@"weekdays"];
-            NSString *year = [NSString stringWithFormat:@"%ld", (long)c.year];
-            [section setObject:year forKey:@"year"];
-            NSString *month = [NSString stringWithFormat:@"%02ld", (long)c.month];
-            [section setObject:month forKey:@"month"];
-            [childImagesDic setObject:section forKey:ym];
-        }
-       
-        // TODO
-        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
-        childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)c.year, (long)c.month, (long)c.day] integerValue]];
-        [[section objectForKey:@"images"] addObject:childImage];
-        [[section objectForKey:@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
-        [[section objectForKey:@"weekdays"] addObject: [NSNumber numberWithInt: c.weekday]];
-       
-        todayComps = [DateUtils addDateComps:todayComps withUnit:@"day" withValue:-1];
-        today = [cal dateFromComponents:todayComps];
+    NSLog(@"calendarStartingDateComps:%@ todayComps:%@", calendarStartingDateComps, todayComps);
+    
+    if (!_childImages) {
+        _childImages = [[NSMutableArray alloc]init];
     }
     
-    [self setObjectsToChildImages:childImagesDic];
+    // 始点と終点の日付(NSDateComponents)を与えるとchildPropertyに自動追加してくれるmethodを作る必要がある
+    [self addChildImages:_childImages withStartDateComps:calendarStartingDateComps withEndDateComps:todayComps];
+    
+    [self setupChildImagesIndexMap];
     
     // scroll位置と表示月の関係
     [self setupScrollPositionData];
 }
 
-- (void)setObjectsToChildImages:(NSMutableDictionary *)childImagesDic
+- (NSNumber *)getCalendarStartingDate
 {
-    NSArray *ymList = [[childImagesDic allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2){
-        return [obj1 integerValue] > [obj2 integerValue];
-    }];
-   
-    NSMutableArray *childImagesAsc = [[NSMutableArray alloc]init];
-    for (NSString *ym in ymList) {
-        [childImagesAsc addObject:[childImagesDic objectForKey:ym]];
+    NSLog(@"_childProperty : %@", _childProperty);
+    NSNumber *calendarStartDate = _childProperty[@"calendarStartDate"];
+    NSNumber *oldestChildImageDate = _childProperty[@"oldestChildImageDate"];
+    NSDate *birthday = _childProperty[@"birthday"];
+    
+    if (calendarStartDate) {
+        // calendarStartDateがある場合はcalendarStartDateをカレンダー開始日とする
+        
+        // ただしoldestChildImageDate < calendarStartDateの場合はoldestChildImageDateを起点にする
+        NSLog(@"oldestChildImageDate:%@ calendarStartDate:%@", oldestChildImageDate, calendarStartDate);
+        NSComparisonResult c = [oldestChildImageDate compare:calendarStartDate];
+        NSLog(@"comparison result : %ld", c);
+        if (oldestChildImageDate && [oldestChildImageDate compare:calendarStartDate] == NSOrderedAscending) {
+            return oldestChildImageDate;
+        } else {
+            return calendarStartDate;
+        }
+    } else {
+        // calendarStartDateがない場合は誕生日をカレンダー開始日とする
+        NSDateComponents *birthdayComps = [DateUtils dateCompsFromDate:birthday];
+        NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", birthdayComps.year, birthdayComps.month, birthdayComps.day] integerValue]];
+       
+        NSLog(@"birthdayNumber : %@", birthdayNumber);
+        
+        // ただしoldestChildImageDate < birthdayの場合はoldestChildImageDateを起点にする
+        if (oldestChildImageDate && [oldestChildImageDate compare:birthdayNumber] == NSOrderedAscending) {
+            return oldestChildImageDate;
+        } else {
+            return birthdayNumber;
+        }
     }
-    _childImages = [[NSMutableArray alloc]initWithArray:[[childImagesAsc reverseObjectEnumerator] allObjects]];
-    _childImagesIndexMap = [[NSMutableDictionary alloc]init];
-   
+}
+
+- (void)addChildImages:(NSMutableArray *)childImages withStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
+{
+    NSLog(@"addChildImages start startDateComps:%@ endDateComps:%@", startDateComps, endDateComps);
+    NSCalendar *cal   = [NSCalendar currentCalendar];
+    NSDate *startDate = [cal dateFromComponents:startDateComps];
+    NSDate *endDate   = [cal dateFromComponents:endDateComps];
+    
+    while ([endDate compare:startDate] == NSOrderedDescending || [endDate compare:startDate] == NSOrderedSame) {
+        NSString *ym = [NSString stringWithFormat:@"%ld%02ld", endDateComps.year, endDateComps.month];
+       
+        NSMutableDictionary *targetSection;
+        for (NSMutableDictionary *section in childImages) {
+            NSString *yearMonthOfSection = [NSString stringWithFormat:@"%@%@", section[@"year"], section[@"month"]];
+            if ([yearMonthOfSection isEqualToString:ym]) {
+                targetSection = section;
+                break;
+            }
+        }
+        if (!targetSection) {
+            targetSection = [[NSMutableDictionary alloc]init];
+            targetSection[@"images"]        = [[NSMutableArray alloc]init];
+            targetSection[@"totalImageNum"] = [[NSMutableArray alloc]init];
+            targetSection[@"weekdays"]      = [[NSMutableArray alloc]init];
+            targetSection[@"year"]          = [NSString stringWithFormat:@"%ld", endDateComps.year];
+            targetSection[@"month"]         = [NSString stringWithFormat:@"%02ld", endDateComps.month];
+            [_childImages addObject:targetSection];
+        }
+        
+        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]]];
+        childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
+        [targetSection[@"images"] addObject:childImage];
+        [targetSection[@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
+        [targetSection[@"weekdays"] addObject: [NSNumber numberWithInt: endDateComps.weekday]];
+        
+        endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
+        endDate = [cal dateFromComponents:endDateComps];
+    }
+}
+
+- (void)setupChildImagesIndexMap
+{
     _childImagesIndexMap = [[NSMutableDictionary alloc] init];
     int n = 0;
     for (NSMutableDictionary *section in _childImages) {
-        NSString *ym = [NSString stringWithFormat:@"%@%02ld", [section objectForKey:@"year"], (long)[[section objectForKey:@"month"] integerValue]];
+        NSString *ym = [NSString stringWithFormat:@"%@%02ld", section[@"year"], (long)[section[@"month"] integerValue]];
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
     }
