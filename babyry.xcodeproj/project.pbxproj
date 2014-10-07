@@ -212,6 +212,8 @@
 		F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */; };
 		F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350419C97982001F33D0 /* TutorialNavigator.m */; };
 		F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */; };
+		F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA55619DC04C900546669 /* CloseButtonView.xib */; };
+		F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA55B19DC16EA00546669 /* CloseButtonView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -568,6 +570,9 @@
 		F2D9350419C97982001F33D0 /* TutorialNavigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialNavigator.m; sourceTree = "<group>"; };
 		F2D9350A19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+ShowMultiUpload.h"; sourceTree = "<group>"; };
 		F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+ShowMultiUpload.m"; sourceTree = "<group>"; };
+		F2FAA55619DC04C900546669 /* CloseButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CloseButtonView.xib; sourceTree = "<group>"; };
+		F2FAA55A19DC16EA00546669 /* CloseButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseButtonView.h; sourceTree = "<group>"; };
+		F2FAA55B19DC16EA00546669 /* CloseButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseButtonView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -610,6 +615,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2FAA55519DC04A700546669 /* Gadget */,
 				F21BBBB119C9EC85002D4623 /* TutorialView */,
 				F2D9350619C97BB3001F33D0 /* TutorialNavigator */,
 				88C072EA19CAAFC400BF6F6F /* ChildListCell */,
@@ -1294,6 +1300,32 @@
 			name = TutorialNavigator;
 			sourceTree = "<group>";
 		};
+		F2FAA55519DC04A700546669 /* Gadget */ = {
+			isa = PBXGroup;
+			children = (
+				F2FAA55919DC16D500546669 /* Class */,
+				F2FAA55819DC16CC00546669 /* Xib */,
+			);
+			name = Gadget;
+			sourceTree = "<group>";
+		};
+		F2FAA55819DC16CC00546669 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				F2FAA55619DC04C900546669 /* CloseButtonView.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		F2FAA55919DC16D500546669 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				F2FAA55A19DC16EA00546669 /* CloseButtonView.h */,
+				F2FAA55B19DC16EA00546669 /* CloseButtonView.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1392,6 +1424,7 @@
 				F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */,
 				F21BBBEE19CAD5D1002D4623 /* TutorialUploadByUserView.xib in Resources */,
 				F21BBBD219CA6AF1002D4623 /* TutorialPartChangeExecView.xib in Resources */,
+				F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */,
 				88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */,
 				88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */,
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
@@ -1522,6 +1555,7 @@
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
+				F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */,
 				F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */,
 				F21BBBF919CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.m in Sources */,
 				F271B31E1999E5E800C9952A /* Badge.m in Sources */,
