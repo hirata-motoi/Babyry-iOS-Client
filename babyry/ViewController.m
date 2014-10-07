@@ -231,7 +231,6 @@
             }
             _childArrayFoundFromParse = childList;
             [self setupChildProperties];
-            [self initializeChildImages];
             _only_first_load = 0;
             
             [_hud hide:YES];
@@ -363,14 +362,6 @@
     IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     introChildNameViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:introChildNameViewController animated:YES];
-}
-
-- (void)initializeChildImages
-{
-    _childImages = [[NSMutableDictionary alloc]init];
-    for (PFObject *child in _childArrayFoundFromParse) {
-        [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
-    }
 }
 
 - (NSString*) createFamilyId
