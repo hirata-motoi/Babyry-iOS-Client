@@ -107,8 +107,8 @@ static NSMutableDictionary *returnDic;
         currentViewController[@"viewController"] = @"ViewController";
     }
     
-    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
-        returnDic = [self dispatchForImageUploadOrComment:viewController childObjectId:currentChildObjectId selectedDate:currentDate];
+    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"commentPosted"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
+        returnDic = [self dispatchForImageOperation:viewController childObjectId:currentChildObjectId selectedDate:currentDate];
     }
     
     if ([transitionInfo[@"event"] isEqualToString:@"partSwitched"]){
@@ -120,14 +120,14 @@ static NSMutableDictionary *returnDic;
     return returnDic;
 }
 
-+ (NSMutableDictionary *)dispatchForImageUploadOrComment:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
++ (NSMutableDictionary *)dispatchForImageOperation:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
 {
     if ([currentViewController[@"viewController"] isEqualToString:@"ViewController"]) {
         NSLog(@"もしviewControllerだったら");
         if ([transitionInfo[@"childObjectId"] isEqualToString:currentChildObjectId]) {
             NSLog(@"もしこどもが一致していたら");
             returnDic[@"nextVC"] = [self uploadType];
-            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
+            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
                 // 画像アップロードの場合、遷移はこれで終わりなのでtransitionInfoを初期化
                 [self removeInfo];
             }
@@ -141,7 +141,7 @@ static NSMutableDictionary *returnDic;
         NSLog(@"もしMultiUploadViewControllerだったら");
         if ([currentDate isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
             NSLog(@"もし日付とこどもが一致していたら");
-            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
+            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
                 NSLog(@"imageUploadなら");
                 // ここでMultiUploadViewControllerのうまいreloadの仕方が思いつかない
                 // notificationの方がまだましな気がしてきた
