@@ -120,6 +120,8 @@
 	</array>
 	<key>FinishedFirstLaunch</key>
 	<string>finishedFirstLaunch</string>
+	<key>FinishedIntroductionOfPageFlick</key>
+	<string>finishedIntroductioOfPageFlick</string>
 	<key>UUIDKeyName</key>
 	<string>firstLaunchUUID</string>
 	<key>InviteLineText</key>

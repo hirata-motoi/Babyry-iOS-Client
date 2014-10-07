@@ -17,6 +17,7 @@
         [mutDic setObject:[object objectForKey:key] forKey:key];
     }
     [mutDic setObject:object.objectId forKey:@"objectId"];
+    [mutDic setObject:object.createdAt forKey:@"createdAt"];
     
     return [[NSMutableDictionary alloc] initWithDictionary:mutDic];
 }

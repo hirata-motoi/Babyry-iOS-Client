@@ -15,6 +15,8 @@
 #import "Config.h"
 #import "AppSetting.h"
 #import "NotificationHistory.h"
+#import "ParseUtils.h"
+#import "ImageRequestIntroductionView.h"
 
 @implementation PageContentViewController_Logic
 
@@ -23,6 +25,7 @@
     [self showChildImages];
     [self setupImagesCount];
     [self setupNotificationHistory];
+    [self updateChildProperties];
 }
 
 - (void)showChildImages
@@ -238,13 +241,13 @@
     if ([self.pageContentViewController.selfRole isEqualToString:@"uploader"]) {
         return;
     }
-    
+
     // チョイスとしての初load以外ならreturn
     AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedFirstLaunch"]];
     if (appSetting) {
         return;
     }
-
+    
     AppSetting *newAppSetting = [AppSetting MR_createEntity];
     newAppSetting.name = [Config config][@"FinishedFirstLaunch"];
     newAppSetting.value = @"";
@@ -252,6 +255,22 @@
     newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntrodutionOfImageRequestView:) userInfo:nil repeats:NO];
+}
+
+- (void)showIntroductionOfPageFlick
+{
+    // 初回のみ
+    AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
+    if (appSetting || self.pageContentViewController.childProperties.count < 2 ) {
+        return;
+    }
+    AppSetting *newAppSetting = [AppSetting MR_createEntity];
+    newAppSetting.name = [Config config][@"FinishedIntroductionOfPageFlick"];
+    newAppSetting.value = @"";
+    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntroductionOfPageFlickView:) userInfo:nil repeats:NO];
 }
 
 - (void)removeUnnecessaryFullsizeCache
@@ -296,6 +315,7 @@
             [self.pageContentViewController.notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
         }
         [self.pageContentViewController.pageContentCollectionView reloadData];
+        [self disableRedundantNotificationHistory];
     }];
     
 }
@@ -456,6 +476,55 @@
     }];
 }
 
+// notification historyの過去のバグで、notificationがつく → 画像を消す とすると
+// notificationがついたままになってしまうので、
+// notificationがあるけども画像がない -> notificationをdisableする
+- (void)disableRedundantNotificationHistory
+{
+    NSMutableArray *targetYMDs = [[NSMutableArray alloc]init];
+    for (NSString *ymd in [self.pageContentViewController.notificationHistory allKeys]) {
+        [targetYMDs addObject:[NSNumber numberWithInteger:[ymd integerValue]]];
+    }
+    
+    // choosedの写真がない日を探す
+    NSMutableDictionary *child = self.pageContentViewController.childProperty;
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
+    [query whereKey:@"imageOf" equalTo:child[@"objectId"]];
+    [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    [query whereKey:@"date" containedIn:targetYMDs];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get choosed images for disableRedundantNotificationHistory Error:%@", error]];
+            return;
+        }
+        
+        NSMutableDictionary *choosedYMD = [[NSMutableDictionary alloc]init];
+        for (PFObject *childImage in objects) {
+            choosedYMD[ [childImage[@"date"] stringValue] ] = [NSNumber numberWithBool:YES];
+        }
+        
+        BOOL shouldReload = NO;
+        for (NSString *ymd in [self.pageContentViewController.notificationHistory allKeys]) {
+            if (choosedYMD[ymd]) {
+                continue;
+            }
+            // 今日・昨日に関してはchoosedが一枚もない場合が普通にあるので判別不可能なので
+            // PageContentViewController内で、写真が一枚もない場合はnotificationを見せない対応をする
+            NSIndexPath *ip = [self indexPathFromYMD:ymd];
+            if (!ip || [self withinTwoDay:ip]) {
+                continue;
+            }
+            
+            // choosedの画像がないにも関わらずnotificationが残っている日のnotificationはdisable
+            [self disableNotificationHistory:ymd];
+            shouldReload = YES;
+        }
+        if (shouldReload) {
+            [self.pageContentViewController.pageContentCollectionView reloadData];
+        }
+    }];
+}
+
 - (BOOL)hasUpdatedChildProperties:(NSArray *)properties
 {
     if (properties.count != self.pageContentViewController.childProperties.count) {
@@ -594,6 +663,34 @@
         if (i >= 31) {
             break;
         }
+    }
+}
+- (NSIndexPath *)indexPathFromYMD:(NSString *)ymd
+{
+    NSNumber *ymdNumber = [NSNumber numberWithInteger:[ymd integerValue]];
+    
+    // index pathを取得
+    NSInteger sectionIndex = [[self.pageContentViewController.childImagesIndexMap objectForKey:[ymd substringWithRange:NSMakeRange(0, 6)] ] integerValue];
+    NSMutableDictionary *section = [self.pageContentViewController.childImages objectAtIndex:sectionIndex];
+    NSMutableArray *images = [section objectForKey:@"images"];
+    for (NSInteger i = 0; i < images.count; i++) {
+        PFObject *childImage = images[i];
+        if ([childImage[@"date"] isEqualToNumber:ymdNumber]) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
+            return indexPath;
+        }
+    }
+    return nil;
+}
+
+- (void)disableNotificationHistory:(NSString *)ymd
+{
+    for (NSString *type in [self.pageContentViewController.notificationHistory[ymd] allKeys]) {
+        NSArray *notificationHistories = self.pageContentViewController.notificationHistory[ymd][type];
+        for (PFObject *notificationHistory in notificationHistories) {
+            [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+        }
+        [self.pageContentViewController.notificationHistory[ymd][type] removeAllObjects];
     }
 }
 

@@ -39,6 +39,7 @@
 #import "CollectionViewSectionHeader.h"
 #import <AudioToolbox/AudioServices.h>
 #import "ImageRequestIntroductionView.h"
+#import "PageFlickIntroductionView.h"
 #import "Config.h"
 #import "Logger.h"
 #import "AppSetting.h"
@@ -991,8 +992,33 @@
 
 - (void)addIntrodutionOfImageRequestView:(NSTimer *)timer
 {
+    // すでにダイアログが表示されていたらCoreDataを戻してreturn
+    if ([self alreadyDisplayedDialog]) {
+        AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedFirstLaunch"]];
+        [as MR_deleteEntity];
+        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+        return;
+    }
     // ダイアログを表示
     ImageRequestIntroductionView *view = [ImageRequestIntroductionView view];
+    CGRect rect = view.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+    view.frame = rect;
+    [self.view addSubview:view];
+}
+
+- (void)addIntroductionOfPageFlickView:(NSTimer *)timer
+{
+    // すでにダイアログが表示されていたらCoreDataを戻してreturn
+    if ([self alreadyDisplayedDialog]) {
+        AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
+        [as MR_deleteEntity];
+        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+        return;
+    }
+    // ダイアログを表示
+    PageFlickIntroductionView *view = [PageFlickIntroductionView view];
     CGRect rect = view.frame;
     rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
     rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;

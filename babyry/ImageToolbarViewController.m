@@ -203,6 +203,9 @@
             // 画像有る無しのカウントを0にする
             [_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
             
+            // この日のnotification historyを削除
+            [self removeNotificationHistory:childObjectId withDate:date];
+            
             [self.navigationController setNavigationBarHidden:NO];
             [self.navigationController popViewControllerAnimated:YES];
             
@@ -247,6 +250,27 @@
     rect.origin.y = rect.size.height/2 * -1;
     _commentBadge.frame = rect;
     [_imageCommentView.customView addSubview:_commentBadge];
+}
+
+- (void)removeNotificationHistory:(NSString *)childObjectId withDate:(NSString *)date
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"NotificationHistory"];
+    [query whereKey:@"child" equalTo:childObjectId];
+    [query whereKey:@"date" equalTo:[NSNumber numberWithInteger:[date integerValue]]];
+    [query whereKey:@"status" equalTo:@"ready"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to remove NotificationHistory childObjectId:%@ date:%@ error:%@", childObjectId, date, error]];
+            return;
+        }
+        if (objects.count < 1) {
+            return;
+        }
+        
+        for (PFObject *notificationHistory in objects) {
+            [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+        }
+    }];
 }
 
 /*

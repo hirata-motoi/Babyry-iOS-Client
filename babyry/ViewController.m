@@ -33,6 +33,7 @@
 #import "DateUtils.h"
 #import "PartnerInvitedEntity.h"
 #import "PartnerWaitViewController.h"
+#import "ParseUtils.h"
 
 @interface ViewController ()
 
@@ -271,18 +272,7 @@
     [_childProperties removeAllObjects];
     
     for (PFObject *c in _childArrayFoundFromParse) {
-        NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
-        [childSubDic setObject:c.objectId forKey:@"objectId"];
-        [childSubDic setObject:c[@"name"] forKey:@"name"];
-        if (c[@"birthday"]) {
-            [childSubDic setObject:c[@"birthday"] forKey:@"birthday"];
-        } else {
-            [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
-        }
-        childSubDic[@"childImageShardIndex"] = c[@"childImageShardIndex"];
-        childSubDic[@"commentShardIndex"] = c[@"commentShardIndex"];
-        childSubDic[@"createdAt"] = c.createdAt;
-        [_childProperties addObject:childSubDic];
+        [_childProperties addObject:[ParseUtils pfObjectToDic:c]];
     }
     
     // 各こどもの最も古い写真の日付を保持

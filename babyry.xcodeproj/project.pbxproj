@@ -216,6 +216,8 @@
 		F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */; };
 		F2FAA56719E2DBF600546669 /* AddMonthToCalendarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */; };
 		F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */; };
+		F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA55619DC04C900546669 /* CloseButtonView.xib */; };
+		F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA55B19DC16EA00546669 /* CloseButtonView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -578,6 +580,9 @@
 		F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddMonthToCalendarView.xib; sourceTree = "<group>"; };
 		F2FAA56819E2DE6300546669 /* AddMonthToCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddMonthToCalendarView.h; sourceTree = "<group>"; };
 		F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddMonthToCalendarView.m; sourceTree = "<group>"; };
+		F2FAA55619DC04C900546669 /* CloseButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CloseButtonView.xib; sourceTree = "<group>"; };
+		F2FAA55A19DC16EA00546669 /* CloseButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseButtonView.h; sourceTree = "<group>"; };
+		F2FAA55B19DC16EA00546669 /* CloseButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseButtonView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -620,6 +625,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2FAA55519DC04A700546669 /* Gadget */,
 				F21BBBB119C9EC85002D4623 /* TutorialView */,
 				F2D9350619C97BB3001F33D0 /* TutorialNavigator */,
 				88C072EA19CAAFC400BF6F6F /* ChildListCell */,
@@ -1233,6 +1239,7 @@
 			isa = PBXGroup;
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
+				F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */,
 				F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */,
 			);
 			name = Xib;
@@ -1241,6 +1248,8 @@
 		F2AD4F10199FD37E00037C72 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2FAA56319DC576300546669 /* PageFlickIntroductionView.h */,
+				F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */,
 				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
 				F2AD4F14199FD5F200037C72 /* ImageRequestIntroductionView.m */,
 				F2B7E0DF19C1F3A00052981B /* LogoutIntroduceView.h */,
@@ -1305,6 +1314,32 @@
 				F226591C19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m */,
 			);
 			name = TutorialNavigator;
+			sourceTree = "<group>";
+		};
+		F2FAA55519DC04A700546669 /* Gadget */ = {
+			isa = PBXGroup;
+			children = (
+				F2FAA55919DC16D500546669 /* Class */,
+				F2FAA55819DC16CC00546669 /* Xib */,
+			);
+			name = Gadget;
+			sourceTree = "<group>";
+		};
+		F2FAA55819DC16CC00546669 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				F2FAA55619DC04C900546669 /* CloseButtonView.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		F2FAA55919DC16D500546669 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				F2FAA55A19DC16EA00546669 /* CloseButtonView.h */,
+				F2FAA55B19DC16EA00546669 /* CloseButtonView.m */,
+			);
+			name = Class;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1405,11 +1440,13 @@
 				F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */,
 				F21BBBEE19CAD5D1002D4623 /* TutorialUploadByUserView.xib in Resources */,
 				F21BBBD219CA6AF1002D4623 /* TutorialPartChangeExecView.xib in Resources */,
+				F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */,
 				88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */,
 				88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */,
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				F285517119D160A500347BB6 /* TutorialImage_3.jpg in Resources */,
 				F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */,
+				F2FAA56219DC4ABB00546669 /* PageFlickIntroductionView.xib in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
 				F2AD4F0A199F96DF00037C72 /* BadgeNotify.xib in Resources */,
 				88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */,
@@ -1498,6 +1535,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */,
 				F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */,
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */,
@@ -1536,6 +1574,7 @@
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
+				F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */,
 				F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */,
 				F21BBBF919CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.m in Sources */,
 				F271B31E1999E5E800C9952A /* Badge.m in Sources */,

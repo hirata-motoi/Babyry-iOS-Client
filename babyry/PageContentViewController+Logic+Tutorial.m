@@ -26,6 +26,13 @@
     
 }
 
+- (void)setImages
+{
+    [self showChildImages];
+    [self setupImagesCount];
+    [self setupNotificationHistory];
+}
+
 - (void)showChildImages
 {
     // 固定でbabyryちゃんのデータを取得
