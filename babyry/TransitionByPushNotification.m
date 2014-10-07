@@ -12,6 +12,7 @@
 #import "PageViewController.h"
 #import "PageContentViewController.h"
 #import "UploadViewController.h"
+#import "FamilyRole.h"
 
 static NSMutableDictionary *transitionInfo;
 static NSMutableDictionary *currentViewController;
@@ -108,6 +109,12 @@ static NSMutableDictionary *returnDic;
     
     if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
         returnDic = [self dispatchForImageUploadOrComment:viewController childObjectId:currentChildObjectId selectedDate:currentDate];
+    }
+    
+    if ([transitionInfo[@"event"] isEqualToString:@"partSwitched"]){
+        [FamilyRole getFamilyRole:@"NetworkFirst"];
+        [self removeInfo];
+        [self returnToRoot:viewController];
     }
     
     return returnDic;
