@@ -24,6 +24,7 @@
 
 @implementation IntroChildNameViewController {
     TutorialNavigator *tn;
+    BOOL selectedBirthday;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -49,6 +50,7 @@
     UITapGestureRecognizer *addChildGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addChild)];
     addChildGesture.numberOfTapsRequired = 1;
     [_childAddButton addGestureRecognizer:addChildGesture];
+    _childAddButton.layer.cornerRadius = 2.0f;
     
     UITapGestureRecognizer *stgr3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openDatePicker)];
     stgr3.numberOfTapsRequired = 1;
@@ -59,12 +61,28 @@
     // set date
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"yyyy/MM/dd";
-    _birthdayLabel.text = [df stringFromDate:_datePicker.date];
+    [self resetBirthday];
+    selectedBirthday = NO;
     
     _datePickerContainer.hidden = YES;
     
     _datePicker.maximumDate = [NSDate date];
     [_datePicker addTarget:self action:@selector(action:forEvent:) forControlEvents:UIControlEventValueChanged];
+    
+    // sex
+    [self resetSex];
+   
+    // set frame
+    _requireChildName.layer.borderColor = [UIColor redColor].CGColor;
+    _requireChildName.layer.borderWidth = 0.6f;
+    _optionalBirthday.layer.borderColor = [UIColor darkGrayColor].CGColor;
+    _optionalBirthday.layer.borderWidth = 0.6f;
+    _optionalSex.layer.borderColor = [UIColor darkGrayColor].CGColor;
+    _optionalSex.layer.borderWidth = 0.6f;
+    
+    // reset
+    [_resetBirthdayButton addTarget:self action:@selector(resetBirthday) forControlEvents:UIControlEventTouchUpInside];
+    [_resetSexButton addTarget:self action:@selector(resetSex) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)didReceiveMemoryWarning
@@ -115,8 +133,8 @@
 
 -(void)addChild
 {
-    if (!_childNameField.text || [_childNameField.text isEqualToString:@""]|| !_birthdayLabel.text) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"未記入の項目があります"
+    if (!_childNameField.text || [_childNameField.text isEqualToString:@""]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"こどもの名前を入力してください"
                                                         message:@""
                                                        delegate:nil
                                               cancelButtonTitle:nil
@@ -135,13 +153,6 @@
                               ];
         [alert show];
         return;
-    }
-    
-    NSString *childSex = [[NSString alloc] init];
-    if (_childSexSegment.selectedSegmentIndex == 0) {
-        childSex = @"male";
-    } else {
-        childSex = @"female";
     }
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -166,15 +177,21 @@
             [child setObject:object forKey:@"createdBy"];
             child[@"name"] = _childNameField.text;
             child[@"familyId"] = object[@"familyId"];
-            child[@"sex"] = childSex;
-            child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
+            
+            if (_childSexSegment.selectedSegmentIndex == 0) {
+                child[@"sex"] = @"male";
+            } else if (_childSexSegment.selectedSegmentIndex == 1) {
+                child[@"sex"] = @"female";
+            }
+           
+            if (selectedBirthday) {
+                child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
+            }
+            
             child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
             child[@"commentShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"Comment"]];
             [child save];
 
-            // 誕生日変更時に落ちるため一旦現在時刻をいれておく
-            child[@"createdAt"] = [NSDate date];
-            child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
             [_childProperties addObject:[ParseUtils pfObjectToDic:child]];
             
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
@@ -190,7 +207,11 @@
                 }
             }
             [self refreshChildList];
+            
+            // reset forms
             _childNameField.text = @"";
+            [self resetBirthday];
+            [self resetSex];
             
             // _pageViewControllerを再読み込み
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
@@ -220,7 +241,7 @@
     
     float lastY = 0;
     int childIndex = 0;
-    for (NSDictionary *childDic in _childProperties) {
+    for (NSMutableDictionary *childDic in _childProperties) {
         if (![childDic[@"objectId"] isEqualToString:babyryId]) {
             ChildListCell *childListView = [ChildListCell view];
             
@@ -230,12 +251,14 @@
             stgr.numberOfTapsRequired = 1;
             [childListView.childDeleteLabel addGestureRecognizer:stgr];
             childListView.childObjectId = childDic[@"objectId"];
-            
             childListView.childName.text = childDic[@"name"];
-            if(childDic[@"birthday"]) {
+            
+            if (childDic[@"birthday"] && ![childDic[@"birthday"] isEqualToDate:[NSDate distantFuture]]) {
                 NSDateFormatter *df = [[NSDateFormatter alloc] init];
                 df.dateFormat = @"yyyy/MM/dd";
                 childListView.childBirthday.text = [df stringFromDate:childDic[@"birthday"]];
+            } else {
+                childListView.childBirthday.text = @"";
             }
             
             CGRect frame = childListView.frame;
@@ -324,7 +347,7 @@
     NSString *babyryId = @"0HJFGtSrzN";
 
     int count = 0;
-    for (NSDictionary *childDic in _childProperties) {
+    for (NSMutableDictionary *childDic in _childProperties) {
         if (![childDic[@"objectId"] isEqualToString:babyryId]) {
             count++;
         }
@@ -343,6 +366,19 @@
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"yyyy/MM/dd";
     _birthdayLabel.text = [df stringFromDate:_datePicker.date];
+    selectedBirthday = YES;
+}
+
+- (void)resetBirthday
+{
+    _birthdayLabel.text = @"----/--/--";
+    _datePicker.date = [DateUtils setSystemTimezone:[NSDate date]];
+    selectedBirthday = NO;
+}
+
+- (void)resetSex
+{
+    _childSexSegment.selectedSegmentIndex = UISegmentedControlNoSegment;
 }
 
 @end

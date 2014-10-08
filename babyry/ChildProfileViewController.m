@@ -97,7 +97,7 @@
                     cell.textLabel.text = @"誕生日";
                     NSDateFormatter *df = [[NSDateFormatter alloc] init];
                     df.dateFormat = @"yyyy/MM/dd";
-                    if ([_childBirthday isEqual:[NSDate distantFuture]]) {
+                    if ([_childBirthday isEqualToDate:[NSDate distantFuture]]) {
                         cell.detailTextLabel.text = @"";
                     } else {
                         cell.detailTextLabel.text = [df stringFromDate:_childBirthday];
@@ -182,6 +182,7 @@
 - (void)changeChildNickname:(NSString *)nickname
 {
     _childNicknameCell.detailTextLabel.text = nickname;
+    [_childProfileTableView reloadData];
 }
 
 - (void)changeChildBirthday:(NSDate *)birthday
@@ -190,6 +191,7 @@
     df.dateFormat = @"yyyy/MM/dd";
     _childBirthdayCell.detailTextLabel.text = [df stringFromDate:birthday];
     _childBirthday = birthday;
+    [_childProfileTableView reloadData];
 }
 
 @end
