@@ -138,6 +138,8 @@
 		F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F226591E19D434C3003A62BD /* TutorialImage_0_1.jpg */; };
 		F226592119D434C3003A62BD /* TutorialImage_0_2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F226591F19D434C3003A62BD /* TutorialImage_0_2.jpg */; };
 		F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */; };
+		F22F208619E46A600089A592 /* ChildPropertyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = F22F208519E46A600089A592 /* ChildPropertyEntity.m */; };
+		F22F208F19E4739A0089A592 /* ChildProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F22F208E19E4739A0089A592 /* ChildProperties.m */; };
 		F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */; };
 		F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F230520B198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m */; };
 		F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */ = {isa = PBXBuildFile; fileRef = F230520D198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib */; };
@@ -212,12 +214,12 @@
 		F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */; };
 		F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350419C97982001F33D0 /* TutorialNavigator.m */; };
 		F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */; };
+		F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA55619DC04C900546669 /* CloseButtonView.xib */; };
+		F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA55B19DC16EA00546669 /* CloseButtonView.m */; };
 		F2FAA56219DC4ABB00546669 /* PageFlickIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */; };
 		F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */; };
 		F2FAA56719E2DBF600546669 /* AddMonthToCalendarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */; };
 		F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */; };
-		F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA55619DC04C900546669 /* CloseButtonView.xib */; };
-		F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA55B19DC16EA00546669 /* CloseButtonView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -457,6 +459,11 @@
 		F226591F19D434C3003A62BD /* TutorialImage_0_2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TutorialImage_0_2.jpg; sourceTree = "<group>"; };
 		F22C976A198B7E2A00A5BD19 /* ArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtils.h; sourceTree = "<group>"; };
 		F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArrayUtils.m; sourceTree = "<group>"; };
+		F22F208319E469700089A592 /* babyry-coredata-v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "babyry-coredata-v3.xcdatamodel"; sourceTree = "<group>"; };
+		F22F208419E46A600089A592 /* ChildPropertyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildPropertyEntity.h; sourceTree = "<group>"; };
+		F22F208519E46A600089A592 /* ChildPropertyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildPropertyEntity.m; sourceTree = "<group>"; };
+		F22F208D19E4739A0089A592 /* ChildProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProperties.h; sourceTree = "<group>"; };
+		F22F208E19E4739A0089A592 /* ChildProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProperties.m; sourceTree = "<group>"; };
 		F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToEncourageUpload.xib; path = ../CellBackgroundViewToEncourageUpload.xib; sourceTree = "<group>"; };
 		F230520A198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CellBackgroundViewToEncourageUpload.h; path = ../CellBackgroundViewToEncourageUpload.h; sourceTree = "<group>"; };
 		F230520B198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CellBackgroundViewToEncourageUpload.m; path = ../CellBackgroundViewToEncourageUpload.m; sourceTree = "<group>"; };
@@ -574,15 +581,15 @@
 		F2D9350419C97982001F33D0 /* TutorialNavigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialNavigator.m; sourceTree = "<group>"; };
 		F2D9350A19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+ShowMultiUpload.h"; sourceTree = "<group>"; };
 		F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+ShowMultiUpload.m"; sourceTree = "<group>"; };
+		F2FAA55619DC04C900546669 /* CloseButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CloseButtonView.xib; sourceTree = "<group>"; };
+		F2FAA55A19DC16EA00546669 /* CloseButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseButtonView.h; sourceTree = "<group>"; };
+		F2FAA55B19DC16EA00546669 /* CloseButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseButtonView.m; sourceTree = "<group>"; };
 		F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PageFlickIntroductionView.xib; sourceTree = "<group>"; };
 		F2FAA56319DC576300546669 /* PageFlickIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageFlickIntroductionView.h; sourceTree = "<group>"; };
 		F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageFlickIntroductionView.m; sourceTree = "<group>"; };
 		F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddMonthToCalendarView.xib; sourceTree = "<group>"; };
 		F2FAA56819E2DE6300546669 /* AddMonthToCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddMonthToCalendarView.h; sourceTree = "<group>"; };
 		F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddMonthToCalendarView.m; sourceTree = "<group>"; };
-		F2FAA55619DC04C900546669 /* CloseButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CloseButtonView.xib; sourceTree = "<group>"; };
-		F2FAA55A19DC16EA00546669 /* CloseButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseButtonView.h; sourceTree = "<group>"; };
-		F2FAA55B19DC16EA00546669 /* CloseButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseButtonView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -693,6 +700,8 @@
 				F271B31D1999E5E800C9952A /* Badge.m */,
 				88E2822019B4A8DE00225DD3 /* Child.h */,
 				88E2822119B4A8DE00225DD3 /* Child.m */,
+				F22F208D19E4739A0089A592 /* ChildProperties.h */,
+				F22F208E19E4739A0089A592 /* ChildProperties.m */,
 				88C072A519C211AB00BF6F6F /* CheckAppVersion.h */,
 				88C072A619C211AB00BF6F6F /* CheckAppVersion.m */,
 				88C072C519C459D600BF6F6F /* TmpUser.h */,
@@ -1261,6 +1270,8 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				F22F208419E46A600089A592 /* ChildPropertyEntity.h */,
+				F22F208519E46A600089A592 /* ChildPropertyEntity.m */,
 				883A92EE19D2102F00F82A34 /* PartnerInviteEntity.h */,
 				883A92EF19D2102F00F82A34 /* PartnerInviteEntity.m */,
 				F2D9350019C95DA8001F33D0 /* TutorialAttributes.h */,
@@ -1618,6 +1629,7 @@
 				F2B9697A19CD8F4C00C14201 /* TutorialNavigator+Introduction.m in Sources */,
 				F2B9697719CD76BD00C14201 /* TutorialBestShotSelectedView.m in Sources */,
 				88B18C87193814CE00ED630C /* AppDelegate.m in Sources */,
+				F22F208F19E4739A0089A592 /* ChildProperties.m in Sources */,
 				F25D29D2199B228D00CD50D7 /* AcceptableUsePolicyViewController.m in Sources */,
 				8814A99D194ADB330010F516 /* MultiUploadViewController.m in Sources */,
 				F261A888196523110072BBD2 /* NSObject+Retry.m in Sources */,
@@ -1669,6 +1681,7 @@
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */,
 				F21BBBC019C9F9D3002D4623 /* TutorialNavigator+SelectBestShot.m in Sources */,
+				F22F208619E46A600089A592 /* ChildPropertyEntity.m in Sources */,
 				F230522C19907927000F5E32 /* PageViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2094,10 +2107,11 @@
 		F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F22F208319E469700089A592 /* babyry-coredata-v3.xcdatamodel */,
 				88C072C119C458E000BF6F6F /* babyry-coredata-v2.xcdatamodel */,
 				F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */,
 			);
-			currentVersion = 88C072C119C458E000BF6F6F /* babyry-coredata-v2.xcdatamodel */;
+			currentVersion = F22F208319E469700089A592 /* babyry-coredata-v3.xcdatamodel */;
 			path = "babyry-coredata.xcdatamodeld";
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

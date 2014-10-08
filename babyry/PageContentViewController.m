@@ -52,6 +52,7 @@
 #import "PartnerWaitViewController.h"
 #import "PartnerApply.h"
 #import "ParseUtils.h"
+#import "ChildProperties.h"
 
 @interface PageContentViewController ()
 

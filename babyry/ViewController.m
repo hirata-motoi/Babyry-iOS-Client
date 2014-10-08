@@ -34,6 +34,7 @@
 #import "PartnerInvitedEntity.h"
 #import "PartnerWaitViewController.h"
 #import "ParseUtils.h"
+#import "ChildProperties.h"
 
 @interface ViewController ()
 
@@ -235,6 +236,7 @@
             _childArrayFoundFromParse = childList;
             [self setupOldestChildImageDate];
             [self setupChildProperties];
+            [ChildProperties syncChildProperties];
             _only_first_load = 0;
             
             [_hud hide:YES];
