@@ -76,7 +76,9 @@ NSString *const className = @"NotificationHistory";
 
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object
 {
+    NSLog(@"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     object[@"status"] = @"displayed";
+    NSLog(@"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbb");
     [object saveInBackground];
 }
 

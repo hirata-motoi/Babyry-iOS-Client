@@ -348,6 +348,7 @@
     multiUploadAlbumTableViewController.child = _child;
     multiUploadAlbumTableViewController.totalImageNum = _totalImageNum;
     multiUploadAlbumTableViewController.indexPath = _indexPath;
+    multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 

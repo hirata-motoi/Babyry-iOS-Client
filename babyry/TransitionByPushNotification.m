@@ -107,7 +107,10 @@ static NSMutableDictionary *returnDic;
         currentViewController[@"viewController"] = @"ViewController";
     }
     
-    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"commentPosted"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
+    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]
+        || [transitionInfo[@"event"] isEqualToString:@"commentPosted"]
+        || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]
+        || [transitionInfo[@"event"] isEqualToString:@"requestPhoto"]) {
         returnDic = [self dispatchForImageOperation:viewController childObjectId:currentChildObjectId selectedDate:currentDate];
     }
     
@@ -126,9 +129,11 @@ static NSMutableDictionary *returnDic;
         NSLog(@"もしviewControllerだったら");
         if ([transitionInfo[@"childObjectId"] isEqualToString:currentChildObjectId]) {
             NSLog(@"もしこどもが一致していたら");
-            returnDic[@"nextVC"] = [self uploadType];
             if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
+                returnDic[@"nextVC"] = [self uploadType];
                 // 画像アップロードの場合、遷移はこれで終わりなのでtransitionInfoを初期化
+                [self removeInfo];
+            } else if ([transitionInfo[@"event"] isEqualToString:@"requestPhoto"]) {
                 [self removeInfo];
             }
         } else {

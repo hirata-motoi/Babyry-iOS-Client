@@ -50,6 +50,7 @@
 #import "PartnerWaitViewController.h"
 #import "PartnerApply.h"
 #import "ParseUtils.h"
+#import "Partner.h"
 
 @interface PageContentViewController ()
 
@@ -319,6 +320,8 @@
         }
     }
     
+    cell.tag = indexPath.row;
+    
     return cell;
 }
 
@@ -354,6 +357,7 @@
             multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] stringValue];
             multiUploadAlbumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
             multiUploadAlbumTableViewController.child = _childProperty;
+            multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -861,9 +865,21 @@
         }
     }
     
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"requestPhoto";
+    transitionInfoDic[@"childObjectId"] = _childObjectId;
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+    options[@"data"] = [[NSMutableDictionary alloc]
+                        initWithObjects:@[@"Increment", transitionInfoDic]
+                        forKeys:@[@"badge", @"transitionInfo"]];
     [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
+    
+    
+    PFObject *childImage = [[[_childImages objectAtIndex:0] objectForKey:@"images"] objectAtIndex:[sender view].tag];
+    NSString *ymd = [childImage[@"date"] stringValue];
+    PFObject *partner = (PFObject *)[Partner partnerUser];
+    NSLog(@"give me photo on %@ %d", _childObjectId, [ymd integerValue]);
+    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:[ymd integerValue]];
 }
 
 
@@ -914,6 +930,26 @@
         badge.frame = rect;
         [cell addSubview:badge];
         c++;
+    }
+    
+    // give me photoのラベルはる
+    // 基本的には1つしか無いはずなので、最初の一つをとる
+    // ただし、表示するのは、section = 0, row = 0,1だけ
+    if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
+        if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
+            // 左下にそっと出してみる
+            float cellHeigt = cell.frame.size.height;
+            float cellWidth = cell.frame.size.width;
+            int widthRatio = 4;
+            if (indexPath.row == 1) {
+                widthRatio = 3;
+            }
+            CGRect rect = CGRectMake(0, cellHeigt - cellHeigt/widthRatio, cellWidth/widthRatio, cellHeigt/widthRatio);
+            UIImage *giveMePhotoIcon = [UIImage imageNamed:@"GiveMePhotoIcon"];
+            UIImageView *giveMePhotoIconView = [[UIImageView alloc] initWithImage:giveMePhotoIcon];
+            giveMePhotoIconView.frame = rect;
+            [cell addSubview:giveMePhotoIconView];
+        }
     }
 }
 

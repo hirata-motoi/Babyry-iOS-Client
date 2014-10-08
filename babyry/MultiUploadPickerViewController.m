@@ -247,8 +247,8 @@
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ準備中";
-    //_hud.margin = 0;
-    //_hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+    
+    [self disableNotificationHistory];
     
     int __block saveCount = 0;
     
@@ -435,6 +435,19 @@
                 MultiUploadViewController_Logic *logic = [[MultiUploadViewController_Logic alloc]init];
                 [logic updateBestShotWithChild:_child withDate:_date];
             }
+        }
+    }
+}
+
+- (void)disableNotificationHistory
+{
+    NSArray *targetTypes = [NSArray arrayWithObjects:@"requestPhoto", nil];
+    for (NSString *type in targetTypes) {
+        if (_notificationHistoryByDay && _notificationHistoryByDay[type]) {
+            for (PFObject *notificationHistory in _notificationHistoryByDay[type]) {
+                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+            }
+            [_notificationHistoryByDay[type] removeAllObjects];
         }
     }
 }
