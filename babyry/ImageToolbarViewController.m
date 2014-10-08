@@ -214,6 +214,10 @@
             [self.navigationController setNavigationBarHidden:NO];
             [self.navigationController popViewControllerAnimated:YES];
             
+            // 削除した画像を反映してリフレッシュ
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+            
             break;
         }
         default:
