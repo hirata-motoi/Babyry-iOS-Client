@@ -166,7 +166,6 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"viewDidAppear in PageContentViewController %d", _pageIndex);
     [super viewDidAppear:animated];
     
     [self setImages];
@@ -431,6 +430,7 @@
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     multiUploadViewController.totalImageNum = totalImageNum;
     multiUploadViewController.indexPath = indexPath;
+    multiUploadViewController.pCVC = self;
     
     if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
         [self.navigationController pushViewController:multiUploadViewController animated:YES];
@@ -878,7 +878,6 @@
     PFObject *childImage = [[[_childImages objectAtIndex:0] objectForKey:@"images"] objectAtIndex:[sender view].tag];
     NSString *ymd = [childImage[@"date"] stringValue];
     PFObject *partner = (PFObject *)[Partner partnerUser];
-    NSLog(@"give me photo on %@ %d", _childObjectId, [ymd integerValue]);
     [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:[ymd integerValue]];
 }
 

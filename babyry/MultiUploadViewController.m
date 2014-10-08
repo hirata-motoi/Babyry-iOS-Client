@@ -99,8 +99,6 @@
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
     _bestImageId = @"";
-   
-    [[self logic] disableNotificationHistory];
 }
 
 - (void)didReceiveMemoryWarning
@@ -113,6 +111,8 @@
 {
     NSLog(@"viewDidAppear in MultiUploadViewController");
     [super viewDidAppear:animated];
+    
+    [[self logic] disableNotificationHistory];
         
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ同期中";

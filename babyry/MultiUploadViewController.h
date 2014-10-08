@@ -13,6 +13,7 @@
 #import "MultiUploadAlbumTableViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MBProgressHUD.h"
+#import "PageContentViewController.h"
 
 @interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate>
 
@@ -80,4 +81,6 @@
 - (void)forwardNextTutorial;
 - (void) dispatchForPushReceivedTransition;
 
+// バッチの更新時にreloadをかけるため
+@property (weak) PageContentViewController *pCVC;
 @end
