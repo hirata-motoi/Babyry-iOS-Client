@@ -17,7 +17,9 @@
 
 @end
 
-@implementation IntroMyNicknameViewController
+@implementation IntroMyNicknameViewController {
+    BOOL selectedBirthday;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -34,6 +36,7 @@
     // Do any additional setup after loading the view.
 
     _introMyNicknameSendLabel.tag = 2;
+    _introMyNicknameSendLabel.layer.cornerRadius = 2.0f;
     
     UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     stgr.numberOfTapsRequired = 1;
@@ -47,6 +50,14 @@
     stgr3.numberOfTapsRequired = 1;
     [_birthdayLabel addGestureRecognizer:stgr3];
     
+    // frame for UILabel
+    _requiredNickName.layer.borderColor = [UIColor redColor].CGColor;
+    _requiredNickName.layer.borderWidth = 0.6;
+    _optionalBirthday.layer.borderColor = [UIColor darkGrayColor].CGColor;
+    _optionalBirthday.layer.borderWidth = 0.6;
+    _optionalSex.layer.borderColor = [UIColor darkGrayColor].CGColor;
+    _optionalSex.layer.borderWidth = 0.6;
+    
     // set date
     NSCalendar* calendar = [NSCalendar currentCalendar];
     NSDateComponents* components = [[NSDateComponents alloc] init];
@@ -55,14 +66,18 @@
     components.day = 1;
     
     _datePicker.date = [calendar dateFromComponents:components];
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    df.dateFormat = @"yyyy/MM/dd";
-    _birthdayLabel.text = [df stringFromDate:_datePicker.date];
+    [self resetBirthday];
 
     _datePickerContainer.hidden = YES;
     
     _datePicker.maximumDate = [NSDate date];
     [_datePicker addTarget:self action:@selector(action:forEvent:) forControlEvents:UIControlEventValueChanged];
+    selectedBirthday = NO;
+    [_birthdayResetButton addTarget:self action:@selector(resetBirthday) forControlEvents:UIControlEventTouchUpInside];
+    
+    // sex
+    [self resetSex];
+    [_sexResetButton addTarget:self action:@selector(resetSex) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)didReceiveMemoryWarning
@@ -134,8 +149,8 @@
 -(void)handleSingleTap:(id) sender
 {
     if ([sender view].tag == 2) {
-        if (!_introMyNicknameField.text || [_introMyNicknameField.text isEqualToString:@""] || !_birthdayLabel.text) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"未記入の項目があります"
+        if (!_introMyNicknameField.text || [_introMyNicknameField.text isEqualToString:@""]) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ニックネームを入力してください"
                                                             message:@""
                                                            delegate:nil
                                                   cancelButtonTitle:nil
@@ -146,14 +161,17 @@
             
             PFObject *user = [PFUser currentUser];
             user[@"nickName"] = _introMyNicknameField.text;
-            
+           
+            // 未選択の場合はUISegmentedControlNoSegment
             if (_selectSexController.selectedSegmentIndex == 0) {
                 user[@"sex"] = @"male";
-            } else {
+            } else if (_selectSexController.selectedSegmentIndex == 1) {
                 user[@"sex"] = @"female";
             }
-            
-            user[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
+           
+            if (selectedBirthday) {
+                user[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_datePicker.date];
+            }
             
             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             hud.labelText = @"データ保存中";
@@ -198,6 +216,18 @@
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"yyyy/MM/dd";
     _birthdayLabel.text = [df stringFromDate:_datePicker.date];
+    selectedBirthday = YES;
+}
+
+- (void)resetBirthday
+{
+    _birthdayLabel.text = @"----/--/--";
+    selectedBirthday = NO;
+}
+
+- (void)resetSex
+{
+    _selectSexController.selectedSegmentIndex = UISegmentedControlNoSegment;
 }
 
 @end
