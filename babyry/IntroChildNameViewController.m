@@ -191,6 +191,7 @@
             child[@"childImageShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"ChildImage"]];
             child[@"commentShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"Comment"]];
             [child save];
+            [child refresh];
 
             [_childProperties addObject:[ParseUtils pfObjectToDic:child]];
             
