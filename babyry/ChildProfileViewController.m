@@ -182,7 +182,6 @@
 - (void)changeChildNickname:(NSString *)nickname
 {
     _childNicknameCell.detailTextLabel.text = nickname;
-    [_childProfileTableView reloadData];
 }
 
 - (void)changeChildBirthday:(NSDate *)birthday
@@ -191,7 +190,6 @@
     df.dateFormat = @"yyyy/MM/dd";
     _childBirthdayCell.detailTextLabel.text = [df stringFromDate:birthday];
     _childBirthday = birthday;
-    [_childProfileTableView reloadData];
 }
 
 @end
