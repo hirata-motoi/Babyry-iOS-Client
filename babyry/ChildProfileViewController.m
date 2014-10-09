@@ -182,7 +182,6 @@
 - (void)changeChildNickname:(NSString *)nickname
 {
     _childNicknameCell.detailTextLabel.text = nickname;
-    [_childProfileTableView reloadData];
 }
 
 - (void)changeChildBirthday:(NSDate *)birthday
