@@ -10,7 +10,7 @@
 
 @implementation ParseUtils
 
-+ (NSDictionary *)pfObjectToDic:(PFObject *)object
++ (NSMutableDictionary *)pfObjectToDic:(PFObject *)object
 {
     NSMutableDictionary *mutDic = [[NSMutableDictionary alloc] init];
     for (NSString *key in [object allKeys]) {
@@ -18,7 +18,7 @@
     }
     [mutDic setObject:object.objectId forKey:@"objectId"];
     
-    return [[NSDictionary alloc] initWithDictionary:mutDic];
+    return [[NSMutableDictionary alloc] initWithDictionary:mutDic];
 }
 
 @end

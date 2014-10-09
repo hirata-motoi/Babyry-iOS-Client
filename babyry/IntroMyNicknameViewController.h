@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import <Parse/Parse.h>
 
 @interface IntroMyNicknameViewController : UIViewController
@@ -17,7 +18,11 @@
 @property (strong, nonatomic) IBOutlet UIView *datePickerContainer;
 @property (strong, nonatomic) IBOutlet UIDatePicker *datePicker;
 @property (strong, nonatomic) IBOutlet UILabel *birthdayLabel;
-
+@property (weak, nonatomic) IBOutlet UILabel *requiredNickName;
+@property (weak, nonatomic) IBOutlet UILabel *optionalBirthday;
+@property (weak, nonatomic) IBOutlet UILabel *optionalSex;
+@property (weak, nonatomic) IBOutlet UIButton *birthdayResetButton;
+@property (weak, nonatomic) IBOutlet UIButton *sexResetButton;
 @property BOOL keyboradObserving;
 
 @end
