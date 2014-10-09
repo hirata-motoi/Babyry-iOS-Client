@@ -190,7 +190,6 @@
     df.dateFormat = @"yyyy/MM/dd";
     _childBirthdayCell.detailTextLabel.text = [df stringFromDate:birthday];
     _childBirthday = birthday;
-    [_childProfileTableView reloadData];
 }
 
 @end
