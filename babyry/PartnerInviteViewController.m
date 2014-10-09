@@ -87,10 +87,10 @@
             }
         }];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"パートナー承認が完了しています"
-                                                        message:@"既にパートナーとのひも付けが完了していますので、トップページに戻ってください。"
-                                                       delegate:nil
+                                                        message:@""
+                                                       delegate:self
                                               cancelButtonTitle:nil
-                                              otherButtonTitles:@"OK", nil];
+                                              otherButtonTitles:@"トップページに戻る", nil];
         [alert show];
     }
 }
@@ -214,5 +214,20 @@
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }];
 }
+
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    switch (buttonIndex) {
+        case 0:
+        {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+            break;
+        default:
+            break;
+    }
+    
+}
+
 
 @end
