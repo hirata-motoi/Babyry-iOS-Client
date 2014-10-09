@@ -14,6 +14,8 @@
 #import "PartnerInviteEntity.h"
 #import "DateUtils.h"
 #import "InputPinCodeViewController.h"
+#import "Tutorial.h"
+#import "ParseUtils.h"
 
 @interface PartnerInviteViewController ()
 
@@ -64,6 +66,32 @@
     } else {
         _pinCode = pie.pinCode;
         _displayedPinCode.text = [NSString stringWithFormat:@"%@", _pinCode];
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    if([PartnerApply linkComplete]) {
+        [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
+        // childPropertiesを更新してViewを更新
+        //NSMutableArray *tmpProperties = [[NSMutableArray alloc] init];
+        PFQuery *child = [PFQuery queryWithClassName:@"Child"];
+        [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+        [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+            if (objects) {
+                [_childProperties removeAllObjects];
+                for (PFObject *object in objects) {
+                    [_childProperties addObject:[ParseUtils pfObjectToDic:object]];
+                }
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }
+        }];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"パートナー承認が完了しています"
+                                                        message:@"既にパートナーとのひも付けが完了していますので、トップページに戻ってください。"
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil];
+        [alert show];
     }
 }
 

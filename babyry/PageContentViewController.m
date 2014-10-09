@@ -967,6 +967,7 @@
     [Tutorial forwardStageWithNextStage:@"familyApplyExec"];
     [_tn removeNavigationView];
     PartnerInviteViewController * partnerInviteViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerInviteViewController"];
+    partnerInviteViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:partnerInviteViewController animated:YES];
 }
 
