@@ -248,6 +248,11 @@
     vc.familyApplyIntroduceView = headerView;
     [self setRectToHeaderView:vc.familyApplyIntroduceView];
     [vc.view addSubview:vc.familyApplyIntroduceView];
+    
+    TutorialStage *currentStage = [Tutorial currentStage];
+    if ([currentStage.currentStage isEqualToString:@"familyApply"]) {
+        [self.pageContentViewController showTutorialNavigator];
+    }
 }
 
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload

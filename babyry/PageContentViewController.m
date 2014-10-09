@@ -156,8 +156,9 @@
  
     // ベストショット選択を促すとき(chooseByUser)と写真のアップロードを促す時(uploadByUser)は
     // cellにholeをあてるためcell表示後にoverlayを出す必要がある
+    // familyApplyは非同期でheader viewを出した後にチュートリアルを表示しているので、ここでも表示するとちかちかする
     TutorialStage *currentStage = [Tutorial currentStage];
-    if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) ) {
+    if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"] || [currentStage.currentStage isEqualToString:@"familyApply"]) ) {
         [self showTutorialNavigator];
     }
 }
@@ -966,6 +967,7 @@
     [Tutorial forwardStageWithNextStage:@"familyApplyExec"];
     [_tn removeNavigationView];
     PartnerInviteViewController * partnerInviteViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerInviteViewController"];
+    partnerInviteViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:partnerInviteViewController animated:YES];
 }
 

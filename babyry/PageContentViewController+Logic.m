@@ -159,7 +159,7 @@
 	[inputDateFormatter setDateFormat:@"yyyyMMdd"];
 	NSDate *dateToday = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:[NSString stringWithFormat:@"%ld%02ld%02ld", (long)compToday.year, (long)compToday.month, (long)compToday.day]]];
 	NSDate *dateTappedImage = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:ymd]];
-  
+ 
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *diff = [cal components:NSDayCalendarUnit fromDate:dateTappedImage toDate:dateToday options:0];
     
@@ -308,9 +308,9 @@
     NSDate *birthday = child[@"birthday"];
     NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
     if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
-        birthday = child[@"createdAt"];
+        birthday = child[@"createdAt"] ? child[@"createdAt"] : [NSDate date];
     }
-    
+   
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *birthdayComps = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:birthday];
     NSDateComponents *firstDayComps = [DateUtils addDateComps:birthdayComps withUnit:@"month" withValue:-2];

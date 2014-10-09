@@ -31,7 +31,7 @@
     CGSize viewSize = self.targetViewController.view.frame.size;
     CGRect rect = view.frame;
     rect.origin.x = (viewSize.width - rect.size.width) / 2;
-    rect.origin.y = 250;
+    rect.origin.y = 240;
     view.frame = rect;
     
     [overlay addSubview:view];
