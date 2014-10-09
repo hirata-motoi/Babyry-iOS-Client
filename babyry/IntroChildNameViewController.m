@@ -234,9 +234,8 @@
     }
     
     // BabyryちゃんのobjectIdを取得
-    //NSString *babyryId = @"aI1Lo7FXhH";
-    NSString *babyryId = @"0HJFGtSrzN";
-    
+    NSString *babyryId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+              
     _isBabyryExist = NO;
     
     float lastY = 0;
@@ -266,6 +265,8 @@
             childListView.frame = frame;
             lastY += childListView.frame.size.height;
             [_childListContainer addSubview:childListView];
+            
+            _childListContainer.contentSize = CGSizeMake(_childListContainer.frame.size.width, lastY);
         } else {
             _isBabyryExist = YES;
         }
@@ -343,8 +344,7 @@
 
 - (int) countChildProperty
 {
-//    NSString *babyryId = @"aI1Lo7FXhH";
-    NSString *babyryId = @"0HJFGtSrzN";
+    NSString *babyryId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
 
     int count = 0;
     for (NSMutableDictionary *childDic in _childProperties) {
