@@ -11,6 +11,6 @@
 
 @interface ParseUtils : NSObject
 
-+ (NSDictionary *) pfObjectToDic:(PFObject *)object;
++ (NSMutableDictionary *) pfObjectToDic:(PFObject *)object;
 
 @end
