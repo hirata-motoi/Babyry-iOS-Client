@@ -117,7 +117,12 @@
         frame.origin = _childBirthdayCellPoint;
         _childBirthdayDatePickerContainer.frame = frame;
         [_childBirthdayDatePicker becomeFirstResponder];
-        _childBirthdayDatePicker.date = [_child[@"birthday"] isEqualToDate:[NSDate distantFuture]] ? [DateUtils setSystemTimezone:_child[@"createdAt"]] : _child[@"birthday"];
+        
+        if (!_child[@"birthday"] || [_child[@"birthday"] isEqualToDate:[NSDate distantFuture]]) {
+            _childBirthdayDatePicker.date = _child[@"createdAt"] ? _child[@"createdAt"] : [DateUtils setSystemTimezone:[NSDate date]];
+        } else {
+            _childBirthdayDatePicker.date = _child[@"birthday"];
+        }   
     }
 }
 
