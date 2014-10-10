@@ -291,6 +291,12 @@
     // カレンダー追加用cell
     if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
         [self setBackgroundViewOfCell:cell withImageCachePath:@"" withIndexPath:indexPath];
+        
+        if (indexPath.section == 0 && indexPath.row == 1) {
+            CGRect rect = cell.frame;
+            rect.origin.x = 0;
+            cell.frame = rect;
+        }
         return cell;
     }
 
