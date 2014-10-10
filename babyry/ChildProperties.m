@@ -84,7 +84,7 @@
 {
     NSArray *childProperties = [self getChildProperties];
     for (NSMutableDictionary *childProperty in childProperties) {
-        if ([childProperty[@"objectIs"] isEqualToString:childObjectId]) {
+        if ([childProperty[@"objectId"] isEqualToString:childObjectId]) {
             return childProperty;
         }
     }
@@ -142,7 +142,6 @@
             childProperty = [ChildPropertyEntity MR_createEntity];
         }
         
-        NSLog(@"saveChildProperties child.createdBy:%@", child[@"createdBy"]);
         childProperty.objectId   = child.objectId;
         childProperty.updatedAt  = child.updatedAt;
         childProperty.createdAt  = child.createdAt;
@@ -156,7 +155,6 @@
         childProperty.calendarStartDate    = child[@"calendarStartDate"];
         childProperty.oldestChildImageDate = oldestChildImageDate[child.objectId];
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-        NSLog(@"saveChildProperties end childObjectId:%@", child.objectId);
     }
 }
 
@@ -183,7 +181,14 @@
 + (void)updateChildPropertyWithObjectId:(NSString *)childObjectId withParams:(NSMutableDictionary *)params
 {
     ChildPropertyEntity *childProperty = [self fetchChildProperty:childObjectId];
-    [childProperty setValuesForKeysWithDictionary:params];
+    for (NSString *key in [params allKeys]) {
+        if (params[key] == [NSNull null]) {
+            [childProperty setValue:nil forKey:@"calendarStartDate"];
+        } else {
+            [childProperty setValue:params[key] forKey:key];
+        }
+    }
+    
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 

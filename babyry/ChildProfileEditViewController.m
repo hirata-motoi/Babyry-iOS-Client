@@ -9,6 +9,7 @@
 #import "ChildProfileEditViewController.h"
 #import "DateUtils.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface ChildProfileEditViewController ()
 
@@ -54,6 +55,7 @@
 
 - (void)saveProfile
 {
+    NSMutableDictionary *params = [self createSaveParams];
     // 保存
     PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
     [childQuery whereKey:@"objectId" equalTo:_childObjectId];
@@ -67,24 +69,57 @@
             return;
         }
         
-        if ([_editTarget isEqualToString:@"name"]) {
-            object[@"name"] = _childNicknameEditTextField.text;
-            [_delegate changeChildNickname:_childNicknameEditTextField.text];
-        } else if ([_editTarget isEqualToString:@"birthday"]) {
-            object[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
-            [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
+        
+        for (NSString *key in [params allKeys]) {
+            if (params[key] == [NSNull null]) {
+                [object removeObjectForKey:key];
+            } else {
+                object[key] = params[key];
+            }
         }
         [object saveInBackground];
     }];
     
     // 即反映のため、block外で。
+    [ChildProperties updateChildPropertyWithObjectId:_childObjectId withParams:params];
+    
     if ([_editTarget isEqualToString:@"name"]) {
         _child[@"name"] = _childNicknameEditTextField.text;
+        [_delegate changeChildNickname:_childNicknameEditTextField.text];
     } else if ([_editTarget isEqualToString:@"birthday"]) {
         _child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
+        [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
     }
     
     [self closeEditing];
+}
+
+- (NSMutableDictionary *)createSaveParams
+{
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
+   if ([_editTarget isEqualToString:@"name"]) {
+       params[@"name"] = _childNicknameEditTextField.text;
+       return params;
+       
+   } else if ([_editTarget isEqualToString:@"birthday"]) {
+       NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
+       params[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
+      
+       NSDateComponents *comps = [DateUtils dateCompsFromDate:_childBirthdayDatePicker.date];
+       NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day] integerValue]];
+       if (childProperty[@"calendarStartDate"]) {
+           if ([childProperty[@"calendarStartDate"] compare:birthdayNumber] == NSOrderedAscending) {
+               // 変更後の誕生日の方が未来なので、今後のcalendarはcalendarStartDateの日付が優先される
+               // 要はcalendarStartDateはそのまま
+           } else {
+               // 変更後誕生日の方が過去なので、今後のcalendarは誕生日から開始となる。
+               // つまりcalendarStartDateは不要となるので空にする
+               params[@"calendarStartDate"] = [NSNull null];
+           }
+       }
+       return params;
+   }
+    return nil;
 }
 
 - (void)makeEditField

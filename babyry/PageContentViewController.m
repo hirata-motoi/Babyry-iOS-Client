@@ -341,6 +341,13 @@
     if ([[self logic:@"forbiddenSelectCell"] forbiddenSelectCell:indexPath]) {
         return;
     }
+    
+    // カレンダー追加cell withinTwoDayがcallされる前にチェックしておく必要がある
+    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
+        [[self logic:@"addMonthToCalendar"] addMonthToCalendar:indexPath];
+        return;
+    }
+    
     // チェックの人がアップ催促する時は何の処理もしない
     if ([_selfRole isEqualToString:@"chooser"] && [[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
@@ -355,12 +362,6 @@
         }
     }
    
-    // カレンダー追加cell
-    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
-        [[self logic:@"addMonthToCalendar"] addMonthToCalendar:indexPath];
-        return;
-    }
-    
     PFObject *tappedChildImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     // chooser
     //    upload待ち
