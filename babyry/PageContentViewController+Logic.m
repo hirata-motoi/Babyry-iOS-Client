@@ -17,6 +17,7 @@
 #import "NotificationHistory.h"
 #import "ParseUtils.h"
 #import "ImageRequestIntroductionView.h"
+#import "ChildProperties.h"
 
 @implementation PageContentViewController_Logic
 
@@ -594,15 +595,18 @@
         
         if (objects.count > 0) {
             NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", compsToAdd.year, compsToAdd.month, compsToAdd.day];
-            NSNumber *calenarStartDate = [NSNumber numberWithInteger:[ymd integerValue]];
+            NSNumber *calendarStartDate = [NSNumber numberWithInteger:[ymd integerValue]];
             PFObject *child = objects[0];
-            child[@"calendarStartDate"] = calenarStartDate;
+            child[@"calendarStartDate"] = calendarStartDate;
             [child saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save Child.calendarStartDate Child.objectId:%@ calendarStartDate:%@", self.pageContentViewController.childObjectId, calenarStartDate]];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save Child.calendarStartDate Child.objectId:%@ calendarStartDate:%@", self.pageContentViewController.childObjectId, calendarStartDate]];
                     // TODO ネットワークを確かめてalertを表示
                     return;
                 }
+                // CoreDataに保存
+                [ChildProperties updateChildPropertyWithObjectId:self.pageContentViewController.childObjectId withParams:[NSMutableDictionary dictionaryWithObjects:@[calendarStartDate] forKeys:@[@"calendarStartDate"]]];
+                
                 // _childImagesにPFObjectを追加
                 [self addEmptyChildImages:compsToAdd];
                 // PageContentViewControllerをreload
