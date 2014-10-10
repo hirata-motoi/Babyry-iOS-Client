@@ -28,6 +28,7 @@
     }
    
     NSMutableDictionary *oldestChildImageDate = [self getOldestChildImageDate:childList];
+    [self deleteUnavailableChildProperties:childList];
     [self saveChildProperties:childList withOldestChildImageDate:oldestChildImageDate];
 }
 
@@ -79,6 +80,17 @@
     }];
 }
 
++ (NSMutableDictionary *)getChildProperty:(NSString *)childObjectId
+{
+    NSArray *childProperties = [self getChildProperties];
+    for (NSMutableDictionary *childProperty in childProperties) {
+        if ([childProperty[@"objectIs"] isEqualToString:childObjectId]) {
+            return childProperty;
+        }
+    }
+    return nil;
+}
+
 + (NSMutableArray *)getChildProperties
 {
     NSArray *childPropertiesRecords = [ChildPropertyEntity MR_findAll];
@@ -110,7 +122,7 @@
     return oldestChildImageDate;
 }
              
-+ (ChildPropertyEntity *)findChildPropertyEntity:(NSArray *)childProperties withObjectId:(NSString *)childObjectId
++ (ChildPropertyEntity *)findChildProperty:(NSArray *)childProperties withObjectId:(NSString *)childObjectId
 {
     for (ChildPropertyEntity *childProperty in childProperties) {
         if ([childProperty.objectId isEqualToString:childObjectId]) {
@@ -125,7 +137,7 @@
     NSArray *childProperties = [ChildPropertyEntity MR_findAll];
     for (PFObject *child in childList) {
         NSString *childObjectId = child.objectId;
-        ChildPropertyEntity *childProperty = [self findChildPropertyEntity:childProperties withObjectId:childObjectId];
+        ChildPropertyEntity *childProperty = [self findChildProperty:childProperties withObjectId:childObjectId];
         if (!childProperty) {
             childProperty = [ChildPropertyEntity MR_createEntity];
         }
@@ -146,6 +158,48 @@
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
         NSLog(@"saveChildProperties end childObjectId:%@", child.objectId);
     }
+}
+
++ (ChildPropertyEntity *)fetchChildProperty:(NSString *)childObjectId
+{
+    return [ChildPropertyEntity MR_findFirstByAttribute:@"objectId" withValue:childObjectId];
+}
+
++ (NSArray *)fetchChildProperties:(NSArray *)childObjectIds
+{
+    if (!childObjectIds) {
+        return [ChildPropertyEntity MR_findAll];
+    }
+    
+    NSPredicate *filter = [NSPredicate predicateWithFormat:@"objectId IN %@", childObjectIds];
+    return [self fetchChildPropertiesWithPredicate:filter];
+}
+
++ (NSArray *)fetchChildPropertiesWithPredicate:(NSPredicate *)predicate
+{
+    return [ChildPropertyEntity MR_findAllWithPredicate:predicate];
+}
+
++ (void)updateChildPropertyWithObjectId:(NSString *)childObjectId withParams:(NSMutableDictionary *)params
+{
+    ChildPropertyEntity *childProperty = [self fetchChildProperty:childObjectId];
+    [childProperty setValuesForKeysWithDictionary:params];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (void)deleteUnavailableChildProperties:(NSArray *)childList
+{
+    NSMutableArray *childObjectIds = [[NSMutableArray alloc]init];
+    for (ChildPropertyEntity *childProperty in childList) {
+        [childObjectIds addObject:childProperty.objectId];
+    }
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (objectId IN %@)", childObjectIds];
+    NSArray *unavailableChildProperties = [self fetchChildPropertiesWithPredicate:predicate];
+    for (ChildPropertyEntity *childProperty in unavailableChildProperties) {
+        [childProperty MR_deleteEntity];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
 @end

@@ -17,5 +17,6 @@ typedef void (^UpdateChildPropertiesAsyncBlock)();
 + (void)asyncChildProperties;
 + (void)asyncChildPropertiesWithBlock:(UpdateChildPropertiesAsyncBlock)block;
 + (NSMutableArray *)getChildProperties;
++ (void)updateChildPropertyWithObjectId:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;
 
 @end
