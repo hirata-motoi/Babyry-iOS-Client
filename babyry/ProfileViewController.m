@@ -13,12 +13,15 @@
 #import "PartnerApply.h"
 #import "PartnerInviteViewController.h"
 #import "FamilyRole.h"
+#import "ChildProperties.h"
 
 @interface ProfileViewController ()
 
 @end
 
-@implementation ProfileViewController
+@implementation ProfileViewController {
+    NSMutableArray *childProperties;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -33,6 +36,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    childProperties = [ChildProperties getChildProperties];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@""
@@ -52,6 +56,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    childProperties = [ChildProperties getChildProperties];
     [_profileTableView reloadData];
 }
 
@@ -71,7 +76,7 @@
             break;
         }
         case 2:
-            numberOfRows = [_childProperties count];
+            numberOfRows = [childProperties count];
             break;
         default:
             break;
@@ -124,7 +129,7 @@
             break;
         case 2: {
             // indexPath.rowに従って子供の情報をセットする
-            cell.textLabel.text = _childProperties[indexPath.row][@"name"];
+            cell.textLabel.text = childProperties[indexPath.row][@"name"];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
         }
@@ -212,12 +217,8 @@
 - (void)showChildInfo:(NSInteger)index
 {
     ChildProfileViewController *childProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileViewController"];
-    NSMutableDictionary *child = _childProperties[index];
+    NSMutableDictionary *child = childProperties[index];
     childProfileViewController.childObjectId = child[@"objectId"];
-    childProfileViewController.child = child;
-    
-    childProfileViewController.childName = child[@"name"];
-    childProfileViewController.childBirthday = child[@"birthday"];
     [self.navigationController pushViewController:childProfileViewController animated:YES];
 }
 

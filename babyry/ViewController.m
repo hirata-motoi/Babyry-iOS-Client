@@ -74,8 +74,6 @@
                                              target:nil
                                              action:nil];
     
-    // childPropertiesのメモリ領域確保
-    _childProperties = [[NSMutableArray alloc] init];
     // partner情報初期化
     [Partner initialize];
     
@@ -203,8 +201,8 @@
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
-            NSArray *childList = [childQuery findObjects];
-            if (childList.count < 1) {
+            NSMutableArray *childProperties = [ChildProperties syncChildProperties];
+            if (childProperties.count < 1) {
                 if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApplyExec"]) {
                     [self setChildNames];
                     return;
@@ -220,39 +218,25 @@
                     [Tutorial upsertTutorialAttributes:@"tutorialChildObjectId" withValue:childObjectId];
                     
                     // Childからbotのrowをひく
-                    PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
-                    [botQuery whereKey:@"objectId" equalTo:childObjectId];
-                    NSArray *botChild = [botQuery findObjects];
+                    NSMutableDictionary *botChildProperty = [ChildProperties syncChildProperty:childObjectId];
                     
-                    if (botChild.count > 0) {
-                        childList = botChild;
-                    } else {
+                    if (!botChildProperty) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"No Bot User in Child class objectId:%@", childObjectId]];
                     }
                 } else {
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
             }
-            _childArrayFoundFromParse = childList;
-            [self setupOldestChildImageDate];
-            [self setupChildProperties];
             [ChildProperties syncChildProperties];
             _only_first_load = 0;
             
             [_hud hide:YES];
         } else {
             // 二発目以降はbackgroundで引かないとUIが固まる
-            [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                if(!error) {
-                    if ([objects count] < 1) {
-                        TutorialStage *currentStage = [Tutorial currentStage];
-                        if ([currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
-                            [self setChildNames];
-                        }
-                        return;
-                    }
-                } else {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
+            [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
+                TutorialStage *currentStage = [Tutorial currentStage];
+                if ([currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
+                    [self setChildNames];
                 }
             }];
         }
@@ -264,31 +248,7 @@
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
     globalSettingViewController.viewController = self;
-    globalSettingViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:globalSettingViewController animated:YES];
-}
-
-- (void)setupChildProperties
-{
-    // 初期化
-    [_childProperties removeAllObjects];
-    
-    for (PFObject *c in _childArrayFoundFromParse) {
-        [_childProperties addObject:[ParseUtils pfObjectToDic:c]];
-    }
-    
-    // 各こどもの最も古い写真の日付を保持
-    NSLog(@"oldestChildImageDate:%@", oldestChildImageDate);
-    for (NSString *childObjectId in [oldestChildImageDate allKeys]) {
-        [_childProperties enumerateObjectsUsingBlock:^(NSMutableDictionary *childProperty, NSUInteger idx, BOOL *stop) {
-            
-            if ([childProperty[@"objectId"] isEqualToString:childObjectId]) {
-                childProperty[@"oldestChildImageDate"] = oldestChildImageDate[childObjectId];
-                *stop = YES;
-            }   
-        }];
-    }
-    NSLog(@"end of setupChildProperties");
 }
 
 -(void) showPageViewController
@@ -334,12 +294,11 @@
 
 - (void)instantiatePageViewController
 {
-    NSLog(@"instantiatePageViewController childProperties:%@", _childProperties);
-    if (_childProperties.count < 1) {
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    if (childProperties.count < 1) {
         return;
     }
     _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-    _pageViewController.childProperties = _childProperties;
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [self setupGlobalSetting];
@@ -369,7 +328,6 @@
 -(void)setChildNames
 {
     IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    introChildNameViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:introChildNameViewController animated:YES];
 }
 
@@ -453,35 +411,6 @@
         }
         [FamilyRole updateCache];
     }];
-}
-
-// 不本意ではあるが同期処理でloadする(複数回リクエストを投げるのでそこは並列処理する)
-// first loadの時だけ使う
-- (void)setupOldestChildImageDate
-{
-    if (!oldestChildImageDate) {
-        oldestChildImageDate = [[NSMutableDictionary alloc]init];
-    }
-    [oldestChildImageDate removeAllObjects]; // initialize
-    
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        for (PFObject *child in _childArrayFoundFromParse ) {
-            PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
-            [query whereKey:@"imageOf" equalTo:child.objectId];
-            [query orderByAscending:@"date"];
-            PFObject *oldestChildImage = [query getFirstObject];
-            if (oldestChildImage) {
-                oldestChildImageDate[child.objectId] = oldestChildImage[@"date"];
-            }
-            NSLog(@"load oldestChildImageDate childObjectId:%@", child.objectId);
-        }
-        dispatch_semaphore_signal(semaphore);
-    });
-    
-    NSLog(@"wait...");
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    NSLog(@"wait...finished");
 }
 
 @end

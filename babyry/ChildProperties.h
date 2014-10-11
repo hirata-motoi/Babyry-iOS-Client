@@ -9,15 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <Parse/Parse.h>
 
-typedef void (^UpdateChildPropertiesAsyncBlock)();
-
+typedef void (^UpdateChildPropertiesAsyncBlock)(NSMutableArray *beforeSyncChildProperties);
+                                                         
 @interface ChildProperties : NSObject
 
-+ (void)syncChildProperties;
++ (NSMutableArray *)syncChildProperties;
++ (NSMutableDictionary *)syncChildProperty:(NSString *)childObjectId;
 + (void)asyncChildProperties;
 + (void)asyncChildPropertiesWithBlock:(UpdateChildPropertiesAsyncBlock)block;
 + (NSMutableDictionary *)getChildProperty:(NSString *)childObjectId;
 + (NSMutableArray *)getChildProperties;
 + (void)updateChildPropertyWithObjectId:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;
++ (BOOL)deleteByObjectId:(NSString *)objectId;
 
 @end

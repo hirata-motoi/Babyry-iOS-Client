@@ -20,7 +20,6 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
 @property NSUInteger pageIndex;
-@property NSMutableDictionary *childProperty;
 @property NSString *childObjectId;
 
 @property NSString *returnValueOfChildName;
@@ -52,8 +51,8 @@
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
 - (void)showAlertMessage;
-- (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
-- (void)addIntrodutionOfPageFlickView:(NSTimer *)timer;
+- (void)addIntroductionOfImageRequestView:(NSTimer *)timer;
+- (void)addIntroductionOfPageFlickView:(NSTimer *)timer;
 - (void)openFamilyApply;
 - (void)setImages;
 - (void)showTutorialNavigator;
@@ -72,7 +71,5 @@
 @property UIView *familyApplyIntroduceView;
 @property NSTimer *instructionTimer;
 
-// CoreDataに移動したら消す
-@property NSMutableArray *childProperties;
 
 @end

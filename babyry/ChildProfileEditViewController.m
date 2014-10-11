@@ -69,7 +69,6 @@
             return;
         }
         
-        
         for (NSString *key in [params allKeys]) {
             if (params[key] == [NSNull null]) {
                 [object removeObjectForKey:key];
@@ -107,6 +106,7 @@
       
        NSDateComponents *comps = [DateUtils dateCompsFromDate:_childBirthdayDatePicker.date];
        NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day] integerValue]];
+       
        if (childProperty[@"calendarStartDate"]) {
            if ([childProperty[@"calendarStartDate"] compare:birthdayNumber] == NSOrderedAscending) {
                // 変更後の誕生日の方が未来なので、今後のcalendarはcalendarStartDateの日付が優先される

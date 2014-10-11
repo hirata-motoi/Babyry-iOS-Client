@@ -12,11 +12,11 @@
 
 @implementation ChildProperties
 
-+ (void)syncChildProperties
++ (NSMutableArray *)syncChildProperties
 {
     PFUser *currentUser = [PFUser currentUser];
     if (!currentUser || !currentUser[@"familyId"] || [currentUser[@"familyId"] isEqualToString:@""]) {
-        return;
+        return nil;
     }
     // childを取得
     PFQuery *query = [PFQuery queryWithClassName:@"Child"];
@@ -24,12 +24,32 @@
     NSArray *childList = [query findObjects];
     
     if (childList.count < 1) {
-        return;
+        return nil;
     }
    
     NSMutableDictionary *oldestChildImageDate = [self getOldestChildImageDate:childList];
     [self deleteUnavailableChildProperties:childList];
     [self saveChildProperties:childList withOldestChildImageDate:oldestChildImageDate];
+    return [self getChildProperties];
+}
+
++ (NSMutableDictionary *)syncChildProperty:(NSString *)childObjectId
+{
+    if (!childObjectId) {
+        return nil;
+    }
+    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
+    [query whereKey:@"objectId" equalTo:childObjectId];
+    NSArray *childList = [query findObjects];
+    
+    if (childList.count < 1) {
+        return nil;
+    }
+    
+    NSMutableDictionary *oldestChildImageDate = [[NSMutableDictionary alloc]init]; // 空でOK
+    [self deleteUnavailableChildProperties:childList];
+    [self saveChildProperties:childList withOldestChildImageDate:oldestChildImageDate];
+    return [self getChildProperty:childObjectId];
 }
 
 + (void)asyncChildProperties
@@ -68,10 +88,11 @@
                 queryCompletedCount++;
                 
                 if (queryCompletedCount == objects.count) {
+                    NSMutableArray *beforeSyncChildProperties = [self getChildProperties];
                     [self saveChildProperties:objects withOldestChildImageDate:oldestChildImageDate];
                     
                     if (block) {
-                        block();
+                        block(beforeSyncChildProperties);
                     }
                 }
             }];
@@ -96,7 +117,14 @@
     NSArray *childPropertiesRecords = [ChildPropertyEntity MR_findAll];
     NSMutableArray *childProperties = [[NSMutableArray alloc]init];
     for (ChildPropertyEntity *childPropertyRecord in childPropertiesRecords) {
-        [childProperties addObject:[childPropertyRecord dictionaryWithValuesForKeys:[[[childPropertyRecord entity] attributesByName] allKeys]]];
+        NSMutableDictionary *childProperty = [NSMutableDictionary dictionaryWithDictionary:[childPropertyRecord dictionaryWithValuesForKeys:[[[childPropertyRecord entity] attributesByName] allKeys]]];
+        // valueがNULLになっているkeyは不要なので削除
+        for (NSString *key in [childProperty allKeys]) {
+            if (childProperty[key] == [NSNull null]) {
+                [childProperty removeObjectForKey:key];
+            }
+        }
+        [childProperties addObject:childProperty];
     }
     return childProperties;
 }
@@ -183,7 +211,7 @@
     ChildPropertyEntity *childProperty = [self fetchChildProperty:childObjectId];
     for (NSString *key in [params allKeys]) {
         if (params[key] == [NSNull null]) {
-            [childProperty setValue:nil forKey:@"calendarStartDate"];
+            [childProperty setValue:nil forKey:key];
         } else {
             [childProperty setValue:params[key] forKey:key];
         }
@@ -205,6 +233,18 @@
         [childProperty MR_deleteEntity];
     }
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (BOOL)deleteByObjectId:(NSString *)objectId
+{
+    ChildPropertyEntity *childProperty = [self fetchChildProperty:objectId];
+    if (!childProperty) {
+        return NO;
+    }
+    
+    [childProperty MR_deleteEntity];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    return YES;
 }
 
 @end

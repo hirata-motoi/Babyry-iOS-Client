@@ -14,7 +14,6 @@
 @interface IntroChildNameViewController : UIViewController
 
 @property BOOL keyboradObserving;
-@property NSMutableArray *childProperties;
 @property MBProgressHUD *hud;
 @property int removeTarget;
 @property BOOL isBabyryExist;

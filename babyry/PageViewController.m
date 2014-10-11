@@ -10,12 +10,15 @@
 #import "PageContentViewController.h"
 #import "ImageEdit.h"
 #import "TagAlbumOperationViewController.h"
+#import "ChildProperties.h"
 
 @interface PageViewController ()
 
 @end
 
-@implementation PageViewController
+@implementation PageViewController {
+    NSMutableArray *childProperties;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -29,6 +32,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    childProperties = [ChildProperties getChildProperties];
+    
     // Do any additional setup after loading the view.
     self.delegate = self;
     self.dataSource = self;
@@ -68,7 +74,7 @@
     }
     
     index++;
-    if (index == [_childProperties count]) {
+    if (index == [childProperties count]) {
         return nil;
     }
     return [self viewControllerAtIndex:index];
@@ -76,18 +82,14 @@
 
 - (PageContentViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    if (([_childProperties count] == 0) || (index >= [_childProperties count])) {
+    if (([childProperties count] == 0) || (index >= [childProperties count])) {
         return nil;
     }
     
     PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
 
     pageContentViewController.pageIndex = index;
-    pageContentViewController.childProperty = _childProperties[index];
-    pageContentViewController.childObjectId = [[_childProperties objectAtIndex:index] objectForKey:@"objectId"];
-    
-    // PageContentViewから更新するために暫定 (CoreDataに入れたら消す)
-    pageContentViewController.childProperties = _childProperties;
+    pageContentViewController.childObjectId = [[childProperties objectAtIndex:index] objectForKey:@"objectId"];
     
     _currentPageIndex = index;
     _currentDisplayedPageContentViewController = pageContentViewController;
@@ -122,7 +124,7 @@
 
 - (NSString *)getDisplayedChildObjectId
 {
-    return [[_childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
+    return [[childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
 }
 
 

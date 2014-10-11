@@ -12,14 +12,8 @@
 @interface ChildProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, ChildProfileEditViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *childProfileTableView;
-
 @property UITableViewCell *childNicknameCell;
 @property UITableViewCell *childBirthdayCell;
-
 @property NSString *childObjectId;
-@property NSString *childName;
-@property NSDate *childBirthday;
-@property NSString *childBirthdayString;
-@property NSMutableDictionary *child;
 
 @end

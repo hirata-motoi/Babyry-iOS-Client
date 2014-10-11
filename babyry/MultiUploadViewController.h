@@ -16,8 +16,6 @@
 
 @interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate>
 
-//- (IBAction)multiUploadViewBackButton:(id)sender;
-
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (strong, nonatomic) IBOutlet UIButton *bestShotReplyIcon;
@@ -27,8 +25,6 @@
 @property NSString *myRole;
 
 @property NSString *childObjectId;
-@property NSMutableDictionary *child;
-@property NSString *name;
 @property NSMutableArray *childImageArray;
 @property NSMutableArray *childCachedImageArray;
 @property NSMutableArray *childDetailImageArray;

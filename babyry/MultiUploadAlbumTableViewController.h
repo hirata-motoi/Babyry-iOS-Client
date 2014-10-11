@@ -23,7 +23,6 @@
 @property NSString *date;
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
-@property NSMutableDictionary *child;
 
 @property BOOL accessAllowed;
 

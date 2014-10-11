@@ -59,21 +59,23 @@
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
     self.pageContentViewController.isLoading = YES;
-    NSMutableDictionary *child = self.pageContentViewController.childProperty;
+    NSMutableDictionary *child = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
     query.limit = 1000;
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
-    
     [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 1] integerValue]]];
     [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 31] integerValue]]];
-    
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
-            NSInteger index = [[self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
+            NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
+            if (!indexNumber) {
+                return;
+            }
+            NSInteger index = [indexNumber integerValue];
             NSMutableDictionary *section = [self.pageContentViewController.childImages objectAtIndex:index];
             NSMutableArray *images = [section objectForKey:@"images"];
             NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-          
+            
             NSMutableDictionary *childImageDic = [ArrayUtils arrayToHash:objects withKeyColumn:@"date"];
             
             NSMutableArray *cacheSetQueueArray = [[NSMutableArray alloc] init];
@@ -172,6 +174,7 @@
 
 - (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
 {
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
     // 並列実行数
     int concurrency = 3;
     
@@ -187,7 +190,7 @@
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
                 getRequest.bucket = [Config config][@"AWSBucketName"];
 
-                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[self.pageContentViewController.childProperty[@"childImageShardIndex"] integerValue]], queue[@"objectId"]];
+                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], queue[@"objectId"]];
                 // no-cache必須
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:self.pageContentViewController.configuration];
@@ -255,14 +258,14 @@
     newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
     newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntrodutionOfImageRequestView:) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntroductionOfImageRequestView:) userInfo:nil repeats:NO];
 }
 
-- (void)showIntroductionOfPageFlick
+- (void)showIntroductionOfPageFlick:(NSMutableArray *)childProperties
 {
     // 初回のみ
     AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
-    if (appSetting || self.pageContentViewController.childProperties.count < 2 ) {
+    if (appSetting || childProperties.count < 2 ) {
         return;
     }
     AppSetting *newAppSetting = [AppSetting MR_createEntity];
@@ -290,10 +293,10 @@
 
 - (void)setupImagesCount
 {
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
     // TODO 誕生日以前のデータは無視する
     // ChildImage.dateの型をNumberにしたら対応する
-    NSMutableDictionary *child = self.pageContentViewController.childProperty;
-    NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]];
+    NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -321,23 +324,21 @@
     
 }
 
-// 誕生日の2ヶ月前からcellを表示する
-// birthdayがなかった場合はcreatedAtを誕生日とする
 - (NSDate *)getCollectionViewFirstDay
 {
-    NSMutableDictionary *child = self.pageContentViewController.childProperty;
-    NSDate *birthday = child[@"birthday"];
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
+    NSDate *birthday = childProperty[@"birthday"];
     NSDate *base = [DateUtils setSystemTimezone:[NSDate date]];
     if (!birthday || [base timeIntervalSinceDate:birthday] < 0) {
-        birthday = child[@"createdAt"] ? child[@"createdAt"] : [NSDate date];
+        birthday = childProperty[@"createdAt"] ? childProperty[@"createdAt"] : [NSDate date];
     }
-   
+
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *birthdayComps = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:birthday];
     NSDateComponents *firstDayComps = [DateUtils addDateComps:birthdayComps withUnit:@"month" withValue:-2];
-    
+
     NSDate *firstDay = [cal dateFromComponents:firstDayComps];
-    
+
     return firstDay;
 }
 
@@ -445,35 +446,16 @@
 - (void)forwardNextTutorial
 {}
 
-// TODO oldestChildImageDateの更新をここでもやる
-// ChildPropertiesというクラスを作った方がいいかな
 - (void)updateChildProperties
 {
-    PFQuery *child = [PFQuery queryWithClassName:@"Child"];
-    [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
-    [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to update childProperties userId:%@ error:%@", [PFUser currentUser][@"userId"], error]];
+    [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
+        NSMutableArray *childProperties = [ChildProperties getChildProperties];
+        if (![self hasUpdatedChildProperties:beforeSyncChildProperties withChildProperties:childProperties]) {
+            [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
             return;
         }
-        if (objects) {
-            NSMutableArray *properties = [[NSMutableArray alloc]init];
-            for (PFObject *object in objects) {
-                [properties addObject:[ParseUtils pfObjectToDic:object]];
-            }
-            
-            if (![self hasUpdatedChildProperties:properties]) {
-                [self showIntroductionOfPageFlick];
-                return;
-            }
-            
-            [self.pageContentViewController.childProperties removeAllObjects];
-            for (NSMutableDictionary *childProperty in properties) {
-                [self.pageContentViewController.childProperties addObject:childProperty];
-            }
-            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-            [[NSNotificationCenter defaultCenter] postNotification:n];
-        }
+        NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotification:n];
     }];
 }
 
@@ -488,9 +470,9 @@
     }
     
     // choosedの写真がない日を探す
-    NSMutableDictionary *child = self.pageContentViewController.childProperty;
-    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
-    [query whereKey:@"imageOf" equalTo:child[@"objectId"]];
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
+    [query whereKey:@"imageOf" equalTo:childProperty[@"objectId"]];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
     [query whereKey:@"date" containedIn:targetYMDs];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -526,18 +508,18 @@
     }];
 }
 
-- (BOOL)hasUpdatedChildProperties:(NSArray *)properties
+- (BOOL)hasUpdatedChildProperties:(NSMutableArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
-    if (properties.count != self.pageContentViewController.childProperties.count) {
+    if (childProperties.count != beforeSyncChildProperties.count) {
         return YES;
     }
     
     NSMutableDictionary *childPropertiesDic = [[NSMutableDictionary alloc]init];
-    for (NSMutableDictionary *childProperty in self.pageContentViewController.childProperties) {
+    for (NSMutableDictionary *childProperty in childProperties) {
         childPropertiesDic[childProperty[@"objectId"]] = childProperty;
     }
     
-    for (NSMutableDictionary *child in properties) {
+    for (NSMutableDictionary *child in beforeSyncChildProperties) {
         NSString *objectId = child[@"objectId"];
         if (![self isEqualDictionary:child withCompare:childPropertiesDic[objectId]]) {
             return YES;
@@ -619,6 +601,7 @@
 // compsToAddまでのchildImageを追加する
 - (void)addEmptyChildImages:(NSDateComponents *)compsToAdd
 {
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
     NSMutableArray *childImages = self.pageContentViewController.childImages;
     NSMutableDictionary *oldestSection = childImages[childImages.count - 1];
     
@@ -657,7 +640,7 @@
         oldestComps = [DateUtils addDateComps:oldestComps withUnit:@"day" withValue:-1];
         oldestDateToAdd = [cal dateFromComponents:oldestComps];
         
-        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[self.pageContentViewController.childProperty[@"childImageShardIndex"] integerValue]]];
+        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)oldestComps.year, (long)oldestComps.month, (long)oldestComps.day] integerValue]];
         [images addObject:childImage];
         [section[@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
@@ -697,5 +680,6 @@
         [self.pageContentViewController.notificationHistory[ymd][type] removeAllObjects];
     }
 }
+
 
 @end
