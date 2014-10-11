@@ -66,19 +66,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentSubmitButton.hidden = NO;
     [_commentTableContainer addSubview:_commentSubmitButton];
     
-//    // TagViewを設置
-//    NSLog(@"set tagview %@", _imageInfo);
-//    if (_imageInfo) {
-//        TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
-//        tagEditViewController.imageInfo = _imageInfo;
-//        _tagViewOnCommentView = tagEditViewController.view;
-//        _tagViewOnCommentView.hidden = NO;
-//        _tagViewOnCommentView.frame = CGRectMake(0, 50, self.view.frame.size.width, 60);
-//        _tagViewOnCommentView.userInteractionEnabled = YES;
-//        [self addChildViewController:tagEditViewController];
-//        [_commentTableContainer addSubview:_tagViewOnCommentView];
-//    }
-    
+    _isGettingComment = NO;
     [self getCommentFromParse];
     
     [self.commentSubmitButton addTarget:self action:@selector(submitComment) forControlEvents:UIControlEventTouchUpInside];
@@ -104,6 +92,11 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 {
     [super viewWillAppear:animated];
     
+    if (!_commentTimer || ![_commentTimer isValid]) {
+        _commentTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(getCommentFromParse) userInfo:nil repeats:YES];
+        [_commentTimer fire];
+    }
+    
     // Start observing
     if (!_keyboardObserving) {
         NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -126,6 +119,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     // super
     [super viewWillDisappear:animated];
     
+    [_commentTimer invalidate];
+    
     // Stop observing
     if (_keyboardObserving) {
         NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -143,6 +138,11 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 -(void)getCommentFromParse
 {
+    if (_isGettingComment) {
+        return;
+    }
+    _isGettingComment = YES;
+    
     PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[_child[@"commentShardIndex"] integerValue]]];
     [commentQuery whereKey:@"childId" equalTo:_childObjectId];
     [commentQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
@@ -160,6 +160,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getCommentFromParse : %@", error]];
         }
+        _isGettingComment = NO;
     }];
 }
 

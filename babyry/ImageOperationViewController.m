@@ -53,14 +53,13 @@
     // 画像がなければコメントは出来ない
     // プリロード(サムネイルだけで本画像ではない)時もコメントは出さない(出せない)
     if (_imageInfo && !_isPreload) {
-        [self setupCommentView];
-        
-        // 画像削除、保存、コメントは全部toolbar経由にする
-        // 画像をいじるので、これも_imageInfo必須
-        [self setupToolbar];
+        // 画像をいじるので、_imageInfo必須
         if (_fromMultiUpload) {
             [self setupBestLabel];
         }
+        [self setupCommentView];
+        // 画像削除、保存、コメントは全部toolbar経由にする
+        [self setupToolbar];
     }
     [self setupNavigation];
 }
@@ -75,6 +74,7 @@
 {
     if ([self getBestShotIndex] == _pageIndex) {
         [self.view addSubview:_selectedBestshotView];
+        [self setBestShotToBack];
     }
 }
 
@@ -182,30 +182,30 @@
 -(void)setupBestLabel
 {
     // ベスト以外の星、全部の写真に付ける
-    UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
+    _unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
     
     // どの画像でも定位置に張る
     int bestLabelWidth = self.view.frame.size.width/6;
     int x = self.view.frame.size.width - bestLabelWidth - 5;
     int y = self.view.frame.size.height -50 - bestLabelWidth -5;
-    unSelectedBestshotView.frame = CGRectMake(x, y, bestLabelWidth, bestLabelWidth);
-    [self.view addSubview:unSelectedBestshotView];
+    _unSelectedBestshotView.frame = CGRectMake(x, y, bestLabelWidth, bestLabelWidth);
+    [self.view addSubview:_unSelectedBestshotView];
 
     // ベストショットのほうもはる
-    _selectedBestshotView.frame = unSelectedBestshotView.frame;
+    _selectedBestshotView.frame = _unSelectedBestshotView.frame;
     if ([self getBestShotIndex] == (int)_pageIndex) {
         [self.view addSubview:_selectedBestshotView];
     } else {
         if ([_myRole isEqualToString:@"uploader"]) {
-            unSelectedBestshotView.hidden = YES;
+            _unSelectedBestshotView.hidden = YES;
         }
     }
     
     if ([_myRole isEqualToString:@"chooser"]) {
         UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
         selectBestShotGesture.numberOfTapsRequired = 1;
-        unSelectedBestshotView.userInteractionEnabled = YES;
-        [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+        _unSelectedBestshotView.userInteractionEnabled = YES;
+        [_unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
     }
 }
 
@@ -213,6 +213,7 @@
 {
     _selectedBestshotView.frame = [sender view].frame;
     [self.view addSubview:_selectedBestshotView];
+    [self setBestShotToBack];
     [self setBestShotIndex:_pageIndex];
    
     UIImage *thumbImage = [ImageCache makeThumbNail:_uploadedImage];
@@ -297,6 +298,16 @@
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
 }
+
+- (void)setBestShotToBack
+{
+    [self.view sendSubviewToBack:_selectedBestshotView];
+    [self.view sendSubviewToBack:_unSelectedBestshotView];
+    if ([_myRole isEqualToString:@"uploader"]) {
+        _unSelectedBestshotView.hidden = YES;
+    }
+}
+
 
 /*
 #pragma mark - Navigation

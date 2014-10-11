@@ -51,5 +51,6 @@
 @property NSInteger pageIndex;
 
 @property UIImageView *selectedBestshotView;
+@property UIImageView *unSelectedBestshotView;
 
 @end
