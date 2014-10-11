@@ -16,6 +16,10 @@
 #import "TutorialNavigator.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 
+@protocol PageContentViewControllerDelegate <NSObject>
+- (void) moveToTargetPage:(int)index;
+@end
+
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
@@ -59,6 +63,7 @@
 - (void)showTutorialNavigator;
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
+- (void) dispatchForPushReceivedTransition;
 
 @property AWSServiceConfiguration *configuration;
 
@@ -74,5 +79,7 @@
 
 // CoreDataに移動したら消す
 @property NSMutableArray *childProperties;
+
+@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
 
 @end

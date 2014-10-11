@@ -63,6 +63,17 @@
     
     [self setTrackingLogName:@""];
     
+    // TransitionByPushNotification初期化
+    [TransitionByPushNotification initialize];
+    
+    // push通知から飛んだ場合userInfoに値がある
+    NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (userInfo != nil) {
+        if (userInfo[@"transitionInfo"]) {
+            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+        }
+    }
+    
     // Override point for customization after application launch.
     return YES;
 }
@@ -72,11 +83,30 @@
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:newDeviceToken];
     currentInstallation[@"badge"] = [NSNumber numberWithInt:0];
-    [currentInstallation saveInBackground];
+    [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting device token %@", error]];
+        }
+    }];
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)err{
+    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"failed to get device token %@", err]];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    [PFPush handlePush:userInfo];
+    
+    if (application.applicationState == UIApplicationStateActive) {
+        // アプリが起動している時に、push通知が届きpush通知から起動
+    }
+    
+    if (application.applicationState == UIApplicationStateInactive) {
+        // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
+        [PFPush handlePush:userInfo];
+        if (userInfo[@"transitionInfo"]) {
+            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+        }
+    }
     
     /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
     NSInteger badgeNumber = [application applicationIconBadgeNumber];

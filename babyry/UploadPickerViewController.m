@@ -181,8 +181,16 @@
         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
     ];
     
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"imageUpload";
+    transitionInfoDic[@"date"] = _date;
+    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+    transitionInfoDic[@"childObjectId"] = _childObjectId;
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+    options[@"data"] = [[NSMutableDictionary alloc]
+                        initWithObjects:@[@"Increment", transitionInfoDic]
+                        forKeys:@[@"badge", @"transitionInfo"]];
     [PushNotification sendInBackground:@"imageUpload" withOptions:options];
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];

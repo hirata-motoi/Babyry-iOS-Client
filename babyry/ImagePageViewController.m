@@ -86,6 +86,7 @@
     uploadViewController.holdedBy = @"TagAlbumPageViewController";
     uploadViewController.child = _child;
     uploadViewController.fromMultiUpload = _fromMultiUpload;
+    uploadViewController.indexPath = _indexPath;
     if (_fromMultiUpload) {
         uploadViewController.bestImageIndexArray = _bestImageIndexArray;
         uploadViewController.pageIndex = index;

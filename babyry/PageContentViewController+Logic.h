@@ -28,6 +28,10 @@
 - (void)hideFamilyApplyIntroduceView;
 - (void)setupImagesCount;
 
-@property PageContentViewController *pageContentViewController;
+// 循環参照(メモリリーク)が起きるので、弱参照にしないと駄目
+@property (weak) PageContentViewController *pageContentViewController;
+
+// 今月と先月のgetChildImagesWithYearを読み込んだフラグ
+@property BOOL loadCompletBothMonth;
 
 @end
