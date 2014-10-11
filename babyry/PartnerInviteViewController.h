@@ -20,6 +20,4 @@
 @property int pinCodeSaveRetryMaxCount;
 @property int pinCodeSaveRetryCount;
 
-@property NSMutableArray *childProperties;
-
 @end

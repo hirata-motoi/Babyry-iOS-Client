@@ -16,6 +16,7 @@
 #import "InputPinCodeViewController.h"
 #import "Tutorial.h"
 #import "ParseUtils.h"
+#import "ChildProperties.h"
 
 @interface PartnerInviteViewController ()
 
@@ -73,19 +74,11 @@
     if([PartnerApply linkComplete]) {
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
         // childPropertiesを更新してViewを更新
-        //NSMutableArray *tmpProperties = [[NSMutableArray alloc] init];
-        PFQuery *child = [PFQuery queryWithClassName:@"Child"];
-        [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
-        [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if (objects) {
-                [_childProperties removeAllObjects];
-                for (PFObject *object in objects) {
-                    [_childProperties addObject:[ParseUtils pfObjectToDic:object]];
-                }
-                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotification:n];
-            }
+        [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
         }];
+        
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"パートナー承認が完了しています"
                                                         message:@""
                                                        delegate:self
