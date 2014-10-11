@@ -604,10 +604,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## Parse
 
-See https://parse.com/about/terms
-
-## Parse-iOS
-
 See https://www.parse.com/about/terms
 
 ## ParseFacebookUtils

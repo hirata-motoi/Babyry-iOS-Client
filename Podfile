@@ -1,5 +1,5 @@
-pod 'Parse', '1.3'
-pod 'ParseFacebookUtils', '1.3'
+pod 'Parse', '1.4.1'
+pod 'ParseFacebookUtils', '1.4.1'
 pod 'AWSiOSSDKv2', '2.0.7'
 pod 'Facebook-iOS-SDK', '3.18'
 pod 'CrittercismSDK', '4.3.7'
