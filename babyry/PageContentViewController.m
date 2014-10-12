@@ -434,12 +434,10 @@
     [TransitionByPushNotification setCurrentViewController:@"MultiUploadViewController"];
     
     MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
-    multiUploadViewController.name = [_childProperty objectForKey:@"name"];
-    multiUploadViewController.childObjectId = [_childProperty objectForKey:@"objectId"];
+    multiUploadViewController.childObjectId = childProperty[@"objectId"];
     multiUploadViewController.date = date;
     multiUploadViewController.month = [date substringWithRange:NSMakeRange(0, 6)];
     multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    multiUploadViewController.child = _childProperty;
     multiUploadViewController.notificationHistoryByDay = _notificationHistory[[date substringWithRange:NSMakeRange(0, 8)]];
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
@@ -463,7 +461,6 @@
     pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
-    pageViewController.child = _childProperty;
     pageViewController.notificationHistory = _notificationHistory;
     pageViewController.indexPath = indexPath;
     [self.navigationController setNavigationBarHidden:YES];
@@ -1142,10 +1139,12 @@
     NSDictionary *info = [TransitionByPushNotification getInfo];
     PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
     
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    
     // 以後の処理を進めるのはフロントに表示されているものだけ (PageViewは最大3枚表示されるので、前後のページの処理が行われるとばぐる)
     // 今のページのindex(childIdからもとめる)がCoreDataと一致していなければreturn
     int i = 0;
-    for (NSMutableDictionary *dic in _childProperties) {
+    for (NSMutableDictionary *dic in childProperties) {
         if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
             if (i != [TransitionByPushNotification getCurrentPageIndex]) {
                 return;
@@ -1168,7 +1167,7 @@
     if ([tsnInfo[@"nextVC"] isEqualToString:@"movePageContentViewController"]) {
         // ださいけど、childPropertiesからターゲットのchildIdのindexをみつける
         int i = 0;
-        for (NSMutableDictionary *dic in _childProperties) {
+        for (NSMutableDictionary *dic in childProperties) {
             if ([dic[@"objectId"] isEqualToString:tsnInfo[@"childObjectId"]]) {
                 [TransitionByPushNotification setCurrentPageIndex:i];
                 NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
