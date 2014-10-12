@@ -63,6 +63,7 @@
     if (!currentUser || !currentUser[@"familyId"] || [currentUser[@"familyId"] isEqualToString:@""]) {
         return;
     }
+    NSMutableArray *beforeSyncChildProperties = [self getChildProperties];
     
     PFQuery *query = [PFQuery queryWithClassName:@"Child"];
     [query whereKey:@"familyId" equalTo:currentUser[@"familyId"]];
@@ -72,6 +73,10 @@
             return;
         }
         if (objects.count < 1) {
+            [self deleteUnavailableChildProperties:nil];
+            if (block) {
+                block(beforeSyncChildProperties);
+            }
             return;
         }
         
@@ -88,7 +93,7 @@
                 queryCompletedCount++;
                 
                 if (queryCompletedCount == objects.count) {
-                    NSMutableArray *beforeSyncChildProperties = [self getChildProperties];
+                    [self deleteUnavailableChildProperties:objects];
                     [self saveChildProperties:objects withOldestChildImageDate:oldestChildImageDate];
                     
                     if (block) {
