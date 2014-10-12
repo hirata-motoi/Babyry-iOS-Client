@@ -136,11 +136,15 @@
 
 + (NSMutableDictionary *)getOldestChildImageDate:(NSArray *)childList
 {
+    if (childList.count < 1) {
+        return nil;
+    }
+    
     NSMutableDictionary *oldestChildImageDate = [[NSMutableDictionary alloc]init];
-                         
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        for (PFObject *child in childList) {
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(childList.count);
+    for (PFObject *child in childList) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
             [query whereKey:@"imageOf" equalTo:child.objectId];
             [query orderByAscending:@"date"];
@@ -148,9 +152,9 @@
             if (oldestChildImage) {
                 oldestChildImageDate[child.objectId] = oldestChildImage[@"date"];
             }
-        }
-        dispatch_semaphore_signal(semaphore);
-    });
+            dispatch_semaphore_signal(semaphore);
+        });
+    }
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     return oldestChildImageDate;
 }
