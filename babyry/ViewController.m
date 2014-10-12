@@ -227,7 +227,6 @@
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
             }
-            [ChildProperties syncChildProperties];
             _only_first_load = 0;
             
             [_hud hide:YES];
