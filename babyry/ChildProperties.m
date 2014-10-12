@@ -88,7 +88,7 @@
             [query orderByAscending:@"date"];
             [query getFirstObjectInBackgroundWithBlock:^(PFObject *childImage, NSError *error) {
                 if (childImage) {
-                    oldestChildImageDate[childImage.objectId] = childImage[@"date"];
+                    oldestChildImageDate[child.objectId] = childImage[@"date"];
                 }
                 queryCompletedCount++;
                 
