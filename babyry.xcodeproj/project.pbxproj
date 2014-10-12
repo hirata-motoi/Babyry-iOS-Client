@@ -27,6 +27,7 @@
 		889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002F7198E6FA9005775B5 /* AWSS3Utils.m */; };
 		889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FA198F5EC7005775B5 /* ChildProfileViewController.m */; };
 		889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */; };
+		889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */; };
 		88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */; };
 		88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FEC196CE9C500F4B40C /* MJPopupBackgroundView.m */; };
 		88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FEE196CE9C500F4B40C /* UIViewController+MJPopupViewController.m */; };
@@ -273,6 +274,8 @@
 		889002FA198F5EC7005775B5 /* ChildProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileViewController.m; sourceTree = "<group>"; };
 		889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileEditViewController.h; sourceTree = "<group>"; };
 		889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileEditViewController.m; sourceTree = "<group>"; };
+		889F53E119DBFE4A009B3123 /* TransitionByPushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransitionByPushNotification.h; sourceTree = "<group>"; };
+		889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransitionByPushNotification.m; sourceTree = "<group>"; };
 		88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroFirstViewController.h; sourceTree = "<group>"; };
 		88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroFirstViewController.m; sourceTree = "<group>"; };
 		88AA2FEB196CE9C500F4B40C /* MJPopupBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MJPopupBackgroundView.h; sourceTree = "<group>"; };
@@ -714,6 +717,8 @@
 				88C072D319C87A3200BF6F6F /* PartnerApply.m */,
 				88C072F419CC107800BF6F6F /* ParseUtils.h */,
 				88C072F519CC107800BF6F6F /* ParseUtils.m */,
+				889F53E119DBFE4A009B3123 /* TransitionByPushNotification.h */,
+				889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1592,6 +1597,7 @@
 				F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */,
 				883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */,
 				88C072CB19C60E1600BF6F6F /* UserRegisterViewController.m in Sources */,
+				889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */,
 				8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */,
 				F2B7E0EE19C742520052981B /* PageContentViewController+Logic.m in Sources */,
 				F21BBBE319CA7359002D4623 /* TutorialAddChildView.m in Sources */,
@@ -1938,7 +1944,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "087BED89-D87B-4851-9891-6A386ACC15B0";
+				PROVISIONING_PROFILE = "c3b8343f-b9e6-4828-90d9-7ffe47964c8f";
 				SDKROOT = iphoneos;
 			};
 			name = BabyryDev;

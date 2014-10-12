@@ -39,15 +39,20 @@
     self.delegate = self;
     self.dataSource = self;
   
-    PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
+    PageContentViewController *startingViewController = [self viewControllerAtIndex:[TransitionByPushNotification getCurrentPageIndex]];
     NSArray *startingViewControllers = @[startingViewController];
     [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    [TransitionByPushNotification endMoving];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
 }
 
 // pragma mark - Page View Controller Data Source
@@ -88,6 +93,7 @@
     
     PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
 
+    pageContentViewController.delegate = self;
     pageContentViewController.pageIndex = index;
     pageContentViewController.childObjectId = [[childProperties objectAtIndex:index] objectForKey:@"objectId"];
     
@@ -95,6 +101,15 @@
     _currentDisplayedPageContentViewController = pageContentViewController;
     
     return pageContentViewController;
+}
+
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
+{
+    PageContentViewController *currentView = [pageViewController.viewControllers objectAtIndex:0];
+    
+    int index = currentView.pageIndex;
+
+    [TransitionByPushNotification setCurrentPageIndex:index];
 }
 
 // ViewControllerから叩かれる
@@ -127,6 +142,12 @@
     return [[childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
 }
 
+- (void) moveToTargetPage:(int)index
+{
+    [TransitionByPushNotification setCurrentPageIndex:index];
+    NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
+}
 
 /*
 #pragma mark - Navigation

@@ -23,7 +23,7 @@
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;
 
-@property NSUInteger currentPageIndex;
+//@property NSUInteger currentPageIndex;
 @property int only_first_load;
 @property MBProgressHUD *hud;
 @property UIView *tagAlbumOperationView;

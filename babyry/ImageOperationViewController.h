@@ -51,5 +51,7 @@
 @property NSInteger pageIndex;
 
 @property UIImageView *selectedBestshotView;
+@property NSIndexPath *indexPath;
+@property BOOL openCommentView;
 
 @end

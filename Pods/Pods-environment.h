@@ -88,7 +88,7 @@
 #define COCOAPODS_POD_AVAILABLE_Bolts
 #define COCOAPODS_VERSION_MAJOR_Bolts 1
 #define COCOAPODS_VERSION_MINOR_Bolts 1
-#define COCOAPODS_VERSION_PATCH_Bolts 2
+#define COCOAPODS_VERSION_PATCH_Bolts 3
 
 // CrittercismSDK
 #define COCOAPODS_POD_AVAILABLE_CrittercismSDK
@@ -135,21 +135,14 @@
 // Parse
 #define COCOAPODS_POD_AVAILABLE_Parse
 #define COCOAPODS_VERSION_MAJOR_Parse 1
-#define COCOAPODS_VERSION_MINOR_Parse 3
-#define COCOAPODS_VERSION_PATCH_Parse 0
-
-// Parse-iOS
-#define COCOAPODS_POD_AVAILABLE_Parse_iOS
-// This library does not follow semantic-versioning,
-// so we were not able to define version macros.
-// Please contact the author.
-// Version: 1.3.0.1.
+#define COCOAPODS_VERSION_MINOR_Parse 4
+#define COCOAPODS_VERSION_PATCH_Parse 1
 
 // ParseFacebookUtils
 #define COCOAPODS_POD_AVAILABLE_ParseFacebookUtils
 #define COCOAPODS_VERSION_MAJOR_ParseFacebookUtils 1
-#define COCOAPODS_VERSION_MINOR_ParseFacebookUtils 3
-#define COCOAPODS_VERSION_PATCH_ParseFacebookUtils 0
+#define COCOAPODS_VERSION_MINOR_ParseFacebookUtils 4
+#define COCOAPODS_VERSION_PATCH_ParseFacebookUtils 1
 
 // Reachability
 #define COCOAPODS_POD_AVAILABLE_Reachability
@@ -161,7 +154,7 @@
 #define COCOAPODS_POD_AVAILABLE_TMCache
 #define COCOAPODS_VERSION_MAJOR_TMCache 1
 #define COCOAPODS_VERSION_MINOR_TMCache 2
-#define COCOAPODS_VERSION_PATCH_TMCache 1
+#define COCOAPODS_VERSION_PATCH_TMCache 2
 
 // UICKeyChainStore
 #define COCOAPODS_POD_AVAILABLE_UICKeyChainStore

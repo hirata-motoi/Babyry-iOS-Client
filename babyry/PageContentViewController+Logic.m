@@ -25,12 +25,13 @@
 {
     [self showChildImages];
     [self setupImagesCount];
-    [self setupNotificationHistory];
     [self updateChildProperties];
 }
 
 - (void)showChildImages
 {
+    _loadCompletBothMonth = NO;
+    
     // 今月
     NSDateComponents *comp = [self dateComps];
     [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
@@ -140,6 +141,8 @@
             [self showIntroductionOfImageRequest];
             self.pageContentViewController.isFirstLoad = 0;
             [self finalizeProcess];
+            
+            [self setupNotificationHistory];
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [self.pageContentViewController.hud hide:YES];
@@ -315,11 +318,20 @@
     self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
-        for (NSString *ymd in history) {
-            [self.pageContentViewController.notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
+        // ただし、imageUpload or bestShotChoosen or commentPosted のpush通知をもらった場合はnotificationHistoryを更新しない(自動で開くので)
+        NSDictionary *info = [TransitionByPushNotification getInfo];
+        if (![info[@"event"] isEqualToString:@"imageUpload"] && ![info[@"event"] isEqualToString:@"bestShotChoosen"] && ![info[@"event"] isEqualToString:@"commentPosted"]) {
+            for (NSString *ymd in history) {
+                [self.pageContentViewController.notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
+            }
+            [self.pageContentViewController.pageContentCollectionView reloadData];
+        }
+        if (_loadCompletBothMonth == YES) {
+            [self.pageContentViewController dispatchForPushReceivedTransition];
         }
         [self.pageContentViewController.pageContentCollectionView reloadData];
         [self disableRedundantNotificationHistory];
+        _loadCompletBothMonth = YES;
     }];
     
 }

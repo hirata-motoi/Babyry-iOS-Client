@@ -252,8 +252,8 @@
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ準備中";
-    //_hud.margin = 0;
-    //_hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+    
+    [self disableNotificationHistory];
     
     int __block saveCount = 0;
     
@@ -421,8 +421,17 @@
             [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
         
             // push通知
+            // message以外にも、タップしたところが分かる情報を飛ばす
+            NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+            transitionInfoDic[@"event"] = @"imageUpload";
+            transitionInfoDic[@"date"] = _date;
+            transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+            transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+            transitionInfoDic[@"childObjectId"] = _childObjectId;
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+            options[@"data"] = [[NSMutableDictionary alloc]
+                                initWithObjects:@[@"Increment", transitionInfoDic]
+                                forKeys:@[@"badge", @"transitionInfo"]];
             [PushNotification sendInBackground:@"imageUpload" withOptions:options];
            
             if ([Tutorial underTutorial]) {
@@ -430,6 +439,19 @@
                 MultiUploadViewController_Logic *logic = [[MultiUploadViewController_Logic alloc]init];
                 [logic updateBestShotWithChild:_childObjectId withDate:_date];
             }
+        }
+    }
+}
+
+- (void)disableNotificationHistory
+{
+    NSArray *targetTypes = [NSArray arrayWithObjects:@"requestPhoto", nil];
+    for (NSString *type in targetTypes) {
+        if (_notificationHistoryByDay && _notificationHistoryByDay[type]) {
+            for (PFObject *notificationHistory in _notificationHistoryByDay[type]) {
+                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+            }
+            [_notificationHistoryByDay[type] removeAllObjects];
         }
     }
 }

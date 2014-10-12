@@ -43,4 +43,6 @@
 
 @property int multiUploadMax;
 
+@property NSMutableDictionary *notificationHistoryByDay;
+
 @end

@@ -103,8 +103,6 @@
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
     _bestImageId = @"";
-   
-    [[self logic] disableNotificationHistory];
 }
 
 - (void)didReceiveMemoryWarning
@@ -117,6 +115,8 @@
 {
     [super viewDidAppear:animated];
     
+    [[self logic] disableNotificationHistory];
+        
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ同期中";
     
@@ -351,6 +351,7 @@
     multiUploadAlbumTableViewController.month = _month;
     multiUploadAlbumTableViewController.totalImageNum = _totalImageNum;
     multiUploadAlbumTableViewController.indexPath = _indexPath;
+    multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
@@ -403,10 +404,10 @@
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
     _detailImageIndex = [[sender view] tag];
-    [self openImagePageView:_detailImageIndex];
+    [self openImagePageView:_detailImageIndex forceOpenBestShot:NO];
 }
 
-- (void) openImagePageView:(int)detailImageIndex
+- (void) openImagePageView:(int)detailImageIndex forceOpenBestShot:(BOOL)forceOpenBestShot
 {
     // _childImageArrayを_childImageCacheArrayのならびにそろえる (ソートの関係でそろわない可能性あり)
     // ついでにtmp省く
@@ -439,7 +440,11 @@
         ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
         pageViewController.childImages = childImages;
         pageViewController.currentSection = 0;
-        pageViewController.currentRow = detailImageIndex;
+        if (forceOpenBestShot && bestIndex != -1) {
+            pageViewController.currentRow = bestIndex;
+        } else {
+            pageViewController.currentRow = detailImageIndex;
+        }
         pageViewController.childObjectId = _childObjectId;
         pageViewController.fromMultiUpload = YES;
         pageViewController.myRole = _myRole;
@@ -627,6 +632,20 @@
 - (void)forwardNextTutorial
 {
     [[self logic] forwardNextTutorial];
+}
+
+- (void) dispatchForPushReceivedTransition
+{
+    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
+    if (!tsnInfo) {
+        return;
+    }
+        
+    if ([tsnInfo[@"nextVC"] isEqualToString:@"CommentViewController"]) {
+        [self openImagePageView:0 forceOpenBestShot:YES];
+        return;
+    }
+
 }
 
 @end

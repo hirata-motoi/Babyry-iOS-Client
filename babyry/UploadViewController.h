@@ -50,5 +50,6 @@
 @property NSInteger pageIndex;
 @property NSMutableArray *bestImageIndexArray;
 @property NSMutableArray *childCachedImageArray;
+@property NSIndexPath *indexPath;
 
 @end

@@ -126,7 +126,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - Bolts (1.1.2)
+  - Bolts (1.1.3)
   - CrittercismSDK (4.3.7)
   - Facebook-iOS-SDK (3.18.0):
     - Bolts
@@ -137,15 +137,13 @@ PODS:
   - Mantle (1.4.1):
     - Mantle/extobjc
   - Mantle/extobjc (1.4.1)
-  - Parse (1.3.0):
-    - Facebook-iOS-SDK (~> 3.17)
-  - Parse-iOS (1.3.0.1):
+  - Parse (1.4.1):
     - Bolts (~> 1.1.2)
-  - ParseFacebookUtils (1.3.0):
-    - Facebook-iOS-SDK (~> 3.9.0)
-    - Parse-iOS (~> 1.3.0)
+  - ParseFacebookUtils (1.4.1):
+    - Facebook-iOS-SDK (~> 3.17.0)
+    - Parse (~> 1.4.1)
   - Reachability (3.1.1)
-  - TMCache (1.2.1)
+  - TMCache (1.2.2)
   - UICKeyChainStore (1.0.5)
   - XMLDictionary (1.4)
 
@@ -154,22 +152,21 @@ DEPENDENCIES:
   - CrittercismSDK (= 4.3.7)
   - Facebook-iOS-SDK (= 3.18)
   - MagicalRecord (= 2.2)
-  - Parse (= 1.3)
-  - ParseFacebookUtils (= 1.3)
+  - Parse (= 1.4.1)
+  - ParseFacebookUtils (= 1.4.1)
 
 SPEC CHECKSUMS:
-  AWSiOSSDKv2: b27b5a62c1cab8cfbbe973d800dc835aecd8a289
-  Bolts: 2635e8698a630774689441047f3465d78c48d485
+  AWSiOSSDKv2: 2fd1741ec9f72024f6820ed92b815a5a82d563c6
+  Bolts: 3db0a875235e0c9042b013af13af0f00f79b102c
   CrittercismSDK: 4da8d0e407fb1ef29eef98678c1f90be4943b85e
   Facebook-iOS-SDK: fa12c51cc57bfb6f92e47793c9d4d2c65bc92741
   GZIP: f27c434ffee5e9a9b34f4e9c19e91350fa8bbde1
   MagicalRecord: 2b471584fc9e3137f3d0a56967917baa4979e224
   Mantle: 1ca9c0fa84d3d3fc98524e7229f30489b6dd44e5
-  Parse: 8ffeef385de83a6bef0c23cdf25f939635b53f5e
-  Parse-iOS: 92c08e7a60ee29dd499e3ab187f14d58027f98da
-  ParseFacebookUtils: d57d7d8dcd0ea941acd5a673b8d056d271b176d5
+  Parse: db1a09c832b7509edcc88a65dc07229f5e578c73
+  ParseFacebookUtils: 625da00d0f36a34e25ebae7f543385a0f19ccf1e
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
-  TMCache: ed936c5b4684e4ea15113d46fba8829ed3baadad
+  TMCache: e2c9225de7a107b529d1d04baa58eb5eab3051f3
   UICKeyChainStore: 4f9719600cc70025064e26f28f1210bcfc3b0c35
   XMLDictionary: 735e81b9a043e220b0d24e9d4f16719606f2e0fc
 

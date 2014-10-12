@@ -28,5 +28,6 @@
 @property NSMutableArray *bestImageIndexArray;
 @property NSMutableDictionary *notificationHistory;
 @property NSMutableArray *childCachedImageArray;
+@property NSIndexPath *indexPath;
 
 @end

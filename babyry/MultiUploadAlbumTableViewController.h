@@ -26,4 +26,6 @@
 
 @property BOOL accessAllowed;
 
+@property NSMutableDictionary *notificationHistoryByDay;
+
 @end

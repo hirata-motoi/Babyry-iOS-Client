@@ -11,7 +11,7 @@
 
 @interface MultiUploadViewController_Logic : NSObject
 
-@property MultiUploadViewController *multiUploadViewController;
+@property (weak) MultiUploadViewController *multiUploadViewController;
 
 - (void)showCacheImages;
 - (void)disableNotificationHistory;

@@ -426,12 +426,19 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 - (void)sendPushNotification:(PFObject *)dailyComment
 {
     // TODO push通知送信用methodで可変長の引数をとれるように対応する
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"commentPosted";
+    transitionInfoDic[@"date"] = _date;
+    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+    transitionInfoDic[@"childObjectId"] = _childObjectId;
     NSString *message = [NSString stringWithFormat:@"%@さん\n%@", [PFUser currentUser][@"nickName"], dailyComment[@"comment"]];
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
     options[@"data"] = data;
     data[@"alert"] = message;
     data[@"badge"] = @"Increment";
+    data[@"transitionInfo"] = transitionInfoDic;
     [PushNotification sendInBackground:@"commentPosted" withOptions:options];
 }
 
