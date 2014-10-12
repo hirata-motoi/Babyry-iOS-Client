@@ -51,10 +51,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-}
-
 // pragma mark - Page View Controller Data Source
 // provides the view controller after the current view controller. In other words, we tell the app what to display for the next screen.
 - (PageContentViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(PageContentViewController *)viewController
