@@ -60,8 +60,7 @@
     // その為、基本的にはしょっぱなでpinCodeを発行 & PincodeList(Parse)にレコード追加しておく (つまり、最初は1ユーザーに必ず1レコードが出来る)
     // パートナーひも付けが完了した場合にこのレコードは削除する
     // PincodeListに書き込んだらCoreDataに書き込んでおく、消したらCoreDataから消す
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if (!pie || !pie.pinCode || [pie.pinCode isEqualToNumber:[NSNumber numberWithInt:0]]) {
         [self issuePinCode];
     } else {
@@ -202,7 +201,6 @@
         }
         
         PartnerInviteEntity *pie = [PartnerInviteEntity MR_createEntity];
-        pie.name = [Config config][@"PartnerInviteEntityKeyName"];
         pie.pinCode = _pinCode;
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }];

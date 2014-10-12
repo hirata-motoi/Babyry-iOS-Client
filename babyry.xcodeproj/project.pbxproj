@@ -18,7 +18,6 @@
 		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
-		883A92F019D2102F00F82A34 /* PartnerInviteEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 883A92EF19D2102F00F82A34 /* PartnerInviteEntity.m */; };
 		883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */; };
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
 		887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */; };
@@ -28,6 +27,7 @@
 		889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FA198F5EC7005775B5 /* ChildProfileViewController.m */; };
 		889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */; };
 		889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */; };
+		889F53ED19EAE4F5009B3123 /* PartnerInviteEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 889F53EC19EAE4F5009B3123 /* PartnerInviteEntity.m */; };
 		88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */; };
 		88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FEC196CE9C500F4B40C /* MJPopupBackgroundView.m */; };
 		88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88AA2FEE196CE9C500F4B40C /* UIViewController+MJPopupViewController.m */; };
@@ -256,8 +256,6 @@
 		8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadPickerViewController.h; sourceTree = "<group>"; };
 		8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadPickerViewController.m; sourceTree = "<group>"; };
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
-		883A92EE19D2102F00F82A34 /* PartnerInviteEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerInviteEntity.h; sourceTree = "<group>"; };
-		883A92EF19D2102F00F82A34 /* PartnerInviteEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerInviteEntity.m; sourceTree = "<group>"; };
 		883A92F119D2257C00F82A34 /* PartnerWaitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerWaitViewController.h; sourceTree = "<group>"; };
 		883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerWaitViewController.m; sourceTree = "<group>"; };
 		885A223519750DD20039B263 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
@@ -276,6 +274,8 @@
 		889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileEditViewController.m; sourceTree = "<group>"; };
 		889F53E119DBFE4A009B3123 /* TransitionByPushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransitionByPushNotification.h; sourceTree = "<group>"; };
 		889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransitionByPushNotification.m; sourceTree = "<group>"; };
+		889F53EB19EAE4F5009B3123 /* PartnerInviteEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerInviteEntity.h; sourceTree = "<group>"; };
+		889F53EC19EAE4F5009B3123 /* PartnerInviteEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerInviteEntity.m; sourceTree = "<group>"; };
 		88AA2FE7196C16D600F4B40C /* IntroFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroFirstViewController.h; sourceTree = "<group>"; };
 		88AA2FE8196C16D600F4B40C /* IntroFirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroFirstViewController.m; sourceTree = "<group>"; };
 		88AA2FEB196CE9C500F4B40C /* MJPopupBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MJPopupBackgroundView.h; sourceTree = "<group>"; };
@@ -1275,10 +1275,10 @@
 		F2AE04E319B2E66B00B39C6F /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				889F53EB19EAE4F5009B3123 /* PartnerInviteEntity.h */,
+				889F53EC19EAE4F5009B3123 /* PartnerInviteEntity.m */,
 				F22F208419E46A600089A592 /* ChildPropertyEntity.h */,
 				F22F208519E46A600089A592 /* ChildPropertyEntity.m */,
-				883A92EE19D2102F00F82A34 /* PartnerInviteEntity.h */,
-				883A92EF19D2102F00F82A34 /* PartnerInviteEntity.m */,
 				F2D9350019C95DA8001F33D0 /* TutorialAttributes.h */,
 				F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */,
 				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
@@ -1589,6 +1589,7 @@
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
+				889F53ED19EAE4F5009B3123 /* PartnerInviteEntity.m in Sources */,
 				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
 				F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */,
 				F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */,
@@ -1674,7 +1675,6 @@
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
 				F21BBBD519CA6B6E002D4623 /* TutorialPartChangeExecView.m in Sources */,
 				F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */,
-				883A92F019D2102F00F82A34 /* PartnerInviteEntity.m in Sources */,
 				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,
 				F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,

@@ -16,9 +16,8 @@
 
 + (BOOL) linkComplete
 {
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
-    if (!pie.linkComplete || [pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
+    if (!pie || !pie.linkComplete || [pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
         return NO;
     } else {
         return YES;
@@ -27,8 +26,7 @@
 
 + (void) setLinkComplete
 {
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if ([pie.linkComplete isEqual:[NSNumber numberWithBool:YES]]) {
         return;
     }
@@ -38,15 +36,13 @@
     } else {
         PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
         newPie.linkComplete = [NSNumber numberWithBool:YES];
-        newPie.name = [Config config][@"PartnerInviteEntityKeyName"];
     }
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
 + (void) unsetLinkComplete
 {
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if ([pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
         return;
     }
@@ -56,7 +52,6 @@
     } else {
         PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
         newPie.linkComplete = [NSNumber numberWithBool:NO];
-        newPie.name = [Config config][@"PartnerInviteEntityKeyName"];
     }
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
