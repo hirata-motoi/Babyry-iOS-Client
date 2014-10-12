@@ -29,6 +29,7 @@
 - (void)setupImagesCount;
 - (NSDateComponents *)compsToAdd:(NSNumber *)oldestChildImageDate;
 - (void)addMonthToCalendar:(NSIndexPath *)indexPath;
+- (BOOL)canAddCalendar:(NSInteger)section;
 
 // 循環参照(メモリリーク)が起きるので、弱参照にしないと駄目
 @property (weak) PageContentViewController *pageContentViewController;

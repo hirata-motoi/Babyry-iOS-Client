@@ -241,7 +241,7 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    if (section == _childImages.count - 1) {
+    if (section == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:section]) {
         return [_childImages[section][@"images"] count] + 1;
     }
     return [_childImages[section][@"images"] count];
@@ -1184,6 +1184,7 @@
         return;
     }
 }
+
 
 /*
 #pragma mark - Navigation

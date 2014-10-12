@@ -568,6 +568,10 @@
 
 - (void)addMonthToCalendar:(NSIndexPath *)indexPath
 {
+    if (![self canAddCalendar:indexPath.section]) {
+        return;
+    }
+    
     PFObject *oldestChildImage = self.pageContentViewController.childImages[indexPath.section][@"images"][indexPath.row - 1];
     NSNumber *date = oldestChildImage[@"date"];
     NSDateComponents *compsToAdd = [self compsToAdd:date];
@@ -691,6 +695,16 @@
         }
         [self.pageContentViewController.notificationHistory[ymd][type] removeAllObjects];
     }
+}
+
+// 2009年分のカレンダーまでは追加可能とする
+// こどもの誕生日の下限が2010/01/01なので、決めでその一年前とする
+- (BOOL)canAddCalendar:(NSInteger)section
+{
+    NSInteger year = [self.pageContentViewController.childImages[section][@"year"] integerValue];
+    NSInteger month = [self.pageContentViewController.childImages[section][@"month"] integerValue];
+    return !(year < 2009 || (year == 2009 && month == 1));
+    
 }
 
 
