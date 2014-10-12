@@ -232,13 +232,12 @@
             
             [_hud hide:YES];
         } else {
-            // 二発目以降はbackgroundで引かないとUIが固まる
-            [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
-                TutorialStage *currentStage = [Tutorial currentStage];
-                if ([currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
-                    [self setChildNames];
-                }
-            }];
+            // 二回目以降はchildPropertiesの更新を行わない
+            // PageContentViewControllerの方に委譲しているため
+            TutorialStage *currentStage = [Tutorial currentStage];
+            if ([currentStage.currentStage isEqualToString:@"familyApplyExec"] && [[ChildProperties getChildProperties] count] == 0) {
+                [self setChildNames];
+            }
         }
         [self showPageViewController];
     }
