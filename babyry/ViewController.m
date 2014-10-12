@@ -34,12 +34,15 @@
 #import "PartnerInvitedEntity.h"
 #import "PartnerWaitViewController.h"
 #import "ParseUtils.h"
+#import "ChildProperties.h"
 
 @interface ViewController ()
 
 @end
 
-@implementation ViewController
+@implementation ViewController {
+    NSMutableDictionary *oldestChildImageDate;
+}
 
 - (void)viewDidLoad
 {
@@ -71,8 +74,6 @@
                                              target:nil
                                              action:nil];
     
-    // childPropertiesのメモリ領域確保
-    _childProperties = [[NSMutableArray alloc] init];
     // partner情報初期化
     [Partner initialize];
     
@@ -200,8 +201,8 @@
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
-            NSArray *childList = [childQuery findObjects];
-            if (childList.count < 1) {
+            NSMutableArray *childProperties = [ChildProperties syncChildProperties];
+            if (childProperties.count < 1) {
                 if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApplyExec"]) {
                     [self setChildNames];
                     return;
@@ -217,40 +218,25 @@
                     [Tutorial upsertTutorialAttributes:@"tutorialChildObjectId" withValue:childObjectId];
                     
                     // Childからbotのrowをひく
-                    PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
-                    [botQuery whereKey:@"objectId" equalTo:childObjectId];
-                    NSArray *botChild = [botQuery findObjects];
+                    NSMutableDictionary *botChildProperty = [ChildProperties syncChildProperty:childObjectId];
                     
-                    if (botChild.count > 0) {
-                        childList = botChild;
-                    } else {
+                    if (!botChildProperty) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"No Bot User in Child class objectId:%@", childObjectId]];
                     }
                 } else {
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
             }
-            _childArrayFoundFromParse = childList;
-            [self setupChildProperties];
-            [self initializeChildImages];
             _only_first_load = 0;
             
             [_hud hide:YES];
         } else {
-            // 二発目以降はbackgroundで引かないとUIが固まる
-            [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                if(!error) {
-                    if ([objects count] < 1) {
-                        TutorialStage *currentStage = [Tutorial currentStage];
-                        if ([currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
-                            [self setChildNames];
-                        }
-                        return;
-                    }
-                } else {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
-                }
-            }];
+            // 二回目以降はchildPropertiesの更新を行わない
+            // PageContentViewControllerの方に委譲しているため
+            TutorialStage *currentStage = [Tutorial currentStage];
+            if ([currentStage.currentStage isEqualToString:@"familyApplyExec"] && [[ChildProperties getChildProperties] count] == 0) {
+                [self setChildNames];
+            }
         }
         [self showPageViewController];
     }
@@ -260,18 +246,7 @@
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
     globalSettingViewController.viewController = self;
-    globalSettingViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:globalSettingViewController animated:YES];
-}
-
-- (void)setupChildProperties
-{
-    // 初期化
-    [_childProperties removeAllObjects];
-    
-    for (PFObject *c in _childArrayFoundFromParse) {
-        [_childProperties addObject:[ParseUtils pfObjectToDic:c]];
-    }
 }
 
 -(void) showPageViewController
@@ -317,11 +292,11 @@
 
 - (void)instantiatePageViewController
 {
-    if (_childProperties.count < 1) {
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    if (childProperties.count < 1) {
         return;
     }
     _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-    _pageViewController.childProperties = _childProperties;
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [self setupGlobalSetting];
@@ -351,16 +326,7 @@
 -(void)setChildNames
 {
     IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    introChildNameViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:introChildNameViewController animated:YES];
-}
-
-- (void)initializeChildImages
-{
-    _childImages = [[NSMutableDictionary alloc]init];
-    for (PFObject *child in _childArrayFoundFromParse) {
-        [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
-    }
 }
 
 - (NSString*) createFamilyId

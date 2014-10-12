@@ -18,7 +18,7 @@
 - (void)updateImagesFromParse;
 - (void)updateBestShot;
 - (void)createNotificationHistory:(NSString *)type;
-- (void)updateBestShotWithChild:(NSMutableDictionary *)childProperty withDate:(NSString *)date;
+- (void)updateBestShotWithChild:(NSString *)childObjectId withDate:(NSString *)date;
 - (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath;
 - (void)finalizeSelectBestShot;
 - (void)forwardNextTutorial;

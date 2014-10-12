@@ -28,6 +28,7 @@
 #import "ICTutorialOverlay.h"
 #import "FamilyRole.h"
 #import "ViewController.h"
+#import "ChildProperties.h"
 
 @implementation TutorialNavigator {
     TutorialNavigator *navigator_;
@@ -151,13 +152,13 @@
     //    かつこども追加viewを表示(ViewControllerがやってくれる)
     NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
     ViewController *vc = [self.targetViewController.navigationController.viewControllers objectAtIndex:0];
-    NSMutableArray *childProperties = vc.childProperties;
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
     
     NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
     NSArray *tutorialChildObjects = [childProperties filteredArrayUsingPredicate:p];
     if (tutorialChildObjects.count > 0) {
         for (NSMutableDictionary *matchedChild in tutorialChildObjects) {
-            [childProperties removeObject:matchedChild];
+            [ChildProperties deleteByObjectId:matchedChild[@"objectId"]];
         }
     }
     // _pageViewControllerを再読み込み

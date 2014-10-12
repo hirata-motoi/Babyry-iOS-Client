@@ -103,7 +103,7 @@
             uploadPickerViewController.childObjectId = _childObjectId;
             uploadPickerViewController.date = _date;
             uploadPickerViewController.uploadViewController = _uploadViewController;
-            uploadPickerViewController.child = _child;
+//            uploadPickerViewController.child = _child;
             [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         }
             break;

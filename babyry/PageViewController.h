@@ -11,7 +11,6 @@
 
 @interface PageViewController : UIPageViewController<UIPageViewControllerDataSource, UIPageViewControllerDelegate, PageContentViewControllerDelegate>
 
-@property NSMutableArray *childProperties;
 @property UIView *tagAlbumOperationView;
 @property NSInteger currentPageIndex;
 @property PageContentViewController *currentDisplayedPageContentViewController;

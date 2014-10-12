@@ -15,6 +15,7 @@
 #import "PushNotification.h"
 #import "NotificationHistory.h"
 #import "DateUtils.h"
+#import "ChildProperties.h"
 
 @implementation MultiUploadViewController_Logic
 
@@ -31,7 +32,8 @@
     // Parseから画像をとる
     // TODO 子クラスでは日付を調節して取得してくる。_dateの値を書き換えるだけでいいかもしれない
     // また、CoreDataからBestShotの情報を取得して_bestImageIdをセットする。このmethodの後の方でいいかも
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_multiUploadViewController.child[@"childImageShardIndex"] integerValue]]];
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.multiUploadViewController.childObjectId];
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_multiUploadViewController.childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[self compensateTargetDate:[NSNumber numberWithInteger:[_multiUploadViewController.date integerValue]]]];
@@ -125,9 +127,10 @@
                     return;
                 }
             } else {
+                NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.multiUploadViewController.childObjectId];
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
                 getRequest.bucket = [Config config][@"AWSBucketName"];
-                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_multiUploadViewController.child[@"childImageShardIndex"] integerValue]], object.objectId];
+                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_multiUploadViewController.configuration];
                 [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
@@ -183,7 +186,8 @@
 - (void)updateBestShot
 {
     // update Parse
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_multiUploadViewController.child[@"childImageShardIndex"] integerValue]]];
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.multiUploadViewController.childObjectId];
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_multiUploadViewController.childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_multiUploadViewController.date integerValue]]];
@@ -230,11 +234,12 @@
 
 }
 
-- (void)updateBestShotWithChild:(NSMutableDictionary *)childProperty withDate:(NSString *)date
+- (void)updateBestShotWithChild:(NSString *)childObjectId withDate:(NSString *)date
 {
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:childObjectId];
     PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [childProperty[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
-    [childImageQuery whereKey:@"imageOf" equalTo:childProperty[@"objectId"]];
+    [childImageQuery whereKey:@"imageOf" equalTo:childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[date integerValue]]];
     [childImageQuery orderByAscending:@"createdAt"];
     [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {

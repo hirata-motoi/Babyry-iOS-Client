@@ -124,14 +124,14 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int index = [indexPath indexAtPosition:[indexPath length] - 1];
+    NSInteger index = [indexPath indexAtPosition:[indexPath length] - 1];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AlbumListTableViewCell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"AlbumListTableViewCell"];
     }
     cell.backgroundColor = [UIColor whiteColor];
     cell.textLabel.text = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%d枚", [[_albumImageAssetsArray objectAtIndex:index] count]];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld枚", [[_albumImageAssetsArray objectAtIndex:index] count]];
     
     UIImage *tmpImage = [UIImage imageWithCGImage:[[[_albumImageAssetsArray objectAtIndex:index] lastObject] thumbnail]];
     cell.imageView.image = tmpImage;
@@ -141,14 +141,13 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int index = [indexPath indexAtPosition:[indexPath length] - 1];
+    NSInteger index = [indexPath indexAtPosition:[indexPath length] - 1];
     
     MultiUploadPickerViewController *multiUploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadPickerViewController"];
     multiUploadPickerViewController.alAssetsArr = [_albumImageAssetsArray objectAtIndex:index];
     multiUploadPickerViewController.month = _month;
     multiUploadPickerViewController.childObjectId = _childObjectId;
     multiUploadPickerViewController.date = _date;
-    multiUploadPickerViewController.child = _child;
     multiUploadPickerViewController.notificationHistoryByDay = _notificationHistoryByDay;
     if (_totalImageNum){
         multiUploadPickerViewController.totalImageNum = _totalImageNum;

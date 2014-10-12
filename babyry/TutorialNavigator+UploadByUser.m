@@ -10,6 +10,7 @@
 #import "ICTutorialOverlay.h"
 #import "PageContentViewController.h"
 #import "TutorialUploadByUserView.h"
+#import "ChildProperties.h"
 
 @implementation TutorialNavigator_UploadByUser {
     ICTutorialOverlay *overlay;
@@ -31,8 +32,9 @@
     [overlay show];
     
     TutorialUploadByUserView *view = [TutorialUploadByUserView view];
+   
     
-    NSMutableDictionary *childProperty = vc.childProperty;
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:vc.childObjectId];
     view.message.text = [NSString stringWithFormat:@"%@ちゃんの登録が完了しました。\n次に写真をアップロードしましょう。", childProperty[@"name"]];
     [view.message sizeToFit];
     CGRect viewRect = view.frame;

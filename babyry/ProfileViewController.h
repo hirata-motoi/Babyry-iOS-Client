@@ -16,7 +16,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *profileTableView;
 @property NSInteger numberOfChild;
 @property PFObject *partnerInfo;
-@property NSMutableArray *childProperties;
 @property UITableViewCell *nicknameCell;
 @property NSInteger editedChildIndex;
 

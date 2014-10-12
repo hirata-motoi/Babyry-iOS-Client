@@ -23,6 +23,5 @@
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
 @property NSMutableDictionary *section;
-@property NSMutableDictionary *child;
 
 @end

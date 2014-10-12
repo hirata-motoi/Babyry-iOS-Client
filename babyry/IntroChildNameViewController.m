@@ -17,6 +17,7 @@
 #import "ChildListCell.h"
 #import "ParseUtils.h"
 #import "DateUtils.h"
+#import "ChildProperties.h"
 
 @interface IntroChildNameViewController ()
 
@@ -133,6 +134,7 @@
 
 -(void)addChild
 {
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (!_childNameField.text || [_childNameField.text isEqualToString:@""]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"こどもの名前を入力してください"
                                                         message:@""
@@ -144,7 +146,7 @@
         return;
     }
     
-    if ([_childProperties count] >= 5) {
+    if ([childProperties count] >= 5) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限に達しています"
                                                         message:@"こどもを作成できる上限は5人です。"
                                                        delegate:nil
@@ -192,20 +194,12 @@
             child[@"commentShardIndex"] = [NSNumber numberWithInteger: [Sharding shardIndexWithClassName:@"Comment"]];
             [child save];
             [child refresh];
+            [ChildProperties syncChildProperties];
 
-            [_childProperties addObject:[ParseUtils pfObjectToDic:child]];
-            
             // もしtutorial中だった場合はデフォルトのこどもの情報を消す
             if ([Tutorial underTutorial] && _isBabyryExist) {
                 [ImageCache removeAllCache];
                 [Tutorial forwardStageWithNextStage:@"uploadByUser"];
-                // ViewControllerのchildPropertiesからデフォルトのこどもを削除
-                NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
-                NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
-                NSArray *tutorialChildObjects = [_childProperties filteredArrayUsingPredicate:p];
-                if (tutorialChildObjects.count > 0) {
-                    [_childProperties removeObject:tutorialChildObjects[0]];
-                }
             }
             [self refreshChildList];
             
@@ -234,6 +228,7 @@
         [view removeFromSuperview];
     }
     
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
     // BabyryちゃんのobjectIdを取得
     NSString *babyryId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
               
@@ -241,7 +236,7 @@
     
     float lastY = 0;
     int childIndex = 0;
-    for (NSMutableDictionary *childDic in _childProperties) {
+    for (NSMutableDictionary *childDic in childProperties) {
         if (![childDic[@"objectId"] isEqualToString:babyryId]) {
             ChildListCell *childListView = [ChildListCell view];
             
@@ -313,16 +308,23 @@
             break;
         case 1:
         {
+            NSMutableArray *childProperties = [ChildProperties getChildProperties];
             _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             _hud.labelText = @"削除中";
             PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
-            [childQuery whereKey:@"objectId" equalTo:[[_childProperties objectAtIndex:_removeTarget] objectForKey:@"objectId"]];
-            [childQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+            [childQuery whereKey:@"objectId" equalTo:[[childProperties objectAtIndex:_removeTarget] objectForKey:@"objectId"]];
+            [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 if (error) {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in find child in alertView %@", error]];
                     return;
                 }
                 
+                if (objects.count < 1) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Child not found in alertView"]];
+                    return;
+                }
+
+                PFObject *object = objects[0];
                 [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (error) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in child delete in alertView %@", error]];
@@ -330,7 +332,7 @@
                     }
                     
                     if (succeeded) {
-                        [_childProperties removeObjectAtIndex:_removeTarget];
+                        [ChildProperties deleteByObjectId:childProperties[_removeTarget][@"objectId"]];
                         [_hud hide:YES];
                         [self viewWillAppear:YES];
                         _removeTarget = -1;
@@ -346,9 +348,10 @@
 - (int) countChildProperty
 {
     NSString *babyryId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
 
     int count = 0;
-    for (NSMutableDictionary *childDic in _childProperties) {
+    for (NSMutableDictionary *childDic in childProperties) {
         if (![childDic[@"objectId"] isEqualToString:babyryId]) {
             count++;
         }

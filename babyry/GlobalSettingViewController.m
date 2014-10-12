@@ -359,7 +359,6 @@
 {
     [tn removeNavigationView];
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    icnvc.childProperties = _childProperties;
     [self.navigationController pushViewController:icnvc animated:YES];
 }
 
@@ -463,9 +462,6 @@
 {
     ProfileViewController *profileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ProfileViewController"];
     
-    // リクエストが増えるのは微妙だが事前に情報を取得しておく
-    // partnerInfo、childともに基本キャッシュ、ネットワークがない場合はキャッシュを使う
-    profileViewController.childProperties = _childProperties;
     profileViewController.partnerInfo = _partnerInfo;
     [self.navigationController pushViewController:profileViewController animated:YES];
 }
