@@ -1162,6 +1162,9 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                                 <date key="date" timeIntervalSinceReferenceDate="433263128.94653499">
                                                     <!--2014-09-24 14:52:08 +0000-->
                                                 </date>
+                                                <date key="minimumDate" timeIntervalSinceReferenceDate="283964400">
+                                                    <!--2009-12-31 15:00:00 +0000-->
+                                                </date>
                                                 <timeZone key="timeZone" name="America/Los_Angeles">
                                                     <data key="data">
 VFppZgAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAAAC5AAAABAAAABCepkign7sVkKCGKqChmveQ
