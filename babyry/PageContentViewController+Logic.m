@@ -520,7 +520,7 @@
     }];
 }
 
-- (BOOL)hasUpdatedChildProperties:(NSMutableArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
+- (BOOL)hasUpdatedChildProperties:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
     if (childProperties.count != beforeSyncChildProperties.count) {
         return YES;
