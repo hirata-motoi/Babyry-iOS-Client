@@ -53,5 +53,6 @@
 @property UIImageView *selectedBestshotView;
 @property NSIndexPath *indexPath;
 @property BOOL openCommentView;
+@property UIImageView *unSelectedBestshotView;
 
 @end
