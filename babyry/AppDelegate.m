@@ -15,6 +15,7 @@
 #import "AppSetting.h"
 #import "DateUtils.h"
 #import "Logger.h"
+#import "FamilyRole.h"
 
 @implementation AppDelegate
 
@@ -98,6 +99,15 @@
     
     if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
+        
+        // パート変更の場合にはフォラグラウンドでもお知らせ
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
+            // キャッシュを更新しておく
+            [FamilyRole selfRole:@"noCache"];
+            [PFPush handlePush:userInfo];
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
     }
     
     if (application.applicationState == UIApplicationStateInactive) {

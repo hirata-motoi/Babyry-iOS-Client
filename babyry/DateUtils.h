@@ -18,5 +18,7 @@
 + (NSDateComponents *)dateCompsFromDate:(NSDate *)date;
 + (NSDateComponents *)compsFromNumber:(NSNumber *)date;
 + (NSNumber *)numberFromComps:(NSDateComponents *)comps;
++ (NSNumber *)getTodayYMD;
++ (NSNumber *)getYesterdayYMD;
 
 @end
