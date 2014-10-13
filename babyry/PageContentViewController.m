@@ -975,7 +975,7 @@
     // 基本的には1つしか無いはずなので、最初の一つをとる
     // ただし、表示するのは、section = 0, row = 0,1だけ
     // かつ uploaderだけ
-    if ([[FamilyRole selfRole:@"noCache"] isEqualToString:@"uploader"]) {
+    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
         if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
             if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
                 // 左下にそっと出してみる
