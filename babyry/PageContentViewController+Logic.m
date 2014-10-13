@@ -18,6 +18,7 @@
 #import "ParseUtils.h"
 #import "ImageRequestIntroductionView.h"
 #import "ChildProperties.h"
+#import "FamilyRole.h"
 
 @implementation PageContentViewController_Logic
 
@@ -331,6 +332,7 @@
         }
         [self.pageContentViewController.pageContentCollectionView reloadData];
         [self disableRedundantNotificationHistory];
+        [self removeUnnecessaryGMPBadge];
         _loadCompletBothMonth = YES;
     }];
     
@@ -518,6 +520,27 @@
             [self.pageContentViewController.pageContentCollectionView reloadData];
         }
     }];
+}
+
+// 1. uploaderの時に受け取っていたgive me photoはchooserに切り替わったら要らないので消す
+// 2. 2日以上前の場合はgive me photoのアイコンは要らないので消す
+- (void)removeUnnecessaryGMPBadge
+{
+    for (NSMutableDictionary *notification in [self.pageContentViewController.notificationHistory allValues]) {
+        for (NSString *type in [notification allKeys]) {
+            if ([type isEqualToString:@"requestPhoto"]) {
+                for (PFObject *object in notification[type]){
+                    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"chooser"]) {
+                        [NotificationHistory disableDisplayedNotificationsWithObject:object];
+                    } else {
+                        if (!([object[@"date"] isEqualToNumber:[DateUtils getTodayYMD]] || [object[@"date"] isEqualToNumber:[DateUtils getYesterdayYMD]])) {
+                            [NotificationHistory disableDisplayedNotificationsWithObject:object];
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 - (BOOL)hasUpdatedChildProperties:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties

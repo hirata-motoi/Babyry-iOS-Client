@@ -145,5 +145,14 @@
     return [NSNumber numberWithInt:[string intValue]];
 }
 
++ (NSNumber *)getTodayYMD
+{
+    return [self numberFromComps:[self dateCompsFromDate:[self setSystemTimezone:[NSDate date]]]];
+}
+
++ (NSNumber *)getYesterdayYMD
+{
+    return [self numberFromComps:[self dateCompsFromDate:[self setSystemTimezone:[NSDate dateWithTimeIntervalSinceNow:-24*60*60]]]];
+}
 
 @end
