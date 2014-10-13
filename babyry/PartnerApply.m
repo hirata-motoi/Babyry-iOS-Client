@@ -17,7 +17,7 @@
 + (BOOL) linkComplete
 {
     PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
-    if (!pie.linkComplete) {
+    if (!pie || !pie.linkComplete || [pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
         return NO;
     } else {
         return YES;
@@ -26,8 +26,7 @@
 
 + (void) setLinkComplete
 {
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if ([pie.linkComplete isEqual:[NSNumber numberWithBool:YES]]) {
         return;
     }
@@ -43,8 +42,7 @@
 
 + (void) unsetLinkComplete
 {
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if ([pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
         return;
     }
