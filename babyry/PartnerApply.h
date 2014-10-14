@@ -16,5 +16,8 @@
 + (NSNumber *) issuePinCode;
 + (void) registerApplyList;
 + (void) removeApplyList;
++ (void) removePartnerInvitedFromCoreData;
++ (void) removePartnerInviteFromCoreData;
++ (void)syncPartnerApply;
 
 @end

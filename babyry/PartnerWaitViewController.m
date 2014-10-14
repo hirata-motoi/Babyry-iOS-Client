@@ -78,9 +78,10 @@
                     user[@"familyId"] = pie.familyId;
                     [user save];
                     [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
-                    pie.familyId = nil;
-                    pie.inputtedPinCode = nil;
+                    
+                    [pie MR_deleteEntity];
                     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+                    
                     [self dismissViewControllerAnimated:YES completion:nil];
                 }
                 _isTimerRunning = NO;
