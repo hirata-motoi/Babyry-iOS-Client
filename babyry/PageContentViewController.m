@@ -627,8 +627,8 @@
 {
     NSNumber *calendarStartDate = childProperty[@"calendarStartDate"];
     NSNumber *oldestChildImageDate = childProperty[@"oldestChildImageDate"];
-    NSDate *birthday = childProperty[@"birthday"];
-    
+    NSDate *birthday = childProperty[@"birthday"] ? childProperty[@"birthday"] : childProperty[@"createdAt"];
+                                                                                 
     if (calendarStartDate) {
         // calendarStartDateがある場合はcalendarStartDateをカレンダー開始日とする
         
