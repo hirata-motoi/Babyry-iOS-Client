@@ -11,6 +11,7 @@
 #import "PartnerInvitedEntity.h"
 #import "Config.h"
 #import "PushNotification.h"
+#import "Logger.h"
 
 @implementation PartnerApply
 
@@ -124,6 +125,20 @@
             [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
         }];
     }
+}
+
++ (void)checkPartnerApplyListWithBlock:(CheckPartnerApplyBlock)block
+{
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    PFQuery *query = [PFQuery queryWithClassName:@"PartnerApplyList"];
+    [query whereKey:@"familyId" equalTo:pie.familyId];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to load PartnerApplyList familyId:%@ error:%@", pie.familyId, error]];
+            return;
+        }
+        block(objects.count > 0);
+    }];
 }
 
 @end

@@ -81,9 +81,17 @@
                     pie.familyId = nil;
                     pie.inputtedPinCode = nil;
                     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-                    [self dismissViewControllerAnimated:YES completion:nil];
+                    [self close];
+                    _isTimerRunning = NO;
+                } else {
+                    [PartnerApply checkPartnerApplyListWithBlock:^(BOOL existsApply) {
+                        if (!existsApply) {
+                            [PartnerApply removeApplyList];
+                            [self close];
+                        }
+                        _isTimerRunning = NO;
+                    }];
                 }
-                _isTimerRunning = NO;
             }];
         }
     }
@@ -109,13 +117,18 @@
         case 1:
         {
             [PartnerApply removeApplyList];
-            if ([self.navigationController isViewLoaded]) {
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            } else {
-                [self dismissViewControllerAnimated:YES completion:nil];
-            }
+            [self close];
         }
             break;
+    }
+}
+
+- (void)close
+{
+    if ([self.navigationController isViewLoaded]) {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

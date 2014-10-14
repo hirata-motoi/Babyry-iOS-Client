@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (^CheckPartnerApplyBlock)(BOOL existsApply);
+
 @interface PartnerApply : NSObject
 
 + (BOOL) linkComplete;
@@ -16,5 +18,6 @@
 + (NSNumber *) issuePinCode;
 + (void) registerApplyList;
 + (void) removeApplyList;
++ (void)checkPartnerApplyListWithBlock:(CheckPartnerApplyBlock)block;
 
 @end
