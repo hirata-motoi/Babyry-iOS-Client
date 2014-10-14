@@ -103,6 +103,8 @@
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
     _bestImageId = @"";
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -114,6 +116,8 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    [TransitionByPushNotification setCurrentDate:_date];
     
     [[self logic] disableNotificationHistory];
         
@@ -144,6 +148,8 @@
 
     [tn removeNavigationView];
     [_myTimer invalidate];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void) doTimer:(NSTimer *)timer
@@ -163,6 +169,11 @@
     return
         (logicTutorial) ? logicTutorial :
         (logic)         ? logic         : nil;
+}
+
+- (void)applicationDidReceiveRemoteNotification
+{
+    [self viewDidAppear:YES];
 }
 
 /*
@@ -460,13 +471,13 @@
     }
 }
 
--(void)backFromDetailImage:(id) sender
-{
-    [_pageViewController.view removeFromSuperview];
-    [_pageViewController removeFromParentViewController];
-    
-    [self viewDidAppear:(BOOL)YES];
-}
+//-(void)backFromDetailImage:(id) sender
+//{
+//    [_pageViewController.view removeFromSuperview];
+//    [_pageViewController removeFromParentViewController];
+//    
+//    [self viewDidAppear:(BOOL)YES];
+//}
 
 - (void)setupBestShotReply
 {
@@ -636,6 +647,7 @@
 
 - (void) dispatchForPushReceivedTransition
 {
+    NSLog(@"dispatchForPushReceivedTransition in MultiUploadViewController");
     NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
     if (!tsnInfo) {
         return;

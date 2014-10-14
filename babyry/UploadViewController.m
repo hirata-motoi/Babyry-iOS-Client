@@ -130,17 +130,29 @@
 {
     // super
     [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    [TransitionByPushNotification setCurrentDate:_date];
+    [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     // super
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)applicationDidReceiveRemoteNotification
+{
+    [self viewDidAppear:YES];
 }
 
 - (void)closeView:(id)sender

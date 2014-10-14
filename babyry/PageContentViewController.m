@@ -93,12 +93,6 @@
     [self initializeChildImages];
     [self createCollectionView];
     //[self setupScrollBarView];
-        
-    // Notification登録
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
 }
 
 - (void)applicationDidBecomeActive
@@ -109,6 +103,17 @@
 
 - (void)applicationDidReceiveRemoteNotification
 {
+    // こどもが一致しているViewのみpushの通知を処理を受け取る
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    int i = 0;
+    for (NSMutableDictionary *dic in childProperties) {
+        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
+            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
+                return;
+            }
+        }
+        i++;
+    }
     [self viewDidAppear:YES];
 }
 
@@ -120,6 +125,12 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    // Notification登録
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+    
     if (_isFirstLoad) {
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
@@ -136,6 +147,7 @@
 
 - (void)reloadView
 {
+    NSLog(@"reloadView");
     if ([PartnerApply linkComplete] && [_instructionTimer isValid]) {
         // この処理は一回だけで良し
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
@@ -166,6 +178,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    NSLog(@"viewDidAppear in PageContentViewController %d %@", _pageIndex, self);
     
     [self setImages];
     if (!_tm || ![_tm isValid]) {
@@ -179,6 +192,8 @@
     
     [_tn removeNavigationView];
     _tn = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (id)logic:(NSString *)methodName
@@ -223,8 +238,11 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
+    NSLog(@"viewWillDisappear in PageContentViewController %d %@", _pageIndex, self);
     [_tm invalidate];
+    
+    // Observerけす
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void)createCollectionView
@@ -1138,6 +1156,7 @@
 
 - (void) dispatchForPushReceivedTransition
 {
+    NSLog(@"dispatchForPushReceivedTransition in PageContentViewController");
     // push通知のInfoから日付組み立て
     NSDictionary *info = [TransitionByPushNotification getInfo];
     PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];

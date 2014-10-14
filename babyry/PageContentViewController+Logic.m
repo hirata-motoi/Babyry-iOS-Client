@@ -34,10 +34,12 @@
     _loadCompletBothMonth = NO;
     
     // 今月
+    NSLog(@"showChildImages in PageContentViewController 今月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *comp = [self dateComps];
     [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
    
     // 先月
+    NSLog(@"showChildImages in PageContentViewController 先月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *lastComp = [self dateComps];
     lastComp.month--;
     [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
@@ -71,6 +73,8 @@
         if (!error) {
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
+                // 先月の画像が無い状態。この場合でも完了フラグはたてる
+                _loadCompletBothMonth = YES;
                 return;
             }
             NSInteger index = [indexNumber integerValue];
@@ -142,13 +146,16 @@
             [self showIntroductionOfImageRequest];
             self.pageContentViewController.isFirstLoad = 0;
             [self finalizeProcess];
-            
-            [self setupNotificationHistory];
+
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [self.pageContentViewController.hud hide:YES];
             [self.pageContentViewController showAlertMessage];
         }
+        if (_loadCompletBothMonth == YES) {
+            [self setupNotificationHistory];
+        }
+        _loadCompletBothMonth = YES;
     }];
     // 不要なfullsizeのキャッシュを消す
     [self removeUnnecessaryFullsizeCache];
@@ -316,6 +323,7 @@
 
 - (void)setupNotificationHistory
 {
+    NSLog(@"setupNotificationHistory");
     self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
@@ -327,13 +335,14 @@
             }
             [self.pageContentViewController.pageContentCollectionView reloadData];
         }
+        NSLog(@"_loadCompletBothMonth %hhd", _loadCompletBothMonth);
         if (_loadCompletBothMonth == YES) {
+            NSLog(@"_loadCompletBothMonth %hhd", _loadCompletBothMonth);
             [self.pageContentViewController dispatchForPushReceivedTransition];
         }
         [self.pageContentViewController.pageContentCollectionView reloadData];
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];
-        _loadCompletBothMonth = YES;
     }];
     
 }
@@ -462,14 +471,19 @@
 
 - (void)updateChildProperties
 {
+    NSLog(@"updateChildProperties");
     [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
         NSMutableArray *childProperties = [ChildProperties getChildProperties];
-        if (![self hasUpdatedChildProperties:beforeSyncChildProperties withChildProperties:childProperties]) {
+        if (![self isNeedReloadPageContentView:beforeSyncChildProperties withChildProperties:childProperties]) {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
-            return;
+        } else {
+            NSLog(@"これがある時は遷移しない %@", [TransitionByPushNotification getInfo][@"event"]);
+            if (![TransitionByPushNotification getInfo][@"event"] || [[TransitionByPushNotification getInfo][@"event"] isEqualToString:@""]) {
+                NSLog(@"child property change!");
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }
         }
-        NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-        [[NSNotificationCenter defaultCenter] postNotification:n];
     }];
 }
 
@@ -543,23 +557,48 @@
     }
 }
 
-- (BOOL)hasUpdatedChildProperties:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
+// childPropertiesのあらゆる要素が更新された場合にPageContentViewを書き直す必要はない(全部で書き直すと画像を上げたらTopに戻ってしまったり、パートナーが誕生日を更新したらTopに戻ってしまったり、が起きる)
+// PageContentViewの更新が必要なのは、こどもの数が変わったとき、こどものidが一致しない時、こどもの名前が変わったとき、カレンダーの最古の日付が変わったとき
+// Viewがいきなり変わるので、push通知で知らせた方が良いかもね(TODO)
+- (BOOL)isNeedReloadPageContentView:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
+    NSLog(@"isNeedReloadPageContentView");
+    // こどもの数が変わったとき
     if (childProperties.count != beforeSyncChildProperties.count) {
+        NSLog(@"こどもの数が変わったとき");
         return YES;
     }
     
-    NSMutableDictionary *childPropertiesDic = [[NSMutableDictionary alloc]init];
+    NSMutableDictionary *currentChildDic = [[NSMutableDictionary alloc] init];
     for (NSMutableDictionary *childProperty in childProperties) {
-        childPropertiesDic[childProperty[@"objectId"]] = childProperty;
+        currentChildDic[childProperty[@"objectId"]] = childProperty;
     }
-    
-    for (NSMutableDictionary *child in beforeSyncChildProperties) {
-        NSString *objectId = child[@"objectId"];
-        if (![self isEqualDictionary:child withCompare:childPropertiesDic[objectId]]) {
+    for (NSMutableDictionary *beforeChildDic in beforeSyncChildProperties) {
+        NSString *objectId = beforeChildDic[@"objectId"];
+        if (!currentChildDic[objectId]) {
+            NSLog(@"idが一致しない");
             return YES;
+        } else if (![currentChildDic[objectId][@"name"] isEqualToString:beforeChildDic[@"name"]]) {
+            NSLog(@"名前が一致しない %@ %@", currentChildDic[objectId][@"name"], beforeChildDic[@"name"]);
+            return YES;
+        } else if (currentChildDic[objectId][@"calendarStartDate"] && beforeChildDic[@"calendarStartDate"]) {
+            if (![currentChildDic[objectId][@"calendarStartDate"] isEqualToNumber:beforeChildDic[@"calendarStartDate"]]) {
+                NSLog(@"calendarStartDateが一致しないかどうか %@ %@", currentChildDic[objectId][@"calendarStartDate"], beforeChildDic[@"calendarStartDate"]);
+                return YES;
+            }
         }
     }
+//    NSMutableDictionary *childPropertiesDic = [[NSMutableDictionary alloc]init];
+//    for (NSMutableDictionary *childProperty in childProperties) {
+//        childPropertiesDic[childProperty[@"objectId"]] = childProperty;
+//    }
+//    
+//    for (NSMutableDictionary *child in beforeSyncChildProperties) {
+//        NSString *objectId = child[@"objectId"];
+//        if (![self isEqualDictionary:child withCompare:childPropertiesDic[objectId]]) {
+//            return YES;
+//        }
+//    }
     return NO;
 }
 

@@ -79,4 +79,6 @@
 
 @property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
 
+@property NSNotificationCenter *notificationCenter;
+
 @end

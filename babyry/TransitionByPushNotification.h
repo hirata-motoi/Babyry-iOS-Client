@@ -13,11 +13,12 @@
 + (void) setInfo:(NSMutableDictionary *)transitionInfo;
 + (NSDictionary *) getInfo;
 + (void) removeInfo;
-+ (void) endMoving;
 + (void) setCurrentViewController:(NSString *)viewController;
 + (NSString *) getCurrentViewController;
 + (void) setCurrentPageIndex:(int)index;
 + (int) getCurrentPageIndex;
 + (NSMutableDictionary *) dispatch:(UIViewController *)viewController childObjectId:(NSString *)childObjectId selectedDate:(NSString *)selectedDate;
++ (void) setCurrentDate:(NSString *)ymd;
++ (NSString *)getCurrentDate;
 
 @end

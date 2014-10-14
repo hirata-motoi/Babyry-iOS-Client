@@ -107,7 +107,7 @@
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
-        _pageViewController = nil;
+        _pageViewController = [[PageViewController alloc] init];
         
         // ログインしてない場合は、イントロ+ログインViewを出す
         IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
@@ -292,6 +292,7 @@
 
 - (void)instantiatePageViewController
 {
+    NSLog(@"instantiatePageViewController");
     NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (childProperties.count < 1) {
         return;
@@ -337,10 +338,25 @@
 
 - (void)reloadPageViewController
 {
+    NSLog(@"reloadPageViewController");
     [_pageViewController.view removeFromSuperview];
     [_pageViewController removeFromParentViewController];
-    _pageViewController = nil;
-   
+
+    // pageViewControllerにのっているpageContentViewControllerとview, subviewも消す (そんなに大きなリークでもないけど(効果あるかも微妙だけど)とりあえず)
+    for (UIViewController __strong *vc in [_pageViewController viewControllers]){
+        NSLog(@"Remove UIViewController %@", vc);
+        for (UIView __strong *view in vc.view.subviews) {
+            [view removeFromSuperview];
+            view = nil;
+        }
+        [vc willMoveToParentViewController:nil];
+        [vc.view removeFromSuperview];
+        [[NSNotificationCenter defaultCenter] removeObserver:vc];
+        [vc removeFromParentViewController];
+        NSLog(@"Removed UIViewController %@", vc);
+    }
+    // alloc し直さないと前に載ってるviewControllerを呼び続けてしまう
+    _pageViewController = [[PageViewController alloc] init];
     [self instantiatePageViewController];
 }
 
