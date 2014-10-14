@@ -11,7 +11,6 @@
 
 @interface InputPinCodeViewController : UIViewController
 
-@property (strong, nonatomic) IBOutlet UILabel *dismisButton;
 @property (strong, nonatomic) IBOutlet UITextField *pincodeField;
 @property (strong, nonatomic) IBOutlet UILabel *startRegisterButton;
 

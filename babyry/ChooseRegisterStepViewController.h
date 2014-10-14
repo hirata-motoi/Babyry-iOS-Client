@@ -16,7 +16,6 @@
 @property (strong, nonatomic) IBOutlet UILabel *noRegisterButton;
 @property (strong, nonatomic) IBOutlet UILabel *registerButton;
 @property (strong, nonatomic) IBOutlet UILabel *facebookLoginButton;
-@property (strong, nonatomic) IBOutlet UILabel *dismisButton;
 
 @property BOOL isSignUpCompleted;
 
