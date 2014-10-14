@@ -17,6 +17,6 @@
 @property (nonatomic, retain) NSString * password;
 @property (nonatomic, retain) NSDate * createdAt;
 @property (nonatomic, retain) NSDate * updatedAt;
-@property (nonatomic, retain) NSNumber * isRegistered;
+@property (nonatomic) BOOL isRegistered;
 
 @end
