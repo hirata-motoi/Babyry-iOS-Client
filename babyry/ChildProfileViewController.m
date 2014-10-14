@@ -192,7 +192,6 @@
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"yyyy/MM/dd";
     _childBirthdayCell.detailTextLabel.text = [df stringFromDate:birthday];
-    [_childProfileTableView reloadData];
 }
 
 @end

@@ -23,6 +23,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    _childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
     [self makeEditField];
     
     UITapGestureRecognizer *coverViewTapGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeEditing)];
@@ -81,12 +83,13 @@
     
     // 即反映のため、block外で。
     [ChildProperties updateChildPropertyWithObjectId:_childObjectId withParams:params];
+    _childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     if ([_editTarget isEqualToString:@"name"]) {
-        _child[@"name"] = _childNicknameEditTextField.text;
+        _childProperty[@"name"] = _childNicknameEditTextField.text;
         [_delegate changeChildNickname:_childNicknameEditTextField.text];
     } else if ([_editTarget isEqualToString:@"birthday"]) {
-        _child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
+        _childProperty[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
         [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
     }
     
@@ -101,14 +104,13 @@
        return params;
        
    } else if ([_editTarget isEqualToString:@"birthday"]) {
-       NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
        params[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
       
        NSDateComponents *comps = [DateUtils dateCompsFromDate:_childBirthdayDatePicker.date];
        NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", comps.year, comps.month, comps.day] integerValue]];
        
-       if (childProperty[@"calendarStartDate"]) {
-           if ([childProperty[@"calendarStartDate"] compare:birthdayNumber] == NSOrderedAscending) {
+       if (_childProperty[@"calendarStartDate"]) {
+           if ([_childProperty[@"calendarStartDate"] compare:birthdayNumber] == NSOrderedAscending) {
                // 変更後の誕生日の方が未来なので、今後のcalendarはcalendarStartDateの日付が優先される
                // 要はcalendarStartDateはそのまま
            } else {
@@ -145,7 +147,7 @@
         
         //_childNicknameEditTextField.frame = _childNicknameCellRect;
         [_childNicknameEditTextField becomeFirstResponder]; // focusをあてる
-        _childNicknameEditTextField.text = _child[@"name"];
+        _childNicknameEditTextField.text = _childProperty[@"name"];
     } else if ([_editTarget isEqualToString:@"birthday"]) {
         _childBirthdayDatePickerContainer.hidden = NO;
         CGRect frame = _childBirthdayDatePickerContainer.frame;
@@ -153,10 +155,10 @@
         _childBirthdayDatePickerContainer.frame = frame;
         [_childBirthdayDatePicker becomeFirstResponder];
         
-        if (!_child[@"birthday"] || [_child[@"birthday"] isEqualToDate:[NSDate distantFuture]]) {
-            _childBirthdayDatePicker.date = _child[@"createdAt"] ? _child[@"createdAt"] : [DateUtils setSystemTimezone:[NSDate date]];
+        if (!_childProperty[@"birthday"] || [_childProperty[@"birthday"] isEqualToDate:[NSDate distantFuture]]) {
+            _childBirthdayDatePicker.date = _childProperty[@"createdAt"] ? _childProperty[@"createdAt"] : [DateUtils setSystemTimezone:[NSDate date]];
         } else {
-            _childBirthdayDatePicker.date = _child[@"birthday"];
+            _childBirthdayDatePicker.date = _childProperty[@"birthday"];
         }   
     }
 }

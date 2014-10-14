@@ -21,6 +21,7 @@
 #import "Partner.h"
 #import "NotificationHistory.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface ImageOperationViewController ()
 
@@ -41,6 +42,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
@@ -103,7 +106,6 @@
             uploadPickerViewController.childObjectId = _childObjectId;
             uploadPickerViewController.date = _date;
             uploadPickerViewController.uploadViewController = _uploadViewController;
-//            uploadPickerViewController.child = _child;
             [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         }
             break;
@@ -123,7 +125,6 @@
     commentViewController.date = _date;
     commentViewController.month = _month;
     commentViewController.imageInfo = _imageInfo;
-    commentViewController.child = _child;
     commentViewController.indexPath = _indexPath;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
@@ -159,8 +160,8 @@
     imageToolbarViewController.commentView = _commentView;
     imageToolbarViewController.uploadViewController = _uploadViewController;
     imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
-    imageToolbarViewController.child = _child;
     imageToolbarViewController.openCommentView = _openCommentView;
+    imageToolbarViewController.childObjectId = _childObjectId;
     
     _toolbarView = imageToolbarViewController.view;
     _toolbarView.hidden = NO;
@@ -251,7 +252,7 @@
     NSString *bestObjectId = [[[_uploadViewController.childCachedImageArray objectAtIndex:index] componentsSeparatedByString:@"-"] lastObject];
     
     // Parseを更新(Classに外出しでも良さげ)
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];

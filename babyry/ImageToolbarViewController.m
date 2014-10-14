@@ -14,6 +14,7 @@
 #import "NotificationHistory.h"
 #import "Config.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface ImageToolbarViewController ()
 
@@ -34,6 +35,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     CGRect frame = CGRectMake(0, 0, 320, 44);
     self.view.frame = frame;
@@ -110,7 +113,7 @@
     
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = [Config config][@"AWSBucketName"];
-    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
     // no-cache必須
     getRequest.responseCacheControl = @"no-cache";
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
