@@ -121,13 +121,12 @@
 
 + (NSMutableArray *)getChildProperties
 {
-    NSArray *childPropertiesRecords = [ChildPropertyEntity MR_findAll];
+    NSArray *childPropertiesRecords = [ChildPropertyEntity MR_findAllSortedBy:@"createdAt" ascending:YES];
     NSMutableArray *childProperties = [[NSMutableArray alloc]init];
     for (ChildPropertyEntity *childPropertyRecord in childPropertiesRecords) {
         NSMutableDictionary *childProperty = [NSMutableDictionary dictionaryWithDictionary:[childPropertyRecord dictionaryWithValuesForKeys:[[[childPropertyRecord entity] attributesByName] allKeys]]];
         // valueがNULLになっているkeyは不要なので削除
         for (NSString *key in [childProperty allKeys]) {
-//            NSLog(@"childProperty %@ %@", key, childProperty[key]);
             if (childProperty[key] == [NSNull null]) {
                 [childProperty removeObjectForKey:key];
             }

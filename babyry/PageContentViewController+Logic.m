@@ -55,7 +55,8 @@
         NSYearCalendarUnit   |
         NSMonthCalendarUnit  |
         NSDayCalendarUnit    |
-        NSHourCalendarUnit
+        NSHourCalendarUnit   |
+        NSWeekdayCalendarUnit
     fromDate:date];
     return dateComps;
 }
