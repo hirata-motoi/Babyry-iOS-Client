@@ -471,14 +471,6 @@
     }
 }
 
-//-(void)backFromDetailImage:(id) sender
-//{
-//    [_pageViewController.view removeFromSuperview];
-//    [_pageViewController removeFromParentViewController];
-//    
-//    [self viewDidAppear:(BOOL)YES];
-//}
-
 - (void)setupBestShotReply
 {
     if (![_myRole isEqualToString:@"uploader"]) {

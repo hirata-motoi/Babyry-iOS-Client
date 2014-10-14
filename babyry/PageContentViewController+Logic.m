@@ -31,18 +31,18 @@
 
 - (void)showChildImages
 {
-    _loadCompletBothMonth = NO;
+    _iterateCount = 2;
     
     // 今月
     NSLog(@"showChildImages in PageContentViewController 今月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *comp = [self dateComps];
-    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
+    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES iterateCount:_iterateCount];
    
     // 先月
     NSLog(@"showChildImages in PageContentViewController 先月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *lastComp = [self dateComps];
     lastComp.month--;
-    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
+    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES iterateCount:_iterateCount];
   
     self.pageContentViewController.dateComp = lastComp;
 }
@@ -61,7 +61,7 @@
     return dateComps;
 }
 
-- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(int)iterateCount
 {
     self.pageContentViewController.isLoading = YES;
     NSMutableDictionary *child = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
@@ -75,7 +75,7 @@
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
                 // 先月の画像が無い状態。この場合でも完了フラグはたてる
-                _loadCompletBothMonth = YES;
+                _iterateCount--;
                 return;
             }
             NSInteger index = [indexNumber integerValue];
@@ -153,10 +153,10 @@
             [self.pageContentViewController.hud hide:YES];
             [self.pageContentViewController showAlertMessage];
         }
-        if (_loadCompletBothMonth == YES) {
+        _iterateCount--;
+        if (_iterateCount < 1) {
             [self setupNotificationHistory];
         }
-        _loadCompletBothMonth = YES;
     }];
     // 不要なfullsizeのキャッシュを消す
     [self removeUnnecessaryFullsizeCache];
@@ -336,11 +336,7 @@
             }
             [self.pageContentViewController.pageContentCollectionView reloadData];
         }
-        NSLog(@"_loadCompletBothMonth %hhd", _loadCompletBothMonth);
-        if (_loadCompletBothMonth == YES) {
-            NSLog(@"_loadCompletBothMonth %hhd", _loadCompletBothMonth);
-            [self.pageContentViewController dispatchForPushReceivedTransition];
-        }
+        [self.pageContentViewController dispatchForPushReceivedTransition];
         [self.pageContentViewController.pageContentCollectionView reloadData];
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];
@@ -580,27 +576,32 @@
             NSLog(@"idが一致しない");
             return YES;
         } else if (![currentChildDic[objectId][@"name"] isEqualToString:beforeChildDic[@"name"]]) {
-            NSLog(@"名前が一致しない %@ %@", currentChildDic[objectId][@"name"], beforeChildDic[@"name"]);
-            return YES;
+            [self reloadPageContentViewWithoutRemove];
+            return NO;
         } else if (currentChildDic[objectId][@"calendarStartDate"] && beforeChildDic[@"calendarStartDate"]) {
             if (![currentChildDic[objectId][@"calendarStartDate"] isEqualToNumber:beforeChildDic[@"calendarStartDate"]]) {
-                NSLog(@"calendarStartDateが一致しないかどうか %@ %@", currentChildDic[objectId][@"calendarStartDate"], beforeChildDic[@"calendarStartDate"]);
-                return YES;
+                [self reloadPageContentViewWithoutRemove];
+                return NO;
+            }
+        } else if (currentChildDic[objectId][@"oldestChildImageDate"] && beforeChildDic[@"oldestChildImageDate"]) {
+            if (![currentChildDic[objectId][@"oldestChildImageDate"] isEqualToNumber:beforeChildDic[@"oldestChildImageDate"]]) {
+                [self reloadPageContentViewWithoutRemove];
+                return NO;
+            }
+        } else if (currentChildDic[objectId][@"birthday"] && beforeChildDic[@"birthday"]) {
+            if (![currentChildDic[objectId][@"birthday"] isEqualToNumber:beforeChildDic[@"birthday"]]) {
+                [self reloadPageContentViewWithoutRemove];
+                return NO;
             }
         }
     }
-//    NSMutableDictionary *childPropertiesDic = [[NSMutableDictionary alloc]init];
-//    for (NSMutableDictionary *childProperty in childProperties) {
-//        childPropertiesDic[childProperty[@"objectId"]] = childProperty;
-//    }
-//    
-//    for (NSMutableDictionary *child in beforeSyncChildProperties) {
-//        NSString *objectId = child[@"objectId"];
-//        if (![self isEqualDictionary:child withCompare:childPropertiesDic[objectId]]) {
-//            return YES;
-//        }
-//    }
     return NO;
+}
+
+- (void) reloadPageContentViewWithoutRemove
+{
+    [self.pageContentViewController initializeChildImages];
+    [self.pageContentViewController.pageContentCollectionView reloadData];
 }
 
 - (BOOL)isEqualDictionary:(NSDictionary *)child1 withCompare:(NSDictionary *)child2

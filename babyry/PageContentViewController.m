@@ -103,17 +103,17 @@
 
 - (void)applicationDidReceiveRemoteNotification
 {
-    // こどもが一致しているViewのみpushの通知を処理を受け取る
-    NSMutableArray *childProperties = [ChildProperties getChildProperties];
-    int i = 0;
-    for (NSMutableDictionary *dic in childProperties) {
-        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
-            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
-                return;
-            }
-        }
-        i++;
-    }
+//    // こどもが一致しているViewのみpushの通知を処理を受け取る
+//    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+//    int i = 0;
+//    for (NSMutableDictionary *dic in childProperties) {
+//        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
+//            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
+//                return;
+//            }
+//        }
+//        i++;
+//    }
     [self viewDidAppear:YES];
 }
 
@@ -575,7 +575,7 @@
         int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
         
         if (firstDateInt <= nextLoadInt) {
-            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
+            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES iterateCount:1];
         }                  
     }
 }
@@ -643,6 +643,7 @@
 
 - (NSNumber *)getCalendarStartingDate
 {
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     NSNumber *calendarStartDate = childProperty[@"calendarStartDate"];
     NSNumber *oldestChildImageDate = childProperty[@"oldestChildImageDate"];
     NSDate *birthday = childProperty[@"birthday"];
@@ -697,6 +698,12 @@
             [_childImages addObject:targetSection];
         }
         
+        if ([self checkDuplicateDate:targetSection endDateComps:endDateComps]) {
+            endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
+            endDate = [cal dateFromComponents:endDateComps];
+            continue;
+        }
+
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
         [targetSection[@"images"] addObject:childImage];
@@ -706,6 +713,17 @@
         endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
         endDate = [cal dateFromComponents:endDateComps];
     }
+}
+
+- (BOOL) checkDuplicateDate:(NSMutableDictionary *)targetSection endDateComps:(NSDateComponents *)endDateComps
+{
+    for (PFObject *object in targetSection[@"images"]) {
+//        NSLog(@"%@ %@", object[@"date"], [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]]);
+        if ([object[@"date"] isEqualToNumber:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]]]) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 - (void)setupChildImagesIndexMap

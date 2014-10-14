@@ -63,6 +63,7 @@
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
 - (void) dispatchForPushReceivedTransition;
+- (void)initializeChildImages;
 
 @property AWSServiceConfiguration *configuration;
 
