@@ -20,7 +20,6 @@
 @property NSString *date;
 @property UIImage *uploadedImage;
 @property NSString *name;
-@property NSMutableDictionary *childProperty;
 
 @property UploadViewController *uploadViewController;
 

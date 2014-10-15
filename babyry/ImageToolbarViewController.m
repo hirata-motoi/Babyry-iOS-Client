@@ -36,8 +36,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _childProperty = [ChildProperties getChildProperty:_childObjectId];
-    
     CGRect frame = CGRectMake(0, 0, 320, 44);
     self.view.frame = frame;
     
@@ -111,9 +109,11 @@
     
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = [Config config][@"AWSBucketName"];
-    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
     // no-cache必須
     getRequest.responseCacheControl = @"no-cache";
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];

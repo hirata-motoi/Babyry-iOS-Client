@@ -35,6 +35,5 @@
 @property NSString *editTarget;
 @property CGRect childNicknameCellRect;
 @property CGPoint childBirthdayCellPoint;
-@property NSMutableDictionary *childProperty;
 
 @end

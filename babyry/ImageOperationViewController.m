@@ -27,7 +27,10 @@
 
 @end
 
-@implementation ImageOperationViewController
+@implementation ImageOperationViewController {
+    NSMutableDictionary *childProperty;
+}
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,7 +46,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _childProperty = [ChildProperties getChildProperty:_childObjectId];
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
@@ -252,7 +255,7 @@
     NSString *bestObjectId = [[[_uploadViewController.childCachedImageArray objectAtIndex:index] componentsSeparatedByString:@"-"] lastObject];
     
     // Parseを更新(Classに外出しでも良さげ)
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_childProperty[@"childImageShardIndex"] integerValue]]];
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];

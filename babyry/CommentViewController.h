@@ -32,6 +32,5 @@
 @property BOOL isGettingComment;
 @property PFObject *imageInfo;
 @property NSIndexPath *indexPath;
-@property NSMutableDictionary *childProperty;
 
 @end
