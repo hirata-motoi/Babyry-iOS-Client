@@ -677,6 +677,8 @@
     NSDate *startDate = [cal dateFromComponents:startDateComps];
     NSDate *endDate   = [cal dateFromComponents:endDateComps];
     
+    NSMutableDictionary *dicForCheckDuplicate = [[NSMutableDictionary alloc]init];
+    
     while ([endDate compare:startDate] == NSOrderedDescending || [endDate compare:startDate] == NSOrderedSame) {
         NSString *ym = [NSString stringWithFormat:@"%ld%02ld", endDateComps.year, endDateComps.month];
        
@@ -697,33 +699,41 @@
             targetSection[@"month"]         = [NSString stringWithFormat:@"%02ld", endDateComps.month];
             [_childImages addObject:targetSection];
         }
+      
+        // 重複排除
+        if (!dicForCheckDuplicate[ym]) {
+            [dicForCheckDuplicate removeAllObjects]; // メモリ節約
+            dicForCheckDuplicate[ym] = [self dictionaryForYM:targetSection];
+        }
         
-        if ([self checkDuplicateDate:targetSection endDateComps:endDateComps]) {
-            endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
-            endDate = [cal dateFromComponents:endDateComps];
+        NSNumber *date = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
+        if ([self isDuplicated:date withDic:dicForCheckDuplicate[ym]]) {
             continue;
         }
-
+        
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
-        childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
+        childImage[@"date"] = date;
         [targetSection[@"images"] addObject:childImage];
         [targetSection[@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
-        [targetSection[@"weekdays"] addObject: [NSNumber numberWithInt: endDateComps.weekday]];
+        [targetSection[@"weekdays"] addObject: [NSNumber numberWithInteger: endDateComps.weekday]];
         
         endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
         endDate = [cal dateFromComponents:endDateComps];
     }
 }
 
-- (BOOL) checkDuplicateDate:(NSMutableDictionary *)targetSection endDateComps:(NSDateComponents *)endDateComps
+- (NSMutableDictionary *)dictionaryForYM:(NSMutableDictionary *)targetSection
 {
-    for (PFObject *object in targetSection[@"images"]) {
-//        NSLog(@"%@ %@", object[@"date"], [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]]);
-        if ([object[@"date"] isEqualToNumber:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]]]) {
-            return YES;
-        }
+    NSMutableDictionary *dictionaryForYM = [[NSMutableDictionary alloc]init];
+    for (PFObject *childImage in targetSection[@"images"]) {
+        dictionaryForYM[childImage[@"date"]] = @"1";
     }
-    return NO;
+    return dictionaryForYM;
+}
+
+- (BOOL)isDuplicated:(NSNumber *)date withDic:(NSMutableDictionary *)dictionaryForYM
+{
+    return dictionaryForYM[date] ? YES : NO;
 }
 
 - (void)setupChildImagesIndexMap
