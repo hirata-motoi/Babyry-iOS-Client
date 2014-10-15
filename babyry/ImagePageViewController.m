@@ -13,6 +13,7 @@
 #import "DateUtils.h"
 #import "Config.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @implementation ImagePageViewController
 
@@ -84,7 +85,6 @@
     uploadViewController.date = ymd;
     uploadViewController.tagAlbumPageIndex = index;
     uploadViewController.holdedBy = @"TagAlbumPageViewController";
-    uploadViewController.child = _child;
     uploadViewController.fromMultiUpload = _fromMultiUpload;
     uploadViewController.indexPath = _indexPath;
     if (_fromMultiUpload) {
@@ -227,8 +227,10 @@
     // 誕生日に達したら終了(誕生日がなければ2010年1月まで)
     // 画像が取得できたら終了
     
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
     // 誕生月
-    NSDate *birthday = _child[@"birthday"];
+    NSDate *birthday = childProperty[@"birthday"];
     if (!birthday) {
         NSDateComponents *tmpComps = [[NSDateComponents alloc]init];
         tmpComps.year = 2014;
@@ -243,7 +245,7 @@
     while ([date compare:birthmonth] != NSOrderedAscending) {
         NSDateComponents *c = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:date];
         
-        PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+        PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         [query whereKey:@"imageOf" equalTo:_childObjectId];
         [query whereKey:@"bestFlag" equalTo:@"choosed"];
         
@@ -268,12 +270,13 @@
 - (void)cacheThumbnail:(PFObject *)childImage
 {
     NSString *ymd = [childImage[@"date"] stringValue];
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     // まずはS3に接続
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = [Config config][@"AWSBucketName"];
-    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
     getRequest.responseCacheControl = @"no-cache";
     
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];

@@ -14,6 +14,7 @@
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface CommentViewController ()
 
@@ -25,7 +26,9 @@ static const NSInteger secondsForOneDay = secondsForOneHour * 24;
 static const NSInteger secondsForOneMonth = secondsForOneDay * 30;
 static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
-@implementation CommentViewController
+@implementation CommentViewController {
+    NSMutableDictionary *childProperty;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -40,6 +43,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
     
@@ -143,7 +148,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     }
     _isGettingComment = YES;
     
-    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[_child[@"commentShardIndex"] integerValue]]];
+    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[childProperty[@"commentShardIndex"] integerValue]]];
     [commentQuery whereKey:@"childId" equalTo:_childObjectId];
     [commentQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
     [commentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -318,7 +323,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 {
     if ( _commentTextView && ![_commentTextView.text isEqualToString:@""] ) {
         // Insert To Parse
-        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[_child[@"commentShardIndex"] integerValue]]];
+        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[childProperty[@"commentShardIndex"] integerValue]]];
         dailyComment[@"comment"] = _commentTextView.text;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         dailyComment[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];

@@ -19,7 +19,6 @@
 @property NSInteger currentIndex;
 @property BOOL showPageNavigation; // headerのsubtitleに何枚中何枚目を出すかどうか
 @property NSMutableDictionary *imagesCountDic;
-@property NSMutableDictionary *child;
 @property BOOL isLoading;
 @property id pageContentViewController;
 @property BOOL fromMultiUpload;

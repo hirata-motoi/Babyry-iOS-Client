@@ -15,13 +15,18 @@
 
 @end
 
-@implementation ChildProfileEditViewController
+@implementation ChildProfileEditViewController {
+    NSMutableDictionary *childProperty;
+}
+
 @synthesize delegate = _delegate;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     [self makeEditField];
     
@@ -81,12 +86,11 @@
     
     // 即反映のため、block外で。
     [ChildProperties updateChildPropertyWithObjectId:_childObjectId withParams:params];
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     if ([_editTarget isEqualToString:@"name"]) {
-        _child[@"name"] = _childNicknameEditTextField.text;
         [_delegate changeChildNickname:_childNicknameEditTextField.text];
     } else if ([_editTarget isEqualToString:@"birthday"]) {
-        _child[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
         [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
     }
     
@@ -101,7 +105,6 @@
        return params;
        
    } else if ([_editTarget isEqualToString:@"birthday"]) {
-       NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
        params[@"birthday"] = [DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date];
       
        NSDateComponents *comps = [DateUtils dateCompsFromDate:_childBirthdayDatePicker.date];
@@ -145,7 +148,7 @@
         
         //_childNicknameEditTextField.frame = _childNicknameCellRect;
         [_childNicknameEditTextField becomeFirstResponder]; // focusをあてる
-        _childNicknameEditTextField.text = _child[@"name"];
+        _childNicknameEditTextField.text = childProperty[@"name"];
     } else if ([_editTarget isEqualToString:@"birthday"]) {
         _childBirthdayDatePickerContainer.hidden = NO;
         CGRect frame = _childBirthdayDatePickerContainer.frame;
@@ -153,10 +156,10 @@
         _childBirthdayDatePickerContainer.frame = frame;
         [_childBirthdayDatePicker becomeFirstResponder];
         
-        if (!_child[@"birthday"] || [_child[@"birthday"] isEqualToDate:[NSDate distantFuture]]) {
-            _childBirthdayDatePicker.date = _child[@"createdAt"] ? _child[@"createdAt"] : [DateUtils setSystemTimezone:[NSDate date]];
+        if (!childProperty[@"birthday"] || [childProperty[@"birthday"] isEqualToDate:[NSDate distantFuture]]) {
+            _childBirthdayDatePicker.date = childProperty[@"createdAt"] ? childProperty[@"createdAt"] : [DateUtils setSystemTimezone:[NSDate date]];
         } else {
-            _childBirthdayDatePicker.date = _child[@"birthday"];
+            _childBirthdayDatePicker.date = childProperty[@"birthday"];
         }   
     }
 }
