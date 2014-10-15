@@ -107,7 +107,7 @@
     }
 }
 
-+ (void) removeApplyList
++ (void) removeApplyListWithBlock:(RemovePartnerApplyBlock)block
 {
     PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
     if (pie.familyId) {
@@ -173,6 +173,20 @@
         }
         row.familyId = objects[0][@"familyId"]; // 申請相手のfamilyId
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    }];
+}
+
++ (void)checkPartnerApplyListWithBlock:(CheckPartnerApplyBlock)block
+{
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    PFQuery *query = [PFQuery queryWithClassName:@"PartnerApplyList"];
+    [query whereKey:@"familyId" equalTo:pie.familyId];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to load PartnerApplyList familyId:%@ error:%@", pie.familyId, error]];
+            return;
+        }
+        block(objects.count > 0);
     }];
 }
 

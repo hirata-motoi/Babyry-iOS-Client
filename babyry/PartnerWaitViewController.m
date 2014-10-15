@@ -81,10 +81,18 @@
                     
                     [pie MR_deleteEntity];
                     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-                    
-                    [self dismissViewControllerAnimated:YES completion:nil];
+                    [self close];
+                    _isTimerRunning = NO;
+                } else {
+                    [PartnerApply checkPartnerApplyListWithBlock:^(BOOL existsApply) {
+                        if (!existsApply) {
+                            [PartnerApply removeApplyListWithBlock:^(){
+                                [self close];
+                            }];
+                        }
+                        _isTimerRunning = NO;
+                    }];
                 }
-                _isTimerRunning = NO;
             }];
         }
     }
@@ -109,14 +117,20 @@
             break;
         case 1:
         {
-            [PartnerApply removeApplyList];
-            if ([self.navigationController isViewLoaded]) {
-                [self.navigationController popToRootViewControllerAnimated:YES];
-            } else {
-                [self dismissViewControllerAnimated:YES completion:nil];
-            }
+            [PartnerApply removeApplyListWithBlock:^() {
+                [self close];
+            }];
         }
             break;
+    }
+}
+
+- (void)close
+{
+    if ([self.navigationController isViewLoaded]) {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
