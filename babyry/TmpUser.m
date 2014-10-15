@@ -39,6 +39,18 @@
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
++ (void)removeTmpUser
+{
+    [self removeTmpUserFromCoreData];
+
+    PFUser *currentUser = [PFUser currentUser];
+    [currentUser deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Failed to delete tmp user userId:%@ error:%@", currentUser[@"userId"], error]];
+        }
+    }];
+}
+
 + (void)removeTmpUserFromCoreData
 {
     NSString *TmpUserDataKeyName = [Config config][@"TmpUserDataKeyName"];
@@ -50,13 +62,6 @@
     
     [tud MR_deleteEntity];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-    
-    PFUser *currentUser = [PFUser currentUser];
-    [currentUser deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (error) {
-            [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Failed to delete tmp user userId:%@ error:%@", currentUser[@"userId"], error]];
-        }
-    }];
 }
 
 + (void) loginTmpUserByCoreData
