@@ -63,6 +63,10 @@
     PageContentViewController_Logic *logic;
     PageContentViewController_Logic_Tutorial *logicTutorial;
     NSMutableDictionary *childProperty;
+    float windowWidth;
+    float windowHeight;
+    CGSize bigRect;
+    CGSize smallRect;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -93,6 +97,17 @@
     [self initializeChildImages];
     [self createCollectionView];
     //[self setupScrollBarView];
+    
+    windowWidth = self.view.frame.size.width;
+    windowHeight = self.view.frame.size.height;
+    bigRect = CGSizeMake(windowWidth, windowHeight - 44 - 20  - windowWidth*2/3);
+    smallRect = CGSizeMake(windowWidth/3 - 2, windowWidth/3 - 2);
+        
+    // Notification登録
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
 }
 
 - (void)applicationDidBecomeActive
@@ -272,11 +287,10 @@
 
 // セルの大きさを指定するメソッド
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    float width = self.view.frame.size.width;
-    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-        return  CGSizeMake(width, self.view.frame.size.height - 44 - 20  - width*2/3); // TODO magic number
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        return bigRect;
     }
-    return CGSizeMake(width/3 - 2, width/3 - 2);
+    return smallRect;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section

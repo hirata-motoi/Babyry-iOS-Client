@@ -255,7 +255,7 @@
 
 - (void)logout
 {
-    [TmpUser removeTmpUserFromCoreData];
+    [TmpUser removeTmpUser];
     [self dismissViewControllerAnimated:YES completion:nil];
     [Tutorial removeTutorialStage];
     [ImageCache removeAllCache];

@@ -64,7 +64,7 @@
     // CoreDataに打った認証コードのデータが入っていたら会員登録に飛ばす
     // ただし、すでに会員登録済みの場合には飛ばさない
     PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-    if (pie.familyId && ![PFUser currentUser]) {
+    if (pie && ![PFUser currentUser]) {
         ChooseRegisterStepViewController *chooseRegisterStepViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChooseRegisterStepViewController"];
         [self presentViewController:chooseRegisterStepViewController animated:YES completion:nil];
     }

@@ -24,6 +24,7 @@
 #import "TmpUser.h"
 #import "UserRegisterViewController.h"
 #import "NotEmailVerifiedViewController.h"
+#import "PartnerApply.h"
 
 @interface GlobalSettingViewController ()
 
@@ -68,6 +69,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [_settingTableView reloadData];
     tn = [[TutorialNavigator alloc]init];
     tn.targetViewController = self;
     [tn showNavigationView];
@@ -130,6 +132,9 @@
             [self.navigationController popViewControllerAnimated:YES];
             [Tutorial removeTutorialStage];
             [ImageCache removeAllCache];
+            [TmpUser removeTmpUserFromCoreData];
+            [PartnerApply removePartnerInviteFromCoreData];
+            [PartnerApply removePartnerInvitedFromCoreData];
             [PushNotification removeSelfUserIdFromChannels:^(){
                 [PFUser logOut];
                 [_viewController viewDidAppear:YES];

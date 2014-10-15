@@ -88,11 +88,12 @@
             PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
             [query whereKey:@"imageOf" equalTo:child.objectId];
             [query orderByAscending:@"date"];
-            [query getFirstObjectInBackgroundWithBlock:^(PFObject *childImage, NSError *error) {
-                if (childImage) {
-                    oldestChildImageDate[child.objectId] = childImage[@"date"];
-                }
+            query.limit = 1;
+            [query findObjectsInBackgroundWithBlock:^(NSArray *childImages, NSError *error) {
                 queryCompletedCount++;
+                if (childImages.count > 0) {
+                    oldestChildImageDate[child.objectId] = childImages[0][@"date"];
+                }
                 
                 if (queryCompletedCount == objects.count) {
                     [self deleteUnavailableChildProperties:objects];
@@ -103,7 +104,6 @@
                     }
                 }
             }];
-        
         }
     }];
 }

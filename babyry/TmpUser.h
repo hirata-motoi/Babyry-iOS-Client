@@ -11,7 +11,8 @@
 @interface TmpUser : NSObject
 
 + (void) setTmpUserToCoreData:(NSString *)username password:(NSString *)password;
-+ (void)removeTmpUserFromCoreData;
++ (void) removeTmpUser;
++ (void) removeTmpUserFromCoreData;
 + (void) loginTmpUserByCoreData;
 + (BOOL) checkRegistered;
 + (void) registerComplete;

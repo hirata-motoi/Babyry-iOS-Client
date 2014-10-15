@@ -35,6 +35,7 @@
 #import "PartnerWaitViewController.h"
 #import "ParseUtils.h"
 #import "ChildProperties.h"
+#import "PartnerApply.h"
 
 @interface ViewController ()
 
@@ -151,15 +152,18 @@
         }
         
         // 招待されて認証コードを入力した人はここで承認まで待つ (ただし、familyIdがある人はチュートリアルをやったか、一回ひも付けが解除されている人なので除外)
+        if (_only_first_load == 1) {
+            [PartnerApply syncPartnerApply];
+        }
         PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-        if (pie.inputtedPinCode && !_currentUser[@"familyId"]) {
+        if (pie && !_currentUser[@"familyId"]) {
             PartnerWaitViewController *partnerWaitViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerWaitViewController"];
             [self presentViewController:partnerWaitViewController animated:YES completion:NULL];
             return;
         }
       
         // familyIdを発行する前に呼び出す必要がある
-        if (_only_first_load) {
+        if (_only_first_load == 1) {
             [self initializeTutorialStage];
         }
         

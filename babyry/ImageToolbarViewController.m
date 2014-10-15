@@ -14,6 +14,7 @@
 #import "NotificationHistory.h"
 #import "Config.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface ImageToolbarViewController ()
 
@@ -108,9 +109,11 @@
     
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = [Config config][@"AWSBucketName"];
-    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
     // no-cache必須
     getRequest.responseCacheControl = @"no-cache";
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];

@@ -191,7 +191,7 @@
             }];
             
             PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-            if (!pie.familyId){
+            if (!pie){
                 sentApply = @"NO";
                 [self switchHeaderView:vc];
                 return;

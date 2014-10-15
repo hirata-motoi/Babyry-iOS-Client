@@ -28,7 +28,6 @@
 @property UploadViewController *uploadViewController;
 @property UIPlaceHolderTextView *commentTextView;
 @property UIView *tagViewOnCommentView;
-@property NSMutableDictionary *child;
 @property NSTimer *commentTimer;
 @property BOOL isGettingComment;
 @property PFObject *imageInfo;
