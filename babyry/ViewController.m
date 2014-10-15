@@ -355,8 +355,8 @@
         [vc removeFromParentViewController];
         NSLog(@"Removed UIViewController %@", vc);
     }
-    // alloc し直さないと前に載ってるviewControllerを呼び続けてしまう
-    _pageViewController = [[PageViewController alloc] init];
+    
+    _pageViewController = nil;
     [self instantiatePageViewController];
 }
 

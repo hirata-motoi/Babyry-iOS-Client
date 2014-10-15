@@ -478,6 +478,7 @@
     [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
         NSMutableArray *childProperties = [ChildProperties getChildProperties];
         NSString *reloadType = [self getReloadTypeAfterChildPropertiesChanged:beforeSyncChildProperties withChildProperties:childProperties];
+        
         if ([reloadType isEqualToString:@"replacePageView"]) {
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
@@ -583,10 +584,9 @@
             return @"replacePageView";
         } else if (![currentChildDic[objectId][@"name"] isEqualToString:beforeChildDic[@"name"]]) {
             return @"reloadPageContentViewDate";
-        } else if (currentChildDic[objectId][@"calendarStartDate"] && beforeChildDic[@"calendarStartDate"]) {
-            if (![currentChildDic[objectId][@"calendarStartDate"] isEqualToNumber:beforeChildDic[@"calendarStartDate"]]) {
-                return @"reloadPageContentViewDate";
-            }
+            
+        } else if ([self calendarStartDateChanged:currentChildDic[objectId] withBeforeChild:beforeChildDic]) {
+            return @"reloadPageContentViewDate";
         } else if (currentChildDic[objectId][@"oldestChildImageDate"] && beforeChildDic[@"oldestChildImageDate"]) {
             if (![currentChildDic[objectId][@"oldestChildImageDate"] isEqualToNumber:beforeChildDic[@"oldestChildImageDate"]]) {
                 return @"reloadPageContentViewDate";
@@ -598,6 +598,26 @@
         }
     }
     return @"noNeedToReload";
+}
+
+- (BOOL)calendarStartDateChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
+{
+    NSNumber *currentStartDate = currentChild[@"calendarStartDate"];
+    NSNumber *beforeStartDate  = beforeChild[@"calendarStartDate"];
+    
+    if (!currentStartDate && !beforeStartDate) {
+        return NO;
+    }
+    
+    if ( !(currentStartDate && beforeStartDate) ) {
+        return YES;
+    }
+
+    if (![currentStartDate isEqualToNumber:beforeStartDate]) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (BOOL)isEqualDictionary:(NSDictionary *)child1 withCompare:(NSDictionary *)child2
@@ -635,6 +655,8 @@
     PFObject *oldestChildImage = self.pageContentViewController.childImages[indexPath.section][@"images"][indexPath.row - 1];
     NSNumber *date = oldestChildImage[@"date"];
     NSDateComponents *compsToAdd = [self compsToAdd:date];
+  
+    [self.pageContentViewController showLoadingIcon];
     
     // Child.calendarStartDateを保存
     PFQuery *query = [PFQuery queryWithClassName:@"Child"];
@@ -643,16 +665,18 @@
         if (error) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
             // TODO ネットワークを確かめてalertを表示
+            [self.pageContentViewController hideLoadingIcon];
             return;
         }
         
         if (objects.count == 0) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Cannot find Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
+            [self.pageContentViewController hideLoadingIcon];
             return;
         }
         
         if (objects.count > 0) {
-            NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", compsToAdd.year, compsToAdd.month, compsToAdd.day];
+            NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", (long)compsToAdd.year, (long)compsToAdd.month, (long)compsToAdd.day];
             NSNumber *calendarStartDate = [NSNumber numberWithInteger:[ymd integerValue]];
             PFObject *child = objects[0];
             child[@"calendarStartDate"] = calendarStartDate;
@@ -660,6 +684,7 @@
                 if (error) {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save Child.calendarStartDate Child.objectId:%@ calendarStartDate:%@", self.pageContentViewController.childObjectId, calendarStartDate]];
                     // TODO ネットワークを確かめてalertを表示
+                    [self.pageContentViewController hideLoadingIcon];
                     return;
                 }
                 // CoreDataに保存
@@ -669,6 +694,8 @@
                 [self addEmptyChildImages:compsToAdd];
                 // PageContentViewControllerをreload
                 [self.pageContentViewController.pageContentCollectionView reloadData];
+                
+                [self.pageContentViewController hideLoadingIcon];
             }];
         }
     }];
@@ -766,6 +793,5 @@
     return !(year < 2009 || (year == 2009 && month == 1));
     
 }
-
 
 @end

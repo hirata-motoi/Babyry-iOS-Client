@@ -64,6 +64,8 @@
 - (void)openPartnerWait;
 - (void) dispatchForPushReceivedTransition;
 - (void)initializeChildImages;
+- (void)showLoadingIcon;
+- (void)hideLoadingIcon;
 
 @property AWSServiceConfiguration *configuration;
 
