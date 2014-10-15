@@ -142,12 +142,13 @@
         }
     }
     childProperty = [ChildProperties getChildProperty:_childObjectId];
+
+    [self adjustChildImages];
     [self reloadView];
 }
 
 - (void)reloadView
 {
-    NSLog(@"reloadView");
     if ([PartnerApply linkComplete] && [_instructionTimer isValid]) {
         // この処理は一回だけで良し
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
@@ -178,7 +179,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear in PageContentViewController %d %@", _pageIndex, self);
     
     [self setImages];
     if (!_tm || ![_tm isValid]) {
@@ -621,6 +621,48 @@
     CGPoint scrolledPoint = CGPointMake(0, scrolledHeight);
     [_pageContentCollectionView setContentOffset:scrolledPoint];
     _dragging = NO;
+}
+
+- (void)adjustChildImages
+{
+    PFObject *latestChildImage;
+    PFObject *oldestChildImage;
+    
+    latestChildImage = _childImages[0][@"images"][0];
+    NSMutableDictionary *oldestSection = _childImages[_childImages.count - 1];
+    if (oldestSection) {
+        oldestChildImage = oldestSection[@"images"][ [oldestSection[@"images"] count] - 1];
+    }
+    
+    if (!latestChildImage || !oldestChildImage) {
+        [self initializeChildImages];
+        return;
+    }
+    
+    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
+    NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
+    
+    NSNumber *calendarStartingDateNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", calendarStartingDateComps.year, calendarStartingDateComps.month, calendarStartingDateComps.day] integerValue]];
+    NSNumber *todayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", todayComps.year, todayComps.month, todayComps.day] integerValue]];
+   
+    if (
+        [todayNumber compare:latestChildImage[@"date"]] == NSOrderedAscending ||
+        [calendarStartingDateNumber compare:oldestChildImage[@"date"]] == NSOrderedDescending
+    ) {
+        [_childImages removeAllObjects];
+        [self initializeChildImages];
+        return;
+    }
+    
+    if ( ! (
+            [latestChildImage[@"date"] isEqualToNumber:todayNumber] &&
+            [oldestChildImage[@"date"] isEqualToNumber:calendarStartingDateNumber]
+            
+            )
+    ) {
+        [self initializeChildImages];
+        return;
+    }
 }
 
 - (void)initializeChildImages
