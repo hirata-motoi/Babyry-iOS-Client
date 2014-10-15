@@ -19,7 +19,7 @@
 - (NSDate *)getCollectionViewFirstDay;
 - (NSMutableArray *)screenSavedChildImages;
 - (NSInteger)currentIndexRowInSavedChildImages:(NSIndexPath *)indexPath;
-- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(int)iterateCount;
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(BOOL)iteration;
 - (BOOL)shouldShowMultiUploadView:(NSIndexPath *)indexPath;
 - (BOOL)isNoImage:(NSIndexPath *)indexPath;
 - (BOOL)isBestImageFixed:(NSIndexPath *)indexPath;
@@ -33,8 +33,5 @@
 
 // 循環参照(メモリリーク)が起きるので、弱参照にしないと駄目
 @property (weak) PageContentViewController *pageContentViewController;
-
-// getChildImagesWithYearのカウント数
-@property int iterateCount;
 
 @end

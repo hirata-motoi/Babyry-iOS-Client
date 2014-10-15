@@ -20,7 +20,9 @@
 #import "ChildProperties.h"
 #import "FamilyRole.h"
 
-@implementation PageContentViewController_Logic
+@implementation PageContentViewController_Logic {
+    int iterateCount;
+}
 
 -(void)setImages
 {
@@ -31,18 +33,18 @@
 
 - (void)showChildImages
 {
-    _iterateCount = 2;
+    iterateCount = 2;
     
     // 今月
     NSLog(@"showChildImages in PageContentViewController 今月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *comp = [self dateComps];
-    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES iterateCount:_iterateCount];
+    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES iterateCount:YES];
    
     // 先月
     NSLog(@"showChildImages in PageContentViewController 先月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *lastComp = [self dateComps];
     lastComp.month--;
-    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES iterateCount:_iterateCount];
+    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES iterateCount:YES];
   
     self.pageContentViewController.dateComp = lastComp;
 }
@@ -61,7 +63,7 @@
     return dateComps;
 }
 
-- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(int)iterateCount
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(BOOL)iteration
 {
     self.pageContentViewController.isLoading = YES;
     NSMutableDictionary *child = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
@@ -75,7 +77,9 @@
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
                 // 先月の画像が無い状態。この場合でも完了フラグはたてる
-                _iterateCount--;
+                if (iteration) {
+                    iterateCount--;
+                }
                 return;
             }
             NSInteger index = [indexNumber integerValue];
@@ -153,8 +157,10 @@
             [self.pageContentViewController.hud hide:YES];
             [self.pageContentViewController showAlertMessage];
         }
-        _iterateCount--;
-        if (_iterateCount < 1) {
+        if (iteration) {
+            iterateCount--;
+        }
+        if (iterateCount < 1 || !iteration) {
             [self setupNotificationHistory];
         }
     }];
@@ -471,15 +477,15 @@
     NSLog(@"updateChildProperties");
     [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
         NSMutableArray *childProperties = [ChildProperties getChildProperties];
-        if (![self isNeedReloadPageContentView:beforeSyncChildProperties withChildProperties:childProperties]) {
-            [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
+        NSString *reloadType = [self getReloadTypeAfterChildPropertiesChanged:beforeSyncChildProperties withChildProperties:childProperties];
+        if ([reloadType isEqualToString:@"replacePageView"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        } else if ([reloadType isEqualToString:@"reloadPageContentViewDate"]) {
+            [self.pageContentViewController initializeChildImages];
+            [self.pageContentViewController.pageContentCollectionView reloadData];
         } else {
-            NSLog(@"これがある時は遷移しない %@", [TransitionByPushNotification getInfo][@"event"]);
-            if (![TransitionByPushNotification getInfo][@"event"] || [[TransitionByPushNotification getInfo][@"event"] isEqualToString:@""]) {
-                NSLog(@"child property change!");
-                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotification:n];
-            }
+            [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
         }
     }];
 }
@@ -557,13 +563,13 @@
 // childPropertiesのあらゆる要素が更新された場合にPageContentViewを書き直す必要はない(全部で書き直すと画像を上げたらTopに戻ってしまったり、パートナーが誕生日を更新したらTopに戻ってしまったり、が起きる)
 // PageContentViewの更新が必要なのは、こどもの数が変わったとき、こどものidが一致しない時、こどもの名前が変わったとき、カレンダーの最古の日付が変わったとき
 // Viewがいきなり変わるので、push通知で知らせた方が良いかもね(TODO)
-- (BOOL)isNeedReloadPageContentView:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
+- (NSString *)getReloadTypeAfterChildPropertiesChanged:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
     NSLog(@"isNeedReloadPageContentView");
     // こどもの数が変わったとき
     if (childProperties.count != beforeSyncChildProperties.count) {
         NSLog(@"こどもの数が変わったとき");
-        return YES;
+        return @"replacePageView";
     }
     
     NSMutableDictionary *currentChildDic = [[NSMutableDictionary alloc] init];
@@ -574,34 +580,24 @@
         NSString *objectId = beforeChildDic[@"objectId"];
         if (!currentChildDic[objectId]) {
             NSLog(@"idが一致しない");
-            return YES;
+            return @"replacePageView";
         } else if (![currentChildDic[objectId][@"name"] isEqualToString:beforeChildDic[@"name"]]) {
-            [self reloadPageContentViewWithoutRemove];
-            return NO;
+            return @"reloadPageContentViewDate";
         } else if (currentChildDic[objectId][@"calendarStartDate"] && beforeChildDic[@"calendarStartDate"]) {
             if (![currentChildDic[objectId][@"calendarStartDate"] isEqualToNumber:beforeChildDic[@"calendarStartDate"]]) {
-                [self reloadPageContentViewWithoutRemove];
-                return NO;
+                return @"reloadPageContentViewDate";
             }
         } else if (currentChildDic[objectId][@"oldestChildImageDate"] && beforeChildDic[@"oldestChildImageDate"]) {
             if (![currentChildDic[objectId][@"oldestChildImageDate"] isEqualToNumber:beforeChildDic[@"oldestChildImageDate"]]) {
-                [self reloadPageContentViewWithoutRemove];
-                return NO;
+                return @"reloadPageContentViewDate";
             }
         } else if (currentChildDic[objectId][@"birthday"] && beforeChildDic[@"birthday"]) {
             if (![currentChildDic[objectId][@"birthday"] isEqualToNumber:beforeChildDic[@"birthday"]]) {
-                [self reloadPageContentViewWithoutRemove];
-                return NO;
+                return @"reloadPageContentViewDate";
             }
         }
     }
-    return NO;
-}
-
-- (void) reloadPageContentViewWithoutRemove
-{
-    [self.pageContentViewController initializeChildImages];
-    [self.pageContentViewController.pageContentCollectionView reloadData];
+    return @"noNeedToReload";
 }
 
 - (BOOL)isEqualDictionary:(NSDictionary *)child1 withCompare:(NSDictionary *)child2
