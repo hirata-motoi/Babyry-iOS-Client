@@ -86,7 +86,7 @@
         NSInteger parentHeight = label.frame.size.height + subtitleLabel.frame.size.height;
         NSInteger parentX = (320 - parentWidth) / 2;
         NSInteger parentY = (44 - parentHeight) / 2;
-        titleParent.frame = CGRectMake(parentX, parentY, label.frame.size.width, parentHeight);
+        titleParent.frame = CGRectMake(parentX, parentY, parentWidth, parentHeight);
         
         [titleParent addSubview:label];
         [titleParent addSubview:subtitleLabel];
@@ -142,7 +142,7 @@
     subtitleLabel.text = subtitle;
     subtitleLabel.font = [UIFont fontWithName:font size:subtitleFontSize];
     
-    // subtitleLabelのサイズを取得j
+    // subtitleLabelのサイズを取得
     CGSize subtitleSize = [self immtableLabelSize:subtitleLabel widhBounds:bounds];
     subtitleSize.width = ceilf(subtitleSize.width);
     subtitleSize.height = ceilf(subtitleSize.height);
