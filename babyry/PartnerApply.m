@@ -151,11 +151,11 @@
     }
     
     PFQuery *query = [PFQuery queryWithClassName:@"PartnerApplyList"];
-    [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
+    [query whereKey:@"applyingUserId" equalTo:[PFUser currentUser][@"userId"]];
     [query orderByDescending:@"createdAt"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to load PartnerApplyList familyId:%@ error:%@", [PFUser currentUser][@"familyId"], error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to load PartnerApplyList error:%@", error]];
             return;
         }
         if (objects.count < 1) {
