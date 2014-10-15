@@ -107,7 +107,7 @@
         _only_first_load = 1;
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
-        _pageViewController = [[PageViewController alloc] init];
+        _pageViewController = nil;
         
         // ログインしてない場合は、イントロ+ログインViewを出す
         IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
