@@ -86,8 +86,9 @@
                 } else {
                     [PartnerApply checkPartnerApplyListWithBlock:^(BOOL existsApply) {
                         if (!existsApply) {
-                            [PartnerApply removeApplyList];
-                            [self close];
+                            [PartnerApply removeApplyListWithBlock:^(){
+                                [self close];
+                            }];
                         }
                         _isTimerRunning = NO;
                     }];
@@ -116,8 +117,9 @@
             break;
         case 1:
         {
-            [PartnerApply removeApplyList];
-            [self close];
+            [PartnerApply removeApplyListWithBlock:^() {
+                [self close];
+            }];
         }
             break;
     }

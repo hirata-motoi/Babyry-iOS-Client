@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 typedef void (^CheckPartnerApplyBlock)(BOOL existsApply);
+typedef void (^RemovePartnerApplyBlock)();
 
 @interface PartnerApply : NSObject
 
@@ -17,7 +18,7 @@ typedef void (^CheckPartnerApplyBlock)(BOOL existsApply);
 + (void) unsetLinkComplete;
 + (NSNumber *) issuePinCode;
 + (void) registerApplyList;
-+ (void) removeApplyList;
++ (void) removeApplyListWithBlock:(RemovePartnerApplyBlock)block;
 + (void)checkPartnerApplyListWithBlock:(CheckPartnerApplyBlock)block;
 
 @end

@@ -107,7 +107,7 @@
     }
 }
 
-+ (void) removeApplyList
++ (void) removeApplyListWithBlock:(RemovePartnerApplyBlock)block
 {
     // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
     PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
@@ -123,6 +123,8 @@
             pie.familyId = nil;
             pie.inputtedPinCode = nil;
             [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+            
+            block();
         }];
     }
 }
