@@ -105,6 +105,7 @@
             // キャッシュを更新しておく
             [FamilyRole selfRole:@"noCache"];
             [PFPush handlePush:userInfo];
+            NSLog(@"didReceiveRemoteNotification");
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }

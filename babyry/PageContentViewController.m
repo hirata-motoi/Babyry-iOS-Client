@@ -93,12 +93,6 @@
     [self initializeChildImages];
     [self createCollectionView];
     //[self setupScrollBarView];
-        
-    // Notification登録
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
 }
 
 - (void)applicationDidBecomeActive
@@ -109,6 +103,17 @@
 
 - (void)applicationDidReceiveRemoteNotification
 {
+//    // こどもが一致しているViewのみpushの通知を処理を受け取る
+//    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+//    int i = 0;
+//    for (NSMutableDictionary *dic in childProperties) {
+//        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
+//            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
+//                return;
+//            }
+//        }
+//        i++;
+//    }
     [self viewDidAppear:YES];
 }
 
@@ -120,6 +125,12 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    // Notification登録
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+    
     if (_isFirstLoad) {
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
@@ -136,6 +147,7 @@
 
 - (void)reloadView
 {
+    NSLog(@"reloadView");
     if ([PartnerApply linkComplete] && [_instructionTimer isValid]) {
         // この処理は一回だけで良し
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
@@ -166,6 +178,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    NSLog(@"viewDidAppear in PageContentViewController %d %@", _pageIndex, self);
     
     [self setImages];
     if (!_tm || ![_tm isValid]) {
@@ -179,6 +192,8 @@
     
     [_tn removeNavigationView];
     _tn = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (id)logic:(NSString *)methodName
@@ -223,8 +238,11 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
+    NSLog(@"viewWillDisappear in PageContentViewController %d %@", _pageIndex, self);
     [_tm invalidate];
+    
+    // Observerけす
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void)createCollectionView
@@ -557,7 +575,7 @@
         int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
         
         if (firstDateInt <= nextLoadInt) {
-            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
+            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES iterateCount:NO];
         }                  
     }
 }
@@ -625,6 +643,7 @@
 
 - (NSNumber *)getCalendarStartingDate
 {
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     NSNumber *calendarStartDate = childProperty[@"calendarStartDate"];
     NSNumber *oldestChildImageDate = childProperty[@"oldestChildImageDate"];
     NSDate *birthday = childProperty[@"birthday"];
@@ -641,8 +660,8 @@
     } else {
         // calendarStartDateがない場合は誕生日をカレンダー開始日とする
         NSDateComponents *birthdayComps = [DateUtils dateCompsFromDate:birthday];
-        NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", birthdayComps.year, birthdayComps.month, birthdayComps.day] integerValue]];
-       
+        NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)birthdayComps.year, (long)birthdayComps.month, (long)birthdayComps.day] integerValue]];
+                                                                                                                                                                  
         // ただしoldestChildImageDate < birthdayの場合はoldestChildImageDateを起点にする
         if (oldestChildImageDate && [oldestChildImageDate compare:birthdayNumber] == NSOrderedAscending) {
             return oldestChildImageDate;
@@ -658,9 +677,11 @@
     NSDate *startDate = [cal dateFromComponents:startDateComps];
     NSDate *endDate   = [cal dateFromComponents:endDateComps];
     
+    NSMutableDictionary *dicForCheckDuplicate = [[NSMutableDictionary alloc]init];
+    
     while ([endDate compare:startDate] == NSOrderedDescending || [endDate compare:startDate] == NSOrderedSame) {
-        NSString *ym = [NSString stringWithFormat:@"%ld%02ld", endDateComps.year, endDateComps.month];
-       
+        NSString *ym = [NSString stringWithFormat:@"%ld%02ld", (long)endDateComps.year, (long)endDateComps.month];
+                                                               
         NSMutableDictionary *targetSection;
         for (NSMutableDictionary *section in childImages) {
             NSString *yearMonthOfSection = [NSString stringWithFormat:@"%@%@", section[@"year"], section[@"month"]];
@@ -674,20 +695,46 @@
             targetSection[@"images"]        = [[NSMutableArray alloc]init];
             targetSection[@"totalImageNum"] = [[NSMutableArray alloc]init];
             targetSection[@"weekdays"]      = [[NSMutableArray alloc]init];
-            targetSection[@"year"]          = [NSString stringWithFormat:@"%ld", endDateComps.year];
-            targetSection[@"month"]         = [NSString stringWithFormat:@"%02ld", endDateComps.month];
-            [_childImages addObject:targetSection];
+            targetSection[@"year"]          = [NSString stringWithFormat:@"%ld", (long)endDateComps.year];
+            targetSection[@"month"]         = [NSString stringWithFormat:@"%02ld", (long)endDateComps.month];
+            [_childImages addObject:targetSection];                                
+        }
+      
+        NSNumber *date = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
+        if ([self isDuplicatedChildImage:dicForCheckDuplicate withYearMonth:ym withDate:date withTargetSection:targetSection]) {
+            endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
+            endDate = [cal dateFromComponents:endDateComps];
+            continue;
         }
         
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
-        childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
+        childImage[@"date"] = date;
         [targetSection[@"images"] addObject:childImage];
         [targetSection[@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
-        [targetSection[@"weekdays"] addObject: [NSNumber numberWithInt: endDateComps.weekday]];
+        [targetSection[@"weekdays"] addObject: [NSNumber numberWithInteger: endDateComps.weekday]];
         
         endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
         endDate = [cal dateFromComponents:endDateComps];
     }
+}
+
+- (BOOL)isDuplicatedChildImage:(NSMutableDictionary *)dicForCheckDuplicate withYearMonth:(NSString *)ym withDate:(NSNumber *)date withTargetSection:(NSMutableDictionary *)targetSection
+{
+    if (!dicForCheckDuplicate[ym]) {
+        [dicForCheckDuplicate removeAllObjects]; // メモリ節約
+        dicForCheckDuplicate[ym] = [self dictionaryForYM:targetSection];
+    }
+    
+    return dicForCheckDuplicate[ym][date] ? YES : NO;
+}
+
+- (NSMutableDictionary *)dictionaryForYM:(NSMutableDictionary *)targetSection
+{
+    NSMutableDictionary *dictionaryForYM = [[NSMutableDictionary alloc]init];
+    for (PFObject *childImage in targetSection[@"images"]) {
+        dictionaryForYM[childImage[@"date"]] = @"1";
+    }
+    return dictionaryForYM;
 }
 
 - (void)setupChildImagesIndexMap
@@ -1138,6 +1185,7 @@
 
 - (void) dispatchForPushReceivedTransition
 {
+    NSLog(@"dispatchForPushReceivedTransition in PageContentViewController");
     // push通知のInfoから日付組み立て
     NSDictionary *info = [TransitionByPushNotification getInfo];
     PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
@@ -1186,6 +1234,18 @@
         [self moveToImagePageViewController:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
         return;
     }
+}
+
+- (void)showLoadingIcon
+{
+    _hud = nil;
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.labelText = @"データ更新中";
+}
+
+- (void)hideLoadingIcon
+{
+    [_hud hide:YES];
 }
 
 

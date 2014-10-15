@@ -33,6 +33,7 @@
 {
     [super viewDidLoad];
     
+    NSLog(@"viewDidLoad in PageViewController");
     childProperties = [ChildProperties getChildProperties];
     
     // Do any additional setup after loading the view.
@@ -42,7 +43,6 @@
     PageContentViewController *startingViewController = [self viewControllerAtIndex:[TransitionByPushNotification getCurrentPageIndex]];
     NSArray *startingViewControllers = @[startingViewController];
     [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-    [TransitionByPushNotification endMoving];
 }
 
 - (void)didReceiveMemoryWarning
@@ -140,6 +140,7 @@
 
 - (void) moveToTargetPage:(int)index
 {
+    NSLog(@"moveToTargetPage");
     [TransitionByPushNotification setCurrentPageIndex:index];
     NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] postNotification:n];

@@ -20,7 +20,9 @@
 #import "ChildProperties.h"
 #import "FamilyRole.h"
 
-@implementation PageContentViewController_Logic
+@implementation PageContentViewController_Logic {
+    int iterateCount;
+}
 
 -(void)setImages
 {
@@ -31,16 +33,18 @@
 
 - (void)showChildImages
 {
-    _loadCompletBothMonth = NO;
+    iterateCount = 2;
     
     // 今月
+    NSLog(@"showChildImages in PageContentViewController 今月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *comp = [self dateComps];
-    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
+    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES iterateCount:YES];
    
     // 先月
+    NSLog(@"showChildImages in PageContentViewController 先月 %d %@", self.pageContentViewController.pageIndex, self.pageContentViewController);
     NSDateComponents *lastComp = [self dateComps];
     lastComp.month--;
-    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
+    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES iterateCount:YES];
   
     self.pageContentViewController.dateComp = lastComp;
 }
@@ -53,12 +57,13 @@
         NSYearCalendarUnit   |
         NSMonthCalendarUnit  |
         NSDayCalendarUnit    |
-        NSHourCalendarUnit
+        NSHourCalendarUnit   |
+        NSWeekdayCalendarUnit
     fromDate:date];
     return dateComps;
 }
 
-- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(BOOL)iteration
 {
     self.pageContentViewController.isLoading = YES;
     NSMutableDictionary *child = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
@@ -71,6 +76,10 @@
         if (!error) {
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
+                // 先月の画像が無い状態。この場合でも完了フラグはたてる
+                if (iteration) {
+                    iterateCount--;
+                }
                 return;
             }
             NSInteger index = [indexNumber integerValue];
@@ -142,12 +151,17 @@
             [self showIntroductionOfImageRequest];
             self.pageContentViewController.isFirstLoad = 0;
             [self finalizeProcess];
-            
-            [self setupNotificationHistory];
+
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [self.pageContentViewController.hud hide:YES];
             [self.pageContentViewController showAlertMessage];
+        }
+        if (iteration) {
+            iterateCount--;
+        }
+        if (iterateCount < 1 || !iteration) {
+            [self setupNotificationHistory];
         }
     }];
     // 不要なfullsizeのキャッシュを消す
@@ -316,6 +330,7 @@
 
 - (void)setupNotificationHistory
 {
+    NSLog(@"setupNotificationHistory");
     self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
@@ -327,13 +342,10 @@
             }
             [self.pageContentViewController.pageContentCollectionView reloadData];
         }
-        if (_loadCompletBothMonth == YES) {
-            [self.pageContentViewController dispatchForPushReceivedTransition];
-        }
+        [self.pageContentViewController dispatchForPushReceivedTransition];
         [self.pageContentViewController.pageContentCollectionView reloadData];
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];
-        _loadCompletBothMonth = YES;
     }];
     
 }
@@ -462,14 +474,20 @@
 
 - (void)updateChildProperties
 {
+    NSLog(@"updateChildProperties");
     [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
         NSMutableArray *childProperties = [ChildProperties getChildProperties];
-        if (![self hasUpdatedChildProperties:beforeSyncChildProperties withChildProperties:childProperties]) {
+        NSString *reloadType = [self getReloadTypeAfterChildPropertiesChanged:beforeSyncChildProperties withChildProperties:childProperties];
+        
+        if ([reloadType isEqualToString:@"replacePageView"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        } else if ([reloadType isEqualToString:@"reloadPageContentViewDate"]) {
+            [self.pageContentViewController initializeChildImages];
+            [self.pageContentViewController.pageContentCollectionView reloadData];
+        } else {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
-            return;
         }
-        NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-        [[NSNotificationCenter defaultCenter] postNotification:n];
     }];
 }
 
@@ -543,23 +561,62 @@
     }
 }
 
-- (BOOL)hasUpdatedChildProperties:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
+// childPropertiesのあらゆる要素が更新された場合にPageContentViewを書き直す必要はない(全部で書き直すと画像を上げたらTopに戻ってしまったり、パートナーが誕生日を更新したらTopに戻ってしまったり、が起きる)
+// PageContentViewの更新が必要なのは、こどもの数が変わったとき、こどものidが一致しない時、こどもの名前が変わったとき、カレンダーの最古の日付が変わったとき
+// Viewがいきなり変わるので、push通知で知らせた方が良いかもね(TODO)
+- (NSString *)getReloadTypeAfterChildPropertiesChanged:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
+    NSLog(@"isNeedReloadPageContentView");
+    // こどもの数が変わったとき
     if (childProperties.count != beforeSyncChildProperties.count) {
+        NSLog(@"こどもの数が変わったとき");
+        return @"replacePageView";
+    }
+    
+    NSMutableDictionary *currentChildDic = [[NSMutableDictionary alloc] init];
+    for (NSMutableDictionary *childProperty in childProperties) {
+        currentChildDic[childProperty[@"objectId"]] = childProperty;
+    }
+    for (NSMutableDictionary *beforeChildDic in beforeSyncChildProperties) {
+        NSString *objectId = beforeChildDic[@"objectId"];
+        if (!currentChildDic[objectId]) {
+            NSLog(@"idが一致しない");
+            return @"replacePageView";
+        } else if (![currentChildDic[objectId][@"name"] isEqualToString:beforeChildDic[@"name"]]) {
+            return @"reloadPageContentViewDate";
+            
+        } else if ([self calendarStartDateChanged:currentChildDic[objectId] withBeforeChild:beforeChildDic]) {
+            return @"reloadPageContentViewDate";
+        } else if (currentChildDic[objectId][@"oldestChildImageDate"] && beforeChildDic[@"oldestChildImageDate"]) {
+            if (![currentChildDic[objectId][@"oldestChildImageDate"] isEqualToNumber:beforeChildDic[@"oldestChildImageDate"]]) {
+                return @"reloadPageContentViewDate";
+            }
+        } else if (currentChildDic[objectId][@"birthday"] && beforeChildDic[@"birthday"]) {
+            if (![currentChildDic[objectId][@"birthday"] isEqualToNumber:beforeChildDic[@"birthday"]]) {
+                return @"reloadPageContentViewDate";
+            }
+        }
+    }
+    return @"noNeedToReload";
+}
+
+- (BOOL)calendarStartDateChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
+{
+    NSNumber *currentStartDate = currentChild[@"calendarStartDate"];
+    NSNumber *beforeStartDate  = beforeChild[@"calendarStartDate"];
+    
+    if (!currentStartDate && !beforeStartDate) {
+        return NO;
+    }
+    
+    if ( !(currentStartDate && beforeStartDate) ) {
+        return YES;
+    }
+
+    if (![currentStartDate isEqualToNumber:beforeStartDate]) {
         return YES;
     }
     
-    NSMutableDictionary *childPropertiesDic = [[NSMutableDictionary alloc]init];
-    for (NSMutableDictionary *childProperty in childProperties) {
-        childPropertiesDic[childProperty[@"objectId"]] = childProperty;
-    }
-    
-    for (NSMutableDictionary *child in beforeSyncChildProperties) {
-        NSString *objectId = child[@"objectId"];
-        if (![self isEqualDictionary:child withCompare:childPropertiesDic[objectId]]) {
-            return YES;
-        }
-    }
     return NO;
 }
 
@@ -598,6 +655,8 @@
     PFObject *oldestChildImage = self.pageContentViewController.childImages[indexPath.section][@"images"][indexPath.row - 1];
     NSNumber *date = oldestChildImage[@"date"];
     NSDateComponents *compsToAdd = [self compsToAdd:date];
+  
+    [self.pageContentViewController showLoadingIcon];
     
     // Child.calendarStartDateを保存
     PFQuery *query = [PFQuery queryWithClassName:@"Child"];
@@ -606,16 +665,18 @@
         if (error) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
             // TODO ネットワークを確かめてalertを表示
+            [self.pageContentViewController hideLoadingIcon];
             return;
         }
         
         if (objects.count == 0) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Cannot find Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
+            [self.pageContentViewController hideLoadingIcon];
             return;
         }
         
         if (objects.count > 0) {
-            NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", compsToAdd.year, compsToAdd.month, compsToAdd.day];
+            NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", (long)compsToAdd.year, (long)compsToAdd.month, (long)compsToAdd.day];
             NSNumber *calendarStartDate = [NSNumber numberWithInteger:[ymd integerValue]];
             PFObject *child = objects[0];
             child[@"calendarStartDate"] = calendarStartDate;
@@ -623,6 +684,7 @@
                 if (error) {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save Child.calendarStartDate Child.objectId:%@ calendarStartDate:%@", self.pageContentViewController.childObjectId, calendarStartDate]];
                     // TODO ネットワークを確かめてalertを表示
+                    [self.pageContentViewController hideLoadingIcon];
                     return;
                 }
                 // CoreDataに保存
@@ -632,6 +694,8 @@
                 [self addEmptyChildImages:compsToAdd];
                 // PageContentViewControllerをreload
                 [self.pageContentViewController.pageContentCollectionView reloadData];
+                
+                [self.pageContentViewController hideLoadingIcon];
             }];
         }
     }];
@@ -729,6 +793,5 @@
     return !(year < 2009 || (year == 2009 && month == 1));
     
 }
-
 
 @end

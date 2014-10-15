@@ -30,6 +30,7 @@
     NSMutableDictionary *oldestChildImageDate = [self getOldestChildImageDate:childList];
     [self deleteUnavailableChildProperties:childList];
     [self saveChildProperties:childList withOldestChildImageDate:oldestChildImageDate];
+    NSLog(@"syncChildProperties");
     return [self getChildProperties];
 }
 
@@ -63,6 +64,7 @@
     if (!currentUser || !currentUser[@"familyId"] || [currentUser[@"familyId"] isEqualToString:@""]) {
         return;
     }
+    NSLog(@"asyncChildPropertiesWithBlock");
     NSMutableArray *beforeSyncChildProperties = [self getChildProperties];
     
     PFQuery *query = [PFQuery queryWithClassName:@"Child"];
@@ -119,7 +121,7 @@
 
 + (NSMutableArray *)getChildProperties
 {
-    NSArray *childPropertiesRecords = [ChildPropertyEntity MR_findAll];
+    NSArray *childPropertiesRecords = [ChildPropertyEntity MR_findAllSortedBy:@"createdAt" ascending:YES];
     NSMutableArray *childProperties = [[NSMutableArray alloc]init];
     for (ChildPropertyEntity *childPropertyRecord in childPropertiesRecords) {
         NSMutableDictionary *childProperty = [NSMutableDictionary dictionaryWithDictionary:[childPropertyRecord dictionaryWithValuesForKeys:[[[childPropertyRecord entity] attributesByName] allKeys]]];
@@ -142,9 +144,11 @@
     
     NSMutableDictionary *oldestChildImageDate = [[NSMutableDictionary alloc]init];
     
+    dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    dispatch_group_t g = dispatch_group_create();
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(childList.count);
     for (PFObject *child in childList) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        dispatch_group_async(g,q,^{
             PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
             [query whereKey:@"imageOf" equalTo:child.objectId];
             [query orderByAscending:@"date"];
@@ -152,10 +156,11 @@
             if (oldestChildImage) {
                 oldestChildImageDate[child.objectId] = oldestChildImage[@"date"];
             }
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
             dispatch_semaphore_signal(semaphore);
         });
     }
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
     return oldestChildImageDate;
 }
              
@@ -176,6 +181,7 @@
         NSString *childObjectId = child.objectId;
         ChildPropertyEntity *childProperty = [self findChildProperty:childProperties withObjectId:childObjectId];
         if (!childProperty) {
+            NSLog(@"childPropertyが無いってよ！");
             childProperty = [ChildPropertyEntity MR_createEntity];
         }
         

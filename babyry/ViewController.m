@@ -296,6 +296,7 @@
 
 - (void)instantiatePageViewController
 {
+    NSLog(@"instantiatePageViewController");
     NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (childProperties.count < 1) {
         return;
@@ -341,10 +342,25 @@
 
 - (void)reloadPageViewController
 {
+    NSLog(@"reloadPageViewController");
     [_pageViewController.view removeFromSuperview];
     [_pageViewController removeFromParentViewController];
+
+    // pageViewControllerにのっているpageContentViewControllerとview, subviewも消す (そんなに大きなリークでもないけど(効果あるかも微妙だけど)とりあえず)
+    for (UIViewController __strong *vc in [_pageViewController viewControllers]){
+        NSLog(@"Remove UIViewController %@", vc);
+        for (UIView __strong *view in vc.view.subviews) {
+            [view removeFromSuperview];
+            view = nil;
+        }
+        [vc willMoveToParentViewController:nil];
+        [vc.view removeFromSuperview];
+        [[NSNotificationCenter defaultCenter] removeObserver:vc];
+        [vc removeFromParentViewController];
+        NSLog(@"Removed UIViewController %@", vc);
+    }
+    
     _pageViewController = nil;
-   
     [self instantiatePageViewController];
 }
 

@@ -63,6 +63,9 @@
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
 - (void) dispatchForPushReceivedTransition;
+- (void)initializeChildImages;
+- (void)showLoadingIcon;
+- (void)hideLoadingIcon;
 
 @property AWSServiceConfiguration *configuration;
 
@@ -78,5 +81,7 @@
 
 
 @property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
+
+@property NSNotificationCenter *notificationCenter;
 
 @end
