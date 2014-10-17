@@ -329,7 +329,6 @@
 
 - (void)setupNotificationHistory
 {
-    NSLog(@"setupNotificationHistory");
     self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
@@ -473,7 +472,6 @@
 
 - (void)updateChildProperties
 {
-    NSLog(@"updateChildProperties");
     [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
         NSMutableArray *childProperties = [ChildProperties getChildProperties];
         NSString *reloadType = [self getReloadTypeAfterChildPropertiesChanged:beforeSyncChildProperties withChildProperties:childProperties];
@@ -482,7 +480,7 @@
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         } else if ([reloadType isEqualToString:@"reloadPageContentViewDate"]) {
-            [self.pageContentViewController initializeChildImages];
+        [self.pageContentViewController adjustChildImages];
             [self.pageContentViewController.pageContentCollectionView reloadData];
         } else {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
@@ -572,7 +570,6 @@
 // Viewがいきなり変わるので、push通知で知らせた方が良いかもね(TODO)
 - (NSString *)getReloadTypeAfterChildPropertiesChanged:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
-    NSLog(@"isNeedReloadPageContentView");
     // こどもの数が変わったとき
     if ([self childAddedOrDeleted:childProperties withBeforeChildProperties:beforeSyncChildProperties]) {
         return @"replacePageView";
@@ -604,7 +601,7 @@
     return reloadType;
 }
 
-- (BOOL)childAddedOrDeleted:(NSMutableArray *)childProperties withBeforeChildProperties:(NSMutableArray *)beforeSyncChildProperties
+- (BOOL)childAddedOrDeleted:(NSMutableArray *)childProperties withBeforeChildProperties:(NSArray *)beforeSyncChildProperties
 {
     if (childProperties.count != beforeSyncChildProperties.count) {
         return YES;

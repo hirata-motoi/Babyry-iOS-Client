@@ -105,7 +105,6 @@
             // キャッシュを更新しておく
             [FamilyRole selfRole:@"noCache"];
             [PFPush handlePush:userInfo];
-            NSLog(@"didReceiveRemoteNotification");
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
@@ -150,6 +149,9 @@
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     
     [self setTrackingLogName:@"applicationWillEnterForeground"];
+    
+    NSNotification *n = [NSNotification notificationWithName:@"applicationWillEnterForeground" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

@@ -63,7 +63,7 @@
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
 - (void) dispatchForPushReceivedTransition;
-- (void)initializeChildImages;
+- (void)adjustChildImages;
 - (void)showLoadingIcon;
 - (void)hideLoadingIcon;
 
