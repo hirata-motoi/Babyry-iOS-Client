@@ -86,31 +86,24 @@ static NSMutableDictionary *returnDic;
 
 + (NSMutableDictionary *) dispatch:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
 {
-    NSLog(@"currentViewControllerがとれない場合には何もしない");
     // currentViewControllerがとれない場合には何もしない
     if (!currentViewController[@"viewController"]) {
         return nil;
     }
 
-    NSLog(@"transitionInfoがとれない or eventが空の場合は何もしない");
     // transitionInfoがとれない or eventが空の場合は何もしない
     if (!transitionInfo || [transitionInfo[@"event"] isEqualToString:@""]) {
         // transisionInfoが無ければそのままretrun
         return nil;
     }
     
-    NSLog(@"インスタントに使う用にreturnDicとして深いコピー");
     // インスタントに使う用にreturnDicとして深いコピー
     returnDic = [[NSMutableDictionary alloc] initWithDictionary:transitionInfo];
     
-    NSLog(@"起動一発目は値が入らない かつ 一発目は必ずtopのViewControllerが入るので");
     // 起動一発目は値が入らない かつ 一発目は必ずtopのViewControllerが入るので
     if (!currentViewController[@"viewController"]) {
         currentViewController[@"viewController"] = @"ViewController";
     }
-    NSLog(@"currentViewController %@", currentViewController[@"viewController"]);
-    
-    NSLog(@"transitionInfo %@", transitionInfo);
     
     if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]
         || [transitionInfo[@"event"] isEqualToString:@"commentPosted"]
@@ -125,15 +118,12 @@ static NSMutableDictionary *returnDic;
         [self returnToRoot:viewController];
     }
     
-    NSLog(@"returnDicA %@", returnDic);
     return returnDic;
 }
 
 + (NSMutableDictionary *)dispatchForImageOperation:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
 {
-    NSLog(@"dispatchForImageOperation");
     if ([currentViewController[@"viewController"] isEqualToString:@"ViewController"]) {
-        NSLog(@"currentview is ViewController");
         if ([transitionInfo[@"childObjectId"] isEqualToString:currentChildObjectId]) {
             if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]
                 || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]
@@ -152,10 +142,8 @@ static NSMutableDictionary *returnDic;
         } else {
             returnDic[@"nextVC"] = @"movePageContentViewController";
         }
-        NSLog(@"returnDicB %@", returnDic);
         return returnDic;
     } else if ([currentViewController[@"viewController"] isEqualToString:@"MultiUploadViewController"]) {
-        NSLog(@"currentview is MultiUploadViewController");
         if ([[TransitionByPushNotification getCurrentDate] isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
             if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
                 // ここでMultiUploadViewControllerのうまいreloadの仕方が思いつかない
@@ -173,17 +161,13 @@ static NSMutableDictionary *returnDic;
                 // 対象の日付、対象のこどものMultiUploadViewが開かれている状態
                 // ベストショットがあればベストショット、決まってなければ最初の画像を開く
                 returnDic[@"nextVC"] = @"CommentViewController";
-                NSLog(@"returnDicC %@", returnDic);
                 return returnDic;
             }
         }
         [self returnToRoot:viewController];
         return nil;
     } else if ([currentViewController[@"viewController"] isEqualToString:@"ImagePageViewController"]) {
-        NSLog(@"currentview is ImagePageViewController %@, %@", [TransitionByPushNotification getCurrentDate], currentChildObjectId);
-        NSLog(@"transition %@", transitionInfo);
         if ([[TransitionByPushNotification getCurrentDate] isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
-            NSLog(@"日付、こども一致");
             if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
                 // MultiUploadと同様
                 // notificationの方がまだましな気がしてきた
@@ -199,7 +183,6 @@ static NSMutableDictionary *returnDic;
                 // コメントを開くbabyry/AppDelegate.m
             }
         }
-        NSLog(@"一致しない");
         [self returnToRoot:viewController];
         return nil;
     } else {
@@ -222,7 +205,6 @@ static NSMutableDictionary *returnDic;
 // ここの処理は毎回同じなので、受け取っているviewControllerで処理してしまう
 + (void) returnToRoot:(UIViewController *)viewController
 {
-    NSLog(@"returnToRoot");
     [viewController.navigationController setNavigationBarHidden:NO];
     [viewController.navigationController popToRootViewControllerAnimated:YES];
 //

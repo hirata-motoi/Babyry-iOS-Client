@@ -639,7 +639,6 @@
 
 - (void) dispatchForPushReceivedTransition
 {
-    NSLog(@"dispatchForPushReceivedTransition in MultiUploadViewController");
     NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
     if (!tsnInfo) {
         return;
