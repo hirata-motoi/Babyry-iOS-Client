@@ -24,6 +24,9 @@
             NSString *message = eventInfo[@"message"];
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
                 message = [self stringWithFormat:message withFormatArgsCount:[eventInfo[@"formatArgsCount"] integerValue] withArgs:options[@"formatArgs"]];
+                if (message == nil) {
+                    return;
+                }
             }
             
             // 相方の情報を取得
@@ -101,6 +104,9 @@
             NSString *message = eventInfo[@"message"];
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
                 message = [self stringWithFormat:message withFormatArgsCount:[eventInfo[@"formatArgsCount"] integerValue] withArgs:options[@"formatArgs"]];
+                if (message == nil) {
+                    return;
+                }
             }
             PFPush *push = [[PFPush alloc]init];
             
@@ -213,8 +219,11 @@
     if (!count || count < 1) {
         return format;
     }
+    
+    // 設定ミスのnotificationは送信しない
     if (count > 3) {
-        @throw @"Cannot receive 4 or more arguments";
+        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Found invalid formatArgsCount format:%@ formatArgsCount:%ld", format, (long)count]];
+        return nil;
     }
   
     return
