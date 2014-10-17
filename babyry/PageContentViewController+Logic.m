@@ -19,6 +19,7 @@
 #import "ImageRequestIntroductionView.h"
 #import "ChildProperties.h"
 #import "FamilyRole.h"
+#import "PushNotification.h"
 
 @implementation PageContentViewController_Logic {
     int iterateCount;
@@ -480,7 +481,7 @@
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         } else if ([reloadType isEqualToString:@"reloadPageContentViewDate"]) {
-        [self.pageContentViewController adjustChildImages];
+            [self.pageContentViewController adjustChildImages];
             [self.pageContentViewController.pageContentCollectionView reloadData];
         } else {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
@@ -758,6 +759,8 @@
                 [self.pageContentViewController.pageContentCollectionView reloadData];
                 
                 [self.pageContentViewController hideLoadingIcon];
+                
+                [self sendPushNotificationForCalendarAdded];
             }];
         }
     }];
@@ -854,6 +857,18 @@
     NSInteger month = [self.pageContentViewController.childImages[section][@"month"] integerValue];
     return !(year < 2009 || (year == 2009 && month == 1));
     
+}
+
+// silent push
+- (void)sendPushNotificationForCalendarAdded
+{
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"calendarAdded";
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    options[@"data"] = [[NSMutableDictionary alloc]
+                        initWithObjects:@[@"Increment", transitionInfoDic, [NSNumber numberWithInt:1]]
+                        forKeys:@[@"badge", @"transitionInfo", @"content-available"]];
+    [PushNotification sendInBackground:@"calendarAdded" withOptions:options];
 }
 
 @end

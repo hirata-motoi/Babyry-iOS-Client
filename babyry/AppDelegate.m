@@ -118,6 +118,11 @@
         if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]) {
             [PFPush handlePush:userInfo];
         }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"calendarAdded"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
     }
     
     if (application.applicationState == UIApplicationStateInactive) {
