@@ -423,7 +423,7 @@
         NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
         transitionInfoDic[@"event"] = @"partSwitched";
         NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-        options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+        options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
         options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
         options[@"data"] = [[NSMutableDictionary alloc]
                             initWithObjects:@[@"Increment", transitionInfoDic]

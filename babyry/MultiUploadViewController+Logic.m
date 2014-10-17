@@ -218,7 +218,7 @@
                 transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", self.multiUploadViewController.indexPath.row];
                 transitionInfoDic[@"childObjectId"] = self.multiUploadViewController.childObjectId;
                 NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+                options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
                 options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
                 options[@"data"] = [[NSMutableDictionary alloc]
                                     initWithObjects:@[@"Increment", transitionInfoDic]

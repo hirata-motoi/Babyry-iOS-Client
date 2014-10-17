@@ -23,7 +23,7 @@
             
             NSString *message = eventInfo[@"message"];
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
-                message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
+                message = [self stringWithFormat:message withFormatArgsCount:[eventInfo[@"formatArgsCount"] integerValue] withArgs:options[@"formatArgs"]];
             }
             
             // 相方の情報を取得
@@ -100,7 +100,7 @@
             
             NSString *message = eventInfo[@"message"];
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
-                message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
+                message = [self stringWithFormat:message withFormatArgsCount:[eventInfo[@"formatArgsCount"] integerValue] withArgs:options[@"formatArgs"]];
             }
             PFPush *push = [[PFPush alloc]init];
             
@@ -205,6 +205,23 @@
         // succeededでもerrorでも次の処理に進ませる
         block();
     }];
+}
+
+// 苦肉の策
++ (NSString *)stringWithFormat:(NSString *)format withFormatArgsCount:(NSInteger)count withArgs:(NSArray *)arguments
+{
+    if (!count || count < 1) {
+        return format;
+    }
+    if (count > 3) {
+        @throw @"Cannot receive 4 or more arguments";
+    }
+  
+    return
+        (count == 1) ? [NSString stringWithFormat:format, arguments[0]]:
+        (count == 2) ? [NSString stringWithFormat:format, arguments[0], arguments[1]]:
+        (count == 3) ? [NSString stringWithFormat:format, arguments[0], arguments[1], arguments[2]] :
+                       format;
 }
 
 @end

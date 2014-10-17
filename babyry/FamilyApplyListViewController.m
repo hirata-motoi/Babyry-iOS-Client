@@ -236,7 +236,7 @@
             
             // push通知
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+            options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
             NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
             options[@"data"] = data;
             [PushNotification sendToSpecificUserInBackground:@"admitApply" withOptions:options targetUserId:[inviterUsers objectAtIndex:index][@"userId"]];

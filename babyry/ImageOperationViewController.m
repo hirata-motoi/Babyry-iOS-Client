@@ -286,7 +286,7 @@
                 transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
                 transitionInfoDic[@"childObjectId"] = _childObjectId;
                 NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+                options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
                 options[@"data"] = [[NSMutableDictionary alloc]
                                     initWithObjects:@[@"Increment", transitionInfoDic]
                                     forKeys:@[@"badge", @"transitionInfo"]];
