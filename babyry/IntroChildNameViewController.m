@@ -18,6 +18,7 @@
 #import "ParseUtils.h"
 #import "DateUtils.h"
 #import "ChildProperties.h"
+#import "PushNotification.h"
 
 @interface IntroChildNameViewController ()
 
@@ -213,6 +214,8 @@
             [[NSNotificationCenter defaultCenter] postNotification:n];
             
             [_hud hide:YES];
+            
+            [self sendPushNotification:child[@"name"]];
            
             // tutorial中でBabyryちゃんに対して操作している場合こども追加が完了したらPageContentViewControllerに戻る
             if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUser"]) {
@@ -387,6 +390,18 @@
 - (void)resetSex
 {
     _childSexSegment.selectedSegmentIndex = UISegmentedControlNoSegment;
+}
+
+- (void)sendPushNotification:(NSString *)childName
+{
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"childAdded";
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    options[@"data"] = [[NSMutableDictionary alloc]
+                        initWithObjects:@[@"Increment", transitionInfoDic]
+                        forKeys:@[@"badge", @"transitionInfo"]];
+    options[@"formatArgs"] = [NSArray arrayWithObjects:[PFUser currentUser][@"nickName"], childName,  nil];
+    [PushNotification sendInBackground:@"childAdded" withOptions:options];
 }
 
 @end

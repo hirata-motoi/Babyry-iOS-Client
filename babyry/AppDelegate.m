@@ -112,6 +112,10 @@
         if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
             [PFPush handlePush:userInfo];
         }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]) {
+            [PFPush handlePush:userInfo];
+        }
     }
     
     if (application.applicationState == UIApplicationStateInactive) {
