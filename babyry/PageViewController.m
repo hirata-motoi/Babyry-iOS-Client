@@ -33,14 +33,18 @@
 {
     [super viewDidLoad];
     
-    NSLog(@"viewDidLoad in PageViewController");
     childProperties = [ChildProperties getChildProperties];
     
     // Do any additional setup after loading the view.
     self.delegate = self;
     self.dataSource = self;
-  
-    PageContentViewController *startingViewController = [self viewControllerAtIndex:[TransitionByPushNotification getCurrentPageIndex]];
+    
+    int currentPageIndex = [TransitionByPushNotification getCurrentPageIndex];
+    if (currentPageIndex > childProperties.count - 1) {
+        currentPageIndex = 0;
+    }
+                           
+    PageContentViewController *startingViewController = [self viewControllerAtIndex:currentPageIndex];
     NSArray *startingViewControllers = @[startingViewController];
     [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }

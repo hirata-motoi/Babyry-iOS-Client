@@ -337,6 +337,10 @@
                         [self viewWillAppear:YES];
                         _removeTarget = -1;
                         [self refreshChildList];
+                        
+                        // _pageViewControllerを再読み込み
+                        NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                        [[NSNotificationCenter defaultCenter] postNotification:n];
                     }
                 }];
             }];
