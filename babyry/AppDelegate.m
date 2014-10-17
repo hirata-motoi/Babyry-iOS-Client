@@ -104,9 +104,11 @@
         if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
             // キャッシュを更新しておく
             [FamilyRole selfRole:@"noCache"];
+            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }];
             [PFPush handlePush:userInfo];
-            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-            [[NSNotificationCenter defaultCenter] postNotification:n];
         }
         
         if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {

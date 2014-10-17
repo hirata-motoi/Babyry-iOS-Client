@@ -9,7 +9,10 @@
 #import <Foundation/Foundation.h>
 #import <Parse/Parse.h>
 
+typedef void (^UpdateFamilyRoleCacheBlock)();
+
 @interface FamilyRole : NSObject
+
 
 + (PFObject *)getFamilyRole:(NSString *)cacheType;
 + (NSString *)selfRole:(NSString *)cacheType;
@@ -19,5 +22,6 @@
 + (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block;
 + (void)switchRole:(NSString *)role;
 + (void) unlinkFamily:(PFBooleanResultBlock)block;
++ (void)updateFamilyRoleCacheWithBlock:(UpdateFamilyRoleCacheBlock)block;
 
 @end
