@@ -120,6 +120,7 @@
                 }
             }
             [self removePartnerInvitedFromCoreData];
+            block();
         }];
     }
 }
