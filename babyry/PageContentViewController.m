@@ -1108,24 +1108,24 @@
     // 基本的には1つしか無いはずなので、最初の一つをとる
     // ただし、表示するのは、section = 0, row = 0,1だけ
     // かつ uploaderだけ
-    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
-        if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
-            if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
-                // 左下にそっと出してみる
-                float cellHeigt = cell.frame.size.height;
-                float cellWidth = cell.frame.size.width;
-                int widthRatio = 4;
-                if (indexPath.row == 1) {
-                    widthRatio = 3;
-                }
-                CGRect rect = CGRectMake(0, cellHeigt - cellHeigt/widthRatio, cellWidth/widthRatio, cellHeigt/widthRatio);
-                UIImage *giveMePhotoIcon = [UIImage imageNamed:@"GiveMePhotoIcon"];
-                UIImageView *giveMePhotoIconView = [[UIImageView alloc] initWithImage:giveMePhotoIcon];
-                giveMePhotoIconView.frame = rect;
-                [cell addSubview:giveMePhotoIconView];
-            }
-        }
-    }
+//    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
+//        if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
+//            if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
+//                // 左下にそっと出してみる
+//                float cellHeigt = cell.frame.size.height;
+//                float cellWidth = cell.frame.size.width;
+//                int widthRatio = 4;
+//                if (indexPath.row == 1) {
+//                    widthRatio = 3;
+//                }
+//                CGRect rect = CGRectMake(0, cellHeigt - cellHeigt/widthRatio, cellWidth/widthRatio, cellHeigt/widthRatio);
+//                UIImage *giveMePhotoIcon = [UIImage imageNamed:@"GiveMePhotoIcon"];
+//                UIImageView *giveMePhotoIconView = [[UIImageView alloc] initWithImage:giveMePhotoIcon];
+//                giveMePhotoIconView.frame = rect;
+//                [cell addSubview:giveMePhotoIconView];
+//            }
+//        }
+//    }
 }
 
 - (void)vibrateImageView:(UIImageView *)imageView

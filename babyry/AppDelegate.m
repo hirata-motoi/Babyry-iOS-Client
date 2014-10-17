@@ -108,6 +108,10 @@
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
+            [PFPush handlePush:userInfo];
+        }
     }
     
     if (application.applicationState == UIApplicationStateInactive) {
