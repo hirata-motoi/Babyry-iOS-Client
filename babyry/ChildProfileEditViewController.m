@@ -87,12 +87,8 @@
     // 即反映のため、block外で。
     [ChildProperties updateChildPropertyWithObjectId:_childObjectId withParams:params];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
-    
-    if ([_editTarget isEqualToString:@"name"]) {
-        [_delegate changeChildNickname:_childNicknameEditTextField.text];
-    } else if ([_editTarget isEqualToString:@"birthday"]) {
-        [_delegate changeChildBirthday:[DateUtils setSystemTimezoneAndZero:_childBirthdayDatePicker.date]];
-    }
+   
+    [_delegate reloadChildProfile];
     
     [self closeEditing];
 }
