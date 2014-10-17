@@ -70,6 +70,8 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [_settingTableView reloadData];
+    [self setRoleSegmentControl];
+    
     tn = [[TutorialNavigator alloc]init];
     tn.targetViewController = self;
     [tn showNavigationView];
@@ -149,6 +151,13 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
+    }
+    for (UIView *view in [cell subviews]) {
+        for (UIView *elem in [view subviews]) {
+            if ([elem isKindOfClass:[UISegmentedControl class]]) {
+                [elem removeFromSuperview];
+            }
+        }
     }
     cell.textLabel.numberOfLines = 0;
     
@@ -441,7 +450,22 @@
     rect.origin.y = 7;
     sc.frame = rect;
     [sc addTarget:self action:@selector(switchRole) forControlEvents:UIControlEventValueChanged];
+   
+    // cacheから取得した値を初期値としておく
+    NSString *familyRole = [FamilyRole selfRole:@"cacheOnly"];
+    if (familyRole) {
+        if ([familyRole isEqualToString:@"uploader"]) {
+            sc.selectedSegmentIndex = 0;
+        } else if ([familyRole isEqualToString:@"chooser"]) {
+            sc.selectedSegmentIndex = 1;
+        }
+    }
     
+    return sc;
+}
+
+- (void)setRoleSegmentControl
+{
     // 初期値を非同期でセット
     [FamilyRole fetchFamilyRole:[PFUser currentUser][@"familyId"] withBlock:^(NSArray *objects, NSError *error){
         if (!error) {
@@ -451,16 +475,14 @@
             PFObject *familyRole = [objects objectAtIndex:0];
             NSString *uploader = familyRole[@"uploader"];
             if ([[PFUser currentUser][@"userId"] isEqualToString:uploader]) {
-                sc.selectedSegmentIndex = 0;
+                _roleControl.selectedSegmentIndex = 0;
             } else {
-                sc.selectedSegmentIndex = 1;
+                _roleControl.selectedSegmentIndex = 1;
             }
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in createRoleSwitchSegmentControl : %@", error]];
         }
     }];
-    
-    return sc;
 }
 
 - (void)openProfileEdit
