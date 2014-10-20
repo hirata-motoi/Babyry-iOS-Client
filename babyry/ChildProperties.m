@@ -30,7 +30,6 @@
     NSMutableDictionary *oldestChildImageDate = [self getOldestChildImageDate:childList];
     [self deleteUnavailableChildProperties:childList];
     [self saveChildProperties:childList withOldestChildImageDate:oldestChildImageDate];
-    NSLog(@"syncChildProperties");
     return [self getChildProperties];
 }
 
@@ -64,7 +63,6 @@
     if (!currentUser || !currentUser[@"familyId"] || [currentUser[@"familyId"] isEqualToString:@""]) {
         return;
     }
-    NSLog(@"asyncChildPropertiesWithBlock");
     NSMutableArray *beforeSyncChildProperties = [self getChildProperties];
     
     PFQuery *query = [PFQuery queryWithClassName:@"Child"];
@@ -181,7 +179,6 @@
         NSString *childObjectId = child.objectId;
         ChildPropertyEntity *childProperty = [self findChildProperty:childProperties withObjectId:childObjectId];
         if (!childProperty) {
-            NSLog(@"childPropertyが無いってよ！");
             childProperty = [ChildPropertyEntity MR_createEntity];
         }
         

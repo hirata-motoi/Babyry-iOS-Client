@@ -106,6 +106,8 @@
     // Notification登録
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"applicationWillEnterForeground" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
 }
@@ -143,6 +145,8 @@
     // Notification登録
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
     
@@ -157,12 +161,13 @@
         }
     }
     childProperty = [ChildProperties getChildProperty:_childObjectId];
+
+    [self adjustChildImages];
     [self reloadView];
 }
 
 - (void)reloadView
 {
-    NSLog(@"reloadView");
     if ([PartnerApply linkComplete] && [_instructionTimer isValid]) {
         // この処理は一回だけで良し
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
@@ -193,7 +198,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear in PageContentViewController %d %@", _pageIndex, self);
     
     [self setImages];
     if (!_tm || ![_tm isValid]) {
@@ -253,7 +257,6 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    NSLog(@"viewWillDisappear in PageContentViewController %d %@", _pageIndex, self);
     [_tm invalidate];
     
     // Observerけす
@@ -637,6 +640,58 @@
     _dragging = NO;
 }
 
+- (void)adjustChildImages
+{
+    PFObject *latestChildImage;
+    PFObject *oldestChildImage;
+    
+    latestChildImage = _childImages[0][@"images"][0];
+    NSMutableDictionary *oldestSection = _childImages[_childImages.count - 1];
+    if (oldestSection) {
+        oldestChildImage = oldestSection[@"images"][ [oldestSection[@"images"] count] - 1];
+    }
+    
+    if (!latestChildImage || !oldestChildImage) {
+        [self initializeChildImages];
+        return;
+    }
+    
+    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
+    NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
+    
+    NSNumber *calendarStartingDateNumber = [NSNumber numberWithInteger:
+                                            [[NSString stringWithFormat:@"%ld%02ld%02ld",
+                                              (long)calendarStartingDateComps.year,
+                                              (long)calendarStartingDateComps.month,
+                                              (long)calendarStartingDateComps.day
+                                              ] integerValue]];
+    NSNumber *todayNumber = [NSNumber numberWithInteger:
+                             [[NSString stringWithFormat:@"%ld%02ld%02ld",
+                               (long)todayComps.year,
+                               (long)todayComps.month,
+                               (long)todayComps.day
+                               ] integerValue]];
+                                                       
+    if (
+        [todayNumber compare:latestChildImage[@"date"]] == NSOrderedAscending ||
+        [calendarStartingDateNumber compare:oldestChildImage[@"date"]] == NSOrderedDescending
+    ) {
+        [_childImages removeAllObjects];
+        [self initializeChildImages];
+        return;
+    }
+    
+    if ( ! (
+            [latestChildImage[@"date"] isEqualToNumber:todayNumber] &&
+            [oldestChildImage[@"date"] isEqualToNumber:calendarStartingDateNumber]
+            
+            )
+    ) {
+        [self initializeChildImages];
+        return;
+    }
+}
+
 - (void)initializeChildImages
 {
     NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
@@ -723,13 +778,32 @@
         
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = date;
-        [targetSection[@"images"] addObject:childImage];
-        [targetSection[@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
-        [targetSection[@"weekdays"] addObject: [NSNumber numberWithInteger: endDateComps.weekday]];
+        
+        [self insertChildImage:childImage withSection:targetSection withComps:endDateComps];
         
         endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
         endDate = [cal dateFromComponents:endDateComps];
     }
+}
+
+- (void)insertChildImage:(PFObject *)childImage withSection:(NSMutableDictionary *)targetSection withComps:(NSDateComponents *)endDateComps
+{
+    NSNumber *date = childImage[@"date"];
+    
+    // 最後の要素として追加するケースが多いので速度向上のため配列を逆にまわす
+    int targetIndex = 0;
+    for (int i = [targetSection[@"images"] count] - 1; i >= 0; i--) {
+        PFObject *elem = targetSection[@"images"][i];
+        if ([elem[@"date"] compare:date] == NSOrderedAscending) {
+            continue;
+        }
+       
+        targetIndex = i + 1;
+        break;
+    }
+    [targetSection[@"images"] insertObject:childImage atIndex:targetIndex];
+    [targetSection[@"totalImageNum"] insertObject:[NSNumber numberWithInt:-1] atIndex:targetIndex];
+    [targetSection[@"weekdays"] insertObject:[NSNumber numberWithInteger:endDateComps.weekday] atIndex:targetIndex];
 }
 
 - (BOOL)isDuplicatedChildImage:(NSMutableDictionary *)dicForCheckDuplicate withYearMonth:(NSString *)ym withDate:(NSNumber *)date withTargetSection:(NSMutableDictionary *)targetSection
@@ -1036,24 +1110,24 @@
     // 基本的には1つしか無いはずなので、最初の一つをとる
     // ただし、表示するのは、section = 0, row = 0,1だけ
     // かつ uploaderだけ
-    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
-        if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
-            if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
-                // 左下にそっと出してみる
-                float cellHeigt = cell.frame.size.height;
-                float cellWidth = cell.frame.size.width;
-                int widthRatio = 4;
-                if (indexPath.row == 1) {
-                    widthRatio = 3;
-                }
-                CGRect rect = CGRectMake(0, cellHeigt - cellHeigt/widthRatio, cellWidth/widthRatio, cellHeigt/widthRatio);
-                UIImage *giveMePhotoIcon = [UIImage imageNamed:@"GiveMePhotoIcon"];
-                UIImageView *giveMePhotoIconView = [[UIImageView alloc] initWithImage:giveMePhotoIcon];
-                giveMePhotoIconView.frame = rect;
-                [cell addSubview:giveMePhotoIconView];
-            }
-        }
-    }
+//    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
+//        if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
+//            if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
+//                // 左下にそっと出してみる
+//                float cellHeigt = cell.frame.size.height;
+//                float cellWidth = cell.frame.size.width;
+//                int widthRatio = 4;
+//                if (indexPath.row == 1) {
+//                    widthRatio = 3;
+//                }
+//                CGRect rect = CGRectMake(0, cellHeigt - cellHeigt/widthRatio, cellWidth/widthRatio, cellHeigt/widthRatio);
+//                UIImage *giveMePhotoIcon = [UIImage imageNamed:@"GiveMePhotoIcon"];
+//                UIImageView *giveMePhotoIconView = [[UIImageView alloc] initWithImage:giveMePhotoIcon];
+//                giveMePhotoIconView.frame = rect;
+//                [cell addSubview:giveMePhotoIconView];
+//            }
+//        }
+//    }
 }
 
 - (void)vibrateImageView:(UIImageView *)imageView
@@ -1199,7 +1273,6 @@
 
 - (void) dispatchForPushReceivedTransition
 {
-    NSLog(@"dispatchForPushReceivedTransition in PageContentViewController");
     // push通知のInfoから日付組み立て
     NSDictionary *info = [TransitionByPushNotification getInfo];
     PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
@@ -1260,6 +1333,12 @@
 - (void)hideLoadingIcon
 {
     [_hud hide:YES];
+}
+
+- (void)reloadPageContentView
+{
+    [self viewWillAppear:NO];
+    [self viewDidAppear:NO];
 }
 
 

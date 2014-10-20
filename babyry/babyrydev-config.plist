@@ -133,7 +133,7 @@
 	<key>InquiryEmail</key>
 	<string>info@meaning.co.jp</string>
 	<key>AppVersion</key>
-	<string>1.0.4</string>
+	<string>1.0.5</string>
 	<key>AWSBucketName</key>
 	<string>babyrydev-images</string>
 </dict>

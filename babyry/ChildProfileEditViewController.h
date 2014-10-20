@@ -11,8 +11,7 @@
 
 @protocol ChildProfileEditViewDelegate <NSObject>
 
-- (void)changeChildNickname:(NSString *)childNickname;
-- (void)changeChildBirthday:(NSDate *)birthday;
+- (void)reloadChildProfile;
 
 @end
 

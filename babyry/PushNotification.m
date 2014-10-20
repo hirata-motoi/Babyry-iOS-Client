@@ -23,7 +23,10 @@
             
             NSString *message = eventInfo[@"message"];
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
-                message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
+                message = [self stringWithFormat:message withFormatArgsCount:[eventInfo[@"formatArgsCount"] integerValue] withArgs:options[@"formatArgs"]];
+                if (message == nil) {
+                    return;
+                }
             }
             
             // 相方の情報を取得
@@ -100,7 +103,10 @@
             
             NSString *message = eventInfo[@"message"];
             if (eventInfo[@"formatArgsCount"] && [options objectForKey:@"formatArgs"]) {
-                message = [NSString stringWithFormat:message, [options objectForKey:@"formatArgs"]];
+                message = [self stringWithFormat:message withFormatArgsCount:[eventInfo[@"formatArgsCount"] integerValue] withArgs:options[@"formatArgs"]];
+                if (message == nil) {
+                    return;
+                }
             }
             PFPush *push = [[PFPush alloc]init];
             
@@ -205,6 +211,26 @@
         // succeededでもerrorでも次の処理に進ませる
         block();
     }];
+}
+
+// 苦肉の策
++ (NSString *)stringWithFormat:(NSString *)format withFormatArgsCount:(NSInteger)count withArgs:(NSArray *)arguments
+{
+    if (!count || count < 1) {
+        return format;
+    }
+    
+    // 設定ミスのnotificationは送信しない
+    if (count > 3) {
+        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Found invalid formatArgsCount format:%@ formatArgsCount:%ld", format, (long)count]];
+        return nil;
+    }
+  
+    return
+        (count == 1) ? [NSString stringWithFormat:format, arguments[0]]:
+        (count == 2) ? [NSString stringWithFormat:format, arguments[0], arguments[1]]:
+        (count == 3) ? [NSString stringWithFormat:format, arguments[0], arguments[1], arguments[2]] :
+                       format;
 }
 
 @end

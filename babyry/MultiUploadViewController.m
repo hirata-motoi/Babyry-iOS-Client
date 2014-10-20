@@ -529,7 +529,7 @@
     [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+            options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
             options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
             [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
     
@@ -639,7 +639,6 @@
 
 - (void) dispatchForPushReceivedTransition
 {
-    NSLog(@"dispatchForPushReceivedTransition in MultiUploadViewController");
     NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
     if (!tsnInfo) {
         return;

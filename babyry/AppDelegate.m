@@ -104,9 +104,23 @@
         if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
             // キャッシュを更新しておく
             [FamilyRole selfRole:@"noCache"];
+            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }];
             [PFPush handlePush:userInfo];
-            NSLog(@"didReceiveRemoteNotification");
-            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
+            [PFPush handlePush:userInfo];
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]) {
+            [PFPush handlePush:userInfo];
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"calendarAdded"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
     }
@@ -150,6 +164,9 @@
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     
     [self setTrackingLogName:@"applicationWillEnterForeground"];
+    
+    NSNotification *n = [NSNotification notificationWithName:@"applicationWillEnterForeground" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

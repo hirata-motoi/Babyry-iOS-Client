@@ -93,7 +93,7 @@
                     if (objects) {
                         for (PFObject *object in objects) {
                             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+                            options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
                             NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
                             options[@"data"] = data;
                             if (![object[@"userId"] isEqualToString:[PFUser currentUser][@"userId"]]) {
@@ -120,6 +120,7 @@
                 }
             }
             [self removePartnerInvitedFromCoreData];
+            block();
         }];
     }
 }

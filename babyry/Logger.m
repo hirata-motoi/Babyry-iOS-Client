@@ -46,7 +46,6 @@
     // たまっているLogをParseに。フォアグランドでログの名前の取得まですませてからBackgroundに処理をまわすので、次のロギングには影響しない。
     [self sendTrackingLog];
     
-    NSLog(@"resetTrackingLogName");
     NSString *objectId = [PFUser currentUser].objectId ? [PFUser currentUser].objectId : @"NoObjectId";
     NSString *userId = [PFUser currentUser][@"userId"] ? [PFUser currentUser][@"userId"] : @"NoUserId";
     

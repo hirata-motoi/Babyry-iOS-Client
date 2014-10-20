@@ -182,16 +182,10 @@
     [self.view addSubview:childProfileEditViewController.view];
 }
 
-- (void)changeChildNickname:(NSString *)nickname
+- (void)reloadChildProfile
 {
-    _childNicknameCell.detailTextLabel.text = nickname;
-}
-
-- (void)changeChildBirthday:(NSDate *)birthday
-{
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    df.dateFormat = @"yyyy/MM/dd";
-    _childBirthdayCell.detailTextLabel.text = [df stringFromDate:birthday];
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
+    [_childProfileTableView reloadData];
 }
 
 @end
