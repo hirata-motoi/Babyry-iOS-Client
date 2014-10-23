@@ -319,6 +319,8 @@
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
     
+    //aaaaa
+    
     [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [self.pageContentViewController.imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
@@ -341,7 +343,7 @@
             }
             [self.pageContentViewController.pageContentCollectionView reloadData];
         }
-        [self.pageContentViewController dispatchForPushReceivedTransition];
+//        [self.pageContentViewController dispatchForPushReceivedTransition];
         [self.pageContentViewController.pageContentCollectionView reloadData];
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];

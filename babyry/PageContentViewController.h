@@ -62,7 +62,7 @@
 - (void)showTutorialNavigator;
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
-- (void) dispatchForPushReceivedTransition;
+//- (void) dispatchForPushReceivedTransition;
 - (void)adjustChildImages;
 - (void)showLoadingIcon;
 - (void)hideLoadingIcon;

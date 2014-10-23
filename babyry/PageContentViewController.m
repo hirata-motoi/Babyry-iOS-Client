@@ -80,6 +80,7 @@
 
 - (void)viewDidLoad
 {
+    NSLog(@"viewDidLoad in PageContentViewController");
     [super viewDidLoad];
     
     childProperty = [ChildProperties getChildProperty:_childObjectId];
@@ -104,12 +105,12 @@
     smallRect = CGSizeMake(windowWidth/3 - 2, windowWidth/3 - 2);
         
     // Notification登録
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"applicationWillEnterForeground" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"applicationWillEnterForeground" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
 }
 
 - (void)applicationDidBecomeActive
@@ -142,6 +143,10 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:YES];
+    
+        NSLog(@"viewWillAppear in PageContentViewController");
+    
     // Notification登録
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
@@ -199,6 +204,8 @@
 {
     [super viewDidAppear:animated];
     
+    NSLog(@"viewDidAppear in PageContentViewController %@", [self.navigationController viewControllers]);
+
     [self setImages];
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
@@ -439,7 +446,7 @@
         [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         return;
     }
-   
+    
     [self moveToImagePageViewController:indexPath];
 }
 
@@ -480,11 +487,7 @@
     multiUploadViewController.indexPath = indexPath;
     multiUploadViewController.pCVC = self;
     
-    if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-        [self.navigationController pushViewController:multiUploadViewController animated:YES];
-    } else {
-        // TODO インターネット接続がありません的なメッセージいるかも
-    }
+    [self.navigationController pushViewController:multiUploadViewController animated:YES];
 }
 
 - (void) moveToImagePageViewController:(NSIndexPath *)indexPath
@@ -1271,57 +1274,57 @@
     return NO;
 }
 
-- (void) dispatchForPushReceivedTransition
-{
-    // push通知のInfoから日付組み立て
-    NSDictionary *info = [TransitionByPushNotification getInfo];
-    PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
-    
-    NSMutableArray *childProperties = [ChildProperties getChildProperties];
-    
-    // 以後の処理を進めるのはフロントに表示されているものだけ (PageViewは最大3枚表示されるので、前後のページの処理が行われるとばぐる)
-    // 今のページのindex(childIdからもとめる)がCoreDataと一致していなければreturn
-    int i = 0;
-    for (NSMutableDictionary *dic in childProperties) {
-        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
-            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
-                return;
-            }
-        }
-        i++;
-    }
-    
-    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:[childImage[@"date"] stringValue]];
-    
-    if (!tsnInfo[@"nextVC"]) {
-        return;
-    }
-    
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"MultiUploadViewController"]) {
-        [self moveToMultiUploadViewController:tsnInfo[@"date"] index:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
-        return;
-    }
-    
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"movePageContentViewController"]) {
-        // ださいけど、childPropertiesからターゲットのchildIdのindexをみつける
-        int i = 0;
-        for (NSMutableDictionary *dic in childProperties) {
-            if ([dic[@"objectId"] isEqualToString:tsnInfo[@"childObjectId"]]) {
-                [TransitionByPushNotification setCurrentPageIndex:i];
-                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotification:n];
-                return;
-            }
-            i++;
-        }
-        return;
-    }
-    
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"UploadViewController"]) {
-        [self moveToImagePageViewController:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
-        return;
-    }
-}
+//- (void) dispatchForPushReceivedTransition
+//{
+//    // push通知のInfoから日付組み立て
+//    NSDictionary *info = [TransitionByPushNotification getInfo];
+//    PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
+//    
+//    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+//    
+//    // 以後の処理を進めるのはフロントに表示されているものだけ (PageViewは最大3枚表示されるので、前後のページの処理が行われるとばぐる)
+//    // 今のページのindex(childIdからもとめる)がCoreDataと一致していなければreturn
+//    int i = 0;
+//    for (NSMutableDictionary *dic in childProperties) {
+//        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
+//            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
+//                return;
+//            }
+//        }
+//        i++;
+//    }
+//    
+//    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:[childImage[@"date"] stringValue]];
+//    
+//    if (!tsnInfo[@"nextVC"]) {
+//        return;
+//    }
+//    
+//    if ([tsnInfo[@"nextVC"] isEqualToString:@"MultiUploadViewController"]) {
+//        [self moveToMultiUploadViewController:tsnInfo[@"date"] index:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
+//        return;
+//    }
+//    
+//    if ([tsnInfo[@"nextVC"] isEqualToString:@"movePageContentViewController"]) {
+//        // ださいけど、childPropertiesからターゲットのchildIdのindexをみつける
+//        int i = 0;
+//        for (NSMutableDictionary *dic in childProperties) {
+//            if ([dic[@"objectId"] isEqualToString:tsnInfo[@"childObjectId"]]) {
+//                [TransitionByPushNotification setCurrentPageIndex:i];
+//                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+//                [[NSNotificationCenter defaultCenter] postNotification:n];
+//                return;
+//            }
+//            i++;
+//        }
+//        return;
+//    }
+//    
+//    if ([tsnInfo[@"nextVC"] isEqualToString:@"UploadViewController"]) {
+//        [self moveToImagePageViewController:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
+//        return;
+//    }
+//}
 
 - (void)showLoadingIcon
 {

@@ -30,7 +30,6 @@
 @property UIView *tagViewOnCommentView;
 @property NSTimer *commentTimer;
 @property BOOL isGettingComment;
-@property PFObject *imageInfo;
 @property NSIndexPath *indexPath;
 
 @end

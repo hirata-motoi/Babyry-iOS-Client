@@ -35,7 +35,7 @@
 
 @property PFObject *imageInfo;
 // isPreloadの場合キャッシュのサムネイルを表示するだけなのでコメントViewは表示させない
-@property BOOL isPreload;
+//@property BOOL isPreload;
 
 @property AWSServiceConfiguration *configuration;
 

@@ -180,7 +180,7 @@
     
     _multiUploadViewController.isTimperExecuting = NO;
     
-    [self.multiUploadViewController dispatchForPushReceivedTransition];
+//    [self.multiUploadViewController dispatchForPushReceivedTransition];
 }
 
 - (void)updateBestShot

@@ -83,6 +83,7 @@
     
     // notification center
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -91,8 +92,23 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)applicationDidReceiveRemoteNotification
+{
+    NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
+    if ([transitionInfo count] > 0) {
+        [TransitionByPushNotification returnToTop:self];
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
+    NSLog(@"viewDidAppear in ViewController %@", [self.navigationController viewControllers]);
     [super viewDidAppear:animated];
+    
+    NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
+    NSLog(@"xxxxxxxxxxxxxxx %@", transitionInfo);
+    if ([TransitionByPushNotification isReturnedToTop]) {
+        [TransitionByPushNotification dispatch2:self];
+    }
     
     // 強制アップデート用 (backgroundメソッド)
     [CheckAppVersion checkForceUpdate];
@@ -255,17 +271,23 @@
 
 -(void) showPageViewController
 {
+    NSLog(@"1");
+
     if (_pageViewController) {
         [self setupGlobalSetting];
         return;
     }
-    
+
+    NSLog(@"2");
+
     PFUser *user = [PFUser currentUser];
     if (user[@"familyId"]) {
         [self instantiatePageViewController];
         return;
     }
-    
+
+    NSLog(@"3");
+
     user[@"familyId"] = [self createFamilyId];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         PFQuery *query = [PFQuery queryWithClassName:@"TutorialMap"];
@@ -276,10 +298,16 @@
                 // TODO ネットワークエラーが発生しました を表示
                 return;
             }
+            
+            NSLog(@"4");
+
             if (objects.count > 0) {
                 [self instantiatePageViewController];
                 return;
             }
+            
+            NSLog(@"5");
+
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
             tutorialMap[@"userid"] = user[@"userId"];
             [tutorialMap saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -288,6 +316,8 @@
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving TutorialMap userId:%@ error:%@", user[@"userId"], error]];
                     return;
                 }
+                NSLog(@"6");
+
                 [self instantiatePageViewController];
             }];
         }];
@@ -313,6 +343,7 @@
     [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    NSLog(@"1.5");
 }
 
 -(void)logOut

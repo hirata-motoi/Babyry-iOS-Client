@@ -75,7 +75,7 @@
 - (void)showTutorialNavigator;
 - (void)removeNavigationView;
 - (void)forwardNextTutorial;
-- (void) dispatchForPushReceivedTransition;
+//- (void) dispatchForPushReceivedTransition;
 
 // バッチの更新時にreloadをかけるため
 @property (weak) PageContentViewController *pCVC;

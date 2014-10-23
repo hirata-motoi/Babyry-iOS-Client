@@ -104,7 +104,7 @@
     
     _bestImageId = @"";
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -434,8 +434,8 @@
                 }
             }
         }
-        NSArray *tmpArray = [cacheName componentsSeparatedByString:@"-"];
-        if ([_bestImageId isEqualToString:[tmpArray lastObject]]) {
+//        NSArray *tmpArray = [cacheName componentsSeparatedByString:@"-"];
+        if ([_bestImageId isEqualToString:[splitArray lastObject]]) {
             bestIndex = i;
         }
         i++;
@@ -637,18 +637,18 @@
     [[self logic] forwardNextTutorial];
 }
 
-- (void) dispatchForPushReceivedTransition
-{
-    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
-    if (!tsnInfo) {
-        return;
-    }
-        
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"CommentViewController"]) {
-        [self openImagePageView:0 forceOpenBestShot:YES];
-        return;
-    }
-
-}
+//- (void) dispatchForPushReceivedTransition
+//{
+//    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
+//    if (!tsnInfo) {
+//        return;
+//    }
+//        
+//    if ([tsnInfo[@"nextVC"] isEqualToString:@"CommentViewController"]) {
+//        [self openImagePageView:0 forceOpenBestShot:YES];
+//        return;
+//    }
+//
+//}
 
 @end

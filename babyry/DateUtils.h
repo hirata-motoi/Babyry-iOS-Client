@@ -20,5 +20,7 @@
 + (NSNumber *)numberFromComps:(NSDateComponents *)comps;
 + (NSNumber *)getTodayYMD;
 + (NSNumber *)getYesterdayYMD;
++ (BOOL)isTodayByIndexPath:(NSIndexPath *)index;
++ (BOOL)isInTwodayByIndexPath:(NSIndexPath *)index;
 
 @end
