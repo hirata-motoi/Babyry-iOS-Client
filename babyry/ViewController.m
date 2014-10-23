@@ -94,18 +94,16 @@
 
 - (void)applicationDidReceiveRemoteNotification
 {
-    NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
-    if ([transitionInfo count] > 0) {
-        [TransitionByPushNotification returnToTop:self];
+    if ([PFUser currentUser]) {
+        NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
+        if ([transitionInfo count] > 0) {
+            [TransitionByPushNotification returnToTop:self];
+        }
     }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    if ([TransitionByPushNotification isReturnedToTop]) {
-        [TransitionByPushNotification dispatch:self];
-    }
     
     // 強制アップデート用 (backgroundメソッド)
     [CheckAppVersion checkForceUpdate];
@@ -128,6 +126,10 @@
         [self presentViewController:introFirstViewController animated:YES completion:NULL];
         
     } else {
+        if ([TransitionByPushNotification isReturnedToTop]) {
+            [TransitionByPushNotification dispatch:self];
+        }
+
         // メンテナンス状態かどうか確認
         // バックグラウンドで行わないと一瞬固まる
         PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
