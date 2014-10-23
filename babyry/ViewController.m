@@ -101,13 +101,10 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    NSLog(@"viewDidAppear in ViewController %@", [self.navigationController viewControllers]);
     [super viewDidAppear:animated];
     
-    NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
-    NSLog(@"xxxxxxxxxxxxxxx %@", transitionInfo);
     if ([TransitionByPushNotification isReturnedToTop]) {
-        [TransitionByPushNotification dispatch2:self];
+        [TransitionByPushNotification dispatch:self];
     }
     
     // 強制アップデート用 (backgroundメソッド)
@@ -271,22 +268,16 @@
 
 -(void) showPageViewController
 {
-    NSLog(@"1");
-
     if (_pageViewController) {
         [self setupGlobalSetting];
         return;
     }
-
-    NSLog(@"2");
 
     PFUser *user = [PFUser currentUser];
     if (user[@"familyId"]) {
         [self instantiatePageViewController];
         return;
     }
-
-    NSLog(@"3");
 
     user[@"familyId"] = [self createFamilyId];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -299,15 +290,11 @@
                 return;
             }
             
-            NSLog(@"4");
-
             if (objects.count > 0) {
                 [self instantiatePageViewController];
                 return;
             }
             
-            NSLog(@"5");
-
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
             tutorialMap[@"userid"] = user[@"userId"];
             [tutorialMap saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -316,8 +303,6 @@
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving TutorialMap userId:%@ error:%@", user[@"userId"], error]];
                     return;
                 }
-                NSLog(@"6");
-
                 [self instantiatePageViewController];
             }];
         }];
@@ -343,7 +328,6 @@
     [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    NSLog(@"1.5");
 }
 
 -(void)logOut

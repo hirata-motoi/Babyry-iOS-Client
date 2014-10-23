@@ -21,10 +21,10 @@
 #import "ImageCache.h"
 #import "ChildProperties.h"
 #import "Logger.h"
+#import "NotificationHistory.h"
 
 static NSMutableDictionary *transitionInfo;
 static NSMutableDictionary *currentViewControllerInfo;
-//static NSMutableDictionary *returnDic;
 
 @implementation TransitionByPushNotification
 
@@ -32,12 +32,10 @@ static NSMutableDictionary *currentViewControllerInfo;
 {
     transitionInfo = [[NSMutableDictionary alloc] init];
     currentViewControllerInfo = [[NSMutableDictionary alloc] init];
-//    returnDic = [[NSMutableDictionary alloc] init];
 }
 
 + (void) setInfo:(NSMutableDictionary *)info
 {
-    NSLog(@"TransitionByPushNotification setInfo");
     transitionInfo = [[NSMutableDictionary alloc] initWithDictionary:info];
 }
 
@@ -79,20 +77,6 @@ static NSMutableDictionary *currentViewControllerInfo;
     }
 }
 
-+ (void) setCurrentDate:(NSString *)ymd
-{
-    currentViewControllerInfo[@"currentDate"] = ymd;
-}
-
-+ (NSString *)getCurrentDate
-{
-    if (currentViewControllerInfo[@"currentDate"]) {
-        return currentViewControllerInfo[@"currentDate"];
-    } else {
-        return nil;
-    }
-}
-
 + (BOOL) isCommentViewOpen
 {
     if (currentViewControllerInfo[@"commentViewOpen"] && [currentViewControllerInfo[@"commentViewOpen"] isEqualToString:@"YES"]) {
@@ -105,10 +89,8 @@ static NSMutableDictionary *currentViewControllerInfo;
 + (void) setCommentViewOpenFlag:(BOOL)openFlag
 {
     if (openFlag) {
-        NSLog(@"setCommentViewOpenFlag YES");
         currentViewControllerInfo[@"commentViewOpen"] = @"YES";
     } else {
-        NSLog(@"setCommentViewOpenFlag NO");
         currentViewControllerInfo[@"commentViewOpen"] = @"NO";
     }
 }
@@ -124,6 +106,9 @@ static NSMutableDictionary *currentViewControllerInfo;
 
 + (void)returnToTop:(UIViewController *)vc
 {
+    // notificationHistory消す
+    [self removeNotificationHistoryForPushTransition:transitionInfo[@"event"]];
+    
     // パートナーが操作したこどもとIdが一致していなければTopに戻る
     NSArray *childProperties = [ChildProperties getChildProperties];
     int index = 0;
@@ -134,22 +119,17 @@ static NSMutableDictionary *currentViewControllerInfo;
         index++;
     }
     if ([self getCurrentPageIndex] == index) {
-        NSLog(@"id一致");
         // コメントだけは、一旦Topに戻らない。やり取りを始めると何度も Push->開く を繰り返すと思われるのでチカチカしないように。&コメントを自動遷移で開くのは結構大変(時間かかる)。
         if (![transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
-            NSLog(@"commentPostedじゃないよ！");
             [self executeReturnToTop:vc index:index];
             return;
         }
         if (![self isCommentViewOpen]){
-            NSLog(@"CommentViewControllerじゃないよ！ %@", [self getCurrentViewController]);
             [self executeReturnToTop:vc index:index];
             return;
         }
-        NSLog(@"id一致してコメントを開いているので何もしない");
         [self removeInfo];
     } else {
-        NSLog(@"id不一致");
         // childPropertiesChangedじゃないけど、ページ移動のために呼ぶ
         [self setCurrentPageIndex:index];
         NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
@@ -164,15 +144,14 @@ static NSMutableDictionary *currentViewControllerInfo;
     [vc.navigationController setNavigationBarHidden:NO];
     transitionInfo[@"returnedTop"] = @"YES";
     if ([[vc.navigationController viewControllers] count] == 1) {
-        [self dispatch2:vc];
+        [self dispatch:vc];
     } else {
         [vc.navigationController popToRootViewControllerAnimated:YES];
     }
 }
 
-+ (void)dispatch2:(UIViewController *)vc
++ (void)dispatch:(UIViewController *)vc
 {
-    NSLog(@"TransitionByPushNotification dispatch2 %@", transitionInfo);
     // 方針
     // すべてのフローを一致させる(各パターンにあわせた複雑なフローは抜け漏れが発生してしまう)
     // 1. Topに戻る
@@ -180,8 +159,9 @@ static NSMutableDictionary *currentViewControllerInfo;
     // 3. 当該日付のMulti or Upload Viewを開く
     // 4. コメントの場合は、コメントのViewまで開く
     // 以上を高速に行う事が出来れば、必要ない場合でもTopに戻る時のオーバーヘッドは考えなくても良い
+    // ※ 例外は上に書いてあるけどCommentViewだけ (使ってみてチカチカ遷移がうざかったら他のやつも変える)
 
-    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
+    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
         if ([DateUtils isInTwodayByIndexPath:[NSIndexPath indexPathForRow:[transitionInfo[@"row"] intValue] inSection:[transitionInfo[@"section"] intValue]]]) {
             [self moveToMultiUploadViewControllerForPushTransition:vc];
         } else {
@@ -192,6 +172,16 @@ static NSMutableDictionary *currentViewControllerInfo;
     }
 }
 
++ (void)removeNotificationHistoryForPushTransition:(NSString *)type
+{
+    // pushで遷移してくると、メモリ上(notificationHistory)には保存されていないものの、Parse上にはパートナーが入れたデータがあるのでそれを削除する
+    [NotificationHistory getNotificationHistoryObjectsInBackground:[PFUser currentUser][@"userId"] withType:transitionInfo[@"event"] withChild:transitionInfo[@"childObjectId"] withBlock:^(NSArray *objects){
+        for (PFObject *object in objects) {
+            [NotificationHistory disableDisplayedNotificationsWithObject:object];
+        }
+    }];
+}
+
 + (void) moveToMultiUploadViewControllerForPushTransition:(UIViewController *)vc
 {
     MultiUploadViewController *multiUploadViewController = [vc.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
@@ -199,9 +189,7 @@ static NSMutableDictionary *currentViewControllerInfo;
     multiUploadViewController.date = transitionInfo[@"date"];
     multiUploadViewController.month = [transitionInfo[@"date"] substringWithRange:NSMakeRange(0, 6)];
     multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    //multiUploadViewController.notificationHistoryByDay = _notificationHistory[[date substringWithRange:NSMakeRange(0, 8)]];
     multiUploadViewController.indexPath = [NSIndexPath indexPathForRow:[transitionInfo[@"row"] intValue] inSection:[transitionInfo[@"section"] intValue]];
-    //multiUploadViewController.pCVC = self;
     
     [vc.navigationController pushViewController:multiUploadViewController animated:YES onCompletion:^(void){
         [self removeInfo];
@@ -213,7 +201,6 @@ static NSMutableDictionary *currentViewControllerInfo;
     ImagePageViewController *pageViewController = [vc.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
     pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = transitionInfo[@"childObjectId"];
-    NSLog(@"aaaaaa %@", transitionInfo[@"childObjectId"]);
     [vc.navigationController setNavigationBarHidden:YES];
     [vc.navigationController pushViewController:pageViewController animated:YES onCompletion:^(void){
         [self removeInfo];
@@ -249,140 +236,5 @@ static NSMutableDictionary *currentViewControllerInfo;
         [self removeInfo];
     }];
 }
-
-
-/*
-+ (NSMutableDictionary *) dispatch:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
-{
-    // 何もしない
-    return nil;
- 
- 
-    // currentViewControllerがとれない場合には何もしない
-    if (!currentViewController[@"viewController"]) {
-        return nil;
-    }
-
-    // transitionInfoがとれない or eventが空の場合は何もしない
-    if (!transitionInfo || [transitionInfo[@"event"] isEqualToString:@""]) {
-        // transisionInfoが無ければそのままretrun
-        return nil;
-    }
-    
-    // インスタントに使う用にreturnDicとして深いコピー
-    returnDic = [[NSMutableDictionary alloc] initWithDictionary:transitionInfo];
-    
-    // 起動一発目は値が入らない かつ 一発目は必ずtopのViewControllerが入るので
-    if (!currentViewController[@"viewController"]) {
-        currentViewController[@"viewController"] = @"ViewController";
-    }
-    
-    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]
-        || [transitionInfo[@"event"] isEqualToString:@"commentPosted"]
-        || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]
-        || [transitionInfo[@"event"] isEqualToString:@"requestPhoto"]) {
-        returnDic = [self dispatchForImageOperation:viewController childObjectId:currentChildObjectId selectedDate:currentDate];
-    }
-    
-    if ([transitionInfo[@"event"] isEqualToString:@"partSwitched"]){
-        [FamilyRole getFamilyRole:@"NetworkFirst"];
-        [self removeInfo];
-        [self returnToRoot:viewController];
-    }
-    
-    return returnDic;
-}
-
-+ (NSMutableDictionary *)dispatchForImageOperation:(UIViewController *)viewController childObjectId:(NSString *)currentChildObjectId selectedDate:(NSString *)currentDate
-{
-    if ([currentViewController[@"viewController"] isEqualToString:@"ViewController"]) {
-        if ([transitionInfo[@"childObjectId"] isEqualToString:currentChildObjectId]) {
-            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]
-                || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]
-                || [transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
-                
-                returnDic[@"nextVC"] = [self uploadType];
-                
-                // 画像アップロードの場合、遷移はこれで終わりなのでtransitionInfoを初期化
-                if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]
-                    || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
-                    [self removeInfo];
-                }
-            } else if ([transitionInfo[@"event"] isEqualToString:@"requestPhoto"]) {
-                [self removeInfo];
-            }
-        } else {
-            returnDic[@"nextVC"] = @"movePageContentViewController";
-        }
-        return returnDic;
-    } else if ([currentViewController[@"viewController"] isEqualToString:@"MultiUploadViewController"]) {
-        if ([[TransitionByPushNotification getCurrentDate] isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
-            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"] || [transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
-                // ここでMultiUploadViewControllerのうまいreloadの仕方が思いつかない
-                // notificationの方がまだましな気がしてきた
-                MultiUploadViewController *vC = (MultiUploadViewController *)[viewController.navigationController topViewController];
-                if (vC && [NSStringFromClass([vC class]) isEqualToString:@"MultiUploadViewController"]) {
-                    [vC viewDidAppear:YES];
-                }
-                
-                [self removeInfo];
-                return nil;
-            }
-            
-            if ([transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
-                // 対象の日付、対象のこどものMultiUploadViewが開かれている状態
-                // ベストショットがあればベストショット、決まってなければ最初の画像を開く
-                returnDic[@"nextVC"] = @"CommentViewController";
-                return returnDic;
-            }
-        }
-        [self returnToRoot:viewController];
-        return nil;
-    } else if ([currentViewController[@"viewController"] isEqualToString:@"ImagePageViewController"]) {
-        if ([[TransitionByPushNotification getCurrentDate] isEqualToString:transitionInfo[@"date"]] && [currentChildObjectId isEqualToString:transitionInfo[@"childObjectId"]]) {
-            if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
-                // MultiUploadと同様
-                // notificationの方がまだましな気がしてきた
-                UploadViewController *vC = (UploadViewController *)[viewController.navigationController topViewController];
-                if (vC && [NSStringFromClass([vC class]) isEqualToString:@"UploadViewController"]) {
-                    [vC viewDidLoad];
-                }
-                
-                [self removeInfo];
-                return nil;
-            } else if ([transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
-                // 対象の日付、対象のこどものMultiUploadViewが開かれている状態
-                // コメントを開くbabyry/AppDelegate.m
-            }
-        }
-        [self returnToRoot:viewController];
-        return nil;
-    } else {
-        [self returnToRoot:viewController];
-        return nil;
-    }
-    
-    return nil;
-}
-
-+ (NSString *)uploadType
-{
-    if ([transitionInfo[@"section"] isEqualToString:@"0"] && ([transitionInfo[@"row"] isEqualToString:@"0"] || [transitionInfo[@"row"] isEqualToString:@"1"])) {
-        return @"MultiUploadViewController";
-    } else {
-        return @"UploadViewController";
-    }
-}
-
-// ここの処理は毎回同じなので、受け取っているviewControllerで処理してしまう
-+ (void) returnToRoot:(UIViewController *)viewController
-{
-    [viewController.navigationController setNavigationBarHidden:NO];
-    [viewController.navigationController popToRootViewControllerAnimated:YES];
-//
-//        NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-//        [[NSNotificationCenter defaultCenter] postNotification:n];
-}
- */
 
 @end

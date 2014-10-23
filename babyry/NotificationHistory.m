@@ -74,6 +74,25 @@ NSString *const className = @"NotificationHistory";
     }];
 }
 
++ (void)getNotificationHistoryObjectsInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withBlock:(NotificationHistoryObjectsBlock)block
+{
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"toUserId" equalTo:userId];
+    [query whereKey:@"status" equalTo:@"ready"];
+    [query whereKey:@"child" equalTo:childObjectId];
+    query.limit = 1000; // max
+    if (type != nil) {
+        [query whereKey:@"type" equalTo:type];
+    }
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error) {
+            block(objects);
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryObjectsInBackground : %@", error]];
+        }
+    }];
+}
+
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object
 {
     object[@"status"] = @"displayed";

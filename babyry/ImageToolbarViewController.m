@@ -65,6 +65,7 @@
         NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
         [self showCommentBadge:count];
     }
+    
     // 画像削除と保存はimageInfoが無い場合には表示させない(遅延ロードでimageInfoが取得されてから表示)
     // コメントは日付にひもづくものなのでなくても良い
     if (!_uploadViewController.imageInfo){
@@ -75,6 +76,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:YES];
     if (_openCommentView) {
         [self imageComment];
     }
@@ -82,6 +84,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:YES];
     [TransitionByPushNotification setCommentViewOpenFlag:NO];
 }
 

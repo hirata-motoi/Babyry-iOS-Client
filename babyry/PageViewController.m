@@ -93,7 +93,7 @@
     
     PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
 
-    pageContentViewController.delegate = self;
+//    pageContentViewController.delegate = self;
     pageContentViewController.pageIndex = index;
     pageContentViewController.childObjectId = [[childProperties objectAtIndex:index] objectForKey:@"objectId"];
     
@@ -140,14 +140,6 @@
 - (NSString *)getDisplayedChildObjectId
 {
     return [[childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
-}
-
-- (void) moveToTargetPage:(int)index
-{
-    NSLog(@"moveToTargetPage");
-    [TransitionByPushNotification setCurrentPageIndex:index];
-    NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 /*

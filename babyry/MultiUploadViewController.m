@@ -117,8 +117,6 @@
 {
     [super viewDidAppear:animated];
     
-    [TransitionByPushNotification setCurrentDate:_date];
-    
     [[self logic] disableNotificationHistory];
         
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -636,19 +634,5 @@
 {
     [[self logic] forwardNextTutorial];
 }
-
-//- (void) dispatchForPushReceivedTransition
-//{
-//    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
-//    if (!tsnInfo) {
-//        return;
-//    }
-//        
-//    if ([tsnInfo[@"nextVC"] isEqualToString:@"CommentViewController"]) {
-//        [self openImagePageView:0 forceOpenBestShot:YES];
-//        return;
-//    }
-//
-//}
 
 @end

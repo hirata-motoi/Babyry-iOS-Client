@@ -271,7 +271,7 @@
     
     NSInteger index = [[self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]] integerValue];
     NSMutableDictionary *section = [self.pageContentViewController.childImages objectAtIndex:index];
-    NSMutableArray *images = [section objectForKey:@"images"];
+//    NSMutableArray *images = [section objectForKey:@"images"];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     
     int i = 0;

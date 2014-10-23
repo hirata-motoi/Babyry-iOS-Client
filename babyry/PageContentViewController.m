@@ -80,7 +80,6 @@
 
 - (void)viewDidLoad
 {
-    NSLog(@"viewDidLoad in PageContentViewController");
     [super viewDidLoad];
     
     childProperty = [ChildProperties getChildProperty:_childObjectId];
@@ -121,17 +120,6 @@
 
 - (void)applicationDidReceiveRemoteNotification
 {
-//    // こどもが一致しているViewのみpushの通知を処理を受け取る
-//    NSMutableArray *childProperties = [ChildProperties getChildProperties];
-//    int i = 0;
-//    for (NSMutableDictionary *dic in childProperties) {
-//        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
-//            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
-//                return;
-//            }
-//        }
-//        i++;
-//    }
     [self viewDidAppear:YES];
 }
 
@@ -144,8 +132,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
-    
-        NSLog(@"viewWillAppear in PageContentViewController");
     
     // Notification登録
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -204,8 +190,6 @@
 {
     [super viewDidAppear:animated];
     
-    NSLog(@"viewDidAppear in PageContentViewController %@", [self.navigationController viewControllers]);
-
     [self setImages];
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
@@ -472,9 +456,6 @@
 
 - (void) moveToMultiUploadViewController:(NSString *)date index:(NSIndexPath *)indexPath
 {
-    // 遷移完了しないと入らないので、後続の処理の為にここで先立って入れておく
-    [TransitionByPushNotification setCurrentViewController:@"MultiUploadViewController"];
-    
     MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
     multiUploadViewController.childObjectId = childProperty[@"objectId"];
     multiUploadViewController.date = date;
@@ -595,7 +576,7 @@
         int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
         
         if (firstDateInt <= nextLoadInt) {
-            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES iterateCount:NO];
+            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
         }                  
     }
 }
@@ -1273,58 +1254,6 @@
     }
     return NO;
 }
-
-//- (void) dispatchForPushReceivedTransition
-//{
-//    // push通知のInfoから日付組み立て
-//    NSDictionary *info = [TransitionByPushNotification getInfo];
-//    PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
-//    
-//    NSMutableArray *childProperties = [ChildProperties getChildProperties];
-//    
-//    // 以後の処理を進めるのはフロントに表示されているものだけ (PageViewは最大3枚表示されるので、前後のページの処理が行われるとばぐる)
-//    // 今のページのindex(childIdからもとめる)がCoreDataと一致していなければreturn
-//    int i = 0;
-//    for (NSMutableDictionary *dic in childProperties) {
-//        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
-//            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
-//                return;
-//            }
-//        }
-//        i++;
-//    }
-//    
-//    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:[childImage[@"date"] stringValue]];
-//    
-//    if (!tsnInfo[@"nextVC"]) {
-//        return;
-//    }
-//    
-//    if ([tsnInfo[@"nextVC"] isEqualToString:@"MultiUploadViewController"]) {
-//        [self moveToMultiUploadViewController:tsnInfo[@"date"] index:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
-//        return;
-//    }
-//    
-//    if ([tsnInfo[@"nextVC"] isEqualToString:@"movePageContentViewController"]) {
-//        // ださいけど、childPropertiesからターゲットのchildIdのindexをみつける
-//        int i = 0;
-//        for (NSMutableDictionary *dic in childProperties) {
-//            if ([dic[@"objectId"] isEqualToString:tsnInfo[@"childObjectId"]]) {
-//                [TransitionByPushNotification setCurrentPageIndex:i];
-//                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-//                [[NSNotificationCenter defaultCenter] postNotification:n];
-//                return;
-//            }
-//            i++;
-//        }
-//        return;
-//    }
-//    
-//    if ([tsnInfo[@"nextVC"] isEqualToString:@"UploadViewController"]) {
-//        [self moveToImagePageViewController:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
-//        return;
-//    }
-//}
 
 - (void)showLoadingIcon
 {

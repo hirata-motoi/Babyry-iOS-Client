@@ -42,7 +42,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSLog(@"viewDidLoad in UploadViewController");
     // Do any additional setup after loading the view.
     
     _configuration = [AWSS3Utils getAWSServiceConfiguration];
@@ -174,11 +173,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    NSLog(@"viewDidAppear in UploadViewController %@", [self.navigationController viewControllers]);
-    
-//    [TransitionByPushNotification setCurrentDate:_date];
-//    [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -221,7 +215,6 @@
     _operationViewController.uploadViewController  = self;
     _operationViewController.holdedBy = _holdedBy;
     _operationViewController.imageInfo = _imageInfo;
-//    _operationViewController.isPreload = isPreload;
     _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
     _operationViewController.fromMultiUpload = _fromMultiUpload;
     _operationViewController.imageFrame = _uploadedImageView.frame;
@@ -232,7 +225,6 @@
     
     // push通知でここに来た場合には、コメントを開く為のフラグをたてる
     if (openCommentView) {
-        NSLog(@"コメント表示するってよ");
         _operationViewController.openCommentView = YES;
     } else {
         _operationViewController.openCommentView = NO;
