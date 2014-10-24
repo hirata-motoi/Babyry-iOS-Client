@@ -25,5 +25,6 @@
 @property UIImageView *commentBadge;
 @property BOOL openCommentView;
 @property NSString *childObjectId;
+@property NSString *date;
 
 @end

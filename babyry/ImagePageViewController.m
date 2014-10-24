@@ -35,7 +35,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSLog(@"viewDidLoad in ImagePageViewController");
     // Do any additional setup after loading the view.
     self.dataSource = self;
 
@@ -137,14 +136,12 @@
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(2);
     
     dispatch_group_async(g,q,^{
-        NSLog(@"_imageList構築");
         [self getChildImagesFrom:[[df stringFromDate:fromDate] integerValue] to:[[df stringFromDate:date] integerValue]];
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         dispatch_semaphore_signal(semaphore);
     });
     
     dispatch_group_async(g,q,^{
-        NSLog(@"総image数をカウント");
         _imagesCountDic = [[NSMutableDictionary alloc] init];
         _imagesCountDic[@"imagesCountNumber"] = [NSNumber numberWithInt:0];
         [self countTotalNumOfChildImages:0];
@@ -153,7 +150,6 @@
     });
     
     dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
-    NSLog(@"おわり");
     
     // TODO : Notification関連処理
     
@@ -178,7 +174,6 @@
         ymd   = [imageInfo[@"date"] stringValue];
     } else {
         ymd = transitionInfo[@"date"];
-        NSLog(@"ymd %@", ymd);
     }
     NSString *year  = [ymd substringWithRange:NSMakeRange(0, 4)];
     NSString *month = [ymd substringWithRange:NSMakeRange(4, 2)];
@@ -333,23 +328,21 @@
     NSDate *date = [cal dateFromComponents:comps];
     
     // 画像が取得できるまで処理する
-    // 誕生日に達したら終了(誕生日がなければ2010年1月まで)
+    // oldestChildImageDateに達したら終了(誕生日がなければ2010年1月まで)
     // 画像が取得できたら終了
     
-    // 誕生月
-    NSDate *birthday = childProperty[@"birthday"];
-    if (!birthday) {
-        NSDateComponents *tmpComps = [[NSDateComponents alloc]init];
-        tmpComps.year = 2010;
-        tmpComps.month = 1;
-        tmpComps.day = 1;
-        birthday = [cal dateFromComponents:tmpComps];
+    NSDateComponents *oldestChildImageDateComps;
+    if (childProperty[@"oldestChildImageDate"]) {
+        oldestChildImageDateComps = [DateUtils compsFromNumber:childProperty[@"oldestChildImageDate"]];
+    } else {
+        oldestChildImageDateComps = [[NSDateComponents alloc] init];
+        oldestChildImageDateComps.year = 2010;
+        oldestChildImageDateComps.month = 1;
     }
-    NSDateComponents *birthmonthComps = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:birthday];
-    birthmonthComps.day = 1;
-    NSDate *birthmonth = [cal dateFromComponents:birthmonthComps];
-   
-    while ([date compare:birthmonth] != NSOrderedAscending) {
+    oldestChildImageDateComps.day = 1;
+    NSDate *oldestChildImageMonth = [cal dateFromComponents:oldestChildImageDateComps];
+    
+    while ([date compare:oldestChildImageMonth] != NSOrderedAscending) {
         NSDateComponents *c = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:date];
         
         PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];

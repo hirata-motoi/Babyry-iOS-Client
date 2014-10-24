@@ -166,6 +166,7 @@
     imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
     imageToolbarViewController.openCommentView = _openCommentView;
     imageToolbarViewController.childObjectId = _childObjectId;
+    imageToolbarViewController.date = _date;
     
     _toolbarView = imageToolbarViewController.view;
     _toolbarView.hidden = NO;

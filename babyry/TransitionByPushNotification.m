@@ -77,6 +77,20 @@ static NSMutableDictionary *currentViewControllerInfo;
     }
 }
 
++ (void) setCurrentDate:(NSString *)date
+{
+    currentViewControllerInfo[@"currentDate"] = date;
+}
+
++ (NSString *) getCurrentDate
+{
+    if (currentViewControllerInfo[@"currentDate"]) {
+        return currentViewControllerInfo[@"currentDate"];
+    } else {
+        return @"";
+    }
+}
+
 + (BOOL) isCommentViewOpen
 {
     if (currentViewControllerInfo[@"commentViewOpen"] && [currentViewControllerInfo[@"commentViewOpen"] isEqualToString:@"YES"]) {
@@ -121,6 +135,10 @@ static NSMutableDictionary *currentViewControllerInfo;
     if ([self getCurrentPageIndex] == index) {
         // コメントだけは、一旦Topに戻らない。やり取りを始めると何度も Push->開く を繰り返すと思われるのでチカチカしないように。&コメントを自動遷移で開くのは結構大変(時間かかる)。
         if (![transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
+            [self executeReturnToTop:vc index:index];
+            return;
+        }
+        if (![transitionInfo[@"date"] isEqualToString:[self getCurrentDate]]) {
             [self executeReturnToTop:vc index:index];
             return;
         }
@@ -175,7 +193,7 @@ static NSMutableDictionary *currentViewControllerInfo;
 + (void)removeNotificationHistoryForPushTransition:(NSString *)type
 {
     // pushで遷移してくると、メモリ上(notificationHistory)には保存されていないものの、Parse上にはパートナーが入れたデータがあるのでそれを削除する
-    [NotificationHistory getNotificationHistoryObjectsInBackground:[PFUser currentUser][@"userId"] withType:transitionInfo[@"event"] withChild:transitionInfo[@"childObjectId"] withBlock:^(NSArray *objects){
+    [NotificationHistory getNotificationHistoryObjectsByDateInBackground:[PFUser currentUser][@"userId"] withType:transitionInfo[@"event"] withChild:transitionInfo[@"childObjectId"] date:[NSNumber numberWithInt:[transitionInfo[@"date"] intValue]] withBlock:^(NSArray *objects){
         for (PFObject *object in objects) {
             [NotificationHistory disableDisplayedNotificationsWithObject:object];
         }
@@ -219,13 +237,10 @@ static NSMutableDictionary *currentViewControllerInfo;
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", year, month];
     uploadViewController.date = ymd;
     uploadViewController.indexPath = [NSIndexPath indexPathForRow:[transitionInfo[@"row"] intValue] inSection:[transitionInfo[@"section"] intValue]];
-    NSString *imageCachePath = [[NSString alloc] init];
-    NSString *cacheDir = [[NSString alloc]init];
     
-    cacheDir = [NSString stringWithFormat:@"%@/bestShot/thumbnail", transitionInfo[@"childObjectId"]];
-    imageCachePath = ymd;
+    NSString *cacheDir = [NSString stringWithFormat:@"%@/bestShot/thumbnail", transitionInfo[@"childObjectId"]];
     
-    NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:cacheDir];
+    NSData *imageCacheData = [ImageCache getCache:ymd dir:cacheDir];
     
     if (imageCacheData) {
         uploadViewController.uploadedImage = [UIImage imageWithData:imageCacheData];

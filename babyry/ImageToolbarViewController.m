@@ -160,6 +160,7 @@
     if (currentFrame.origin.y <= 20 + 44) {
         // 閉じる
         [TransitionByPushNotification setCommentViewOpenFlag:NO];
+        [TransitionByPushNotification setCurrentDate:@""];
         currentFrame.origin.y = self.parentViewController.view.frame.size.height;
         currentFrame.origin.x = self.view.frame.size.width;
 
@@ -174,6 +175,7 @@
     } else {
         // 開く
         [TransitionByPushNotification setCommentViewOpenFlag:YES];
+        [TransitionByPushNotification setCurrentDate:_date];
         currentFrame.origin.y = 20 + 44;
         currentFrame.origin.x = 0;
         [UIView animateWithDuration:0.3

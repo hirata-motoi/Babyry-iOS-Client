@@ -15,6 +15,8 @@
 + (void) removeInfo;
 + (void) setCurrentViewController:(NSString *)viewController;
 + (NSString *) getCurrentViewController;
++ (void) setCurrentDate:(NSString *)date;
++ (NSString *) getCurrentDate;
 + (void) setCurrentPageIndex:(int)index;
 + (int) getCurrentPageIndex;
 + (void)dispatch:(UIViewController *)vc;

@@ -16,7 +16,7 @@ typedef void (^NotificationHistoryObjectsBlock)(NSArray *objects);
 
 + (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withChild:(NSString *)childObjectId withDate:(NSInteger)date;
 + (void)getNotificationHistoryInBackground: userId withType:(NSString *)type withChild:(NSString *)childObjectId withBlock:(NotificationHistoryBlock)block;
-+ (void)getNotificationHistoryObjectsInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withBlock:(NotificationHistoryObjectsBlock)block;
++ (void)getNotificationHistoryObjectsByDateInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId date:(NSNumber *)date withBlock:(NotificationHistoryObjectsBlock)block;
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object;
 
 @end

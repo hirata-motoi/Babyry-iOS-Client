@@ -34,7 +34,6 @@
 
 - (void)viewDidLoad
 {
-    NSLog(@"viewDidLoad in ProfileViewController");
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     childProperties = [ChildProperties getChildProperties];
@@ -57,7 +56,6 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    NSLog(@"viewWillAppear in PrfileViewController");
     childProperties = [ChildProperties getChildProperties];
     [_profileTableView reloadData];
 }
