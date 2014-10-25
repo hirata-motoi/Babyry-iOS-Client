@@ -178,8 +178,8 @@
                         cell.textLabel.text = @"本登録を完了する";
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     } else {
-                        cell.textLabel.text = @"メールアドレス確認";
-                        cell.detailTextLabel.text = _emailVerified;
+                        cell.textLabel.text = @"メールアドレス認証";
+                        cell.detailTextLabel.text = @"未認証";
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
                     break;
