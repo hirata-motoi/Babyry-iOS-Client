@@ -259,8 +259,9 @@
     [self dismissViewControllerAnimated:YES completion:nil];
     [Tutorial removeTutorialStage];
     [ImageCache removeAllCache];
+    [PartnerApply removePartnerInviteFromCoreData];
+    [PartnerApply removePartnerInvitedFromCoreData];
     [PushNotification removeSelfUserIdFromChannels:^(){
-        NSLog(@"logout executed");
         [PFUser logOut];
     }];
 }

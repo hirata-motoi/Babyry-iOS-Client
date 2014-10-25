@@ -154,7 +154,7 @@
         _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
     }
-    
+   
     if (![PartnerApply linkComplete]) {
         if (!_instructionTimer || ![_instructionTimer isValid]){
             _instructionTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(reloadView) userInfo:nil repeats:YES];

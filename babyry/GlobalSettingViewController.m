@@ -131,14 +131,14 @@
             break;
         case 1:
         {
-            [self.navigationController popViewControllerAnimated:YES];
-            [Tutorial removeTutorialStage];
-            [ImageCache removeAllCache];
-            [TmpUser removeTmpUserFromCoreData];
-            [PartnerApply removePartnerInviteFromCoreData];
-            [PartnerApply removePartnerInvitedFromCoreData];
+            [self.navigationController popToViewController:_viewController animated:YES];
             [PushNotification removeSelfUserIdFromChannels:^(){
                 [PFUser logOut];
+                [Tutorial removeTutorialStage];
+                [ImageCache removeAllCache];
+                [TmpUser removeTmpUserFromCoreData];
+                [PartnerApply removePartnerInviteFromCoreData];
+                [PartnerApply removePartnerInvitedFromCoreData];
                 [_viewController viewDidAppear:YES];
             }];
         }
