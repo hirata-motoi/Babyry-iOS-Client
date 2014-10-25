@@ -217,6 +217,9 @@
                                                       cancelButtonTitle:nil
                                                       otherButtonTitles:@"OK", nil];
                 [alert show];
+                [TmpUser registerComplete];
+                [self dismissViewControllerAnimated:YES completion:NULL];
+                return;
             }
 
             // ここは、IntroPageRootViewControllerからのコピペ
