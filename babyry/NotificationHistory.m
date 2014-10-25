@@ -89,7 +89,7 @@ NSString *const className = @"NotificationHistory";
         if (!error) {
             block(objects);
         } else {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryObjectsInBackground : %@", error]];
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryObjectsByDateInBackground : %@", error]];
         }
     }];
 }

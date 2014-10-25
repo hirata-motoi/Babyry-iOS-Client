@@ -374,8 +374,8 @@
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
     
-    [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%04d%02d", fromYM, 1] integerValue]]];
-    [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%04d%02d", toYM, 31] integerValue]]];
+    [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", fromYM, 1] integerValue]]];
+    [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", toYM, 31] integerValue]]];
     [query orderByDescending:@"date"];
     NSArray *objects = [query findObjects];
     
