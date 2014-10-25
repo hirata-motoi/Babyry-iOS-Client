@@ -47,6 +47,8 @@
     UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap)];
     stgr.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:stgr];
+    
+    [_pincodeField becomeFirstResponder];
 }
 
 - (void)didReceiveMemoryWarning
