@@ -25,6 +25,7 @@
 #import "UserRegisterViewController.h"
 #import "NotEmailVerifiedViewController.h"
 #import "PartnerApply.h"
+#import "UINavigationController+Block.h"
 
 @interface GlobalSettingViewController ()
 
@@ -131,15 +132,16 @@
             break;
         case 1:
         {
-            [self.navigationController popViewControllerAnimated:YES];
-            [Tutorial removeTutorialStage];
-            [ImageCache removeAllCache];
-            [TmpUser removeTmpUserFromCoreData];
-            [PartnerApply removePartnerInviteFromCoreData];
-            [PartnerApply removePartnerInvitedFromCoreData];
-            [PushNotification removeSelfUserIdFromChannels:^(){
-                [PFUser logOut];
-                [_viewController viewDidAppear:YES];
+            [self.navigationController popViewControllerAnimated:YES onCompletion:^(void){
+                [Tutorial removeTutorialStage];
+                [ImageCache removeAllCache];
+                [TmpUser removeTmpUserFromCoreData];
+                [PartnerApply removePartnerInviteFromCoreData];
+                [PartnerApply removePartnerInvitedFromCoreData];
+                [PushNotification removeSelfUserIdFromChannels:^(){
+                    [PFUser logOut];
+                    [_viewController viewDidAppear:YES];
+                }];
             }];
         }
             break;
