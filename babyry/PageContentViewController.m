@@ -190,7 +190,6 @@
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:YES];
-    NSLog(@"viewDidDisappear in PageContentViewController %d", _pageIndex);
     
     [_instructionTimer invalidate];
     
