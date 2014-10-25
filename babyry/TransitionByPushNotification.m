@@ -193,11 +193,30 @@ static NSMutableDictionary *currentViewControllerInfo;
 + (void)removeNotificationHistoryForPushTransition:(NSString *)type
 {
     // pushで遷移してくると、メモリ上(notificationHistory)には保存されていないものの、Parse上にはパートナーが入れたデータがあるのでそれを削除する
-    [NotificationHistory getNotificationHistoryObjectsByDateInBackground:[PFUser currentUser][@"userId"] withType:transitionInfo[@"event"] withChild:transitionInfo[@"childObjectId"] date:[NSNumber numberWithInt:[transitionInfo[@"date"] intValue]] withBlock:^(NSArray *objects){
-        for (PFObject *object in objects) {
-            [NotificationHistory disableDisplayedNotificationsWithObject:object];
-        }
-    }];
+    // transitionInfoとnotificationHistoryで使われるkeyの名前が一致していないのでここで吸収する
+    // notificationHistoryのkeyは、requestPhoto, imageUploaded, commentPosted, bestShotChanged
+    NSMutableArray *notificationTypeArray = [[NSMutableArray alloc] init];
+    if ([transitionInfo[@"event"] isEqualToString:@"imageUpload"]) {
+        [notificationTypeArray addObject:@"imageUploaded"];
+    } else if ([transitionInfo[@"event"] isEqualToString:@"bestShotChosen"]) {
+        // ベストショットが変わった時は、multiUploadを開く => imageUploadedのプッシュも消す必要あり
+        [notificationTypeArray addObject:@"bestShotChanged"];
+        [notificationTypeArray addObject:@"imageUploaded"];
+    } else if ([transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
+        // コメント開く => upされた画像を見る事になる
+        [notificationTypeArray addObject:@"commentPosted"];
+        [notificationTypeArray addObject:@"imageUploaded"];
+    }
+    if ([notificationTypeArray count] < 1) {
+        return;
+    }
+    for (NSString *type in notificationTypeArray) {
+        [NotificationHistory getNotificationHistoryObjectsByDateInBackground:[PFUser currentUser][@"userId"] withType:type withChild:transitionInfo[@"childObjectId"] date:[NSNumber numberWithInt:[transitionInfo[@"date"] intValue]] withBlock:^(NSArray *objects){
+            for (PFObject *object in objects) {
+                [NotificationHistory disableDisplayedNotificationsWithObject:object];
+            }
+        }];
+    }
 }
 
 + (void) moveToMultiUploadViewControllerForPushTransition:(UIViewController *)vc

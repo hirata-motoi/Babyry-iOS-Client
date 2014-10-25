@@ -67,6 +67,7 @@
     float windowHeight;
     CGSize bigRect;
     CGSize smallRect;
+    BOOL alreadyRegisteredObserver;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -102,23 +103,11 @@
     windowHeight = self.view.frame.size.height;
     bigRect = CGSizeMake(windowWidth, windowHeight - 44 - 20  - windowWidth*2/3);
     smallRect = CGSizeMake(windowWidth/3 - 2, windowWidth/3 - 2);
-        
-    // Notification登録
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"applicationWillEnterForeground" object:nil];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+    
+    alreadyRegisteredObserver = NO;
 }
 
 - (void)applicationDidBecomeActive
-{
-    // 不要かも(ViewDidAppearが2回呼ばれて変な事になった)。もろもろ検証終わって要らなかったら削除
-    //[self viewDidAppear:YES];
-}
-
-- (void)applicationDidReceiveRemoteNotification
 {
     [self viewDidAppear:YES];
 }
@@ -132,29 +121,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
-    
-    // Notification登録
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
-    
-    if (_isFirstLoad) {
-        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        _hud.labelText = @"データ同期中";
-    }
-    
-    if (![PartnerApply linkComplete]) {
-        if (!_instructionTimer || ![_instructionTimer isValid]){
-            _instructionTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(reloadView) userInfo:nil repeats:YES];
-        }
-    }
-    childProperty = [ChildProperties getChildProperty:_childObjectId];
-
-    [self adjustChildImages];
-    [self reloadView];
 }
 
 - (void)reloadView
@@ -190,6 +156,31 @@
 {
     [super viewDidAppear:animated];
     
+    // Notification登録
+    if (!alreadyRegisteredObserver) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+        alreadyRegisteredObserver = YES;
+    }
+    // pushでの遷移の時はクルクルを出さない。クルクルを止める処理をする時にはViewが遷移してしまっていてUIの制御が出来なくなるような挙動をするため
+    if (_isFirstLoad && [[TransitionByPushNotification getInfo] count] < 1) {
+        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        _hud.labelText = @"データ同期中";
+    }
+    
+    if (![PartnerApply linkComplete]) {
+        if (!_instructionTimer || ![_instructionTimer isValid]){
+            _instructionTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(reloadView) userInfo:nil repeats:YES];
+        }
+    }
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
+    [self adjustChildImages];
+    [self reloadView];
+    
     [self setImages];
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
@@ -198,6 +189,9 @@
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:YES];
+    NSLog(@"viewDidDisappear in PageContentViewController %d", _pageIndex);
+    
     [_instructionTimer invalidate];
     
     [_tn removeNavigationView];

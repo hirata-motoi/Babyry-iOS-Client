@@ -135,6 +135,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     [self showBestShotFixLimitLabel];
 }
@@ -142,7 +143,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     // super
-    [super viewWillAppear:animated];
+    [super viewWillDisappear:animated];
 
     [tn removeNavigationView];
     [_myTimer invalidate];
