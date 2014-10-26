@@ -100,4 +100,12 @@ NSString *const className = @"NotificationHistory";
     [object saveInBackground];
 }
 
++ (void)disableDisplayedNotificationsWithObject:(PFObject *)object withBlock:(DeleteNotificationHistoryBlock)block
+{
+    object[@"status"] = @"displayed";
+    [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        block();
+    }];
+}
+
 @end

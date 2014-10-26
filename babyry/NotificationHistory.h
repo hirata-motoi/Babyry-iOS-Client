@@ -11,6 +11,7 @@
 
 typedef void (^NotificationHistoryBlock)(NSMutableDictionary *history);
 typedef void (^NotificationHistoryObjectsBlock)(NSArray *objects);
+typedef void (^DeleteNotificationHistoryBlock)(void);
 
 @interface NotificationHistory : NSObject
 
@@ -18,5 +19,6 @@ typedef void (^NotificationHistoryObjectsBlock)(NSArray *objects);
 + (void)getNotificationHistoryInBackground: userId withType:(NSString *)type withChild:(NSString *)childObjectId withBlock:(NotificationHistoryBlock)block;
 + (void)getNotificationHistoryObjectsByDateInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId date:(NSNumber *)date withBlock:(NotificationHistoryObjectsBlock)block;
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object;
++ (void)disableDisplayedNotificationsWithObject:(PFObject *)object withBlock:(DeleteNotificationHistoryBlock)block;
 
 @end

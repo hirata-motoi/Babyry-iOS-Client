@@ -149,11 +149,9 @@ static NSMutableDictionary *currentViewControllerInfo;
         [self removeInfo];
     } else {
         // childPropertiesChangedじゃないけど、ページ移動のために呼ぶ
-        NSLog(@"change currentPageIndex");
         [self setCurrentPageIndex:index];
         NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
         [[NSNotificationCenter defaultCenter] postNotification:n];
-        NSLog(@"start to return top");
         [self executeReturnToTop:vc index:index];
     }
 }
@@ -214,8 +212,19 @@ static NSMutableDictionary *currentViewControllerInfo;
     }
     for (NSString *type in notificationTypeArray) {
         [NotificationHistory getNotificationHistoryObjectsByDateInBackground:[PFUser currentUser][@"userId"] withType:type withChild:transitionInfo[@"childObjectId"] date:[NSNumber numberWithInt:[transitionInfo[@"date"] intValue]] withBlock:^(NSArray *objects){
+            
+            int i = 0;
             for (PFObject *object in objects) {
-                [NotificationHistory disableDisplayedNotificationsWithObject:object];
+                i++;
+               
+                if (i >= objects.count) {
+                    [NotificationHistory disableDisplayedNotificationsWithObject:object withBlock:^(void){
+                        NSNotification *n = [NSNotification notificationWithName:@"resetImage" object:nil];
+                        [[NSNotificationCenter defaultCenter] postNotification:n];
+                    }];
+                } else {
+                    [NotificationHistory disableDisplayedNotificationsWithObject:object];
+                }
             }
         }];
     }
