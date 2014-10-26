@@ -104,7 +104,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear in ViewController");
     
     // 強制アップデート用 (backgroundメソッド)
     [CheckAppVersion checkForceUpdate];
@@ -128,7 +127,6 @@
         
     } else {
         if ([TransitionByPushNotification isReturnedToTop]) {
-            NSLog(@"dispatch!");
             [TransitionByPushNotification dispatch:self];
             return;
         }
@@ -273,7 +271,6 @@
 
 -(void) showPageViewController
 {
-    NSLog(@"showPageViewController");
     if (_pageViewController) {
         [self setupGlobalSetting];
         return;
@@ -325,7 +322,6 @@
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [self setupGlobalSetting];
-    NSLog(@"instantiatePageViewController done");
 }
 
 - (void)setupGlobalSetting
@@ -363,7 +359,6 @@
 
 - (void)reloadPageViewController
 {
-    NSLog(@"reloadPageViewController");
     [_pageViewController.view removeFromSuperview];
     [_pageViewController removeFromParentViewController];
 

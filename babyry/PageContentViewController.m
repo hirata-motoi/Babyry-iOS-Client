@@ -82,7 +82,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-        NSLog(@"viewDidLoad in PageContent %d %@", _pageIndex, self);
     childProperty = [ChildProperties getChildProperty:_childObjectId];
   
     logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
@@ -109,7 +108,6 @@
 
 - (void)applicationDidBecomeActive
 {
-    NSLog(@"applicationDidBecomeActive %d %@", _pageIndex, self);
     [self viewDidAppear:YES];
 }
 
@@ -122,7 +120,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
-        NSLog(@"viewWillAppear in PageContent %d %@", _pageIndex, self);
     
     if (![PartnerApply linkComplete]) {
         if (!_instructionTimer || ![_instructionTimer isValid]){
@@ -138,7 +135,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-        NSLog(@"viewDidAppear in PageContent %d %@", _pageIndex, self);
     
     // Notification登録
     if (!alreadyRegisteredObserver) {
