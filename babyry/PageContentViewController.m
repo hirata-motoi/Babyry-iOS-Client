@@ -82,7 +82,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+        NSLog(@"viewDidLoad in PageContent %d %@", _pageIndex, self);
     childProperty = [ChildProperties getChildProperty:_childObjectId];
   
     logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
@@ -109,6 +109,7 @@
 
 - (void)applicationDidBecomeActive
 {
+    NSLog(@"applicationDidBecomeActive %d %@", _pageIndex, self);
     [self viewDidAppear:YES];
 }
 
@@ -121,6 +122,44 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
+        NSLog(@"viewWillAppear in PageContent %d %@", _pageIndex, self);
+    
+    if (![PartnerApply linkComplete]) {
+        if (!_instructionTimer || ![_instructionTimer isValid]){
+            _instructionTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(reloadView) userInfo:nil repeats:YES];
+        }
+    }
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
+    [self adjustChildImages];
+    [self reloadView];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+        NSLog(@"viewDidAppear in PageContent %d %@", _pageIndex, self);
+    
+    // Notification登録
+    if (!alreadyRegisteredObserver) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+        alreadyRegisteredObserver = YES;
+    }
+    
+    // pushでの遷移の時はクルクルを出さない。クルクルを止める処理をする時にはViewが遷移してしまっていてUIの制御が出来なくなるような挙動をするため
+    if (_isFirstLoad && [[TransitionByPushNotification getInfo] count] < 1) {
+        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        _hud.labelText = @"データ同期中";
+    }
+    
+    [self setImages];
+    if (!_tm || ![_tm isValid]) {
+        _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
+    }
 }
 
 - (void)reloadView
@@ -149,41 +188,6 @@
     TutorialStage *currentStage = [Tutorial currentStage];
     if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"] || [currentStage.currentStage isEqualToString:@"familyApply"]) ) {
         [self showTutorialNavigator];
-    }
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-    // Notification登録
-    if (!alreadyRegisteredObserver) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
-        alreadyRegisteredObserver = YES;
-    }
-    // pushでの遷移の時はクルクルを出さない。クルクルを止める処理をする時にはViewが遷移してしまっていてUIの制御が出来なくなるような挙動をするため
-    if (_isFirstLoad && [[TransitionByPushNotification getInfo] count] < 1) {
-        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        _hud.labelText = @"データ同期中";
-    }
-    
-    if (![PartnerApply linkComplete]) {
-        if (!_instructionTimer || ![_instructionTimer isValid]){
-            _instructionTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(reloadView) userInfo:nil repeats:YES];
-        }
-    }
-    childProperty = [ChildProperties getChildProperty:_childObjectId];
-    
-    [self adjustChildImages];
-    [self reloadView];
-    
-    [self setImages];
-    if (!_tm || ![_tm isValid]) {
-        _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
 }
 

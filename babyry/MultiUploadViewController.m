@@ -52,6 +52,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSLog(@"viewDidLoad in Multi");
     // Do any additional setup after loading the view.
     
     childProperty = [ChildProperties getChildProperty:_childObjectId];
@@ -116,6 +117,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+        NSLog(@"viewDidAppear in Multi");
     
     [[self logic] disableNotificationHistory];
         
@@ -136,6 +138,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+        NSLog(@"viewWillAppear in Multi");
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     [self showBestShotFixLimitLabel];
 }

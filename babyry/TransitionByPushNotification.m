@@ -149,9 +149,11 @@ static NSMutableDictionary *currentViewControllerInfo;
         [self removeInfo];
     } else {
         // childPropertiesChangedじゃないけど、ページ移動のために呼ぶ
+        NSLog(@"change currentPageIndex");
         [self setCurrentPageIndex:index];
         NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
         [[NSNotificationCenter defaultCenter] postNotification:n];
+        NSLog(@"start to return top");
         [self executeReturnToTop:vc index:index];
     }
 }
