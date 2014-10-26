@@ -135,15 +135,15 @@ static NSMutableDictionary *currentViewControllerInfo;
     if ([self getCurrentPageIndex] == index) {
         // コメントだけは、一旦Topに戻らない。やり取りを始めると何度も Push->開く を繰り返すと思われるのでチカチカしないように。&コメントを自動遷移で開くのは結構大変(時間かかる)。
         if (![transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
-            [self executeReturnToTop:vc index:index];
+            [self executeReturnToTop:vc];
             return;
         }
         if (![transitionInfo[@"date"] isEqualToString:[self getCurrentDate]]) {
-            [self executeReturnToTop:vc index:index];
+            [self executeReturnToTop:vc];
             return;
         }
         if (![self isCommentViewOpen]){
-            [self executeReturnToTop:vc index:index];
+            [self executeReturnToTop:vc];
             return;
         }
         [self removeInfo];
@@ -152,11 +152,11 @@ static NSMutableDictionary *currentViewControllerInfo;
         [self setCurrentPageIndex:index];
         NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
         [[NSNotificationCenter defaultCenter] postNotification:n];
-        [self executeReturnToTop:vc index:index];
+        [self executeReturnToTop:vc];
     }
 }
 
-+ (void)executeReturnToTop:(UIViewController *)vc index:(int)index
++ (void)executeReturnToTop:(UIViewController *)vc
 {
     // TopにいなければTopに戻る
     [vc.navigationController setNavigationBarHidden:NO];
