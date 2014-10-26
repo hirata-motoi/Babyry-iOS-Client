@@ -58,6 +58,7 @@
 		88B18CB81938162A00ED630C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CB71938162A00ED630C /* Security.framework */; };
 		88B18CBA1938163100ED630C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B18CB91938163100ED630C /* QuartzCore.framework */; };
 		88B1909D1938D23700ED630C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88B1909C1938D23700ED630C /* Social.framework */; };
+		88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B58B7819F6E86D00B6E86B /* UINavigationController+Block.m */; };
 		88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FB7193B2D52009474DC /* PageContentViewController.m */; };
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
 		88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */; };
@@ -320,6 +321,8 @@
 		88B18CB91938163100ED630C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		88B190981938CE9E00ED630C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		88B1909C1938D23700ED630C /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		88B58B7719F6E86D00B6E86B /* UINavigationController+Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+Block.h"; sourceTree = "<group>"; };
+		88B58B7819F6E86D00B6E86B /* UINavigationController+Block.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+Block.m"; sourceTree = "<group>"; };
 		88B89FB6193B2D52009474DC /* PageContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageContentViewController.h; sourceTree = "<group>"; };
 		88B89FB7193B2D52009474DC /* PageContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageContentViewController.m; sourceTree = "<group>"; };
 		88B89FBC193EDC04009474DC /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
@@ -726,6 +729,7 @@
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				88B58B7619F6E85000B6E86B /* UINavigationController+Block */,
 				88AA2FFC196FE04600F4B40C /* MBProgressHUD */,
 				88AA2FF8196E91A700F4B40C /* ICTutorialOverlay */,
 				88AA2FF1196CE9DC00F4B40C /* MJPopupViewController */,
@@ -860,6 +864,15 @@
 				88B18C9E193814CF00ED630C /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		88B58B7619F6E85000B6E86B /* UINavigationController+Block */ = {
+			isa = PBXGroup;
+			children = (
+				88B58B7719F6E86D00B6E86B /* UINavigationController+Block.h */,
+				88B58B7819F6E86D00B6E86B /* UINavigationController+Block.m */,
+			);
+			name = "UINavigationController+Block";
 			sourceTree = "<group>";
 		};
 		88C072EA19CAAFC400BF6F6F /* ChildListCell */ = {
@@ -1658,6 +1671,7 @@
 				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				F226591D19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m in Sources */,
 				889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */,
+				88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */,
 				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,

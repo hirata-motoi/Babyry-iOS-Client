@@ -171,7 +171,7 @@
 {
     ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
     pageViewController.childImages = [self sortChildImageByYearMonth];
-    pageViewController.currentSection = section;
+//    pageViewController.currentSection = section;
     pageViewController.currentRow = row;
     pageViewController.childObjectId = _childObjectId;
     //_pageViewController.name = _name;  // nameをどっかでとってくる

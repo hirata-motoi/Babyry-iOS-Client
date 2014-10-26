@@ -180,7 +180,7 @@
     
     _multiUploadViewController.isTimperExecuting = NO;
     
-    [self.multiUploadViewController dispatchForPushReceivedTransition];
+//    [self.multiUploadViewController dispatchForPushReceivedTransition];
 }
 
 - (void)updateBestShot
@@ -306,18 +306,10 @@
             [_multiUploadViewController.notificationHistoryByDay[type] removeAllObjects];
         }
     }
-    [self.multiUploadViewController.pCVC.pageContentCollectionView reloadData];
-    
-    // MultiUploadViewControllerが一番最初に開いた場合、notificationHistoryByDayに入っていないデータがあるのでParseから引き直す
-    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.multiUploadViewController.childObjectId withBlock:^(NSMutableDictionary *history){
-        for (NSString *type in targetTypes) {
-            NSMutableDictionary *notificationHistoryByDay = history[self.multiUploadViewController.date];
-            for (PFObject *notificationHistory in notificationHistoryByDay[type]) {
-                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
-            }
-        }
+    // push経由だとpCVCが無いのでチェック。push経由の場合notificationHisotryの反映が後れるだけだからまあ問題ない。
+    if (self.multiUploadViewController.pCVC) {
         [self.multiUploadViewController.pCVC.pageContentCollectionView reloadData];
-    }];
+    }
 }
 
 - (void)compensateDateOfChildImage:(NSArray *)childImages {}

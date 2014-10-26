@@ -58,7 +58,7 @@
 
     // 画像がなければコメントは出来ない
     // プリロード(サムネイルだけで本画像ではない)時もコメントは出さない(出せない)
-    if (_imageInfo && !_isPreload) {
+//    if (_imageInfo) {
         // 画像をいじるので、_imageInfo必須
         if (_fromMultiUpload) {
             [self setupBestLabel];
@@ -66,7 +66,7 @@
         [self setupCommentView];
         // 画像削除、保存、コメントは全部toolbar経由にする
         [self setupToolbar];
-    }
+//    }
     [self setupNavigation];
 }
 
@@ -127,7 +127,8 @@
     commentViewController.name = _name;
     commentViewController.date = _date;
     commentViewController.month = _month;
-    commentViewController.imageInfo = _imageInfo;
+    // つかってないんじゃないの？
+    //commentViewController.imageInfo = _imageInfo;
     commentViewController.indexPath = _indexPath;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
@@ -165,6 +166,7 @@
     imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
     imageToolbarViewController.openCommentView = _openCommentView;
     imageToolbarViewController.childObjectId = _childObjectId;
+    imageToolbarViewController.date = _date;
     
     _toolbarView = imageToolbarViewController.view;
     _toolbarView.hidden = NO;

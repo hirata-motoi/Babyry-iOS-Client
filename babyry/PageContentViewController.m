@@ -67,6 +67,7 @@
     float windowHeight;
     CGSize bigRect;
     CGSize smallRect;
+    BOOL alreadyRegisteredObserver;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -81,7 +82,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     childProperty = [ChildProperties getChildProperty:_childObjectId];
   
     logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
@@ -102,35 +102,12 @@
     windowHeight = self.view.frame.size.height;
     bigRect = CGSizeMake(windowWidth, windowHeight - 44 - 20  - windowWidth*2/3);
     smallRect = CGSizeMake(windowWidth/3 - 2, windowWidth/3 - 2);
-        
-    // Notification登録
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"applicationWillEnterForeground" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+    
+    alreadyRegisteredObserver = NO;
 }
 
 - (void)applicationDidBecomeActive
 {
-    // 不要かも(ViewDidAppearが2回呼ばれて変な事になった)。もろもろ検証終わって要らなかったら削除
-    //[self viewDidAppear:YES];
-}
-
-- (void)applicationDidReceiveRemoteNotification
-{
-//    // こどもが一致しているViewのみpushの通知を処理を受け取る
-//    NSMutableArray *childProperties = [ChildProperties getChildProperties];
-//    int i = 0;
-//    for (NSMutableDictionary *dic in childProperties) {
-//        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
-//            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
-//                return;
-//            }
-//        }
-//        i++;
-//    }
     [self viewDidAppear:YES];
 }
 
@@ -142,18 +119,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    // Notification登録
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
-    
-    if (_isFirstLoad) {
-        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        _hud.labelText = @"データ同期中";
-    }
+    [super viewWillAppear:YES];
     
     if (![PartnerApply linkComplete]) {
         if (!_instructionTimer || ![_instructionTimer isValid]){
@@ -161,9 +127,36 @@
         }
     }
     childProperty = [ChildProperties getChildProperty:_childObjectId];
-
+    
     [self adjustChildImages];
     [self reloadView];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // Notification登録
+    if (!alreadyRegisteredObserver) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"resetImage" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+        alreadyRegisteredObserver = YES;
+    }
+    
+    // pushでの遷移の時はクルクルを出さない。クルクルを止める処理をする時にはViewが遷移してしまっていてUIの制御が出来なくなるような挙動をするため
+    if (_isFirstLoad && [[TransitionByPushNotification getInfo] count] < 1) {
+        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        _hud.labelText = @"データ同期中";
+    }
+    
+    [self setImages];
+    if (!_tm || ![_tm isValid]) {
+        _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
+    }
 }
 
 - (void)reloadView
@@ -195,18 +188,10 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-    [self setImages];
-    if (!_tm || ![_tm isValid]) {
-        _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
-    }
-}
-
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:YES];
+    
     [_instructionTimer invalidate];
     
     [_tn removeNavigationView];
@@ -439,7 +424,7 @@
         [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         return;
     }
-   
+    
     [self moveToImagePageViewController:indexPath];
 }
 
@@ -465,9 +450,6 @@
 
 - (void) moveToMultiUploadViewController:(NSString *)date index:(NSIndexPath *)indexPath
 {
-    // 遷移完了しないと入らないので、後続の処理の為にここで先立って入れておく
-    [TransitionByPushNotification setCurrentViewController:@"MultiUploadViewController"];
-    
     MultiUploadViewController *multiUploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadViewController"];
     multiUploadViewController.childObjectId = childProperty[@"objectId"];
     multiUploadViewController.date = date;
@@ -480,11 +462,7 @@
     multiUploadViewController.indexPath = indexPath;
     multiUploadViewController.pCVC = self;
     
-    if(multiUploadViewController.childObjectId && multiUploadViewController.date && multiUploadViewController.month) {
-        [self.navigationController pushViewController:multiUploadViewController animated:YES];
-    } else {
-        // TODO インターネット接続がありません的なメッセージいるかも
-    }
+    [self.navigationController pushViewController:multiUploadViewController animated:YES];
 }
 
 - (void) moveToImagePageViewController:(NSIndexPath *)indexPath
@@ -592,7 +570,7 @@
         int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
         
         if (firstDateInt <= nextLoadInt) {
-            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES iterateCount:NO];
+            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
         }                  
     }
 }
@@ -1269,58 +1247,6 @@
         }
     }
     return NO;
-}
-
-- (void) dispatchForPushReceivedTransition
-{
-    // push通知のInfoから日付組み立て
-    NSDictionary *info = [TransitionByPushNotification getInfo];
-    PFObject *childImage = [[[_childImages objectAtIndex:[info[@"section"] intValue]] objectForKey:@"images"] objectAtIndex:[info[@"row"] intValue]];
-    
-    NSMutableArray *childProperties = [ChildProperties getChildProperties];
-    
-    // 以後の処理を進めるのはフロントに表示されているものだけ (PageViewは最大3枚表示されるので、前後のページの処理が行われるとばぐる)
-    // 今のページのindex(childIdからもとめる)がCoreDataと一致していなければreturn
-    int i = 0;
-    for (NSMutableDictionary *dic in childProperties) {
-        if ([dic[@"objectId"] isEqualToString:_childObjectId]) {
-            if (i != [TransitionByPushNotification getCurrentPageIndex]) {
-                return;
-            }
-        }
-        i++;
-    }
-    
-    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:[childImage[@"date"] stringValue]];
-    
-    if (!tsnInfo[@"nextVC"]) {
-        return;
-    }
-    
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"MultiUploadViewController"]) {
-        [self moveToMultiUploadViewController:tsnInfo[@"date"] index:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
-        return;
-    }
-    
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"movePageContentViewController"]) {
-        // ださいけど、childPropertiesからターゲットのchildIdのindexをみつける
-        int i = 0;
-        for (NSMutableDictionary *dic in childProperties) {
-            if ([dic[@"objectId"] isEqualToString:tsnInfo[@"childObjectId"]]) {
-                [TransitionByPushNotification setCurrentPageIndex:i];
-                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotification:n];
-                return;
-            }
-            i++;
-        }
-        return;
-    }
-    
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"UploadViewController"]) {
-        [self moveToImagePageViewController:[NSIndexPath indexPathForRow:[tsnInfo[@"row"] intValue] inSection:[tsnInfo[@"section"] intValue]]];
-        return;
-    }
 }
 
 - (void)showLoadingIcon

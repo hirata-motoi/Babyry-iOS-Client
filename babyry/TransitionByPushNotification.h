@@ -15,10 +15,13 @@
 + (void) removeInfo;
 + (void) setCurrentViewController:(NSString *)viewController;
 + (NSString *) getCurrentViewController;
++ (void) setCurrentDate:(NSString *)date;
++ (NSString *) getCurrentDate;
 + (void) setCurrentPageIndex:(int)index;
 + (int) getCurrentPageIndex;
-+ (NSMutableDictionary *) dispatch:(UIViewController *)viewController childObjectId:(NSString *)childObjectId selectedDate:(NSString *)selectedDate;
-+ (void) setCurrentDate:(NSString *)ymd;
-+ (NSString *)getCurrentDate;
++ (void)dispatch:(UIViewController *)vc;
++ (void)returnToTop:(UIViewController *)vc;
++ (BOOL)isReturnedToTop;
++ (void) setCommentViewOpenFlag:(BOOL)openFlag;
 
 @end

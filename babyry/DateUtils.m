@@ -156,4 +156,20 @@
     return [self numberFromComps:[self dateCompsFromDate:[self setSystemTimezone:[NSDate dateWithTimeIntervalSinceNow:-24*60*60]]]];
 }
 
++ (BOOL)isTodayByIndexPath:(NSIndexPath *)index
+{
+    if (index.section == 0 && index.row == 0) {
+        return YES;
+    }
+    return NO;
+}
+
++ (BOOL)isInTwodayByIndexPath:(NSIndexPath *)index
+{
+    if (index.section == 0 && (index.row == 0 || index.row == 1)) {
+        return YES;
+    }
+    return NO;
+}
+
 @end

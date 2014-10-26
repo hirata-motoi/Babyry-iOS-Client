@@ -19,12 +19,16 @@
 #import "Config.h"
 #import "Logger.h"
 #import "ChildProperties.h"
+#import "DateUtils.h"
 
 @interface UploadViewController ()
 
 @end
 
 @implementation UploadViewController
+{
+    BOOL openCommentView;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -44,13 +48,16 @@
     
     _defaultImageViewFrame = _uploadedImageView.frame;
     
-    CGRect imageRect = [self getUploadedImageFrame:_uploadedImage];
-    _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
-                       
-    _uploadedImageView.image = _uploadedImage;
+    if (_uploadedImage) {
+        CGRect imageRect = [self getUploadedImageFrame:_uploadedImage];
+        _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
+        _uploadedImageView.image = _uploadedImage;
+    }
     
-    BOOL __block isPreload = YES;
-    [self setupOperationView:isPreload];
+    if ([[TransitionByPushNotification getInfo][@"event"] isEqualToString:@"commentPosted"]) {
+        openCommentView = YES;
+    }
+    [self setupOperationView];
     
     // zoom
     _scrollView.minimumZoomScale = 1.0f;
@@ -61,7 +68,7 @@
     
     // Parseからちゃんとしたサイズの画像を取得
     // ImagePageViewControllerからimageInfoをもらう
-    // 万が一imageInfoが空だった時のことを考えて、一応、一から組み立てるロジックも入れておくが、ImagePageViewController側でNoImageを省くようになったら不要になる(TODO)。
+    // Push経由で即このviewControllerに来た場合にはimageInfoが無いので、Parseの情報から組み立てる
     if (_imageInfo) {
         AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
         getRequest.bucket = [Config config][@"AWSBucketName"];
@@ -80,18 +87,42 @@
             }
             return nil;
         }];
-        isPreload = NO;
-        [self setupOperationView:isPreload];
+        [self setupOperationView];
     } else {
+        MBProgressHUD *hud;
+        if (!_uploadedImage) {
+            // _uploadedImageにキャッシュがセットされていないまま遷移してきた場合だけクルクル出す
+            hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            hud.labelText = @"画像ダウンロード中";
+        }
         PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
         [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-        [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
+//        [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
         [originalImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
+        [originalImageQuery orderByDescending:@"updatedAt"];
         [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count] > 0) {
-                PFObject * object = [objects objectAtIndex:0];
-
+                PFObject *object;
+                for (PFObject *tmpObject in objects) {
+                    if ([tmpObject[@"bestFlag"] isEqualToString:@"choosed"]) {
+                        object = tmpObject;
+                        break;
+                    }
+                }
+                
+                // Pushで呼ばれた場合のパターン
+                // 1. imageUpload : imageUploadでUploadViewControllerが呼ばれるのは2日以上前なのでかならずbestFlagがたっている
+                // 2. commentPosted : commentPostedで表示するUploadViewController(CommentView付き)で表示するのは、bestShotがあればbestShot、無ければアップロードされている中の最新のものとする
+                //                    ただし、1に書いてある通りbestShotが無いのは、2以内に限られる
+                
+                if (!object) {
+                    // 正常系の動作であれば要らない判定、過去の写真が削除されたりした場合にここに入る事があるかも
+                    if([_date isEqualToString:[[DateUtils getTodayYMD] stringValue]] || [_date isEqualToString:[[DateUtils getYesterdayYMD] stringValue]]) {
+                        object = [objects objectAtIndex:0];
+                    }
+                }
+                
                 AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
                 getRequest.bucket = [Config config][@"AWSBucketName"];
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
@@ -100,15 +131,17 @@
                 [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                        _uploadedImageView.image = [UIImage imageWithData:getResult.body];
+                        UIImage *s3Image = [UIImage imageWithData:getResult.body];
+                        _uploadedImageView.image = s3Image;
+                        CGRect imageRect = [self getUploadedImageFrame:s3Image];
+                        _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
+                        [hud hide:YES];
                     } else {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController(new image) : %@", task.error]];
                     }
                     return nil;
                 }];
                 _imageInfo = object;
-                isPreload = NO;
-                [self setupOperationView:isPreload];
             }
             if (error) {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in findObject in UploadViewController(new image) : %@", error]];
@@ -140,9 +173,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    [TransitionByPushNotification setCurrentDate:_date];
-    [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -163,7 +193,7 @@
     _operationView.hidden = YES;
 }
 
-- (void)setupOperationView:(BOOL) isPreload
+- (void)setupOperationView
 {
     if (_operationViewController) {
         //既にあったら一度消す
@@ -185,7 +215,6 @@
     _operationViewController.uploadViewController  = self;
     _operationViewController.holdedBy = _holdedBy;
     _operationViewController.imageInfo = _imageInfo;
-    _operationViewController.isPreload = isPreload;
     _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
     _operationViewController.fromMultiUpload = _fromMultiUpload;
     _operationViewController.imageFrame = _uploadedImageView.frame;
@@ -195,7 +224,7 @@
     _operationViewController.indexPath = _indexPath;
     
     // push通知でここに来た場合には、コメントを開く為のフラグをたてる
-    if ([[TransitionByPushNotification getInfo][@"event"] isEqualToString:@"commentPosted"]) {
+    if (openCommentView) {
         _operationViewController.openCommentView = YES;
     } else {
         _operationViewController.openCommentView = NO;

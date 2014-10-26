@@ -19,7 +19,7 @@
 - (NSDate *)getCollectionViewFirstDay;
 - (NSMutableArray *)screenSavedChildImages;
 - (NSInteger)currentIndexRowInSavedChildImages:(NSIndexPath *)indexPath;
-- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(BOOL)iteration;
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload;
 - (BOOL)shouldShowMultiUploadView:(NSIndexPath *)indexPath;
 - (BOOL)isNoImage:(NSIndexPath *)indexPath;
 - (BOOL)isBestImageFixed:(NSIndexPath *)indexPath;

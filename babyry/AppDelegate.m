@@ -70,7 +70,7 @@
     // push通知から飛んだ場合userInfoに値がある
     NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (userInfo != nil) {
-        if (userInfo[@"transitionInfo"]) {
+        if (userInfo[@"transitionInfo"] && [PFUser currentUser]) {
             [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
         }
     }
@@ -96,7 +96,9 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    
+    if (![PFUser currentUser]) {
+        return;
+    }
     if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
         
@@ -111,11 +113,8 @@
             [PFPush handlePush:userInfo];
         }
         
-        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
-            [PFPush handlePush:userInfo];
-        }
-        
-        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]) {
+        if (userInfo[@"transitionInfo"]
+            && ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"] || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"])) {
             [PFPush handlePush:userInfo];
         }
         
@@ -129,7 +128,11 @@
         // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
         [PFPush handlePush:userInfo];
         if (userInfo[@"transitionInfo"]) {
+            if ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"imageUpload"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]) {
             [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+            }
         }
     }
     

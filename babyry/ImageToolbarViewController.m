@@ -64,15 +64,28 @@
     if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
         NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
         [self showCommentBadge:count];
-    }                    
+    }
+    
+    // 画像削除と保存はimageInfoが無い場合には表示させない(遅延ロードでimageInfoが取得されてから表示)
+    // コメントは日付にひもづくものなのでなくても良い
+    if (!_uploadViewController.imageInfo){
+        _imageTrashView.customView.hidden = YES;
+        _imageSaveView.customView.hidden = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:YES];
     if (_openCommentView) {
         [self imageComment];
-        [TransitionByPushNotification removeInfo];
     }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:YES];
+    [TransitionByPushNotification setCommentViewOpenFlag:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -145,6 +158,9 @@
     // コメントViewの出し入れだけここでやる。表示とかは別Class
     CGRect currentFrame = _commentView.frame;
     if (currentFrame.origin.y <= 20 + 44) {
+        // 閉じる
+        [TransitionByPushNotification setCommentViewOpenFlag:NO];
+        [TransitionByPushNotification setCurrentDate:@""];
         currentFrame.origin.y = self.parentViewController.view.frame.size.height;
         currentFrame.origin.x = self.view.frame.size.width;
 
@@ -157,6 +173,9 @@
                          completion:^(BOOL finished){
                          }];
     } else {
+        // 開く
+        [TransitionByPushNotification setCommentViewOpenFlag:YES];
+        [TransitionByPushNotification setCurrentDate:_date];
         currentFrame.origin.y = 20 + 44;
         currentFrame.origin.x = 0;
         [UIView animateWithDuration:0.3
@@ -212,7 +231,7 @@
             [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/fullsize/%@", childObjectId, date, imageObject.objectId]];
             
             // 画像有る無しのカウントを0にする
-            [_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
+            //[_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
             
             // この日のnotification historyを削除
             [self removeNotificationHistory:childObjectId withDate:date];

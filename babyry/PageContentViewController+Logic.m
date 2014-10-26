@@ -21,29 +21,26 @@
 #import "FamilyRole.h"
 #import "PushNotification.h"
 
-@implementation PageContentViewController_Logic {
-    int iterateCount;
-}
+@implementation PageContentViewController_Logic
 
 -(void)setImages
 {
     [self showChildImages];
     [self setupImagesCount];
     [self updateChildProperties];
+    [self setupNotificationHistory];
 }
 
 - (void)showChildImages
 {
-    iterateCount = 2;
-    
     // 今月
     NSDateComponents *comp = [self dateComps];
-    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES iterateCount:YES];
+    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
    
     // 先月
     NSDateComponents *lastComp = [self dateComps];
     lastComp.month--;
-    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES iterateCount:YES];
+    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
   
     self.pageContentViewController.dateComp = lastComp;
 }
@@ -62,7 +59,7 @@
     return dateComps;
 }
 
-- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload iterateCount:(BOOL)iteration
+- (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
     self.pageContentViewController.isLoading = YES;
     NSMutableDictionary *child = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
@@ -75,10 +72,6 @@
         if (!error) {
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
-                // 先月の画像が無い状態。この場合でも完了フラグはたてる
-                if (iteration) {
-                    iterateCount--;
-                }
                 [self.pageContentViewController.hud hide:YES];
                 return;
             }
@@ -151,17 +144,10 @@
             [self showIntroductionOfImageRequest];
             self.pageContentViewController.isFirstLoad = 0;
             [self finalizeProcess];
-
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [self.pageContentViewController.hud hide:YES];
             [self.pageContentViewController showAlertMessage];
-        }
-        if (iteration) {
-            iterateCount--;
-        }
-        if (iterateCount < 1 || !iteration) {
-            [self setupNotificationHistory];
         }
     }];
     // 不要なfullsizeのキャッシュを消す
@@ -312,13 +298,12 @@
 - (void)setupImagesCount
 {
     NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
-    // TODO 誕生日以前のデータは無視する
-    // ChildImage.dateの型をNumberにしたら対応する
     NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
-    
+    // imagesCountDicの用途的に15がmaxなので問題ないけど
+    // 用途が増えて100以上になったらlimitを設定する必要あり、1000以上を超える場合にはそれを考慮した書き方に変更しないとだめ
     [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [self.pageContentViewController.imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
@@ -333,7 +318,8 @@
     self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
-        // ただし、imageUpload or bestShotChoosen or commentPosted のpush通知をもらった場合はnotificationHistoryを更新しない(自動で開くので)
+        // ただし、imageUpload or bestShotChoosen or commentPosted のpush通知をもらった場合はnotificationHistoryを更新しない
+        // Pushで開く時はnotificationHistoryを渡さないで即開くので
         NSDictionary *info = [TransitionByPushNotification getInfo];
         if (![info[@"event"] isEqualToString:@"imageUpload"] && ![info[@"event"] isEqualToString:@"bestShotChoosen"] && ![info[@"event"] isEqualToString:@"commentPosted"]) {
             for (NSString *ymd in history) {
@@ -341,7 +327,6 @@
             }
             [self.pageContentViewController.pageContentCollectionView reloadData];
         }
-        [self.pageContentViewController dispatchForPushReceivedTransition];
         [self.pageContentViewController.pageContentCollectionView reloadData];
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];

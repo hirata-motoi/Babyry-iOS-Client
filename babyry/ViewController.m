@@ -83,12 +83,23 @@
     
     // notification center
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)applicationDidReceiveRemoteNotification
+{
+    if ([PFUser currentUser]) {
+        NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
+        if ([transitionInfo count] > 0) {
+            [TransitionByPushNotification returnToTop:self];
+        }
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -115,6 +126,11 @@
         [self presentViewController:introFirstViewController animated:YES completion:NULL];
         
     } else {
+        if ([TransitionByPushNotification isReturnedToTop]) {
+            [TransitionByPushNotification dispatch:self];
+            return;
+        }
+
         // メンテナンス状態かどうか確認
         // バックグラウンドで行わないと一瞬固まる
         PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
@@ -259,13 +275,13 @@
         [self setupGlobalSetting];
         return;
     }
-    
+
     PFUser *user = [PFUser currentUser];
     if (user[@"familyId"]) {
         [self instantiatePageViewController];
         return;
     }
-    
+
     user[@"familyId"] = [self createFamilyId];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         PFQuery *query = [PFQuery queryWithClassName:@"TutorialMap"];
@@ -276,10 +292,12 @@
                 // TODO ネットワークエラーが発生しました を表示
                 return;
             }
+            
             if (objects.count > 0) {
                 [self instantiatePageViewController];
                 return;
             }
+            
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
             tutorialMap[@"userid"] = user[@"userId"];
             [tutorialMap saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {

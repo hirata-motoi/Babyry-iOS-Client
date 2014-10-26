@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "PageContentViewController.h"
 
-@interface PageViewController : UIPageViewController<UIPageViewControllerDataSource, UIPageViewControllerDelegate, PageContentViewControllerDelegate>
+@interface PageViewController : UIPageViewController<UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property UIView *tagAlbumOperationView;
 @property NSInteger currentPageIndex;
@@ -18,7 +18,5 @@
 - (void)openTagSelectView;
 - (NSMutableDictionary *)getYearMonthMap;
 - (NSString *)getDisplayedChildObjectId;
-
-- (void) moveToTargetPage:(int)index;
 
 @end

@@ -10,11 +10,15 @@
 #import <Parse/Parse.h>
 
 typedef void (^NotificationHistoryBlock)(NSMutableDictionary *history);
+typedef void (^NotificationHistoryObjectsBlock)(NSArray *objects);
+typedef void (^DeleteNotificationHistoryBlock)(void);
 
 @interface NotificationHistory : NSObject
 
 + (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withChild:(NSString *)childObjectId withDate:(NSInteger)date;
 + (void)getNotificationHistoryInBackground: userId withType:(NSString *)type withChild:(NSString *)childObjectId withBlock:(NotificationHistoryBlock)block;
++ (void)getNotificationHistoryObjectsByDateInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId date:(NSNumber *)date withBlock:(NotificationHistoryObjectsBlock)block;
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object;
++ (void)disableDisplayedNotificationsWithObject:(PFObject *)object withBlock:(DeleteNotificationHistoryBlock)block;
 
 @end

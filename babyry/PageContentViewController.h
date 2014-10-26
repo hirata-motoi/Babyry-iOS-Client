@@ -16,9 +16,9 @@
 #import "TutorialNavigator.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 
-@protocol PageContentViewControllerDelegate <NSObject>
-- (void) moveToTargetPage:(int)index;
-@end
+//@protocol PageContentViewControllerDelegate <NSObject>
+//- (void) moveToTargetPage:(int)index;
+//@end
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
@@ -62,7 +62,7 @@
 - (void)showTutorialNavigator;
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
-- (void) dispatchForPushReceivedTransition;
+//- (void) dispatchForPushReceivedTransition;
 - (void)adjustChildImages;
 - (void)showLoadingIcon;
 - (void)hideLoadingIcon;
@@ -80,7 +80,7 @@
 @property NSTimer *instructionTimer;
 
 
-@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
+//@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
 
 @property NSNotificationCenter *notificationCenter;
 

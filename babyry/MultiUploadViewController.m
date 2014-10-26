@@ -104,7 +104,7 @@
     
     _bestImageId = @"";
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -116,8 +116,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    [TransitionByPushNotification setCurrentDate:_date];
     
     [[self logic] disableNotificationHistory];
         
@@ -137,6 +135,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     [self showBestShotFixLimitLabel];
 }
@@ -144,7 +143,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     // super
-    [super viewWillAppear:animated];
+    [super viewWillDisappear:animated];
 
     [tn removeNavigationView];
     [_myTimer invalidate];
@@ -434,8 +433,8 @@
                 }
             }
         }
-        NSArray *tmpArray = [cacheName componentsSeparatedByString:@"-"];
-        if ([_bestImageId isEqualToString:[tmpArray lastObject]]) {
+//        NSArray *tmpArray = [cacheName componentsSeparatedByString:@"-"];
+        if ([_bestImageId isEqualToString:[splitArray lastObject]]) {
             bestIndex = i;
         }
         i++;
@@ -635,20 +634,6 @@
 - (void)forwardNextTutorial
 {
     [[self logic] forwardNextTutorial];
-}
-
-- (void) dispatchForPushReceivedTransition
-{
-    NSMutableDictionary *tsnInfo =  [TransitionByPushNotification dispatch:self childObjectId:_childObjectId selectedDate:_date];
-    if (!tsnInfo) {
-        return;
-    }
-        
-    if ([tsnInfo[@"nextVC"] isEqualToString:@"CommentViewController"]) {
-        [self openImagePageView:0 forceOpenBestShot:YES];
-        return;
-    }
-
 }
 
 @end
