@@ -55,18 +55,15 @@
     hideOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
     self.view.userInteractionEnabled = YES;
     [self.view addGestureRecognizer:hideOperationViewTapGestureRecognizer];
-
+    
     // 画像がなければコメントは出来ない
     // プリロード(サムネイルだけで本画像ではない)時もコメントは出さない(出せない)
-//    if (_imageInfo) {
-        // 画像をいじるので、_imageInfo必須
-        if (_fromMultiUpload) {
-            [self setupBestLabel];
-        }
-        [self setupCommentView];
-        // 画像削除、保存、コメントは全部toolbar経由にする
-        [self setupToolbar];
-//    }
+    if (_fromMultiUpload) {
+        [self setupBestLabel];
+    }
+    [self setupCommentView];
+    // 画像削除、保存、コメントは全部toolbar経由にする
+    [self setupToolbar];
     [self setupNavigation];
 }
 
@@ -78,6 +75,7 @@
 
 - (void) viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     if ([self getBestShotIndex] == _pageIndex) {
         [self.view addSubview:_selectedBestshotView];
         [self setBestShotToBack];
@@ -86,6 +84,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     [_selectedBestshotView removeFromSuperview];
 }
 

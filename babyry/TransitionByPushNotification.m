@@ -25,6 +25,7 @@
 
 static NSMutableDictionary *transitionInfo;
 static NSMutableDictionary *currentViewControllerInfo;
+static BOOL appLaunchFlag = NO;
 
 @implementation TransitionByPushNotification
 
@@ -47,6 +48,21 @@ static NSMutableDictionary *currentViewControllerInfo;
 + (void) removeInfo
 {
     transitionInfo = [[NSMutableDictionary alloc] init];
+}
+
++ (void) setAppLaunchedFlag
+{
+    appLaunchFlag = YES;
+}
+
++ (void) removeAppLaunchFlag
+{
+    appLaunchFlag = NO;
+}
+
++ (BOOL) checkAppLaunchedFlag
+{
+    return appLaunchFlag;
 }
 
 + (void) setCurrentViewController:(NSString *)viewController
@@ -120,6 +136,13 @@ static NSMutableDictionary *currentViewControllerInfo;
 
 + (void)returnToTop:(UIViewController *)vc
 {
+    if ([transitionInfo[@"event"] isEqualToString:@"receiveApply"]
+        || [transitionInfo[@"event"] isEqualToString:@"admitApply"]
+        || [transitionInfo[@"event"] isEqualToString:@"requestPhoto"]) {
+        [self executeReturnToTop:vc];
+        return;
+    }
+    
     // notificationHistory消す
     [self removeNotificationHistoryForPushTransition:transitionInfo[@"event"]];
     
@@ -187,6 +210,8 @@ static NSMutableDictionary *currentViewControllerInfo;
         }
     } else if ([transitionInfo[@"event"] isEqualToString:@"commentPosted"]) {
         [self moveToUploadViewControllerWithCommentForPushTransition:vc];
+    } else {
+        [self removeInfo];
     }
 }
 
@@ -251,7 +276,6 @@ static NSMutableDictionary *currentViewControllerInfo;
     pageViewController.childObjectId = transitionInfo[@"childObjectId"];
     [vc.navigationController setNavigationBarHidden:YES];
     [vc.navigationController pushViewController:pageViewController animated:YES onCompletion:^(void){
-        [self removeInfo];
     }];
 }
 
@@ -278,7 +302,6 @@ static NSMutableDictionary *currentViewControllerInfo;
     uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [vc.navigationController setNavigationBarHidden:YES];
     [vc.navigationController pushViewController:uploadViewController animated:YES onCompletion:^(void){
-        [self removeInfo];
     }];
 }
 

@@ -92,10 +92,13 @@
                 [partner findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                     if (objects) {
                         for (PFObject *object in objects) {
+                            NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+                            transitionInfoDic[@"event"] = @"receiveApply";
                             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
                             options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
                             NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
                             options[@"data"] = data;
+                            data[@"transitionInfo"] = transitionInfoDic;
                             if (![object[@"userId"] isEqualToString:[PFUser currentUser][@"userId"]]) {
                                 [PushNotification sendToSpecificUserInBackground:@"receiveApply" withOptions:options targetUserId:object[@"userId"]];
                             }

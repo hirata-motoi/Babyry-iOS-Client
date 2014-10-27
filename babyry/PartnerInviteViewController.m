@@ -200,8 +200,13 @@
             }
         }
         
-        PartnerInviteEntity *pie = [PartnerInviteEntity MR_createEntity];
-        pie.pinCode = _pinCode;
+        PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
+        if (pie) {
+            pie.pinCode = _pinCode;
+        } else {
+            PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
+            newPie.pinCode = _pinCode;
+        }
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }];
 }

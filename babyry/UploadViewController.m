@@ -56,6 +56,7 @@
     
     if ([[TransitionByPushNotification getInfo][@"event"] isEqualToString:@"commentPosted"]) {
         openCommentView = YES;
+        [TransitionByPushNotification removeInfo];
     }
     [self setupOperationView];
     
@@ -218,6 +219,7 @@
     _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
     _operationViewController.fromMultiUpload = _fromMultiUpload;
     _operationViewController.imageFrame = _uploadedImageView.frame;
+    NSLog(@"oooooooooooo %@", _bestImageIndexArray);
     _operationViewController.bestImageIndexArray = _bestImageIndexArray;
     _operationViewController.pageIndex = _pageIndex;
     _operationViewController.myRole = _myRole;
