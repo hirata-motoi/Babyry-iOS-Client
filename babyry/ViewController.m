@@ -129,6 +129,9 @@
         if ([TransitionByPushNotification isReturnedToTop]) {
             [TransitionByPushNotification dispatch:self];
             return;
+        } else if ([TransitionByPushNotification checkAppLaunchedFlag]) {
+            [TransitionByPushNotification removeAppLaunchFlag];
+            [self applicationDidReceiveRemoteNotification];
         }
 
         // メンテナンス状態かどうか確認

@@ -23,5 +23,8 @@
 + (void)returnToTop:(UIViewController *)vc;
 + (BOOL)isReturnedToTop;
 + (void) setCommentViewOpenFlag:(BOOL)openFlag;
++ (void) setAppLaunchedFlag;
++ (void) removeAppLaunchFlag;
++ (BOOL) checkAppLaunchedFlag;
 
 @end

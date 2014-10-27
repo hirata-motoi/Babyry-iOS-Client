@@ -72,6 +72,7 @@
     if (userInfo != nil) {
         if (userInfo[@"transitionInfo"] && [PFUser currentUser]) {
             [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+            [TransitionByPushNotification setAppLaunchedFlag];
         }
     }
     
@@ -114,7 +115,10 @@
         }
         
         if (userInfo[@"transitionInfo"]
-            && ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"] || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"])) {
+            && ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"])) {
             [PFPush handlePush:userInfo];
         }
         
@@ -130,7 +134,9 @@
         if (userInfo[@"transitionInfo"]) {
             if ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"imageUpload"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]) {
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]) {
             [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
             }
         }
