@@ -433,7 +433,6 @@
                 }
             }
         }
-//        NSArray *tmpArray = [cacheName componentsSeparatedByString:@"-"];
         if ([_bestImageId isEqualToString:[splitArray lastObject]]) {
             bestIndex = i;
         }

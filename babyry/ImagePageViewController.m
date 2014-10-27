@@ -46,6 +46,18 @@
         isPushTransition = NO;
     }
     _imageList = [[NSMutableArray alloc]init];
+    
+    // create bestshot index array
+    if (_fromMultiUpload) {
+        _bestImageIndexArray = [[NSMutableArray alloc] init];
+        for (int i = 0; i < [_imagesCountDic[@"imagesCountNumber"] integerValue]; i++) {
+            if ([_bestImageIndexNumber intValue] == i) {
+                [_bestImageIndexArray addObject:@"YES"];
+            } else {
+                [_bestImageIndexArray addObject:@"NO"];
+            }
+        }
+    }
 }
 
 // 通常遷移
@@ -76,18 +88,6 @@
     if (isPushTransition){
         [self setupDataSourceInPushTransition];
         [self showInitialImage];
-    }
-    
-    // create bestshot index array
-    if (_fromMultiUpload) {
-        _bestImageIndexArray = [[NSMutableArray alloc] init];
-        for (int i = 0; i < [_imagesCountDic[@"imagesCountNumber"] integerValue]; i++) {
-            if ([_bestImageIndexNumber intValue] == i) {
-                [_bestImageIndexArray addObject:@"YES"];
-            } else {
-                [_bestImageIndexArray addObject:@"NO"];
-            }
-        }
     }
 }
 
