@@ -318,6 +318,7 @@
 {
     [Tutorial forwardStageWithNextStage:@"familyApply"];
     [self setupHeaderView];
+    [self.pageContentViewController.pageContentCollectionView reloadData];
     [self.pageContentViewController viewDidAppear:YES];
     [self.pageContentViewController showTutorialNavigator];
 }
