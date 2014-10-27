@@ -12,6 +12,7 @@
 #import "DateUtils.h"
 #import <Parse/Parse.h>
 #import "Logger.h"
+#import "Account.h"
 
 @implementation TmpUser
 
@@ -93,6 +94,15 @@
             return YES;
         }
     }
+    
+    // 1.0.1時代のユーザー用
+    // 1.0.1はTmpUserがいなかったので、1.0.1からアップデートした人は本登録済みでもCoreDataにレコードが無い
+    // そのため、userレコードを確認する
+    // キャッシュされているPFUserを使うので、あくまでも救済用。
+    if ([Account validateEmailWithString:[PFUser currentUser][@"emailCommon"]]) {
+        return YES;
+    }
+    
     return NO;
 }
 
