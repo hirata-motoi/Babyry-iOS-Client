@@ -56,6 +56,7 @@
     
     if ([[TransitionByPushNotification getInfo][@"event"] isEqualToString:@"commentPosted"]) {
         openCommentView = YES;
+        [TransitionByPushNotification removeInfo];
     }
     [self setupOperationView];
     

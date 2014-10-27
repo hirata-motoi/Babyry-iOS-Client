@@ -136,9 +136,19 @@
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]) {
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
             [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
             }
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
+            // キャッシュを更新しておく
+            [FamilyRole selfRole:@"noCache"];
+            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }];
         }
     }
     

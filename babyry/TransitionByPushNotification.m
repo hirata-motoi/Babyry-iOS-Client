@@ -136,7 +136,9 @@ static BOOL appLaunchFlag = NO;
 
 + (void)returnToTop:(UIViewController *)vc
 {
-    if ([transitionInfo[@"event"] isEqualToString:@"receiveApply"] || [transitionInfo[@"event"] isEqualToString:@"admitApply"]) {
+    if ([transitionInfo[@"event"] isEqualToString:@"receiveApply"]
+        || [transitionInfo[@"event"] isEqualToString:@"admitApply"]
+        || [transitionInfo[@"event"] isEqualToString:@"requestPhoto"]) {
         [self executeReturnToTop:vc];
         return;
     }
@@ -274,7 +276,6 @@ static BOOL appLaunchFlag = NO;
     pageViewController.childObjectId = transitionInfo[@"childObjectId"];
     [vc.navigationController setNavigationBarHidden:YES];
     [vc.navigationController pushViewController:pageViewController animated:YES onCompletion:^(void){
-        [self removeInfo];
     }];
 }
 
@@ -301,7 +302,6 @@ static BOOL appLaunchFlag = NO;
     uploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [vc.navigationController setNavigationBarHidden:YES];
     [vc.navigationController pushViewController:uploadViewController animated:YES onCompletion:^(void){
-        [self removeInfo];
     }];
 }
 

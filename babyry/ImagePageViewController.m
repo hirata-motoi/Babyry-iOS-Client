@@ -153,6 +153,7 @@
     
     // TODO : Notification関連処理
     
+    [TransitionByPushNotification removeInfo];
     isPushTransition = NO;
 }
 

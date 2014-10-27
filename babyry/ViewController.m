@@ -132,6 +132,7 @@
         } else if ([TransitionByPushNotification checkAppLaunchedFlag]) {
             [TransitionByPushNotification removeAppLaunchFlag];
             [self applicationDidReceiveRemoteNotification];
+            return;
         }
 
         // メンテナンス状態かどうか確認
