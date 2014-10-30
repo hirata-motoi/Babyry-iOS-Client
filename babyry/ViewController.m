@@ -33,12 +33,17 @@
 #import "DateUtils.h"
 #import "PartnerInvitedEntity.h"
 #import "PartnerWaitViewController.h"
+#import "ParseUtils.h"
+#import "ChildProperties.h"
+#import "PartnerApply.h"
 
 @interface ViewController ()
 
 @end
 
-@implementation ViewController
+@implementation ViewController {
+    NSMutableDictionary *oldestChildImageDate;
+}
 
 - (void)viewDidLoad
 {
@@ -70,8 +75,6 @@
                                              target:nil
                                              action:nil];
     
-    // childPropertiesのメモリ領域確保
-    _childProperties = [[NSMutableArray alloc] init];
     // partner情報初期化
     [Partner initialize];
     
@@ -80,12 +83,23 @@
     
     // notification center
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)applicationDidReceiveRemoteNotification
+{
+    if ([PFUser currentUser]) {
+        NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
+        if ([transitionInfo count] > 0) {
+            [TransitionByPushNotification returnToTop:self];
+        }
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -112,6 +126,15 @@
         [self presentViewController:introFirstViewController animated:YES completion:NULL];
         
     } else {
+        if ([TransitionByPushNotification isReturnedToTop]) {
+            [TransitionByPushNotification dispatch:self];
+            return;
+        } else if ([TransitionByPushNotification checkAppLaunchedFlag]) {
+            [TransitionByPushNotification removeAppLaunchFlag];
+            [self applicationDidReceiveRemoteNotification];
+            return;
+        }
+
         // メンテナンス状態かどうか確認
         // バックグラウンドで行わないと一瞬固まる
         PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
@@ -149,15 +172,18 @@
         }
         
         // 招待されて認証コードを入力した人はここで承認まで待つ (ただし、familyIdがある人はチュートリアルをやったか、一回ひも付けが解除されている人なので除外)
+        if (_only_first_load == 1) {
+            [PartnerApply syncPartnerApply];
+        }
         PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-        if (pie.inputtedPinCode && !_currentUser[@"familyId"]) {
+        if (pie && !_currentUser[@"familyId"]) {
             PartnerWaitViewController *partnerWaitViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerWaitViewController"];
             [self presentViewController:partnerWaitViewController animated:YES completion:NULL];
             return;
         }
       
         // familyIdを発行する前に呼び出す必要がある
-        if (_only_first_load) {
+        if (_only_first_load == 1) {
             [self initializeTutorialStage];
         }
         
@@ -199,8 +225,8 @@
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
-            NSArray *childList = [childQuery findObjects];
-            if (childList.count < 1) {
+            NSMutableArray *childProperties = [ChildProperties syncChildProperties];
+            if (childProperties.count < 1) {
                 if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApplyExec"]) {
                     [self setChildNames];
                     return;
@@ -216,40 +242,25 @@
                     [Tutorial upsertTutorialAttributes:@"tutorialChildObjectId" withValue:childObjectId];
                     
                     // Childからbotのrowをひく
-                    PFQuery *botQuery = [PFQuery queryWithClassName:@"Child"];
-                    [botQuery whereKey:@"objectId" equalTo:childObjectId];
-                    NSArray *botChild = [botQuery findObjects];
+                    NSMutableDictionary *botChildProperty = [ChildProperties syncChildProperty:childObjectId];
                     
-                    if (botChild.count > 0) {
-                        childList = botChild;
-                    } else {
+                    if (!botChildProperty) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"No Bot User in Child class objectId:%@", childObjectId]];
                     }
                 } else {
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
             }
-            _childArrayFoundFromParse = childList;
-            [self setupChildProperties];
-            [self initializeChildImages];
             _only_first_load = 0;
             
             [_hud hide:YES];
         } else {
-            // 二発目以降はbackgroundで引かないとUIが固まる
-            [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                if(!error) {
-                    if ([objects count] < 1) {
-                        TutorialStage *currentStage = [Tutorial currentStage];
-                        if ([currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
-                            [self setChildNames];
-                        }
-                        return;
-                    }
-                } else {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get childInfo : %@", error]];
-                }
-            }];
+            // 二回目以降はchildPropertiesの更新を行わない
+            // PageContentViewControllerの方に委譲しているため
+            TutorialStage *currentStage = [Tutorial currentStage];
+            if ([currentStage.currentStage isEqualToString:@"familyApplyExec"] && [[ChildProperties getChildProperties] count] == 0) {
+                [self setChildNames];
+            }
         }
         [self showPageViewController];
     }
@@ -259,29 +270,7 @@
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
     globalSettingViewController.viewController = self;
-    globalSettingViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:globalSettingViewController animated:YES];
-}
-
-- (void)setupChildProperties
-{
-    // 初期化
-    [_childProperties removeAllObjects];
-    
-    for (PFObject *c in _childArrayFoundFromParse) {
-        NSMutableDictionary *childSubDic = [[NSMutableDictionary alloc] init];
-        [childSubDic setObject:c.objectId forKey:@"objectId"];
-        [childSubDic setObject:c[@"name"] forKey:@"name"];
-        if (c[@"birthday"]) {
-            [childSubDic setObject:c[@"birthday"] forKey:@"birthday"];
-        } else {
-            [childSubDic setObject:[NSDate distantFuture] forKey:@"birthday"];
-        }
-        childSubDic[@"childImageShardIndex"] = c[@"childImageShardIndex"];
-        childSubDic[@"commentShardIndex"] = c[@"commentShardIndex"];
-        childSubDic[@"createdAt"] = c.createdAt;
-        [_childProperties addObject:childSubDic];
-    }
 }
 
 -(void) showPageViewController
@@ -290,13 +279,13 @@
         [self setupGlobalSetting];
         return;
     }
-    
+
     PFUser *user = [PFUser currentUser];
     if (user[@"familyId"]) {
         [self instantiatePageViewController];
         return;
     }
-    
+
     user[@"familyId"] = [self createFamilyId];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         PFQuery *query = [PFQuery queryWithClassName:@"TutorialMap"];
@@ -307,10 +296,12 @@
                 // TODO ネットワークエラーが発生しました を表示
                 return;
             }
+            
             if (objects.count > 0) {
                 [self instantiatePageViewController];
                 return;
             }
+            
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
             tutorialMap[@"userid"] = user[@"userId"];
             [tutorialMap saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -327,11 +318,11 @@
 
 - (void)instantiatePageViewController
 {
-    if (_childProperties.count < 1) {
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    if (childProperties.count < 1) {
         return;
     }
     _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-    _pageViewController.childProperties = _childProperties;
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [self setupGlobalSetting];
@@ -361,16 +352,7 @@
 -(void)setChildNames
 {
     IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    introChildNameViewController.childProperties = _childProperties;
     [self.navigationController pushViewController:introChildNameViewController animated:YES];
-}
-
-- (void)initializeChildImages
-{
-    _childImages = [[NSMutableDictionary alloc]init];
-    for (PFObject *child in _childArrayFoundFromParse) {
-        [_childImages setObject:[[NSMutableArray alloc]init] forKey:child.objectId];
-    }
 }
 
 - (NSString*) createFamilyId
@@ -383,14 +365,29 @@
 {
     [_pageViewController.view removeFromSuperview];
     [_pageViewController removeFromParentViewController];
+
+    // pageViewControllerにのっているpageContentViewControllerとview, subviewも消す (そんなに大きなリークでもないけど(効果あるかも微妙だけど)とりあえず)
+    for (UIViewController __strong *vc in [_pageViewController viewControllers]){
+        for (UIView __strong *view in vc.view.subviews) {
+            [view removeFromSuperview];
+            view = nil;
+        }
+        [vc willMoveToParentViewController:nil];
+        [vc.view removeFromSuperview];
+        [[NSNotificationCenter defaultCenter] removeObserver:vc];
+        [vc removeFromParentViewController];
+    }
+    
     _pageViewController = nil;
-   
     [self instantiatePageViewController];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
     [Logger writeToTrackingLog:[NSString stringWithFormat:@"%@ %@ %@ %@", [DateUtils setSystemTimezone:[NSDate date]], _currentUser.objectId, _currentUser[@"userId"], NSStringFromClass([viewController class])]];
+    
+    // 動的に[self.navigationController topViewController]とかでとるとタイミングによってnullが帰ってくるので、TransitionByPushNotificationのclass変数に格納
+    [TransitionByPushNotification setCurrentViewController:NSStringFromClass([viewController class])];
 }
 
 - (BOOL)hasStartedTutorial

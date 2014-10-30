@@ -16,6 +16,7 @@
 #import "InputPinCodeViewController.h"
 #import "Tutorial.h"
 #import "ParseUtils.h"
+#import "ChildProperties.h"
 
 @interface PartnerInviteViewController ()
 
@@ -59,8 +60,7 @@
     // その為、基本的にはしょっぱなでpinCodeを発行 & PincodeList(Parse)にレコード追加しておく (つまり、最初は1ユーザーに必ず1レコードが出来る)
     // パートナーひも付けが完了した場合にこのレコードは削除する
     // PincodeListに書き込んだらCoreDataに書き込んでおく、消したらCoreDataから消す
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if (!pie || !pie.pinCode || [pie.pinCode isEqualToNumber:[NSNumber numberWithInt:0]]) {
         [self issuePinCode];
     } else {
@@ -73,19 +73,11 @@
     if([PartnerApply linkComplete]) {
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
         // childPropertiesを更新してViewを更新
-        //NSMutableArray *tmpProperties = [[NSMutableArray alloc] init];
-        PFQuery *child = [PFQuery queryWithClassName:@"Child"];
-        [child whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
-        [child findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-            if (objects) {
-                [_childProperties removeAllObjects];
-                for (PFObject *object in objects) {
-                    [_childProperties addObject:[ParseUtils pfObjectToDic:object]];
-                }
-                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotification:n];
-            }
+        [ChildProperties asyncChildPropertiesWithBlock:^(NSArray *beforeSyncChildProperties) {
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
         }];
+        
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"パートナー承認が完了しています"
                                                         message:@""
                                                        delegate:self
@@ -208,9 +200,13 @@
             }
         }
         
-        PartnerInviteEntity *pie = [PartnerInviteEntity MR_createEntity];
-        pie.name = [Config config][@"PartnerInviteEntityKeyName"];
-        pie.pinCode = _pinCode;
+        PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
+        if (pie) {
+            pie.pinCode = _pinCode;
+        } else {
+            PartnerInviteEntity *newPie = [PartnerInviteEntity MR_createEntity];
+            newPie.pinCode = _pinCode;
+        }
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }];
 }

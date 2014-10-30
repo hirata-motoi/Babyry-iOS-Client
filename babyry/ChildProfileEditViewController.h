@@ -11,8 +11,7 @@
 
 @protocol ChildProfileEditViewDelegate <NSObject>
 
-- (void)changeChildNickname:(NSString *)childNickname;
-- (void)changeChildBirthday:(NSDate *)birthday;
+- (void)reloadChildProfile;
 
 @end
 
@@ -35,7 +34,5 @@
 @property NSString *editTarget;
 @property CGRect childNicknameCellRect;
 @property CGPoint childBirthdayCellPoint;
-@property NSMutableDictionary *child;
-
 
 @end

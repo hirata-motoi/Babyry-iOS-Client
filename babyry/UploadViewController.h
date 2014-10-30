@@ -32,7 +32,6 @@
 @property PFObject *imageInfo;
 @property NSInteger tagAlbumPageIndex;
 @property NSString *holdedBy; //このインスタンスを保持しているオブジェクトのクラス名
-@property NSMutableDictionary *child;
 
 // ImageOperationView使い回すため
 @property UIView *operationView;
@@ -40,8 +39,8 @@
 
 @property AWSServiceConfiguration *configuration;
 
-@property NSMutableArray *totalImageNum;
-@property NSInteger currentRow;
+//@property NSMutableArray *totalImageNum;
+//@property NSInteger currentRow;
 @property NSMutableDictionary *notificationHistoryByDay;
 
 @property BOOL fromMultiUpload;
@@ -50,5 +49,6 @@
 @property NSInteger pageIndex;
 @property NSMutableArray *bestImageIndexArray;
 @property NSMutableArray *childCachedImageArray;
+@property NSIndexPath *indexPath;
 
 @end

@@ -13,8 +13,14 @@
 #import "DateUtils.h"
 #import "Config.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @implementation ImagePageViewController
+{
+    NSDictionary *transitionInfo;
+    NSMutableDictionary *childProperty;
+    BOOL isPushTransition;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -31,19 +37,63 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.dataSource = self;
+
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
+    transitionInfo = [TransitionByPushNotification getInfo];
+    if ([transitionInfo count] > 0) {
+        isPushTransition = YES;
+    } else {
+        isPushTransition = NO;
+    }
+    _imageList = [[NSMutableArray alloc]init];
     
     // create bestshot index array
-    _bestImageIndexArray = [[NSMutableArray alloc] init];
-    for (int i = 0; i < [_imagesCountDic[@"imagesCountNumber"] integerValue]; i++) {
-        if ([_bestImageIndexNumber intValue] == i) {
-            [_bestImageIndexArray addObject:@"YES"];
-        } else {
-            [_bestImageIndexArray addObject:@"NO"];
+    if (_fromMultiUpload) {
+        _bestImageIndexArray = [[NSMutableArray alloc] init];
+        for (int i = 0; i < [_imagesCountDic[@"imagesCountNumber"] integerValue]; i++) {
+            if ([_bestImageIndexNumber intValue] == i) {
+                [_bestImageIndexArray addObject:@"YES"];
+            } else {
+                [_bestImageIndexArray addObject:@"NO"];
+            }
         }
     }
-  
-    [self setupDataSource];
+}
+
+// 通常遷移
+// 通常は_childImagesがセットされているのでsetupDataSourceを呼ぶ。
+// setupDataSourceはviewWillAppearで呼ぶ必要がある。viewDidAppearで呼ぶと、ベースのViewを表示後にPageViewをセットし始めるので一瞬真っ暗な画面が出てしまう。
+// _childImagesがセットされている状態では、setupDataSourceは時間がかからないのでviewDidAppearでも問題ない。
+
+// Push後遷移
+// _childImages(正確には必要なのは_imageList)がセットされていないので本ViewController内でセットする
+// setupDataSourceInPushTransitionがそれ用のmethodであるが、同期的に取得するので多少時間がかかる。
+// この処理をviewWillAppearでやると、Pushで開いた後に本ViewControllerに遷移してくる時間が結構かかる。
+// そのため、viewWillAppearで空のImageをまずは表示させておき(showInitialImage)、ViewDidAppearで改めてPageViewをセットし直している
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:YES];
+    
+    if (!isPushTransition) {
+        [self setupDataSource];
+    }
     [self showInitialImage];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:YES];
+    
+    if (isPushTransition){
+        [self setupDataSourceInPushTransition];
+        [self showInitialImage];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -54,38 +104,87 @@
 
 - (void)setupDataSource
 {
-    _imageList = [[NSMutableArray alloc]init];
     NSInteger sectionIndex = 0;
     for (NSDictionary *sectionInfo in _childImages) {
-        if (sectionIndex  == _currentSection) {
+        if (sectionIndex  == _indexPath.section) {
             _currentIndex = _imageList.count + _currentRow;
         }
-       
+        
         NSArray *images = [sectionInfo objectForKey:@"images"];
         [_imageList addObjectsFromArray:images];
         sectionIndex += 1;
     }
 }
 
+- (void)setupDataSourceInPushTransition
+{
+    _indexPath = [NSIndexPath indexPathForRow:[transitionInfo[@"row"] intValue] inSection:[transitionInfo[@"section"] intValue]];
+    
+    NSDate *date = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
+    
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *comps = [[NSDateComponents alloc]init];
+    comps.month = -_indexPath.section;
+    
+    NSDate *fromDate = [cal dateByAddingComponents:comps toDate:date options:0];
+    
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"yyyyMM"];
+    
+    dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    dispatch_group_t g = dispatch_group_create();
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(2);
+    
+    dispatch_group_async(g,q,^{
+        [self getChildImagesFrom:[[df stringFromDate:fromDate] integerValue] to:[[df stringFromDate:date] integerValue]];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_signal(semaphore);
+    });
+    
+    dispatch_group_async(g,q,^{
+        _imagesCountDic = [[NSMutableDictionary alloc] init];
+        _imagesCountDic[@"imagesCountNumber"] = [NSNumber numberWithInt:0];
+        [self countTotalNumOfChildImages:0];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_signal(semaphore);
+    });
+    
+    dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
+    
+    // TODO : Notification関連処理
+    
+    [TransitionByPushNotification removeInfo];
+    isPushTransition = NO;
+}
+
 - (UploadViewController *)viewControllerAtIndex:(NSInteger)index
 {
-    PFObject *imageInfo = [_imageList objectAtIndex:index];
-    
+    PFObject *imageInfo;
+    if ([_imageList count] > 0) {
+        imageInfo = [_imageList objectAtIndex:index];
+    } else {
+        imageInfo = nil;
+    }
     UploadViewController *uploadViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadViewController"];
     uploadViewController.imageInfo = imageInfo;
     uploadViewController.childObjectId = _childObjectId;
     uploadViewController.name = _name;
    
-    NSString *ymd   = [imageInfo[@"date"] stringValue];
+    NSString *ymd = [[NSString alloc] init];
+    if (imageInfo) {
+        ymd   = [imageInfo[@"date"] stringValue];
+    } else {
+        ymd = transitionInfo[@"date"];
+    }
     NSString *year  = [ymd substringWithRange:NSMakeRange(0, 4)];
     NSString *month = [ymd substringWithRange:NSMakeRange(4, 2)];
     
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", year, month];
     uploadViewController.date = ymd;
     uploadViewController.tagAlbumPageIndex = index;
-    uploadViewController.holdedBy = @"TagAlbumPageViewController";
-    uploadViewController.child = _child;
+    //uploadViewController.holdedBy = @"TagAlbumPageViewController";
     uploadViewController.fromMultiUpload = _fromMultiUpload;
+    uploadViewController.indexPath = _indexPath;
     if (_fromMultiUpload) {
         uploadViewController.bestImageIndexArray = _bestImageIndexArray;
         uploadViewController.pageIndex = index;
@@ -126,13 +225,13 @@
         [self laodMoreImages:index];
     }
 
-    // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す (MultiUploadの場合はひとまず除外)
-    if (!_fromMultiUpload) {
-        NSMutableDictionary *section = [_childImages objectAtIndex:_currentSection];
-        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-        uploadViewController.totalImageNum = totalImageNum;
-        uploadViewController.currentRow = _currentRow;
-    }
+//    // _childImagesの中身を更新するためにUploadViewにリファレンスを渡す (MultiUploadの場合はひとまず除外)
+//    if (!_fromMultiUpload) {
+//        NSMutableDictionary *section = [_childImages objectAtIndex:_indexPath.section];
+//        NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+//        uploadViewController.totalImageNum = totalImageNum;
+//        uploadViewController.currentRow = _currentRow;
+//    }
     
     return uploadViewController;
 }
@@ -163,6 +262,13 @@
     UploadViewController *uploadViewController = (UploadViewController *)viewController;
     
     NSInteger index = uploadViewController.tagAlbumPageIndex;
+    
+    if (isPushTransition) {
+        if (index == NSNotFound || index == 0) {
+            return nil;
+        }
+    }
+    
     if (index == NSNotFound || index == self.imageList.count - 1) {
         return nil;
     }
@@ -223,31 +329,30 @@
     NSDate *date = [cal dateFromComponents:comps];
     
     // 画像が取得できるまで処理する
-    // 誕生日に達したら終了(誕生日がなければ2010年1月まで)
+    // oldestChildImageDateに達したら終了(誕生日がなければ2010年1月まで)
     // 画像が取得できたら終了
     
-    // 誕生月
-    NSDate *birthday = _child[@"birthday"];
-    if (!birthday) {
-        NSDateComponents *tmpComps = [[NSDateComponents alloc]init];
-        tmpComps.year = 2014;
-        tmpComps.month = 1;
-        tmpComps.day = 1;
-        birthday = [cal dateFromComponents:tmpComps];
+    NSDateComponents *oldestChildImageDateComps;
+    if (childProperty[@"oldestChildImageDate"]) {
+        oldestChildImageDateComps = [DateUtils compsFromNumber:childProperty[@"oldestChildImageDate"]];
+    } else {
+        oldestChildImageDateComps = [[NSDateComponents alloc] init];
+        oldestChildImageDateComps.year = 2010;
+        oldestChildImageDateComps.month = 1;
     }
-    NSDateComponents *birthmonthComps = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:birthday];
-    birthmonthComps.day = 1;
-    NSDate *birthmonth = [cal dateFromComponents:birthmonthComps];
-   
-    while ([date compare:birthmonth] != NSOrderedAscending) {
+    oldestChildImageDateComps.day = 1;
+    NSDate *oldestChildImageMonth = [cal dateFromComponents:oldestChildImageDateComps];
+    
+    while ([date compare:oldestChildImageMonth] != NSOrderedAscending) {
         NSDateComponents *c = [cal components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:date];
         
-        PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+        PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         [query whereKey:@"imageOf" equalTo:_childObjectId];
         [query whereKey:@"bestFlag" equalTo:@"choosed"];
         
         [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", c.year, c.month, 1] integerValue]]];
         [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", c.year, c.month, 31] integerValue]]];
+        [query orderByDescending:@"date"];
         NSArray *objects = [query findObjects];
   
         if (objects && objects.count > 0) {
@@ -264,6 +369,30 @@
     _isLoading = NO;
 }
 
+- (void)getChildImagesFrom:(NSInteger)fromYM to:(NSInteger)toYM
+{
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
+    [query whereKey:@"imageOf" equalTo:_childObjectId];
+    [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    
+    [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", fromYM, 1] integerValue]]];
+    [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", toYM, 31] integerValue]]];
+    [query orderByDescending:@"date"];
+    NSArray *objects = [query findObjects];
+    
+    if (objects && objects.count > 0) {
+        [_imageList addObjectsFromArray:objects];
+        int index = 0;
+        for (PFObject *childImage in objects) {
+            if ([[childImage[@"date"] stringValue] isEqualToString:transitionInfo[@"date"]]) {
+                _currentIndex = index;
+            }
+            [self cacheThumbnail:childImage];
+            index++;
+        }
+    }
+}
+
 - (void)cacheThumbnail:(PFObject *)childImage
 {
     NSString *ymd = [childImage[@"date"] stringValue];
@@ -272,12 +401,12 @@
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = [Config config][@"AWSBucketName"];
-    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
     getRequest.responseCacheControl = @"no-cache";
     
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
     [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-        if (!task.error && task.result) {                                                                                                 
+        if (!task.error && task.result) {
             AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
             NSString *thumbPath = [NSString stringWithFormat:@"%@%@thumb", _childObjectId, ymd];
             // cacheが存在しない場合 or cacheが存在するがS3のlastModifiledの方が新しい場合 は新規にcacheする
@@ -295,6 +424,24 @@
         }
         return nil;
     }];
+}
+
+- (void)countTotalNumOfChildImages:(int)skip
+{
+    NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]];
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"imageOf" equalTo:_childObjectId];
+    [query whereKey:@"bestFlag" equalTo:@"choosed"];
+    query.skip = skip;
+    query.limit = 1000;
+    int count = [query countObjects];
+    
+    if (count > 1000) {
+        [self countTotalNumOfChildImages:skip+1000];
+    } else {
+        NSNumber *totalCount = [NSNumber numberWithInt:skip + count];
+        _imagesCountDic[@"imagesCountNumber"] = totalCount;
+    }
 }
 
 

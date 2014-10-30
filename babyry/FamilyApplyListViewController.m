@@ -235,10 +235,13 @@
             [_hud hide:YES];
             
             // push通知
+            NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+            transitionInfoDic[@"event"] = @"admitApply";
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+            options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
             NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
             options[@"data"] = data;
+            data[@"transitionInfo"] = transitionInfoDic;
             [PushNotification sendToSpecificUserInBackground:@"admitApply" withOptions:options targetUserId:[inviterUsers objectAtIndex:index][@"userId"]];
             
             NSNotification *n = [NSNotification notificationWithName:@"didAdmittedPartnerApply" object:nil];

@@ -16,11 +16,14 @@
 #import "TutorialNavigator.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 
+//@protocol PageContentViewControllerDelegate <NSObject>
+//- (void) moveToTargetPage:(int)index;
+//@end
+
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
 @property NSUInteger pageIndex;
-@property NSMutableDictionary *childProperty;
 @property NSString *childObjectId;
 
 @property NSString *returnValueOfChildName;
@@ -52,12 +55,17 @@
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
 - (void)showAlertMessage;
-- (void)addIntrodutionOfImageRequestView:(NSTimer *)timer;
+- (void)addIntroductionOfImageRequestView:(NSTimer *)timer;
+- (void)addIntroductionOfPageFlickView:(NSTimer *)timer;
 - (void)openFamilyApply;
 - (void)setImages;
 - (void)showTutorialNavigator;
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
+//- (void) dispatchForPushReceivedTransition;
+- (void)adjustChildImages;
+- (void)showLoadingIcon;
+- (void)hideLoadingIcon;
 
 @property AWSServiceConfiguration *configuration;
 
@@ -71,7 +79,9 @@
 @property UIView *familyApplyIntroduceView;
 @property NSTimer *instructionTimer;
 
-// CoreDataに移動したら消す
-@property NSMutableArray *childProperties;
+
+//@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
+
+@property NSNotificationCenter *notificationCenter;
 
 @end

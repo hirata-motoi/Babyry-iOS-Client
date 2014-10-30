@@ -13,6 +13,7 @@
 #import "Account.h"
 #import "PartnerInvitedEntity.h"
 #import "Logger.h"
+#import "CloseButtonView.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -66,10 +67,17 @@
 
 - (void)makeDismisButton
 {
-    _dismisButton.layer.cornerRadius = _dismisButton.frame.size.width/2;
-    UITapGestureRecognizer *dismisViewController = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismisViewController)];
-    dismisViewController.numberOfTapsRequired = 1;
-    [_dismisButton addGestureRecognizer:dismisViewController];
+    CloseButtonView *view = [CloseButtonView view];
+    CGRect rect = view.frame;
+    rect.origin.x = 10;
+    rect.origin.y = 30;
+    view.frame = rect;
+    
+    UITapGestureRecognizer *logoutGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismisViewController)];
+    logoutGesture.numberOfTapsRequired = 1;
+    [view addGestureRecognizer:logoutGesture];
+    
+    [self.view addSubview:view];
 }
 
 - (void)dismisViewController
@@ -209,6 +217,9 @@
                                                       cancelButtonTitle:nil
                                                       otherButtonTitles:@"OK", nil];
                 [alert show];
+                [TmpUser registerComplete];
+                [self dismissViewControllerAnimated:YES completion:NULL];
+                return;
             }
 
             // ここは、IntroPageRootViewControllerからのコピペ

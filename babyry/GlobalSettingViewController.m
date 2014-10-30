@@ -24,6 +24,8 @@
 #import "TmpUser.h"
 #import "UserRegisterViewController.h"
 #import "NotEmailVerifiedViewController.h"
+#import "PartnerApply.h"
+#import "UINavigationController+Block.h"
 
 @interface GlobalSettingViewController ()
 
@@ -68,6 +70,9 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [_settingTableView reloadData];
+    [self setRoleSegmentControl];
+    
     tn = [[TutorialNavigator alloc]init];
     tn.targetViewController = self;
     [tn showNavigationView];
@@ -127,12 +132,16 @@
             break;
         case 1:
         {
-            [self.navigationController popViewControllerAnimated:YES];
-            [Tutorial removeTutorialStage];
-            [ImageCache removeAllCache];
-            [PushNotification removeSelfUserIdFromChannels:^(){
-                [PFUser logOut];
-                [_viewController viewDidAppear:YES];
+            [self.navigationController popViewControllerAnimated:YES onCompletion:^(void){
+                [PushNotification removeSelfUserIdFromChannels:^(){
+                    [PFUser logOut];
+                    [ImageCache removeAllCache];
+                    [Tutorial removeTutorialStage];
+                    [TmpUser removeTmpUserFromCoreData];
+                    [PartnerApply removePartnerInviteFromCoreData];
+                    [PartnerApply removePartnerInvitedFromCoreData];
+                    [_viewController viewDidAppear:YES];
+                }];
             }];
         }
             break;
@@ -144,6 +153,13 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
+    }
+    for (UIView *view in [cell subviews]) {
+        for (UIView *elem in [view subviews]) {
+            if ([elem isKindOfClass:[UISegmentedControl class]]) {
+                [elem removeFromSuperview];
+            }
+        }
     }
     cell.textLabel.numberOfLines = 0;
     
@@ -164,8 +180,8 @@
                         cell.textLabel.text = @"本登録を完了する";
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     } else {
-                        cell.textLabel.text = @"メールアドレス確認";
-                        cell.detailTextLabel.text = _emailVerified;
+                        cell.textLabel.text = @"メールアドレス認証";
+                        cell.detailTextLabel.text = @"未認証";
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
                     break;
@@ -359,7 +375,6 @@
 {
     [tn removeNavigationView];
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    icnvc.childProperties = _childProperties;
     [self.navigationController pushViewController:icnvc animated:YES];
 }
 
@@ -416,9 +431,14 @@
         }
         
         // push通知
+        NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+        transitionInfoDic[@"event"] = @"partSwitched";
         NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-        options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+        options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
         options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+        options[@"data"] = [[NSMutableDictionary alloc]
+                            initWithObjects:@[@"Increment", transitionInfoDic]
+                            forKeys:@[@"badge", @"transitionInfo"]];
         [PushNotification sendInBackground:@"partSwitched" withOptions:options];
     }];
 }
@@ -432,7 +452,22 @@
     rect.origin.y = 7;
     sc.frame = rect;
     [sc addTarget:self action:@selector(switchRole) forControlEvents:UIControlEventValueChanged];
+   
+    // cacheから取得した値を初期値としておく
+    NSString *familyRole = [FamilyRole selfRole:@"cacheOnly"];
+    if (familyRole) {
+        if ([familyRole isEqualToString:@"uploader"]) {
+            sc.selectedSegmentIndex = 0;
+        } else if ([familyRole isEqualToString:@"chooser"]) {
+            sc.selectedSegmentIndex = 1;
+        }
+    }
     
+    return sc;
+}
+
+- (void)setRoleSegmentControl
+{
     // 初期値を非同期でセット
     [FamilyRole fetchFamilyRole:[PFUser currentUser][@"familyId"] withBlock:^(NSArray *objects, NSError *error){
         if (!error) {
@@ -442,25 +477,20 @@
             PFObject *familyRole = [objects objectAtIndex:0];
             NSString *uploader = familyRole[@"uploader"];
             if ([[PFUser currentUser][@"userId"] isEqualToString:uploader]) {
-                sc.selectedSegmentIndex = 0;
+                _roleControl.selectedSegmentIndex = 0;
             } else {
-                sc.selectedSegmentIndex = 1;
+                _roleControl.selectedSegmentIndex = 1;
             }
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in createRoleSwitchSegmentControl : %@", error]];
         }
     }];
-    
-    return sc;
 }
 
 - (void)openProfileEdit
 {
     ProfileViewController *profileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ProfileViewController"];
     
-    // リクエストが増えるのは微妙だが事前に情報を取得しておく
-    // partnerInfo、childともに基本キャッシュ、ネットワークがない場合はキャッシュを使う
-    profileViewController.childProperties = _childProperties;
     profileViewController.partnerInfo = _partnerInfo;
     [self.navigationController pushViewController:profileViewController animated:YES];
 }

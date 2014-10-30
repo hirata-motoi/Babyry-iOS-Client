@@ -11,14 +11,14 @@
 
 @interface MultiUploadViewController_Logic : NSObject
 
-@property MultiUploadViewController *multiUploadViewController;
+@property (weak) MultiUploadViewController *multiUploadViewController;
 
 - (void)showCacheImages;
 - (void)disableNotificationHistory;
 - (void)updateImagesFromParse;
 - (void)updateBestShot;
 - (void)createNotificationHistory:(NSString *)type;
-- (void)updateBestShotWithChild:(NSMutableDictionary *)childProperty withDate:(NSString *)date;
+- (void)updateBestShotWithChild:(NSString *)childObjectId withDate:(NSString *)date;
 - (void)prepareForTutorial:(UICollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath;
 - (void)finalizeSelectBestShot;
 - (void)forwardNextTutorial;

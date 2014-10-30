@@ -20,7 +20,6 @@
 @property NSString *date;
 @property UIImage *uploadedImage;
 @property NSString *name;
-@property NSMutableDictionary *child;
 
 @property UploadViewController *uploadViewController;
 
@@ -36,7 +35,7 @@
 
 @property PFObject *imageInfo;
 // isPreloadの場合キャッシュのサムネイルを表示するだけなのでコメントViewは表示させない
-@property BOOL isPreload;
+//@property BOOL isPreload;
 
 @property AWSServiceConfiguration *configuration;
 
@@ -51,5 +50,8 @@
 @property NSInteger pageIndex;
 
 @property UIImageView *selectedBestshotView;
+@property NSIndexPath *indexPath;
+@property BOOL openCommentView;
+@property UIImageView *unSelectedBestshotView;
 
 @end

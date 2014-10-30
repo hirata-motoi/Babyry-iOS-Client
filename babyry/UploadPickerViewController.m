@@ -14,6 +14,7 @@
 #import "NotificationHistory.h"
 #import "Config.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface UploadPickerViewController ()
 
@@ -104,8 +105,10 @@
         imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
         imageType = @"image/jpeg";
     }
+   
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
     
-    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
     [imageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [imageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
     [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -121,7 +124,7 @@
             if (succeeded) {
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config config][@"AWSBucketName"];
-                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
+                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
                 putRequest.contentType = imageType;
@@ -142,7 +145,7 @@
         // PageContentViewController.childImagesの中身に追加
         [_section[@"images"] replaceObjectAtIndex:_indexPath.row withObject:tmpImageObject];
     } else {
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
         childImage[@"imageOf"] = _childObjectId;
         childImage[@"bestFlag"] = @"choosed";
@@ -150,7 +153,7 @@
             if (succeeded) {
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config config][@"AWSBucketName"];
-                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
                 putRequest.body = imageData;
                 putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
                 putRequest.contentType = imageType;
@@ -181,8 +184,16 @@
         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
     ];
     
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"imageUpload";
+    transitionInfoDic[@"date"] = _date;
+    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+    transitionInfoDic[@"childObjectId"] = _childObjectId;
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+    options[@"data"] = [[NSMutableDictionary alloc]
+                        initWithObjects:@[@"Increment", transitionInfoDic]
+                        forKeys:@[@"badge", @"transitionInfo"]];
     [PushNotification sendInBackground:@"imageUpload" withOptions:options];
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];

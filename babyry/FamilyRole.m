@@ -42,6 +42,24 @@
     }
 }
 
++ (void)updateFamilyRoleCacheWithBlock:(UpdateFamilyRoleCacheBlock)block
+{
+    PFUser *user = [PFUser currentUser];
+    PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
+    query.cachePolicy = kPFCachePolicyNetworkOnly;
+    [query whereKey:@"familyId" equalTo:user[@"familyId"]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get family role for updateFamilyRoleCacheWithBlock familyId:%@ error:%@", user[@"familyId"], error]];
+            return;
+        }
+        if (objects.count < 1) {
+            return;
+        }
+        block();
+    }];
+}
+
 + (void)updateCache
 {
     PFUser *user = [PFUser currentUser];
@@ -73,7 +91,6 @@
             [uploader whereKey:@"familyId" notEqualTo:user[@"familyId"]];
             PFObject *object = [uploader getFirstObject];
             if (object) {
-                NSLog(@"object found in uploader");
                 user[@"familyId"] = object[@"familyId"];
                 [user save];
                 [PartnerApply setLinkComplete];
@@ -84,7 +101,6 @@
             [chooser whereKey:@"familyId" notEqualTo:user[@"familyId"]];
             object = [chooser getFirstObject];
             if (object) {
-                NSLog(@"object found in chooser");
                 user[@"familyId"] = object[@"familyId"];
                 [user save];
                 [PartnerApply setLinkComplete];

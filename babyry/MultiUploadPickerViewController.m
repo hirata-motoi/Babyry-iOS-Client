@@ -18,12 +18,15 @@
 #import "Logger.h"
 #import "Tutorial.h"
 #import "MultiUploadViewController+Logic.h"
+#import "ChildProperties.h"
 
 @interface MultiUploadPickerViewController ()
 
 @end
 
-@implementation MultiUploadPickerViewController
+@implementation MultiUploadPickerViewController {
+    NSMutableDictionary *childProperty;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,6 +41,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     int currentNum = [[_totalImageNum objectAtIndex:_indexPath.row] intValue];
     
@@ -247,8 +252,8 @@
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ準備中";
-    //_hud.margin = 0;
-    //_hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Thin" size:15];
+    
+    [self disableNotificationHistory];
     
     int __block saveCount = 0;
     
@@ -275,11 +280,10 @@
             imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
             imageType = @"image/jpeg";
         }
-        //PFFile *imageFile = [PFFile fileWithName:[NSString stringWithFormat:@"%@%@", _childObjectId, _date] data:imageData];
         [_uploadImageDataArray addObject:imageData];
         [_uploadImageDataTypeArray addObject:imageType];
 
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         // tmpData = @"TRUE" にセットしておく画像はあとからあげる
         childImage[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
         childImage[@"imageOf"] = _childObjectId;
@@ -318,7 +322,7 @@
     // これが count 0になるまで再起実行
     if ([_uploadImageDataArray count] != 0){
         // isTmpDataがついているレコードを探す
-        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
@@ -330,7 +334,7 @@
                 // S3に上げる
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config config][@"AWSBucketName"];
-                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
+                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
                 putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                 putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
                 putRequest.contentType = [_uploadImageDataTypeArray objectAtIndex:0];
@@ -365,7 +369,7 @@
                 }];
             } else {
                 // objectが見つからなければ新たに作成
-                PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+                PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
                 childImage[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
                 childImage[@"imageOf"] = _childObjectId;
                 childImage[@"bestFlag"] = @"unchoosed";
@@ -374,7 +378,7 @@
                         // S3に上げる
                         AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                         putRequest.bucket = [Config config][@"AWSBucketName"];
-                        putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+                        putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
                         putRequest.body = [_uploadImageDataArray objectAtIndex:0];
                         putRequest.contentLength = [NSNumber numberWithLong:[[_uploadImageDataArray objectAtIndex:0] length]];
                         putRequest.contentType = [_uploadImageDataTypeArray objectAtIndex:0];
@@ -401,7 +405,7 @@
         }];
     } else {
         // もしisTmpData = TRUEが残っていればそれは消す
-        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+        PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         [tmpImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
         [tmpImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
@@ -417,15 +421,37 @@
             [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
         
             // push通知
+            // message以外にも、タップしたところが分かる情報を飛ばす
+            NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+            transitionInfoDic[@"event"] = @"imageUpload";
+            transitionInfoDic[@"date"] = _date;
+            transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+            transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+            transitionInfoDic[@"childObjectId"] = _childObjectId;
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+            options[@"data"] = [[NSMutableDictionary alloc]
+                                initWithObjects:@[@"Increment", transitionInfoDic]
+                                forKeys:@[@"badge", @"transitionInfo"]];
             [PushNotification sendInBackground:@"imageUpload" withOptions:options];
            
             if ([Tutorial underTutorial]) {
                 // best shotを選んであげる
                 MultiUploadViewController_Logic *logic = [[MultiUploadViewController_Logic alloc]init];
-                [logic updateBestShotWithChild:_child withDate:_date];
+                [logic updateBestShotWithChild:_childObjectId withDate:_date];
             }
+        }
+    }
+}
+
+- (void)disableNotificationHistory
+{
+    NSArray *targetTypes = [NSArray arrayWithObjects:@"requestPhoto", nil];
+    for (NSString *type in targetTypes) {
+        if (_notificationHistoryByDay && _notificationHistoryByDay[type]) {
+            for (PFObject *notificationHistory in _notificationHistoryByDay[type]) {
+                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+            }
+            [_notificationHistoryByDay[type] removeAllObjects];
         }
     }
 }

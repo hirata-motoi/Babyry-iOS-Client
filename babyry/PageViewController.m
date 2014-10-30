@@ -10,12 +10,15 @@
 #import "PageContentViewController.h"
 #import "ImageEdit.h"
 #import "TagAlbumOperationViewController.h"
+#import "ChildProperties.h"
 
 @interface PageViewController ()
 
 @end
 
-@implementation PageViewController
+@implementation PageViewController {
+    NSMutableArray *childProperties;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -29,11 +32,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    childProperties = [ChildProperties getChildProperties];
+    
     // Do any additional setup after loading the view.
     self.delegate = self;
     self.dataSource = self;
-  
-    PageContentViewController *startingViewController = [self viewControllerAtIndex:0];
+    
+    int currentPageIndex = [TransitionByPushNotification getCurrentPageIndex];
+    if (currentPageIndex > childProperties.count - 1) {
+        currentPageIndex = 0;
+    }
+                           
+    PageContentViewController *startingViewController = [self viewControllerAtIndex:currentPageIndex];
     NSArray *startingViewControllers = @[startingViewController];
     [self setViewControllers:startingViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
@@ -68,7 +79,7 @@
     }
     
     index++;
-    if (index == [_childProperties count]) {
+    if (index == [childProperties count]) {
         return nil;
     }
     return [self viewControllerAtIndex:index];
@@ -76,23 +87,29 @@
 
 - (PageContentViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    if (([_childProperties count] == 0) || (index >= [_childProperties count])) {
+    if (([childProperties count] == 0) || (index >= [childProperties count])) {
         return nil;
     }
     
     PageContentViewController *pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
 
+//    pageContentViewController.delegate = self;
     pageContentViewController.pageIndex = index;
-    pageContentViewController.childProperty = _childProperties[index];
-    pageContentViewController.childObjectId = [[_childProperties objectAtIndex:index] objectForKey:@"objectId"];
-    
-    // PageContentViewから更新するために暫定 (CoreDataに入れたら消す)
-    pageContentViewController.childProperties = _childProperties;
+    pageContentViewController.childObjectId = [[childProperties objectAtIndex:index] objectForKey:@"objectId"];
     
     _currentPageIndex = index;
     _currentDisplayedPageContentViewController = pageContentViewController;
     
     return pageContentViewController;
+}
+
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
+{
+    PageContentViewController *currentView = [pageViewController.viewControllers objectAtIndex:0];
+    
+    int index = currentView.pageIndex;
+
+    [TransitionByPushNotification setCurrentPageIndex:index];
 }
 
 // ViewControllerから叩かれる
@@ -101,18 +118,18 @@
     _tagAlbumOperationView.hidden = NO;
 }
 
-- (void)setupTagAlbumOperationView
-{
-    // tagAlbumのviewcontrollerをinstans化
-    TagAlbumOperationViewController *tagAlbumOperationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumOperationViewController"];
-    tagAlbumOperationViewController.delegate = self;
-    tagAlbumOperationViewController.holdedBy = @"PageViewController";
-    tagAlbumOperationViewController.view.hidden = YES;
-    [self addChildViewController:tagAlbumOperationViewController];
-    [self.view addSubview:tagAlbumOperationViewController.view];
-    
-    _tagAlbumOperationView = tagAlbumOperationViewController.view;
-}
+//- (void)setupTagAlbumOperationView
+//{
+//    // tagAlbumのviewcontrollerをinstans化
+//    TagAlbumOperationViewController *tagAlbumOperationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumOperationViewController"];
+//    tagAlbumOperationViewController.delegate = self;
+//    tagAlbumOperationViewController.holdedBy = @"PageViewController";
+//    tagAlbumOperationViewController.view.hidden = YES;
+//    [self addChildViewController:tagAlbumOperationViewController];
+//    [self.view addSubview:tagAlbumOperationViewController.view];
+//    
+//    _tagAlbumOperationView = tagAlbumOperationViewController.view;
+//}
 
 - (NSMutableDictionary *)getYearMonthMap
 {
@@ -122,9 +139,8 @@
 
 - (NSString *)getDisplayedChildObjectId
 {
-    return [[_childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
+    return [[childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
 }
-
 
 /*
 #pragma mark - Navigation

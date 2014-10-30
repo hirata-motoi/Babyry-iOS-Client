@@ -11,13 +11,14 @@
 #import "PartnerInvitedEntity.h"
 #import "Config.h"
 #import "PushNotification.h"
+#import "Logger.h"
 
 @implementation PartnerApply
 
 + (BOOL) linkComplete
 {
     PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
-    if (!pie.linkComplete) {
+    if (!pie || !pie.linkComplete || [pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
         return NO;
     } else {
         return YES;
@@ -26,8 +27,7 @@
 
 + (void) setLinkComplete
 {
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if ([pie.linkComplete isEqual:[NSNumber numberWithBool:YES]]) {
         return;
     }
@@ -43,8 +43,7 @@
 
 + (void) unsetLinkComplete
 {
-    NSString *partnerInviteEntityKeyName = [Config config][@"PartnerInviteEntityKeyName"];
-    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirstByAttribute:@"name" withValue:partnerInviteEntityKeyName];
+    PartnerInviteEntity *pie = [PartnerInviteEntity MR_findFirst];
     if ([pie.linkComplete isEqual:[NSNumber numberWithBool:NO]]) {
         return;
     }
@@ -93,10 +92,13 @@
                 [partner findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                     if (objects) {
                         for (PFObject *object in objects) {
+                            NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+                            transitionInfoDic[@"event"] = @"receiveApply";
                             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+                            options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
                             NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
                             options[@"data"] = data;
+                            data[@"transitionInfo"] = transitionInfoDic;
                             if (![object[@"userId"] isEqualToString:[PFUser currentUser][@"userId"]]) {
                                 [PushNotification sendToSpecificUserInBackground:@"receiveApply" withOptions:options targetUserId:object[@"userId"]];
                             }
@@ -108,9 +110,8 @@
     }
 }
 
-+ (void) removeApplyList
++ (void) removeApplyListWithBlock:(RemovePartnerApplyBlock)block
 {
-    // pinコード入力している場合(CoreDataにデータがある場合)、PartnerApplyListにレコードを入れる
     PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
     if (pie.familyId) {
         PFQuery *apply = [PFQuery queryWithClassName:@"PartnerApplyList"];
@@ -121,11 +122,76 @@
                     [object deleteInBackground];
                 }
             }
-            pie.familyId = nil;
-            pie.inputtedPinCode = nil;
-            [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+            [self removePartnerInvitedFromCoreData];
+            block();
         }];
     }
+}
+
++ (void)removePartnerInvitedFromCoreData
+{
+    NSArray *rows = [PartnerInvitedEntity MR_findAll];
+    for (PartnerInvitedEntity *row in rows) {
+        [row MR_deleteEntity];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (void)removePartnerInviteFromCoreData
+{
+    NSArray *rows = [PartnerInviteEntity MR_findAll];
+    for (PartnerInviteEntity *row in rows) {
+        [row MR_deleteEntity];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
+// PartnerApplyListの情報をPartnerInvitedEntityへsync
+// PIN CODEは不要なのでsyncしない(というかParse上にデータがないのでできない)
++ (void)syncPartnerApply
+{
+    if (![PFUser currentUser][@"familyId"]) {
+        return;
+    }
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"PartnerApplyList"];
+    [query whereKey:@"applyingUserId" equalTo:[PFUser currentUser][@"userId"]];
+    [query orderByDescending:@"createdAt"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to load PartnerApplyList error:%@", error]];
+            return;
+        }
+        if (objects.count < 1) {
+            NSArray *rows = [PartnerInvitedEntity MR_findAll];
+            for (PartnerInvitedEntity *row in rows) {
+                [row MR_deleteEntity];
+            }
+            [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+            return;
+        }
+        
+        PartnerInvitedEntity *row = [PartnerInvitedEntity MR_findFirst];
+        if (!row) {
+            row = [PartnerInvitedEntity MR_createEntity];
+        }
+        row.familyId = objects[0][@"familyId"]; // 申請相手のfamilyId
+        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    }];
+}
+
++ (void)checkPartnerApplyListWithBlock:(CheckPartnerApplyBlock)block
+{
+    PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
+    PFQuery *query = [PFQuery queryWithClassName:@"PartnerApplyList"];
+    [query whereKey:@"familyId" equalTo:pie.familyId];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to load PartnerApplyList familyId:%@ error:%@", pie.familyId, error]];
+            return;
+        }
+        block(objects.count > 0);
+    }];
 }
 
 @end

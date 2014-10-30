@@ -13,10 +13,9 @@
 #import "MultiUploadAlbumTableViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MBProgressHUD.h"
+#import "PageContentViewController.h"
 
 @interface MultiUploadViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate>
-
-//- (IBAction)multiUploadViewBackButton:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UICollectionView *multiUploadedImages;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -27,8 +26,6 @@
 @property NSString *myRole;
 
 @property NSString *childObjectId;
-@property NSMutableDictionary *child;
-@property NSString *name;
 @property NSMutableArray *childImageArray;
 @property NSMutableArray *childCachedImageArray;
 @property NSMutableArray *childDetailImageArray;
@@ -73,9 +70,13 @@
 // for tutorial
 @property UIView *firstCellUnselectedBestShotView;
 
+@property int totalNewCacheNum;
 
 - (void)showTutorialNavigator;
 - (void)removeNavigationView;
 - (void)forwardNextTutorial;
+//- (void) dispatchForPushReceivedTransition;
 
+// バッチの更新時にreloadをかけるため
+@property (weak) PageContentViewController *pCVC;
 @end

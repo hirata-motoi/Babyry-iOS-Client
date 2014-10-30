@@ -12,6 +12,11 @@
 #import "PartnerInvitedEntity.h"
 #import "PartnerApply.h"
 #import "DateUtils.h"
+#import "CloseButtonView.h"
+#import "Tutorial.h"
+#import "ImageCache.h"
+#import "PushNotification.h"
+#import "TmpUser.h"
 
 @interface IntroMyNicknameViewController ()
 
@@ -74,6 +79,9 @@
     [_datePicker addTarget:self action:@selector(action:forEvent:) forControlEvents:UIControlEventValueChanged];
     selectedBirthday = NO;
     [_birthdayResetButton addTarget:self action:@selector(resetBirthday) forControlEvents:UIControlEventTouchUpInside];
+    
+    // logout button
+    [self setupLogoutButton];
     
     // sex
     [self resetSex];
@@ -228,6 +236,34 @@
 - (void)resetSex
 {
     _selectSexController.selectedSegmentIndex = UISegmentedControlNoSegment;
+}
+
+- (void)setupLogoutButton
+{
+    CloseButtonView *view = [CloseButtonView view];
+    CGRect rect = view.frame;
+    rect.origin.x = 10;
+    rect.origin.y = 30;
+    view.frame = rect;
+    
+    UITapGestureRecognizer *logoutGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(logout)];
+    logoutGesture.numberOfTapsRequired = 1;
+    [view addGestureRecognizer:logoutGesture];
+    
+    [self.view addSubview:view];
+}
+
+- (void)logout
+{
+    [TmpUser removeTmpUser];
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [Tutorial removeTutorialStage];
+    [ImageCache removeAllCache];
+    [PartnerApply removePartnerInviteFromCoreData];
+    [PartnerApply removePartnerInvitedFromCoreData];
+    [PushNotification removeSelfUserIdFromChannels:^(){
+        [PFUser logOut];
+    }];
 }
 
 @end

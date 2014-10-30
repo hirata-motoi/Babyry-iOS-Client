@@ -15,6 +15,7 @@
 #import "AppSetting.h"
 #import "DateUtils.h"
 #import "Logger.h"
+#import "FamilyRole.h"
 
 @implementation AppDelegate
 
@@ -63,6 +64,18 @@
     
     [self setTrackingLogName:@""];
     
+    // TransitionByPushNotification初期化
+    [TransitionByPushNotification initialize];
+    
+    // push通知から飛んだ場合userInfoに値がある
+    NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (userInfo != nil) {
+        if (userInfo[@"transitionInfo"] && [PFUser currentUser]) {
+            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+            [TransitionByPushNotification setAppLaunchedFlag];
+        }
+    }
+    
     // Override point for customization after application launch.
     return YES;
 }
@@ -72,11 +85,72 @@
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:newDeviceToken];
     currentInstallation[@"badge"] = [NSNumber numberWithInt:0];
-    [currentInstallation saveInBackground];
+    [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting device token %@", error]];
+        }
+    }];
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)err{
+    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"failed to get device token %@", err]];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    [PFPush handlePush:userInfo];
+    if (![PFUser currentUser]) {
+        return;
+    }
+    if (application.applicationState == UIApplicationStateActive) {
+        // アプリが起動している時に、push通知が届きpush通知から起動
+        
+        // パート変更の場合にはフォラグラウンドでもお知らせ
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
+            // キャッシュを更新しておく
+            [FamilyRole selfRole:@"noCache"];
+            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }];
+            [PFPush handlePush:userInfo];
+        }
+        
+        if (userInfo[@"transitionInfo"]
+            && ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"])) {
+            [PFPush handlePush:userInfo];
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"calendarAdded"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
+    }
+    
+    if (application.applicationState == UIApplicationStateInactive) {
+        // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
+        [PFPush handlePush:userInfo];
+        if (userInfo[@"transitionInfo"]) {
+            if ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"imageUpload"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
+            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+            }
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
+            // キャッシュを更新しておく
+            [FamilyRole selfRole:@"noCache"];
+            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }];
+        }
+    }
     
     /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
     NSInteger badgeNumber = [application applicationIconBadgeNumber];
@@ -109,6 +183,9 @@
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     
     [self setTrackingLogName:@"applicationWillEnterForeground"];
+    
+    NSNotification *n = [NSNotification notificationWithName:@"applicationWillEnterForeground" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

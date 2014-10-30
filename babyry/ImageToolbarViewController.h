@@ -23,6 +23,8 @@
 @property MBProgressHUD *hud;
 @property NSMutableDictionary *notificationHistoryByDay;
 @property UIImageView *commentBadge;
-@property NSMutableDictionary *child;
+@property BOOL openCommentView;
+@property NSString *childObjectId;
+@property NSString *date;
 
 @end

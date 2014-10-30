@@ -14,6 +14,7 @@
 #import "NotificationHistory.h"
 #import "Config.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface ImageToolbarViewController ()
 
@@ -63,7 +64,28 @@
     if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
         NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
         [self showCommentBadge:count];
-    }                    
+    }
+    
+    // 画像削除と保存はimageInfoが無い場合には表示させない(遅延ロードでimageInfoが取得されてから表示)
+    // コメントは日付にひもづくものなのでなくても良い
+    if (!_uploadViewController.imageInfo){
+        _imageTrashView.customView.hidden = YES;
+        _imageSaveView.customView.hidden = YES;
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:YES];
+    if (_openCommentView) {
+        [self imageComment];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:YES];
+    [TransitionByPushNotification setCommentViewOpenFlag:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -100,9 +122,11 @@
     
     AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
     
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = [Config config][@"AWSBucketName"];
-    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
+    getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], _uploadViewController.imageInfo.objectId];
     // no-cache必須
     getRequest.responseCacheControl = @"no-cache";
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
@@ -134,6 +158,9 @@
     // コメントViewの出し入れだけここでやる。表示とかは別Class
     CGRect currentFrame = _commentView.frame;
     if (currentFrame.origin.y <= 20 + 44) {
+        // 閉じる
+        [TransitionByPushNotification setCommentViewOpenFlag:NO];
+        [TransitionByPushNotification setCurrentDate:@""];
         currentFrame.origin.y = self.parentViewController.view.frame.size.height;
         currentFrame.origin.x = self.view.frame.size.width;
 
@@ -146,6 +173,9 @@
                          completion:^(BOOL finished){
                          }];
     } else {
+        // 開く
+        [TransitionByPushNotification setCommentViewOpenFlag:YES];
+        [TransitionByPushNotification setCurrentDate:_date];
         currentFrame.origin.y = 20 + 44;
         currentFrame.origin.x = 0;
         [UIView animateWithDuration:0.3
@@ -201,10 +231,17 @@
             [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/fullsize/%@", childObjectId, date, imageObject.objectId]];
             
             // 画像有る無しのカウントを0にする
-            [_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
+            //[_uploadViewController.totalImageNum replaceObjectAtIndex:_uploadViewController.currentRow withObject:[NSNumber numberWithInt:0]];
+            
+            // この日のnotification historyを削除
+            [self removeNotificationHistory:childObjectId withDate:date];
             
             [self.navigationController setNavigationBarHidden:NO];
             [self.navigationController popViewControllerAnimated:YES];
+            
+            // 削除した画像を反映してリフレッシュ
+            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
             
             break;
         }
@@ -247,6 +284,27 @@
     rect.origin.y = rect.size.height/2 * -1;
     _commentBadge.frame = rect;
     [_imageCommentView.customView addSubview:_commentBadge];
+}
+
+- (void)removeNotificationHistory:(NSString *)childObjectId withDate:(NSString *)date
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"NotificationHistory"];
+    [query whereKey:@"child" equalTo:childObjectId];
+    [query whereKey:@"date" equalTo:[NSNumber numberWithInteger:[date integerValue]]];
+    [query whereKey:@"status" equalTo:@"ready"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to remove NotificationHistory childObjectId:%@ date:%@ error:%@", childObjectId, date, error]];
+            return;
+        }
+        if (objects.count < 1) {
+            return;
+        }
+        
+        for (PFObject *notificationHistory in objects) {
+            [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
+        }
+    }];
 }
 
 /*

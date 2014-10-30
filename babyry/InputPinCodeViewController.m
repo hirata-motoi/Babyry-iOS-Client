@@ -12,6 +12,7 @@
 #import "MBProgressHUD.h"
 #import "PartnerInvitedEntity.h"
 #import "PartnerApply.h"
+#import "CloseButtonView.h"
 
 @interface InputPinCodeViewController ()
 
@@ -46,6 +47,8 @@
     UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap)];
     stgr.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:stgr];
+    
+    [_pincodeField becomeFirstResponder];
 }
 
 - (void)didReceiveMemoryWarning
@@ -56,10 +59,17 @@
 
 - (void)makeDismisButton
 {
-    _dismisButton.layer.cornerRadius = _dismisButton.frame.size.width/2;
-    UITapGestureRecognizer *dismisViewController = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismisViewController)];
-    dismisViewController.numberOfTapsRequired = 1;
-    [_dismisButton addGestureRecognizer:dismisViewController];
+    CloseButtonView *view = [CloseButtonView view];
+    CGRect rect = view.frame;
+    rect.origin.x = 10;
+    rect.origin.y = 30;
+    view.frame = rect;
+    
+    UITapGestureRecognizer *logoutGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismisViewController)];
+    logoutGesture.numberOfTapsRequired = 1;
+    [view addGestureRecognizer:logoutGesture];
+    
+    [self.view addSubview:view];
 }
 
 - (void)dismisViewController

@@ -27,6 +27,7 @@
 #import "MultiUploadViewController+Logic+Tutorial.h"
 #import "Tutorial.h"
 #import "TutorialNavigator.h"
+#import "ChildProperties.h"
 
 @interface MultiUploadViewController ()
 
@@ -36,6 +37,7 @@
     MultiUploadViewController_Logic *logic;
     MultiUploadViewController_Logic_Tutorial *logicTutorial;
     TutorialNavigator *tn;
+    NSMutableDictionary *childProperty;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -51,6 +53,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     if ([Tutorial shouldShowDefaultImage]) {
         logicTutorial = [[MultiUploadViewController_Logic_Tutorial alloc]init];
@@ -89,7 +93,7 @@
     NSString *yyyy = [_month substringToIndex:4];
     NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
     NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
-    [Navigation setTitle:self.navigationItem withTitle:_child[@"name"] withSubtitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
+    [Navigation setTitle:self.navigationItem withTitle:childProperty[@"name"] withSubtitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
                                                                      
     // set cell size
     _cellHeight = 100.0f;
@@ -99,8 +103,8 @@
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
     _bestImageId = @"";
-   
-    [[self logic] disableNotificationHistory];
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -113,6 +117,8 @@
 {
     [super viewDidAppear:animated];
     
+    [[self logic] disableNotificationHistory];
+        
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ同期中";
     
@@ -129,16 +135,20 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     [self showBestShotFixLimitLabel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     // super
-    [super viewWillAppear:animated];
+    [super viewWillDisappear:animated];
 
     [tn removeNavigationView];
     [_myTimer invalidate];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void) doTimer:(NSTimer *)timer
@@ -158,6 +168,11 @@
     return
         (logicTutorial) ? logicTutorial :
         (logic)         ? logic         : nil;
+}
+
+- (void)applicationDidReceiveRemoteNotification
+{
+    [self viewDidAppear:YES];
 }
 
 /*
@@ -290,7 +305,7 @@
         } else {
             AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
             getRequest.bucket = [Config config][@"AWSBucketName"];
-            getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]], object.objectId];
+            getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
             AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
             [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                 if (!task.error && task.result) {
@@ -344,9 +359,9 @@
     multiUploadAlbumTableViewController.childObjectId = _childObjectId;
     multiUploadAlbumTableViewController.date = _date;
     multiUploadAlbumTableViewController.month = _month;
-    multiUploadAlbumTableViewController.child = _child;
     multiUploadAlbumTableViewController.totalImageNum = _totalImageNum;
     multiUploadAlbumTableViewController.indexPath = _indexPath;
+    multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
     [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
 }
 
@@ -399,10 +414,10 @@
 
 -(void)handleSingleTap:(UIGestureRecognizer *) sender {
     _detailImageIndex = [[sender view] tag];
-    [self openImagePageView:_detailImageIndex];
+    [self openImagePageView:_detailImageIndex forceOpenBestShot:NO];
 }
 
-- (void) openImagePageView:(int)detailImageIndex
+- (void) openImagePageView:(int)detailImageIndex forceOpenBestShot:(BOOL)forceOpenBestShot
 {
     // _childImageArrayを_childImageCacheArrayのならびにそろえる (ソートの関係でそろわない可能性あり)
     // ついでにtmp省く
@@ -418,8 +433,7 @@
                 }
             }
         }
-        NSArray *tmpArray = [cacheName componentsSeparatedByString:@"-"];
-        if ([_bestImageId isEqualToString:[tmpArray lastObject]]) {
+        if ([_bestImageId isEqualToString:[splitArray lastObject]]) {
             bestIndex = i;
         }
         i++;
@@ -435,7 +449,11 @@
         ImagePageViewController *pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImagePageViewController"];
         pageViewController.childImages = childImages;
         pageViewController.currentSection = 0;
-        pageViewController.currentRow = detailImageIndex;
+        if (forceOpenBestShot && bestIndex != -1) {
+            pageViewController.currentRow = bestIndex;
+        } else {
+            pageViewController.currentRow = detailImageIndex;
+        }
         pageViewController.childObjectId = _childObjectId;
         pageViewController.fromMultiUpload = YES;
         pageViewController.myRole = _myRole;
@@ -445,19 +463,10 @@
         NSMutableDictionary *imagesCountDic = [[NSMutableDictionary alloc] init];
         [imagesCountDic setObject:[NSNumber numberWithInt:[childImageArraySorted count]] forKey:@"imagesCountNumber"];
         pageViewController.imagesCountDic = imagesCountDic;
-        pageViewController.child = _child;
         pageViewController.notificationHistory = (_notificationHistoryByDay) ? [[NSMutableDictionary alloc]initWithObjects:@[ _notificationHistoryByDay ] forKeys:@[ _date ]] : nil;
         [self.navigationController setNavigationBarHidden:YES];
         [self.navigationController pushViewController:pageViewController animated:YES];
     }
-}
-
--(void)backFromDetailImage:(id) sender
-{
-    [_pageViewController.view removeFromSuperview];
-    [_pageViewController removeFromParentViewController];
-    
-    [self viewDidAppear:(BOOL)YES];
 }
 
 - (void)setupBestShotReply
@@ -501,7 +510,6 @@
     UIButton *alreadyReplyedIcon = [[UIButton alloc] initWithFrame:[self buttonRect]];
     [alreadyReplyedIcon setBackgroundImage:[UIImage imageNamed:@"GoodBlue"] forState:UIControlStateNormal];
     [alreadyReplyedIcon setImage:[UIImage imageNamed:@"GoodBlue"] forState:UIControlStateNormal];
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:alreadyReplyedIcon];
     _bestShotReplyIcon = alreadyReplyedIcon;
     [_headerView addSubview:_bestShotReplyIcon];
 }
@@ -519,7 +527,7 @@
     [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-            options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
+            options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
             options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
             [PushNotification sendInBackground:@"bestshotReply" withOptions:options];
     

@@ -46,7 +46,6 @@
     // たまっているLogをParseに。フォアグランドでログの名前の取得まですませてからBackgroundに処理をまわすので、次のロギングには影響しない。
     [self sendTrackingLog];
     
-    NSLog(@"resetTrackingLogName");
     NSString *objectId = [PFUser currentUser].objectId ? [PFUser currentUser].objectId : @"NoObjectId";
     NSString *userId = [PFUser currentUser][@"userId"] ? [PFUser currentUser][@"userId"] : @"NoUserId";
     
@@ -77,6 +76,11 @@
 
 + (void) writeToTrackingLog:(NSString *)message
 {
+    // prodでなければログに出す
+    if(![[app env] isEqualToString:@"prod"]) {
+        NSLog(@"%@", message);
+    }
+    
     NSString *TrackingLogKeyName = [Config config][@"TrackingLogKeyName"];
     TrackingLogEntity *entity = [TrackingLogEntity MR_findFirstByAttribute:@"name" withValue:TrackingLogKeyName];
     if (!entity.logName) {

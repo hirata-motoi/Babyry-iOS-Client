@@ -21,12 +21,16 @@
 #import "Partner.h"
 #import "NotificationHistory.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface ImageOperationViewController ()
 
 @end
 
-@implementation ImageOperationViewController
+@implementation ImageOperationViewController {
+    NSMutableDictionary *childProperty;
+}
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,6 +46,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
+    
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
     // タップでoperationViewを非表示にする
@@ -49,19 +55,15 @@
     hideOperationViewTapGestureRecognizer.numberOfTapsRequired = 1;
     self.view.userInteractionEnabled = YES;
     [self.view addGestureRecognizer:hideOperationViewTapGestureRecognizer];
-
+    
     // 画像がなければコメントは出来ない
     // プリロード(サムネイルだけで本画像ではない)時もコメントは出さない(出せない)
-    if (_imageInfo && !_isPreload) {
-        [self setupCommentView];
-        
-        // 画像削除、保存、コメントは全部toolbar経由にする
-        // 画像をいじるので、これも_imageInfo必須
-        [self setupToolbar];
-        if (_fromMultiUpload) {
-            [self setupBestLabel];
-        }
+    if (_fromMultiUpload) {
+        [self setupBestLabel];
     }
+    [self setupCommentView];
+    // 画像削除、保存、コメントは全部toolbar経由にする
+    [self setupToolbar];
     [self setupNavigation];
 }
 
@@ -73,13 +75,16 @@
 
 - (void) viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     if ([self getBestShotIndex] == _pageIndex) {
         [self.view addSubview:_selectedBestshotView];
+        [self setBestShotToBack];
     }
 }
 
 - (void) viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     [_selectedBestshotView removeFromSuperview];
 }
 
@@ -103,7 +108,6 @@
             uploadPickerViewController.childObjectId = _childObjectId;
             uploadPickerViewController.date = _date;
             uploadPickerViewController.uploadViewController = _uploadViewController;
-            uploadPickerViewController.child = _child;
             [self.navigationController pushViewController:uploadPickerViewController animated:YES];
         }
             break;
@@ -122,8 +126,9 @@
     commentViewController.name = _name;
     commentViewController.date = _date;
     commentViewController.month = _month;
-    commentViewController.imageInfo = _imageInfo;
-    commentViewController.child = _child;
+    // つかってないんじゃないの？
+    //commentViewController.imageInfo = _imageInfo;
+    commentViewController.indexPath = _indexPath;
     _commentView = commentViewController.view;
     _commentView.hidden = NO;
     _commentView.frame = CGRectMake(self.view.frame.size.width, self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height -44 -20 -44);
@@ -158,7 +163,9 @@
     imageToolbarViewController.commentView = _commentView;
     imageToolbarViewController.uploadViewController = _uploadViewController;
     imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
-    imageToolbarViewController.child = _child;
+    imageToolbarViewController.openCommentView = _openCommentView;
+    imageToolbarViewController.childObjectId = _childObjectId;
+    imageToolbarViewController.date = _date;
     
     _toolbarView = imageToolbarViewController.view;
     _toolbarView.hidden = NO;
@@ -182,30 +189,30 @@
 -(void)setupBestLabel
 {
     // ベスト以外の星、全部の写真に付ける
-    UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
+    _unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
     
     // どの画像でも定位置に張る
     int bestLabelWidth = self.view.frame.size.width/6;
     int x = self.view.frame.size.width - bestLabelWidth - 5;
     int y = self.view.frame.size.height -50 - bestLabelWidth -5;
-    unSelectedBestshotView.frame = CGRectMake(x, y, bestLabelWidth, bestLabelWidth);
-    [self.view addSubview:unSelectedBestshotView];
+    _unSelectedBestshotView.frame = CGRectMake(x, y, bestLabelWidth, bestLabelWidth);
+    [self.view addSubview:_unSelectedBestshotView];
 
     // ベストショットのほうもはる
-    _selectedBestshotView.frame = unSelectedBestshotView.frame;
+    _selectedBestshotView.frame = _unSelectedBestshotView.frame;
     if ([self getBestShotIndex] == (int)_pageIndex) {
         [self.view addSubview:_selectedBestshotView];
     } else {
         if ([_myRole isEqualToString:@"uploader"]) {
-            unSelectedBestshotView.hidden = YES;
+            _unSelectedBestshotView.hidden = YES;
         }
     }
     
     if ([_myRole isEqualToString:@"chooser"]) {
         UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
         selectBestShotGesture.numberOfTapsRequired = 1;
-        unSelectedBestshotView.userInteractionEnabled = YES;
-        [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+        _unSelectedBestshotView.userInteractionEnabled = YES;
+        [_unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
     }
 }
 
@@ -213,6 +220,7 @@
 {
     _selectedBestshotView.frame = [sender view].frame;
     [self.view addSubview:_selectedBestshotView];
+    [self setBestShotToBack];
     [self setBestShotIndex:_pageIndex];
    
     UIImage *thumbImage = [ImageCache makeThumbNail:_uploadedImage];
@@ -248,7 +256,7 @@
     NSString *bestObjectId = [[[_uploadViewController.childCachedImageArray objectAtIndex:index] componentsSeparatedByString:@"-"] lastObject];
     
     // Parseを更新(Classに外出しでも良さげ)
-    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_child[@"childImageShardIndex"] integerValue]]];
+    PFQuery *childImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
     childImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
     [childImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
@@ -272,9 +280,17 @@
             }
             PFObject *partner = (PFUser *)[Partner partnerUser];
             if (partner != nil) {
+                NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+                transitionInfoDic[@"event"] = @"bestShotChosen";
+                transitionInfoDic[@"date"] = _date;
+                transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+                transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+                transitionInfoDic[@"childObjectId"] = _childObjectId;
                 NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-                options[@"formatArgs"] = [PFUser currentUser][@"nickName"];
-                options[@"data"] = [[NSMutableDictionary alloc]initWithObjects:@[@"Increment"] forKeys:@[@"badge"]];
+                options[@"formatArgs"] = [NSArray arrayWithObject:[PFUser currentUser][@"nickName"]];
+                options[@"data"] = [[NSMutableDictionary alloc]
+                                    initWithObjects:@[@"Increment", transitionInfoDic]
+                                    forKeys:@[@"badge", @"transitionInfo"]];
                 [PushNotification sendInBackground:@"bestShotChosen" withOptions:options];
                 [self createNotificationHistory:@"bestShotChanged"];
             }
@@ -297,6 +313,16 @@
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:type withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
 }
+
+- (void)setBestShotToBack
+{
+    [self.view sendSubviewToBack:_selectedBestshotView];
+    [self.view sendSubviewToBack:_unSelectedBestshotView];
+    if ([_myRole isEqualToString:@"uploader"]) {
+        _unSelectedBestshotView.hidden = YES;
+    }
+}
+
 
 /*
 #pragma mark - Navigation

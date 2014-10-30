@@ -14,6 +14,7 @@
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @interface CommentViewController ()
 
@@ -25,7 +26,9 @@ static const NSInteger secondsForOneDay = secondsForOneHour * 24;
 static const NSInteger secondsForOneMonth = secondsForOneDay * 30;
 static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
-@implementation CommentViewController
+@implementation CommentViewController {
+    NSMutableDictionary *childProperty;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -40,6 +43,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     _commentTableContainer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
     
@@ -66,19 +71,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     _commentSubmitButton.hidden = NO;
     [_commentTableContainer addSubview:_commentSubmitButton];
     
-//    // TagViewを設置
-//    NSLog(@"set tagview %@", _imageInfo);
-//    if (_imageInfo) {
-//        TagEditViewController *tagEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagEditViewController"];
-//        tagEditViewController.imageInfo = _imageInfo;
-//        _tagViewOnCommentView = tagEditViewController.view;
-//        _tagViewOnCommentView.hidden = NO;
-//        _tagViewOnCommentView.frame = CGRectMake(0, 50, self.view.frame.size.width, 60);
-//        _tagViewOnCommentView.userInteractionEnabled = YES;
-//        [self addChildViewController:tagEditViewController];
-//        [_commentTableContainer addSubview:_tagViewOnCommentView];
-//    }
-    
+    _isGettingComment = NO;
     [self getCommentFromParse];
     
     [self.commentSubmitButton addTarget:self action:@selector(submitComment) forControlEvents:UIControlEventTouchUpInside];
@@ -104,6 +97,11 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 {
     [super viewWillAppear:animated];
     
+    if (!_commentTimer || ![_commentTimer isValid]) {
+        _commentTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(getCommentFromParse) userInfo:nil repeats:YES];
+        [_commentTimer fire];
+    }
+    
     // Start observing
     if (!_keyboardObserving) {
         NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -126,6 +124,8 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
     // super
     [super viewWillDisappear:animated];
     
+    [_commentTimer invalidate];
+    
     // Stop observing
     if (_keyboardObserving) {
         NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -143,7 +143,12 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 -(void)getCommentFromParse
 {
-    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[_child[@"commentShardIndex"] integerValue]]];
+    if (_isGettingComment) {
+        return;
+    }
+    _isGettingComment = YES;
+    
+    PFQuery *commentQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[childProperty[@"commentShardIndex"] integerValue]]];
     [commentQuery whereKey:@"childId" equalTo:_childObjectId];
     [commentQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
     [commentQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -160,6 +165,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getCommentFromParse : %@", error]];
         }
+        _isGettingComment = NO;
     }];
 }
 
@@ -317,7 +323,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 {
     if ( _commentTextView && ![_commentTextView.text isEqualToString:@""] ) {
         // Insert To Parse
-        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[_child[@"commentShardIndex"] integerValue]]];
+        PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[childProperty[@"commentShardIndex"] integerValue]]];
         dailyComment[@"comment"] = _commentTextView.text;
         // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         dailyComment[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
@@ -426,12 +432,19 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 - (void)sendPushNotification:(PFObject *)dailyComment
 {
     // TODO push通知送信用methodで可変長の引数をとれるように対応する
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"commentPosted";
+    transitionInfoDic[@"date"] = _date;
+    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _indexPath.section];
+    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _indexPath.row];
+    transitionInfoDic[@"childObjectId"] = _childObjectId;
     NSString *message = [NSString stringWithFormat:@"%@さん\n%@", [PFUser currentUser][@"nickName"], dailyComment[@"comment"]];
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc]init];
     options[@"data"] = data;
     data[@"alert"] = message;
     data[@"badge"] = @"Increment";
+    data[@"transitionInfo"] = transitionInfoDic;
     [PushNotification sendInBackground:@"commentPosted" withOptions:options];
 }
 

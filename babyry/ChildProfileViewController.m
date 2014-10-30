@@ -9,12 +9,15 @@
 #import "ChildProfileViewController.h"
 #import "Navigation.h"
 #import "ChildProfileEditViewController.h"
+#import "ChildProperties.h"
 
 @interface ChildProfileViewController ()
 
 @end
 
-@implementation ChildProfileViewController
+@implementation ChildProfileViewController {
+    NSMutableDictionary *childProperty;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -29,6 +32,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     
     _childProfileTableView.delegate = self;
     _childProfileTableView.dataSource = self;
@@ -82,7 +86,7 @@
             switch (indexPath.row) {
                 case 0: {
                     cell.textLabel.text = @"名前";
-                    cell.detailTextLabel.text = _childName;
+                    cell.detailTextLabel.text = childProperty[@"name"];
                     
                     _childNicknameCell = cell;
                     break;
@@ -97,10 +101,10 @@
                     cell.textLabel.text = @"誕生日";
                     NSDateFormatter *df = [[NSDateFormatter alloc] init];
                     df.dateFormat = @"yyyy/MM/dd";
-                    if ([_childBirthday isEqualToDate:[NSDate distantFuture]]) {
+                    if ([childProperty[@"birthday"] isEqualToDate:[NSDate distantFuture]]) {
                         cell.detailTextLabel.text = @"";
                     } else {
-                        cell.detailTextLabel.text = [df stringFromDate:_childBirthday];
+                        cell.detailTextLabel.text = [df stringFromDate:childProperty[@"birthday"]];
                     }
                     _childBirthdayCell = cell;
                     break;
@@ -164,7 +168,6 @@
     ChildProfileEditViewController *childProfileEditViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileEditViewController"];
     childProfileEditViewController.delegate = self;
     childProfileEditViewController.childObjectId = _childObjectId;
-    childProfileEditViewController.child = _child;
     CGRect tableViewRect;
     if ([editName isEqualToString:@"name"]) {
         tableViewRect = _childNicknameCell.superview.superview.frame;
@@ -179,17 +182,9 @@
     [self.view addSubview:childProfileEditViewController.view];
 }
 
-- (void)changeChildNickname:(NSString *)nickname
+- (void)reloadChildProfile
 {
-    _childNicknameCell.detailTextLabel.text = nickname;
-}
-
-- (void)changeChildBirthday:(NSDate *)birthday
-{
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    df.dateFormat = @"yyyy/MM/dd";
-    _childBirthdayCell.detailTextLabel.text = [df stringFromDate:birthday];
-    _childBirthday = birthday;
+    childProperty = [ChildProperties getChildProperty:_childObjectId];
     [_childProfileTableView reloadData];
 }
 

@@ -20,11 +20,10 @@
 @property (strong, nonatomic) PFObject *currentUser;
 @property (strong, nonatomic) PFObject *currentInstallation;
 @property (strong, nonatomic) PageViewController *pageViewController;
-@property NSMutableArray *childProperties;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;
 
-@property NSUInteger currentPageIndex;
+//@property NSUInteger currentPageIndex;
 @property int only_first_load;
 @property MBProgressHUD *hud;
 @property UIView *tagAlbumOperationView;
