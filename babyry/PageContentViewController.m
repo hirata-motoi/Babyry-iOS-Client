@@ -104,6 +104,9 @@
     smallRect = CGSizeMake(windowWidth/3 - 2, windowWidth/3 - 2);
     
     alreadyRegisteredObserver = NO;
+    
+    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    _hud.hidden = YES;
 }
 
 - (void)applicationDidBecomeActive
@@ -149,8 +152,8 @@
     
     // pushでの遷移の時はクルクルを出さない。クルクルを止める処理をする時にはViewが遷移してしまっていてUIの制御が出来なくなるような挙動をするため
     if (_isFirstLoad && [[TransitionByPushNotification getInfo] count] < 1) {
-        _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         _hud.labelText = @"データ同期中";
+        _hud.hidden = NO;
     }
     
     [self setImages];
@@ -1252,8 +1255,8 @@
 - (void)showLoadingIcon
 {
     _hud = nil;
-    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ更新中";
+    _hud.hidden = NO;
 }
 
 - (void)hideLoadingIcon
