@@ -120,7 +120,7 @@
     _hud = [MBProgressHUD showHUDAddedTo:_uploadViewController.view animated:YES];
     _hud.labelText = @"画像保存中...";
     
-    AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
+    AWSServiceConfiguration *configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     
     NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
     

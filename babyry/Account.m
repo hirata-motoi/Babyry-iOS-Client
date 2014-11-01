@@ -7,6 +7,10 @@
 //
 
 #import "Account.h"
+#import "IdIssue.h"
+#import "Logger.h"
+#import "AWSCommon.h"
+#import "AWSSESUtils.h"
 
 @implementation Account
 
@@ -75,4 +79,30 @@
     return [aScanner isAtEnd];
 }
 
++ (void)sendVerifyEmail:(NSString *)email
+{
+    // Email認証用のレコード
+    // 既にレコードあれば飛ばす
+    PFQuery *emailQuery = [PFQuery queryWithClassName:@"EmailVerify"];
+    [emailQuery whereKey:@"email" equalTo:email];
+    [emailQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if ([objects count] == 0) {
+            PFObject *emailObject = [PFObject objectWithClassName:@"EmailVerify"];
+            emailObject[@"email"] = email;
+            IdIssue *idIssue = [[IdIssue alloc] init];
+            emailObject[@"token"] = [idIssue randomStringWithLength:32];
+            emailObject[@"isVerified"] = [NSNumber numberWithBool:NO];
+            [emailObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in create token recorde : %@", error]];
+                    return;
+                }
+                if (succeeded && [[app env] isEqualToString:@"prod"]) {
+                    [AWSSESUtils sendEmailBySES:[AWSCommon getAWSServiceConfiguration:@"SES"] to:emailObject[@"email"] token:emailObject[@"token"]];
+                }
+            }];
+        }
+    }];
+}
+    
 @end

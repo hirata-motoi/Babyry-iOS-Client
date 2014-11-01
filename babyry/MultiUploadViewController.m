@@ -14,7 +14,7 @@
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
 #import "Navigation.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "NotificationHistory.h"
 #import "Partner.h"
 #import "ImagePageViewController.h"
@@ -81,7 +81,7 @@
         _instructionLabel.text = @"ベストショットを選択しましょう。\n[写真の星マークをタップして選択できます]";
     }
     
-    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    _configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     _imageLoadComplete = NO;
     _currentUser = [PFUser currentUser];
     

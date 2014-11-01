@@ -14,7 +14,7 @@
 #import "TagAlbumCollectionViewCell.h"
 #import "Navigation.h"
 #import "ImagePageViewController.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "Logger.h"
 
 @interface TagAlbumViewController ()

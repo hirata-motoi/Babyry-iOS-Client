@@ -86,6 +86,10 @@
 
 - (void) checkEmailVerified
 {
+    // Facebookログイン: user[@"email"]なし => noNeed
+    // 簡単ログイン : user[@"emailCommon"]がメアド形式でない => notYet
+    // 本登録&認証済み : user[@"email"]あり、EmailVerifyのisVerifedがTRUE => done
+    // 本登録&認証未済 : user[@"email"]あり、EmailVerifyのisVerifedがFALSE => doing
     PFUser *user = [PFUser currentUser];
     if (user[@"emailVerified"]) {
         if ([user[@"emailVerified"] boolValue]) {

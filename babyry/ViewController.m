@@ -18,7 +18,6 @@
 #import "IntroChildNameViewController.h"
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
-#import "AWSS3Utils.h"
 #import "ImageEdit.h"
 #import "TagAlbumOperationViewController.h"
 #import "ArrayUtils.h"
