@@ -82,7 +82,7 @@
 + (void)sendVerifyEmail:(NSString *)email
 {
     // Email認証用のレコード
-    // 既にレコードあれば飛ばす
+    // 既にレコードあればスキップ
     PFQuery *emailQuery = [PFQuery queryWithClassName:@"EmailVerify"];
     [emailQuery whereKey:@"email" equalTo:email];
     [emailQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
@@ -92,17 +92,16 @@
             IdIssue *idIssue = [[IdIssue alloc] init];
             emailObject[@"token"] = [idIssue randomStringWithLength:32];
             emailObject[@"isVerified"] = [NSNumber numberWithBool:NO];
+            emailObject[@"userId"] = [PFUser currentUser][@"userId"];
             [emailObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                 if (error) {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in create token recorde : %@", error]];
                     return;
                 }
-                if (succeeded && [[app env] isEqualToString:@"prod"]) {
-                    [AWSSESUtils sendEmailBySES:[AWSCommon getAWSServiceConfiguration:@"SES"] to:emailObject[@"email"] token:emailObject[@"token"]];
-                }
+                [AWSSESUtils sendEmailBySES:[AWSCommon getAWSServiceConfiguration:@"SES"] to:emailObject[@"email"] token:emailObject[@"token"]];
             }];
         }
     }];
 }
-    
+
 @end

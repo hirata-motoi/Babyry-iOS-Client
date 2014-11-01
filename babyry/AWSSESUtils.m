@@ -39,11 +39,25 @@
     request.message = message;
     request.destination = destination;
     
-    [[awsSES sendEmail:request] continueWithBlock:^id(BFTask *task){
-        if (task.error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in sending mail %@", task.error]];
+//    if ([[app env] isEqualToString:@"prod"]) {
+        [[awsSES sendEmail:request] continueWithBlock:^id(BFTask *task){
+            if (task.error) {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in sending mail %@", task.error]];
+            }
+            return nil;
+        }];
+//    }
+}
+
++ (void) resendVerifyEmail:(AWSServiceConfiguration *)configuration email:(NSString *)email
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"EmailVerify"];
+    [query whereKey:@"email" equalTo:email];
+    [query whereKey:@"isVerified" equalTo:[NSNumber numberWithBool:NO]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if ([objects count] > 0) {
+            [self sendEmailBySES:configuration to:email token:objects[0][@"token"]];
         }
-        return nil;
     }];
 }
 

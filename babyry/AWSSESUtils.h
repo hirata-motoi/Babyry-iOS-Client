@@ -13,5 +13,6 @@
 @interface AWSSESUtils : NSObject
 
 + (void) sendEmailBySES:(AWSServiceConfiguration *)configuration to:(NSString *)toAddress token:(NSString *)token;
++ (void) resendVerifyEmail:(AWSServiceConfiguration *)configuration email:(NSString *)email;
 
 @end
