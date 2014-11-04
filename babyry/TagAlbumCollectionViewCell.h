@@ -14,4 +14,6 @@
 @property NSInteger currentRow;
 @property BOOL isChoosed;
 
+- (void)rotate;
+
 @end

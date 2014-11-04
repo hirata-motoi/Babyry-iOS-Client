@@ -307,6 +307,10 @@
             [cell removeGestureRecognizer:gesture];
         }
     }
+    
+    // indexPathの設定
+    cell.currentSection = indexPath.section;
+    cell.currentRow = indexPath.row;
    
     // カレンダー追加用cell
     if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
@@ -1268,6 +1272,31 @@
 {
     [self viewWillAppear:NO];
     [self viewDidAppear:NO];
+}
+
+- (void)rotateViewYAxis: (NSArray *)indexPathList
+{
+    NSMutableDictionary *targetIndexPath = [[NSMutableDictionary alloc]init];
+    for (NSIndexPath *indexPath in indexPathList) {
+        NSNumber *section = [NSNumber numberWithInteger: indexPath.section];
+        NSNumber *row = [NSNumber numberWithInteger:indexPath.row];
+        
+        if (!targetIndexPath[section]) {
+            targetIndexPath[section] = [[NSMutableDictionary alloc]init];
+        }
+       
+        targetIndexPath[section][row] = @"YES";
+    }
+    
+    for (UIView *v in [_pageContentCollectionView subviews]) {
+        if (![v isKindOfClass:[TagAlbumCollectionViewCell class]]) {
+            continue;
+        }
+        TagAlbumCollectionViewCell *cell = (TagAlbumCollectionViewCell *)v;
+        if (targetIndexPath[ [NSNumber numberWithInteger:cell.currentSection] ][ [NSNumber numberWithInteger:cell.currentRow] ]) {
+            [cell rotate];
+        }
+    }
 }
 
 
