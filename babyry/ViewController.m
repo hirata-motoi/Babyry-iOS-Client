@@ -36,13 +36,24 @@
 #import "ParseUtils.h"
 #import "ChildProperties.h"
 #import "PartnerApply.h"
-
+#import "HeaderViewManager.h"
+#import "TutorialFamilyApplyIntroduceView.h"
+#import "TutorialReceivedApplyView.h"
+#import "TutorialSentApplyView.h"
+#import "FamilyApplyListViewController.h"
+#import "PartnerInviteViewController.h"
+#import "TutorialNavigator.h"
+         
 @interface ViewController ()
 
 @end
 
 @implementation ViewController {
     NSMutableDictionary *oldestChildImageDate;
+    NSString *receivedApply;
+    NSString *sentApply;
+    CGRect pageViewRect;
+    TutorialNavigator *tn;
 }
 
 - (void)viewDidLoad
@@ -84,6 +95,7 @@
     // notification center
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
 }
 
 - (void)didReceiveMemoryWarning
@@ -100,6 +112,12 @@
             [TransitionByPushNotification returnToTop:self];
         }
     }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:YES];
+    [self setupHeaderView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -260,9 +278,21 @@
             TutorialStage *currentStage = [Tutorial currentStage];
             if ([currentStage.currentStage isEqualToString:@"familyApplyExec"] && [[ChildProperties getChildProperties] count] == 0) {
                 [self setChildNames];
+                return;
             }
         }
+        
+        if (_headerViewManager) {
+            [_headerViewManager validateTimer];
+        }
         [self showPageViewController];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    if (_headerViewManager) {
+        [_headerViewManager invalidateTimer];
     }
 }
 
@@ -276,6 +306,7 @@
 -(void) showPageViewController
 {
     if (_pageViewController) {
+        [self setupHeaderView];
         [self setupGlobalSetting];
         return;
     }
@@ -323,9 +354,20 @@
         return;
     }
     _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
+    pageViewRect = _pageViewController.view.frame;
+    
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [self setupGlobalSetting];
+    
+    if (!_headerViewManager) {
+        _headerViewManager = [[HeaderViewManager alloc]init];
+        _headerViewManager.delegate = self;
+    }
+    [self setupHeaderView];
+    if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
+        [self showTutorialNavigator];
+    }
 }
 
 - (void)setupGlobalSetting
@@ -450,6 +492,108 @@
         }
         [FamilyRole updateCache];
     }];
+}
+
+- (void)showHeaderView:(NSString *)type
+{
+    [_headerView removeFromSuperview];
+    _headerView = nil;
+    // typeに基づいてheaderviewを取得(TutorialHeaderViewクラスを作る？)
+    if ([type isEqualToString:@"receivedApply"]) {
+        TutorialReceivedApplyView *headerView = [TutorialReceivedApplyView view];
+        UITapGestureRecognizer *openPartnerWait = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openFamilyApplyList)];
+        openPartnerWait.numberOfTapsRequired = 1;
+        [headerView.openReceivedApplyButton addGestureRecognizer:openPartnerWait];
+        _headerView = headerView;
+    } else if ([type isEqualToString:@"sentApply"]) {
+        TutorialSentApplyView *headerView = [TutorialSentApplyView view];
+        UITapGestureRecognizer *openPartnerWait = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openPartnerWait)];
+        openPartnerWait.numberOfTapsRequired = 1;
+        [headerView.openPartnerApplyListButton addGestureRecognizer:openPartnerWait];
+        _headerView = headerView;
+    } else if ([type isEqualToString:@"familyApplyIntroduce"]) {
+        TutorialFamilyApplyIntroduceView *headerView = [TutorialFamilyApplyIntroduceView view];
+        UITapGestureRecognizer *openFamilyApply = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openFamilyApply)];
+        openFamilyApply.numberOfTapsRequired = 1;
+        [headerView.openFamilyApplyButton addGestureRecognizer:openFamilyApply];
+        _headerView = headerView;
+    }
+    [self setRectToHeaderView:_headerView];
+    // addSubviewする
+    [self.view addSubview:_headerView];
+    // pageViewControllerの大きさをチェック。必要なら小さくする
+    [self shrinkPageView:_headerView.frame];
+}
+
+- (void)hideHeaderView
+{
+    // header ViewをremoveFromSuperviewする
+    [_headerView removeFromSuperview];
+    // pageViewControllerの大きさを戻す
+    [self fitToScreen];
+}
+
+- (void)shrinkPageView:(CGRect)headerViewRect
+{
+    if (_pageViewController.view.frame.size.height != pageViewRect.size.height) {
+        return;
+    }
+    CGRect rect = _pageViewController.view.frame;
+    rect.size.height -= headerViewRect.size.height;
+    rect.origin.y += headerViewRect.size.height;
+    _pageViewController.view.frame = rect;
+}                   
+
+- (void)fitToScreen
+{
+    _pageViewController.view.frame = pageViewRect;
+}
+
+- (void)setRectToHeaderView:(UIView *)headerView
+{
+    CGRect rect = headerView.frame;
+    rect.origin.x = 0;
+    rect.origin.y = 64;
+    headerView.frame = rect;
+}
+
+- (void)openPartnerWait
+{
+    PartnerWaitViewController * partnerWaitViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerWaitViewController"];
+    [self.navigationController pushViewController:partnerWaitViewController animated:YES];
+}
+
+- (void)openFamilyApplyList
+{
+    FamilyApplyListViewController * familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
+    [self.navigationController pushViewController:familyApplyListViewController animated:YES];
+}
+
+- (void)openFamilyApply
+{
+    [Tutorial forwardStageWithNextStage:@"familyApplyExec"];
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+    PartnerInviteViewController * partnerInviteViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerInviteViewController"];
+    [self.navigationController pushViewController:partnerInviteViewController animated:YES];
+}
+
+- (void)setupHeaderView
+{
+    [_headerViewManager setupHeaderView:NO];
+}
+
+- (void)showTutorialNavigator
+{
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+    tn = [[TutorialNavigator alloc]init];
+    tn.targetViewController = self;
+    [tn showNavigationView];
 }
 
 @end
