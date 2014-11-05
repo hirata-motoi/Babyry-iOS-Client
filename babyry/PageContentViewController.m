@@ -1331,6 +1331,12 @@
         return;
     }
     
+    // 対象cellのindexPathList
+    NSMutableArray *indexPathList = [self rotateTargetIndexPathList];
+    if (indexPathList.count < 1) {
+        return;
+    }
+    
     AppSetting *newAppSetting = [AppSetting MR_createEntity];
     newAppSetting.name = @"finishedIntroductionToUploadPastImages";
     newAppSetting.value = @"1";
@@ -1346,7 +1352,7 @@
     [window bringSubviewToFront:view];
     
     // 少しスクロール
-    [_pageContentCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+    [_pageContentCollectionView scrollToItemAtIndexPath:indexPathList[ indexPathList.count - 1 ] atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
   
     // ダイアログを出す
     UploadPastImagesIntroductionView *dialog = [UploadPastImagesIntroductionView view];
@@ -1359,15 +1365,14 @@
     [NSTimer scheduledTimerWithTimeInterval:1.0
                                      target:self
                                    selector:@selector(rotateEmptyCells:)
-                                   userInfo:[NSMutableDictionary dictionaryWithObjects:@[view, [NSNumber numberWithInt:0]] forKeys:@[@"clearView", @"repeatCount"]]
+                                   userInfo:[NSMutableDictionary dictionaryWithObjects:@[view, indexPathList, [NSNumber numberWithInt:0]] forKeys:@[@"clearView", @"indexPathList", @"repeatCount"]]
                                     repeats:YES];
     
 }
 
-- (void)rotateEmptyCells:(NSTimer *)timer
+- (NSMutableArray *)rotateTargetIndexPathList
 {
     NSMutableArray *indexPathList = [[NSMutableArray alloc]init];
-    // 7つ目のcellまででemptyなものを選ぶ
     NSInteger totalIndex = 0;
     for (NSInteger sectionIndex = 0; sectionIndex < _childImages.count; sectionIndex++) {
         NSMutableDictionary *section = _childImages[sectionIndex];
@@ -1381,10 +1386,17 @@
             [indexPathList addObject:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]];
         }
     }
+    return indexPathList;
+}
+
+- (void)rotateEmptyCells:(NSTimer *)timer
+{
+    NSMutableDictionary *userInfo = [timer userInfo];
+    
+    NSMutableArray *indexPathList = userInfo[@"indexPathList"];
     [self rotateViewYAxis:indexPathList];
     
     // 透明viewを消す
-    NSMutableDictionary *userInfo = [timer userInfo];
     [userInfo[@"clearView"] removeFromSuperview];
  
     // 2回だけ繰り返す
