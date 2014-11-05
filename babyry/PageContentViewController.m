@@ -1352,7 +1352,7 @@
     [window bringSubviewToFront:view];
     
     // 少しスクロール
-    [_pageContentCollectionView scrollToItemAtIndexPath:indexPathList[ indexPathList.count - 1 ] atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+    [_pageContentCollectionView scrollToItemAtIndexPath:indexPathList[ indexPathList.count - 1 ] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
   
     // ダイアログを出す
     UploadPastImagesIntroductionView *dialog = [UploadPastImagesIntroductionView view];
@@ -1384,6 +1384,11 @@
             }
             
             [indexPathList addObject:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]];
+            totalIndex++;
+            
+            if (totalIndex >= 6) {
+                return indexPathList;
+            }
         }
     }
     return indexPathList;
