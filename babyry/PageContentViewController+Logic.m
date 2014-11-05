@@ -856,4 +856,7 @@
     [PushNotification sendInBackground:@"calendarAdded" withOptions:options];
 }
 
+- (void)removeDialogs
+{}
+
 @end

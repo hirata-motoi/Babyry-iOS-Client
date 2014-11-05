@@ -222,6 +222,8 @@
 		F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */; };
 		F2FAA56719E2DBF600546669 /* AddMonthToCalendarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */; };
 		F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */; };
+		F2FB3B9D1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */; };
+		F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -596,6 +598,9 @@
 		F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddMonthToCalendarView.xib; sourceTree = "<group>"; };
 		F2FAA56819E2DE6300546669 /* AddMonthToCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddMonthToCalendarView.h; sourceTree = "<group>"; };
 		F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddMonthToCalendarView.m; sourceTree = "<group>"; };
+		F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadPastImagesIntroductionView.xib; sourceTree = "<group>"; };
+		F2FB3B9E1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadPastImagesIntroductionView.h; sourceTree = "<group>"; };
+		F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPastImagesIntroductionView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1267,6 +1272,7 @@
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
 				F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */,
+				F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */,
 				F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */,
 			);
 			name = Xib;
@@ -1275,6 +1281,8 @@
 		F2AD4F10199FD37E00037C72 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2FB3B9E1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.h */,
+				F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */,
 				F2FAA56319DC576300546669 /* PageFlickIntroductionView.h */,
 				F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */,
 				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
@@ -1503,6 +1511,7 @@
 				F285516919D15F0A00347BB6 /* TutorialImage_4.jpg in Resources */,
 				F285516A19D15F0A00347BB6 /* TutorialImage_5.jpg in Resources */,
 				F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */,
+				F2FB3B9D1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib in Resources */,
 				F226592119D434C3003A62BD /* TutorialImage_0_2.jpg in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */,
@@ -1589,6 +1598,7 @@
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
 				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
+				F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */,
 				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,

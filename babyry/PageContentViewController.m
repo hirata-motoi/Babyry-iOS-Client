@@ -54,6 +54,7 @@
 #import "ParseUtils.h"
 #import "ChildProperties.h"
 #import "Partner.h"
+#import "UploadPastImagesIntroductionView.h"
 
 @interface PageContentViewController ()
 
@@ -160,6 +161,7 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
+    [self showIntroductionForFillingEmptyCells];
 }
 
 - (void)reloadView
@@ -201,6 +203,8 @@
     _tn = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [self removeDialogs];
 }
 
 - (id)logic:(NSString *)methodName
@@ -1249,12 +1253,26 @@
     NSArray *views = [self.view subviews];
     for (int i = 0; i < views.count; i++) {
         if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
-            [views[i] isKindOfClass:[PageFlickIntroductionView class]]) {
+            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
+            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
             return YES;
         }
     }
     return NO;
 }
+
+- (void)removeDialogs
+{
+    NSArray *views = [self.view subviews];
+    for (int i = 0; i < views.count; i++) {
+        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
+            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
+            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
+            [views[i] removeFromSuperview];
+        }
+    }
+}
+
 
 - (void)showLoadingIcon
 {
@@ -1299,6 +1317,85 @@
     }
 }
 
+- (void)showIntroductionForFillingEmptyCells
+{
+    NSString *currentStage = [Tutorial currentStage].currentStage;
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:@"finishedIntroductionToUploadPastImages"];
+   
+    if (
+        as                                                 ||
+        ![currentStage isEqualToString:@"familyApplyExec"] ||
+        ![_selfRole isEqualToString:@"uploader"]           ||
+        [self alreadyDisplayedDialog]
+    ) {
+        return;
+    }
+    
+    AppSetting *newAppSetting = [AppSetting MR_createEntity];
+    newAppSetting.name = @"finishedIntroductionToUploadPastImages";
+    newAppSetting.value = @"1";
+    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    
+    // 透明のviewで画面をブロック
+    UIView *view = [[UIView alloc]init];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    view.frame = window.bounds;
+    [window addSubview:view];
+    [window bringSubviewToFront:view];
+    
+    // 少しスクロール
+    [_pageContentCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+  
+    // ダイアログを出す
+    UploadPastImagesIntroductionView *dialog = [UploadPastImagesIntroductionView view];
+    CGRect rect = dialog.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width) / 2;
+    rect.origin.y = 180;
+    dialog.frame = rect;
+    [self.view addSubview:dialog];
+    
+    [NSTimer scheduledTimerWithTimeInterval:1.0
+                                     target:self
+                                   selector:@selector(rotateEmptyCells:)
+                                   userInfo:[NSMutableDictionary dictionaryWithObjects:@[view, [NSNumber numberWithInt:0]] forKeys:@[@"clearView", @"repeatCount"]]
+                                    repeats:YES];
+    
+}
+
+- (void)rotateEmptyCells:(NSTimer *)timer
+{
+    NSMutableArray *indexPathList = [[NSMutableArray alloc]init];
+    // 7つ目のcellまででemptyなものを選ぶ
+    NSInteger totalIndex = 0;
+    for (NSInteger sectionIndex = 0; sectionIndex < _childImages.count; sectionIndex++) {
+        NSMutableDictionary *section = _childImages[sectionIndex];
+        for (NSInteger rowIndex = 0; rowIndex < [section[@"images"] count]; rowIndex++) {
+            PFObject *childImage = section[@"images"][rowIndex];
+            if (childImage.objectId) { // 画像upload済
+                totalIndex++;
+                continue;
+            }
+            
+            [indexPathList addObject:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]];
+        }
+    }
+    [self rotateViewYAxis:indexPathList];
+    
+    // 透明viewを消す
+    NSMutableDictionary *userInfo = [timer userInfo];
+    [userInfo[@"clearView"] removeFromSuperview];
+ 
+    // 2回だけ繰り返す
+    NSNumber *repeatCountNumber = userInfo[@"repeatCount"];
+    NSNumber *addedRepeatCountNumber = [NSNumber numberWithInteger:[repeatCountNumber integerValue] + 1];
+    userInfo[@"repeatCount"] = addedRepeatCountNumber;
+    
+    if ([addedRepeatCountNumber integerValue] > 1) {
+        [timer invalidate];
+    }
+}
 
 /*
 #pragma mark - Navigation
