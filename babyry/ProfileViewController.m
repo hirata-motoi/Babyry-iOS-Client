@@ -156,7 +156,7 @@
                     if (emailVerified) {
                         cell.detailTextLabel.text = @"完了";
                     } else {
-                        cell.detailTextLabel.text = @"未済";
+                        cell.detailTextLabel.text = @"未完了";
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
                     break;

@@ -29,7 +29,8 @@
                                                           unauthRoleArn:[Config secretConfig][@"AWSCognitoUnauthRoleArn"]
                                                           authRoleArn:nil];
     AWSServiceConfiguration *configuration = [AWSServiceConfiguration configurationWithRegion:regionEnum credentialsProvider:credentialsProvider];
-    [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+    // システムのデフォルトとして使うconfigurationを突っ込んでいたけど、使うサービスによって異なるから突っ込まない事にした
+    //[AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
     
     return configuration;
 }

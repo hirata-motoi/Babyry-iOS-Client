@@ -98,7 +98,7 @@
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in create token recorde : %@", error]];
                     return;
                 }
-                [AWSSESUtils sendEmailBySES:[AWSCommon getAWSServiceConfiguration:@"SES"] to:emailObject[@"email"] token:emailObject[@"token"]];
+                [AWSSESUtils sendVerifyEmail:[AWSCommon getAWSServiceConfiguration:@"SES"] to:emailObject[@"email"] token:emailObject[@"token"]];
             }];
         }
     }];

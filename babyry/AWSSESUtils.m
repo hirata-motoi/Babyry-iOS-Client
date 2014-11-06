@@ -12,7 +12,7 @@
 
 @implementation AWSSESUtils
 
-+ (void) sendEmailBySES:(AWSServiceConfiguration *)configuration to:(NSString *)toAddress token:(NSString *)token
++ (void) sendVerifyEmail:(AWSServiceConfiguration *)configuration to:(NSString *)toAddress token:(NSString *)token
 {
     AWSSES *awsSES = [[AWSSES new] initWithConfiguration:configuration];
     
@@ -35,7 +35,7 @@
     [destination setToAddresses:addressArray];
 
     AWSSESSendEmailRequest *request = [[AWSSESSendEmailRequest alloc] init];
-    request.source = @"info@meaning.co.jp";
+    request.source = [Config config][@"InquiryEmail"];
     request.message = message;
     request.destination = destination;
     
@@ -56,7 +56,7 @@
     [query whereKey:@"isVerified" equalTo:[NSNumber numberWithBool:NO]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if ([objects count] > 0) {
-            [self sendEmailBySES:configuration to:email token:objects[0][@"token"]];
+            [self sendVerifyEmail:configuration to:email token:objects[0][@"token"]];
         }
     }];
 }
