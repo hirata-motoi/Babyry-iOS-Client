@@ -36,6 +36,7 @@
 #import "ParseUtils.h"
 #import "ChildProperties.h"
 #import "PartnerApply.h"
+#import "ImageUploadInBackground.h"
 
 @interface ViewController ()
 
@@ -84,6 +85,7 @@
     // notification center
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(multiUploadImageInBackground) name:@"multiUploadImageInBackground" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -450,6 +452,11 @@
         }
         [FamilyRole updateCache];
     }];
+}
+
+- (void)multiUploadImageInBackground
+{
+    [ImageUploadInBackground multiUploadToParseInBackground];
 }
 
 @end

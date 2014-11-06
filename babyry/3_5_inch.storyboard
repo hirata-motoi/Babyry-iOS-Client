@@ -147,10 +147,10 @@
             </objects>
             <point key="canvasLocation" x="-441" y="-581"/>
         </scene>
-        <!--Multi Upload Album Table View Controller-->
+        <!--Album Table View Controller-->
         <scene sceneID="tx7-zb-PV9">
             <objects>
-                <viewController storyboardIdentifier="MultiUploadAlbumTableViewController" id="5Z6-az-HAZ" customClass="MultiUploadAlbumTableViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AlbumTableViewController" id="5Z6-az-HAZ" customClass="AlbumTableViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Zni-gH-QQV">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -416,10 +416,10 @@
             </objects>
             <point key="canvasLocation" x="1374" y="379"/>
         </scene>
-        <!--Multi Upload Picker View Controller-->
+        <!--Album Picker View Controller-->
         <scene sceneID="Bdz-YP-FE1">
             <objects>
-                <viewController storyboardIdentifier="MultiUploadPickerViewController" id="arV-4y-sLh" customClass="MultiUploadPickerViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AlbumPickerViewController" id="arV-4y-sLh" customClass="AlbumPickerViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dDQ-I5-QdS">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
