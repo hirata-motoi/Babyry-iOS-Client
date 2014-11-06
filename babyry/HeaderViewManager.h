@@ -25,5 +25,6 @@
 - (void)setupHeaderView:(BOOL)doBackground;
 - (void)invalidateTimer;
 - (void)validateTimer;
+- (void)checkPartnerApplyStatus;
 
 @end

@@ -96,6 +96,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
 }
 
 - (void)didReceiveMemoryWarning
@@ -364,7 +365,7 @@
         _headerViewManager = [[HeaderViewManager alloc]init];
         _headerViewManager.delegate = self;
     }
-    [self setupHeaderView];
+    [_headerViewManager setupHeaderView:YES];
     if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
         [self showTutorialNavigator];
     }
@@ -594,6 +595,11 @@
     tn = [[TutorialNavigator alloc]init];
     tn.targetViewController = self;
     [tn showNavigationView];
+}
+
+- (void)checkHeaderView
+{
+    [_headerViewManager checkPartnerApplyStatus];
 }
 
 @end
