@@ -224,6 +224,9 @@
 		F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */; };
 		F2FB3B9D1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */; };
 		F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */; };
+		F2FB3BA81A0A61D200B0A2DD /* ChildFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */; };
+		F2FB3BAA1A0A685900B0A2DD /* ChildFilterListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FB3BA91A0A685900B0A2DD /* ChildFilterListCell.xib */; };
+		F2FB3BAD1A0A68FE00B0A2DD /* ChildFilterListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3BAC1A0A68FE00B0A2DD /* ChildFilterListCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -601,6 +604,11 @@
 		F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadPastImagesIntroductionView.xib; sourceTree = "<group>"; };
 		F2FB3B9E1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadPastImagesIntroductionView.h; sourceTree = "<group>"; };
 		F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPastImagesIntroductionView.m; sourceTree = "<group>"; };
+		F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildFilterViewController.h; sourceTree = "<group>"; };
+		F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildFilterViewController.m; sourceTree = "<group>"; };
+		F2FB3BA91A0A685900B0A2DD /* ChildFilterListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildFilterListCell.xib; sourceTree = "<group>"; };
+		F2FB3BAB1A0A68FE00B0A2DD /* ChildFilterListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildFilterListCell.h; sourceTree = "<group>"; };
+		F2FB3BAC1A0A68FE00B0A2DD /* ChildFilterListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildFilterListCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -929,6 +937,8 @@
 				88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */,
 				F233421619A115D900928101 /* FamilyApplyListCell.h */,
 				F233421719A115D900928101 /* FamilyApplyListCell.m */,
+				F2FB3BAB1A0A68FE00B0A2DD /* ChildFilterListCell.h */,
+				F2FB3BAC1A0A68FE00B0A2DD /* ChildFilterListCell.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -947,6 +957,7 @@
 				F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */,
 				F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */,
 				F233421419A114E900928101 /* FamilyApplyListCell.xib */,
+				F2FB3BA91A0A685900B0A2DD /* ChildFilterListCell.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -986,6 +997,8 @@
 		F215DDCD19761CA50092C712 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */,
+				F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */,
 				F2694B001983A17B008239F6 /* PageView */,
 				F215DDD51976203C0092C712 /* MultiUpload */,
 				F215DDD219761DFB0092C712 /* Intro */,
@@ -1467,6 +1480,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				88CFF52D199B68E400B56481 /* Localizable.strings in Resources */,
+				F2FB3BAA1A0A685900B0A2DD /* ChildFilterListCell.xib in Resources */,
 				F28DFD5019D527BE0080E5C2 /* TutorialReceivedApplyView.xib in Resources */,
 				F21BBBE019CA72D7002D4623 /* TutorialAddChildView.xib in Resources */,
 				F2A8332C19AB0F5C00E2AB58 /* babyry-config.plist in Resources */,
@@ -1601,6 +1615,7 @@
 				F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */,
 				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
+				F2FB3BAD1A0A68FE00B0A2DD /* ChildFilterListCell.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				F21BBBB819C9EEA7002D4623 /* TutorialShowMultiUploadView.m in Sources */,
 				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
@@ -1693,6 +1708,7 @@
 				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
+				F2FB3BA81A0A61D200B0A2DD /* ChildFilterViewController.m in Sources */,
 				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
 				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
