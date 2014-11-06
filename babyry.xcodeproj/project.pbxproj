@@ -86,7 +86,6 @@
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
 		88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */; };
 		88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */; };
-		88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */; };
 		88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */; };
 		88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */; };
 		88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4FF1999312100B56481 /* ImageToolbarTrashIcon.m */; };
@@ -378,8 +377,6 @@
 		88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellBackgroundViewNoImage.xib; sourceTree = "<group>"; };
 		88CFF4E61997B91400B56481 /* CellBackgroundViewNoImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewNoImage.h; sourceTree = "<group>"; };
 		88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewNoImage.m; sourceTree = "<group>"; };
-		88CFF4E91997FFD300B56481 /* UploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadPickerViewController.h; sourceTree = "<group>"; };
-		88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPickerViewController.m; sourceTree = "<group>"; };
 		88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarViewController.h; sourceTree = "<group>"; };
 		88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarViewController.m; sourceTree = "<group>"; };
 		88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageToolbarTrashIcon.xib; sourceTree = "<group>"; };
@@ -1084,8 +1081,6 @@
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
 				F210670A196E734D00187119 /* TagEditViewController.h */,
 				F210670B196E734D00187119 /* TagEditViewController.m */,
-				88CFF4E91997FFD300B56481 /* UploadPickerViewController.h */,
-				88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */,
 				88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */,
 				88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */,
 			);
@@ -1706,7 +1701,6 @@
 				F226591D19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m in Sources */,
 				889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */,
 				88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */,
-				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
 				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
 				88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */,
