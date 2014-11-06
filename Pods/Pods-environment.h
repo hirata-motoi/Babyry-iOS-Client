@@ -108,6 +108,12 @@
 #define COCOAPODS_VERSION_MINOR_GZIP 0
 #define COCOAPODS_VERSION_PATCH_GZIP 3
 
+// MYNStickyFlowLayout
+#define COCOAPODS_POD_AVAILABLE_MYNStickyFlowLayout
+#define COCOAPODS_VERSION_MAJOR_MYNStickyFlowLayout 0
+#define COCOAPODS_VERSION_MINOR_MYNStickyFlowLayout 1
+#define COCOAPODS_VERSION_PATCH_MYNStickyFlowLayout 2
+
 // MagicalRecord
 #define COCOAPODS_POD_AVAILABLE_MagicalRecord
 #define COCOAPODS_VERSION_MAJOR_MagicalRecord 2
