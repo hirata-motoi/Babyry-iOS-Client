@@ -77,7 +77,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     // 再利用できるセルがあれば再利用する
-    ChildFilterListCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    ChildFilterListCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     if (!cell) {
         // 再利用できない場合は新規で作成

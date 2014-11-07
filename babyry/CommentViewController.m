@@ -191,7 +191,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 // indexPathの位置にあるセルを返す
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     cell.textLabel.numberOfLines = 0;
     cell.backgroundColor = [UIColor clearColor];
 
