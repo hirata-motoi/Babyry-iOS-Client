@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Parse/Parse.h>
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 
 @class UploadViewController;
 

@@ -20,10 +20,12 @@
 		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
 		883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */; };
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
+		886A90F61A03A4AB007849DB /* AWSCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90F51A03A4AB007849DB /* AWSCommon.m */; };
+		886A90FA1A03A84F007849DB /* AWSSESUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90F91A03A84F007849DB /* AWSSESUtils.m */; };
+		886A90FD1A051E3D007849DB /* PasswordChangeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90FC1A051E3D007849DB /* PasswordChangeViewController.m */; };
 		887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */; };
 		8881CFA119A0C67800B909C8 /* MyLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8881CFA019A0C67800B909C8 /* MyLogInViewController.m */; };
 		8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */; };
-		889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002F7198E6FA9005775B5 /* AWSS3Utils.m */; };
 		889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FA198F5EC7005775B5 /* ChildProfileViewController.m */; };
 		889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */; };
 		889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */; };
@@ -106,7 +108,7 @@
 		F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC8197402090092C712 /* TagAlbumPageViewController.m */; };
 		F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */; };
 		F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDD719766ECC0092C712 /* ProfileViewController.m */; };
-		F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */; };
+		F215DDDB1976BFB70092C712 /* ProfileEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* ProfileEditViewController.m */; };
 		F215DDDE19777CD00092C712 /* PushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDD19777CD00092C712 /* PushNotification.m */; };
 		F21BBBB519C9ED45002D4623 /* TutorialShowMultiUploadView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F21BBBB419C9ED45002D4623 /* TutorialShowMultiUploadView.xib */; };
 		F21BBBB819C9EEA7002D4623 /* TutorialShowMultiUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F21BBBB719C9EEA7002D4623 /* TutorialShowMultiUploadView.m */; };
@@ -261,14 +263,18 @@
 		883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerWaitViewController.m; sourceTree = "<group>"; };
 		885A223519750DD20039B263 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
 		885A223619750DD20039B263 /* DateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtils.m; sourceTree = "<group>"; };
+		886A90F41A03A4AB007849DB /* AWSCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSCommon.h; sourceTree = "<group>"; };
+		886A90F51A03A4AB007849DB /* AWSCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSCommon.m; sourceTree = "<group>"; };
+		886A90F81A03A84F007849DB /* AWSSESUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSSESUtils.h; sourceTree = "<group>"; };
+		886A90F91A03A84F007849DB /* AWSSESUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSSESUtils.m; sourceTree = "<group>"; };
+		886A90FB1A051E3D007849DB /* PasswordChangeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordChangeViewController.h; sourceTree = "<group>"; };
+		886A90FC1A051E3D007849DB /* PasswordChangeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasswordChangeViewController.m; sourceTree = "<group>"; };
 		887CF8E01987822300B90C2E /* UIPlaceHolderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPlaceHolderTextView.h; sourceTree = "<group>"; };
 		887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPlaceHolderTextView.m; sourceTree = "<group>"; };
 		8881CF9F19A0C67800B909C8 /* MyLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyLogInViewController.h; sourceTree = "<group>"; };
 		8881CFA019A0C67800B909C8 /* MyLogInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyLogInViewController.m; sourceTree = "<group>"; };
 		8881CFA219A0DBC800B909C8 /* MySignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MySignUpViewController.h; sourceTree = "<group>"; };
 		8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MySignUpViewController.m; sourceTree = "<group>"; };
-		889002F6198E6FA9005775B5 /* AWSS3Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSS3Utils.h; sourceTree = "<group>"; };
-		889002F7198E6FA9005775B5 /* AWSS3Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSS3Utils.m; sourceTree = "<group>"; };
 		889002F9198F5EC7005775B5 /* ChildProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileViewController.h; sourceTree = "<group>"; };
 		889002FA198F5EC7005775B5 /* ChildProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileViewController.m; sourceTree = "<group>"; };
 		889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileEditViewController.h; sourceTree = "<group>"; };
@@ -409,8 +415,8 @@
 		F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumCollectionViewCell.m; sourceTree = "<group>"; };
 		F215DDD619766ECC0092C712 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		F215DDD719766ECC0092C712 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
-		F215DDD91976BFB70092C712 /* NicknameEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameEditViewController.h; sourceTree = "<group>"; };
-		F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NicknameEditViewController.m; sourceTree = "<group>"; };
+		F215DDD91976BFB70092C712 /* ProfileEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileEditViewController.h; sourceTree = "<group>"; };
+		F215DDDA1976BFB70092C712 /* ProfileEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileEditViewController.m; sourceTree = "<group>"; };
 		F215DDDC19777CD00092C712 /* PushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushNotification.h; sourceTree = "<group>"; };
 		F215DDDD19777CD00092C712 /* PushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushNotification.m; sourceTree = "<group>"; };
 		F21BBBB419C9ED45002D4623 /* TutorialShowMultiUploadView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TutorialShowMultiUploadView.xib; sourceTree = "<group>"; };
@@ -638,6 +644,7 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				886A90F31A0398D5007849DB /* AWS */,
 				F2FAA55519DC04A700546669 /* Gadget */,
 				F21BBBB119C9EC85002D4623 /* TutorialView */,
 				F2D9350619C97BB3001F33D0 /* TutorialNavigator */,
@@ -690,8 +697,6 @@
 				F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */,
 				F2310C20198F43DF00E01DA3 /* DragView.h */,
 				F2310C21198F43DF00E01DA3 /* DragView.m */,
-				889002F6198E6FA9005775B5 /* AWSS3Utils.h */,
-				889002F7198E6FA9005775B5 /* AWSS3Utils.m */,
 				88CFF4DA19938A0600B56481 /* CalenderLabel.h */,
 				88CFF4DB19938A0600B56481 /* CalenderLabel.m */,
 				F271B3191998CC2200C9952A /* Sharding.h */,
@@ -724,6 +729,17 @@
 				889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		886A90F31A0398D5007849DB /* AWS */ = {
+			isa = PBXGroup;
+			children = (
+				886A90F41A03A4AB007849DB /* AWSCommon.h */,
+				886A90F51A03A4AB007849DB /* AWSCommon.m */,
+				886A90F81A03A84F007849DB /* AWSSESUtils.h */,
+				886A90F91A03A84F007849DB /* AWSSESUtils.m */,
+			);
+			name = AWS;
 			sourceTree = "<group>";
 		};
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
@@ -1012,8 +1028,8 @@
 				F261A880196418990072BBD2 /* FamilyApplyListViewController.m */,
 				F215DDD619766ECC0092C712 /* ProfileViewController.h */,
 				F215DDD719766ECC0092C712 /* ProfileViewController.m */,
-				F215DDD91976BFB70092C712 /* NicknameEditViewController.h */,
-				F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */,
+				F215DDD91976BFB70092C712 /* ProfileEditViewController.h */,
+				F215DDDA1976BFB70092C712 /* ProfileEditViewController.m */,
 				889002F9198F5EC7005775B5 /* ChildProfileViewController.h */,
 				889002FA198F5EC7005775B5 /* ChildProfileViewController.m */,
 				889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */,
@@ -1024,6 +1040,8 @@
 				88C072D019C8798100BF6F6F /* PartnerInviteViewController.m */,
 				883A92F119D2257C00F82A34 /* PartnerWaitViewController.h */,
 				883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */,
+				886A90FB1A051E3D007849DB /* PasswordChangeViewController.h */,
+				886A90FC1A051E3D007849DB /* PasswordChangeViewController.m */,
 			);
 			name = GlobalSetting;
 			sourceTree = "<group>";
@@ -1610,11 +1628,13 @@
 				F271B31E1999E5E800C9952A /* Badge.m in Sources */,
 				F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */,
 				883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */,
+				886A90F61A03A4AB007849DB /* AWSCommon.m in Sources */,
 				88C072CB19C60E1600BF6F6F /* UserRegisterViewController.m in Sources */,
 				889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */,
 				8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */,
 				F2B7E0EE19C742520052981B /* PageContentViewController+Logic.m in Sources */,
 				F21BBBE319CA7359002D4623 /* TutorialAddChildView.m in Sources */,
+				886A90FD1A051E3D007849DB /* PasswordChangeViewController.m in Sources */,
 				F28DFD5319D5285F0080E5C2 /* TutorialReceivedApplyView.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
@@ -1635,6 +1655,7 @@
 				F2D934F019C78D3B001F33D0 /* MultiUploadViewController+Logic.m in Sources */,
 				88AA2FF4196E3C9200F4B40C /* IntroMyNicknameViewController.m in Sources */,
 				F2B7E0DC19C166D20052981B /* Tutorial.m in Sources */,
+				886A90FA1A03A84F007849DB /* AWSSESUtils.m in Sources */,
 				88AA2FE9196C16D600F4B40C /* IntroFirstViewController.m in Sources */,
 				88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */,
 				F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */,
@@ -1670,10 +1691,9 @@
 				F21BBBBD19C9F944002D4623 /* TutorialSelectBestShotView.m in Sources */,
 				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				F226591D19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m in Sources */,
-				889002F8198E6FA9005775B5 /* AWSS3Utils.m in Sources */,
 				88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */,
 				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
-				F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */,
+				F215DDDB1976BFB70092C712 /* ProfileEditViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
 				88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */,
 				F226591219D225AC003A62BD /* TutorialSelectBestShotFinishedView.m in Sources */,

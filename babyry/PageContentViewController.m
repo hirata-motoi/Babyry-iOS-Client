@@ -31,7 +31,6 @@
 #import "CalenderLabel.h"
 #import "PushNotification.h"
 #import "UploadPickerViewController.h"
-#import "AWSS3Utils.h"
 #import "NotificationHistory.h"
 #import "ColorUtils.h"
 #import "Badge.h"
@@ -90,7 +89,7 @@
     logic.pageContentViewController = self;
     
     // Do any additional setup after loading the view.
-    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    _configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];

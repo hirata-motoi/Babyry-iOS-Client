@@ -8,6 +8,8 @@
 
 #import "NotEmailVerifiedViewController.h"
 #import "Logger.h"
+#import "AWSCommon.h"
+#import "AWSSESUtils.h"
 
 @interface NotEmailVerifiedViewController ()
 
@@ -82,24 +84,14 @@
     }
 }
 
-- (void)logOut
-{
-    [PFUser logOut];
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 - (void)resend
 {
     [Logger writeOneShot:@"crit" message:@"Resend email"];
-    PFUser *selfUser = [PFUser currentUser];
-    NSString *email = selfUser[@"email"];
-    selfUser[@"email"] = email;
-    [selfUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [[PFUser currentUser]refresh];
-    }];
+
+    [AWSSESUtils resendVerifyEmail:[AWSCommon getAWSServiceConfiguration:@"SES"] email:[PFUser currentUser][@"emailCommon"]];
     
     // 再送信をした旨をalertで表示
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"以下のアドレスへ再度メールを送信しました"
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"登録されているアドレスへ再度メールを送信しました"
                                                     message:[PFUser currentUser][@"email"]
                                                    delegate:nil
                                           cancelButtonTitle:@"閉じる"

@@ -10,7 +10,7 @@
 #import <Parse/Parse.h>
 #import "ImageCache.h"
 #import "ImageTrimming.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "NotificationHistory.h"
 #import "Partner.h"
 #import "PushNotification.h"
@@ -48,7 +48,7 @@
     
     _picNumLabel.text = [NSString stringWithFormat:@"%d枚アップロード済み、残り%d枚", currentNum, 15 - currentNum];
     
-    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    _configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     
     _albumImageCollectionView.delegate = self;
     _albumImageCollectionView.dataSource = self;

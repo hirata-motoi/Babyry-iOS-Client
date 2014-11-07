@@ -11,7 +11,7 @@
 #import "ImageCache.h"
 #import "Logger.h"
 #import "DateUtils.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "Config.h"
 #import "AppSetting.h"
 #import "NotificationHistory.h"
