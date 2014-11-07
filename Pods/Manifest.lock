@@ -137,7 +137,6 @@ PODS:
   - Mantle (1.4.1):
     - Mantle/extobjc
   - Mantle/extobjc (1.4.1)
-  - MYNStickyFlowLayout (0.1.2)
   - Parse (1.4.1):
     - Bolts (~> 1.1.2)
   - ParseFacebookUtils (1.4.1):
@@ -153,7 +152,6 @@ DEPENDENCIES:
   - CrittercismSDK (= 4.3.7)
   - Facebook-iOS-SDK (= 3.18)
   - MagicalRecord (= 2.2)
-  - MYNStickyFlowLayout
   - Parse (= 1.4.1)
   - ParseFacebookUtils (= 1.4.1)
 
@@ -165,7 +163,6 @@ SPEC CHECKSUMS:
   GZIP: f27c434ffee5e9a9b34f4e9c19e91350fa8bbde1
   MagicalRecord: 2b471584fc9e3137f3d0a56967917baa4979e224
   Mantle: 1ca9c0fa84d3d3fc98524e7229f30489b6dd44e5
-  MYNStickyFlowLayout: 526517bf63272d8adb6caa05a3cab7da3c65dbf0
   Parse: db1a09c832b7509edcc88a65dc07229f5e578c73
   ParseFacebookUtils: 625da00d0f36a34e25ebae7f543385a0f19ccf1e
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
