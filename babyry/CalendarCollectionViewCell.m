@@ -1,14 +1,14 @@
 //
-//  TagAlbumCollectionViewCell.m
+//  CalendarCollectionViewCell.m
 //  babyry
 //
 //  Created by 平田基 on 2014/07/14.
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
-#import "TagAlbumCollectionViewCell.h"
+#import "CalendarCollectionViewCell.h"
 
-@implementation TagAlbumCollectionViewCell
+@implementation CalendarCollectionViewCell
 
 - (id)initWithFrame:(CGRect)frame
 {

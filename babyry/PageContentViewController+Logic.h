@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "PageContentViewController.h"
-#import "TagAlbumCollectionViewCell.h"
 
 @interface PageContentViewController_Logic : NSObject
 

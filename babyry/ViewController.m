@@ -20,7 +20,6 @@
 #import "UIColor+Hex.h"
 #import "AWSS3Utils.h"
 #import "ImageEdit.h"
-#import "TagAlbumOperationViewController.h"
 #import "ArrayUtils.h"
 #import "Navigation.h"
 #import "Partner.h"

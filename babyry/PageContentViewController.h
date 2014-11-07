@@ -12,7 +12,7 @@
 #import "AWSS3Utils.h"
 #import "MBProgressHUD.h"
 #import <AudioToolbox/AudioServices.h>
-#import "TagAlbumCollectionViewCell.h"
+#import "CalendarCollectionViewCell.h"
 #import "TutorialNavigator.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 
@@ -74,7 +74,7 @@
 @property NSTimer *tm;
 
 // for tutorial
-@property TagAlbumCollectionViewCell *cellOfToday;
+@property CalendarCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;
 @property UIView *familyApplyIntroduceView;
 @property NSTimer *instructionTimer;

@@ -9,7 +9,6 @@
 #import "PageViewController.h"
 #import "PageContentViewController.h"
 #import "ImageEdit.h"
-#import "TagAlbumOperationViewController.h"
 #import "ChildProperties.h"
 
 @interface PageViewController ()
@@ -117,19 +116,6 @@
 {
     _tagAlbumOperationView.hidden = NO;
 }
-
-//- (void)setupTagAlbumOperationView
-//{
-//    // tagAlbumのviewcontrollerをinstans化
-//    TagAlbumOperationViewController *tagAlbumOperationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TagAlbumOperationViewController"];
-//    tagAlbumOperationViewController.delegate = self;
-//    tagAlbumOperationViewController.holdedBy = @"PageViewController";
-//    tagAlbumOperationViewController.view.hidden = YES;
-//    [self addChildViewController:tagAlbumOperationViewController];
-//    [self.view addSubview:tagAlbumOperationViewController.view];
-//    
-//    _tagAlbumOperationView = tagAlbumOperationViewController.view;
-//}
 
 - (NSMutableDictionary *)getYearMonthMap
 {

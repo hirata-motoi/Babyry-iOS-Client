@@ -101,10 +101,7 @@
 		F2106709196E33EE00187119 /* CommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106708196E33EE00187119 /* CommentViewController.m */; };
 		F210670C196E734D00187119 /* TagEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670B196E734D00187119 /* TagEditViewController.m */; };
 		F210670F196E805A00187119 /* TagView.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670E196E805A00187119 /* TagView.m */; };
-		F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106711196FD7F600187119 /* TagAlbumViewController.m */; };
-		F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */; };
-		F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC8197402090092C712 /* TagAlbumPageViewController.m */; };
-		F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */; };
+		F215DDCC197409920092C712 /* CalendarCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */; };
 		F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDD719766ECC0092C712 /* ProfileViewController.m */; };
 		F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */; };
 		F215DDDE19777CD00092C712 /* PushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDD19777CD00092C712 /* PushNotification.m */; };
@@ -404,14 +401,8 @@
 		F210670B196E734D00187119 /* TagEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagEditViewController.m; sourceTree = "<group>"; };
 		F210670D196E805A00187119 /* TagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagView.h; sourceTree = "<group>"; };
 		F210670E196E805A00187119 /* TagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagView.m; sourceTree = "<group>"; };
-		F2106710196FD7F600187119 /* TagAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumViewController.h; sourceTree = "<group>"; };
-		F2106711196FD7F600187119 /* TagAlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumViewController.m; sourceTree = "<group>"; };
-		F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumOperationViewController.h; sourceTree = "<group>"; };
-		F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumOperationViewController.m; sourceTree = "<group>"; };
-		F215DDC7197402090092C712 /* TagAlbumPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumPageViewController.h; sourceTree = "<group>"; };
-		F215DDC8197402090092C712 /* TagAlbumPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumPageViewController.m; sourceTree = "<group>"; };
-		F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumCollectionViewCell.h; sourceTree = "<group>"; };
-		F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumCollectionViewCell.m; sourceTree = "<group>"; };
+		F215DDCA197409920092C712 /* CalendarCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCollectionViewCell.h; sourceTree = "<group>"; };
+		F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCollectionViewCell.m; sourceTree = "<group>"; };
 		F215DDD619766ECC0092C712 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		F215DDD719766ECC0092C712 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		F215DDD91976BFB70092C712 /* NicknameEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameEditViewController.h; sourceTree = "<group>"; };
@@ -669,8 +660,8 @@
 				8814A9991945469B0010F516 /* ImageCache.m */,
 				F210670D196E805A00187119 /* TagView.h */,
 				F210670E196E805A00187119 /* TagView.m */,
-				F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */,
-				F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */,
+				F215DDCA197409920092C712 /* CalendarCollectionViewCell.h */,
+				F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */,
 				84ABD705194DBE8500BC3CDA /* Sequence.h */,
 				84ABD706194DBE8500BC3CDA /* Sequence.m */,
 				88AB3A0919AC31D100DA92D4 /* Logger.h */,
@@ -1003,7 +994,6 @@
 				F215DDD51976203C0092C712 /* MultiUpload */,
 				F215DDD219761DFB0092C712 /* Intro */,
 				F215DDD019761D6E0092C712 /* Upload */,
-				F215DDCF19761D3D0092C712 /* TagAlbum */,
 				F215DDCE19761D260092C712 /* GlobalSetting */,
 				88B89FB6193B2D52009474DC /* PageContentViewController.h */,
 				88B89FB7193B2D52009474DC /* PageContentViewController.m */,
@@ -1044,19 +1034,6 @@
 				883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */,
 			);
 			name = GlobalSetting;
-			sourceTree = "<group>";
-		};
-		F215DDCF19761D3D0092C712 /* TagAlbum */ = {
-			isa = PBXGroup;
-			children = (
-				F215DDC7197402090092C712 /* TagAlbumPageViewController.h */,
-				F215DDC8197402090092C712 /* TagAlbumPageViewController.m */,
-				F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */,
-				F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */,
-				F2106710196FD7F600187119 /* TagAlbumViewController.h */,
-				F2106711196FD7F600187119 /* TagAlbumViewController.m */,
-			);
-			name = TagAlbum;
 			sourceTree = "<group>";
 		};
 		F215DDD019761D6E0092C712 /* Upload */ = {
@@ -1588,7 +1565,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */,
-				F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */,
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
@@ -1628,7 +1604,6 @@
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				889F53ED19EAE4F5009B3123 /* PartnerInviteEntity.m in Sources */,
-				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
 				F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */,
 				F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */,
 				F21BBBF919CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.m in Sources */,
@@ -1649,7 +1624,6 @@
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
 				F21BBBE619CAA147002D4623 /* TutorialNavigator+AddChildExec.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
-				F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
@@ -1687,7 +1661,7 @@
 				88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */,
 				88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */,
 				F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */,
-				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
+				F215DDCC197409920092C712 /* CalendarCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
 				88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */,

@@ -17,7 +17,7 @@
 #import "FamilyApply.h"
 #import "ImagePageViewController.h"
 #import "ArrayUtils.h"
-#import "TagAlbumCollectionViewCell.h"
+#import "CalendarCollectionViewCell.h"
 #import "DateUtils.h"
 #import "DragView.h"
 #import "CellBackgroundViewToEncourageUpload.h"
@@ -260,7 +260,7 @@
     // UICollectionViewの土台を作成
     _pageContentCollectionView.delegate = self;
     _pageContentCollectionView.dataSource = self;
-    [_pageContentCollectionView registerClass:[TagAlbumCollectionViewCell class] forCellWithReuseIdentifier:@"PageContentCollectionView"];
+    [_pageContentCollectionView registerClass:[CalendarCollectionViewCell class] forCellWithReuseIdentifier:@"PageContentCollectionView"];
     [_pageContentCollectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader"];
     
     [self.view addSubview:_pageContentCollectionView];
@@ -299,10 +299,10 @@
 }
 
 // 指定された場所のセルを作るメソッド
--(TagAlbumCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+-(CalendarCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     //セルを再利用 or 再生成
-    TagAlbumCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PageContentCollectionView" forIndexPath:indexPath];
+    CalendarCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PageContentCollectionView" forIndexPath:indexPath];
     for (UIView *view in [cell subviews]) {
         [view removeFromSuperview];
     }
@@ -880,7 +880,7 @@
     _dragView.center = movedPoint;
 }
 
-- (void)setBackgroundViewOfCell:(TagAlbumCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
+- (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
 {
     NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     NSString *role = _selfRole;
@@ -1020,7 +1020,7 @@
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     
-    TagAlbumCollectionViewCell *cell = [sender view];
+    CalendarCollectionViewCell *cell = [sender view];
     for (id elem in [cell subviews]) {
         if ([elem isKindOfClass:[CellBackgroundViewToWaitUpload class]] || [elem isKindOfClass:[CellBackgroundViewToWaitUploadLarge class]]) {
             for (UIImageView *imageView in [elem subviews]) {
@@ -1047,7 +1047,7 @@
 
 
 // コメントはコメントアイコン、それ以外はいわゆるbadgeを表示する
-- (void)setBadgeToCell:(TagAlbumCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
+- (void)setBadgeToCell:(CalendarCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
 {
     NSMutableDictionary *histories = _notificationHistory[ymd];
     if (!histories) {
@@ -1307,10 +1307,10 @@
     }
     
     for (UIView *v in [_pageContentCollectionView subviews]) {
-        if (![v isKindOfClass:[TagAlbumCollectionViewCell class]]) {
+        if (![v isKindOfClass:[CalendarCollectionViewCell class]]) {
             continue;
         }
-        TagAlbumCollectionViewCell *cell = (TagAlbumCollectionViewCell *)v;
+        CalendarCollectionViewCell *cell = (CalendarCollectionViewCell *)v;
         if (targetIndexPath[ [NSNumber numberWithInteger:cell.currentSection] ][ [NSNumber numberWithInteger:cell.currentRow] ]) {
             [cell rotate];
         }
