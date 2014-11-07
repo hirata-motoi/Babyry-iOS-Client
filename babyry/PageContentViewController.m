@@ -31,7 +31,6 @@
 #import "CalenderLabel.h"
 #import "PushNotification.h"
 #import "UploadPickerViewController.h"
-#import "AWSS3Utils.h"
 #import "NotificationHistory.h"
 #import "ColorUtils.h"
 #import "Badge.h"
@@ -91,7 +90,7 @@
     logic.pageContentViewController = self;
     
     // Do any additional setup after loading the view.
-    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    _configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
@@ -147,7 +146,6 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"resetImage" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
         alreadyRegisteredObserver = YES;
     }
     
@@ -179,16 +177,14 @@
     }
     
     [FamilyRole updateCache];
-    [[self logic:@"setupHeaderView"] setupHeaderView];
     _selfRole = [FamilyRole selfRole:@"useCache"];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     [_pageContentCollectionView reloadData];
  
     // ベストショット選択を促すとき(chooseByUser)と写真のアップロードを促す時(uploadByUser)は
     // cellにholeをあてるためcell表示後にoverlayを出す必要がある
-    // familyApplyは非同期でheader viewを出した後にチュートリアルを表示しているので、ここでも表示するとちかちかする
     TutorialStage *currentStage = [Tutorial currentStage];
-    if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"] || [currentStage.currentStage isEqualToString:@"familyApply"]) ) {
+    if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) ) {
         [self showTutorialNavigator];
     }
 }
@@ -211,11 +207,7 @@
 {
     TutorialStage *currentStage = [Tutorial currentStage];
     
-    if ([methodName isEqualToString:@"setupHeaderView"]) {
-        if ([Tutorial shouldShowFamilyApplyLead]) {
-            return logicTutorial;
-        }
-    } else if ([methodName isEqualToString:@"setImages"]) {
+    if ([methodName isEqualToString:@"setImages"]) {
         if ([Tutorial shouldShowDefaultImage]) {
             return logicTutorial;
         }
@@ -1241,11 +1233,6 @@
 - (void)forwardNextTutorial
 {
     [[self logic:@"forwardNextTutorial"] forwardNextTutorial];
-}
-
-- (void)hideHeaderView
-{
-    [[self logic:@"hideFamilyApplyIntroduceView"] hideFamilyApplyIntroduceView];
 }
 
 - (BOOL)alreadyDisplayedDialog

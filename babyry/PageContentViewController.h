@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import "DragView.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "MBProgressHUD.h"
 #import <AudioToolbox/AudioServices.h>
 #import "CalendarCollectionViewCell.h"

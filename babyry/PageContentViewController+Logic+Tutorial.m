@@ -19,6 +19,7 @@
 #import "PartnerApply.h"
 #import "PartnerInvitedEntity.h"
 #import "ColorUtils.h"
+#import "ViewController.h"
 
 @implementation PageContentViewController_Logic_Tutorial {
     NSString *receivedApply;
@@ -137,131 +138,6 @@
     [self.pageContentViewController.tn showNavigationView];
 }
 
-- (void)setupHeaderView
-{
-    TutorialStage *currentStage = [Tutorial currentStage];
-    if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
-        if (![PartnerApply linkComplete]) {
-            [self showFamilyApplyIntroduceView];
-        } else {
-            [self hideFamilyApplyIntroduceView];
-        }
-    } else {
-        [self hideFamilyApplyIntroduceView];
-    }
-}
-
-
-- (void)showFamilyApplyIntroduceView
-{
-    PageContentViewController *vc = self.pageContentViewController;
-    if (!vc.familyApplyIntroduceView) {
-        TutorialFamilyApplyIntroduceView *headerView = [TutorialFamilyApplyIntroduceView view];
-        [headerView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
-        vc.familyApplyIntroduceView = headerView;
-        [self setRectToHeaderView:vc.familyApplyIntroduceView];
-        
-        // パートナー申請誘導viewの分collection viewを小さくする
-        CGRect collectionRect = vc.pageContentCollectionView.frame;
-        collectionRect.size.height = collectionRect.size.height - vc.familyApplyIntroduceView.frame.size.height;
-        collectionRect.origin.y = collectionRect.origin.y + vc.familyApplyIntroduceView.frame.size.height;
-        vc.pageContentCollectionView.frame = collectionRect;
-        
-        [vc.view addSubview:vc.familyApplyIntroduceView];
-        return;
-    }
-    
-    [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        if (object) {
-            
-            // initialize
-            receivedApply = nil;
-            sentApply = nil;
-            
-            PFQuery *applyList = [PFQuery queryWithClassName:@"PartnerApplyList"];
-            [applyList whereKey:@"familyId" equalTo:object[@"familyId"]];
-            [applyList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                if ([objects count] > 0) {
-                    receivedApply = @"YES";
-                } else {
-                    receivedApply = @"NO";
-                }
-                [self switchHeaderView:vc];
-                return;
-            }];
-            
-            PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-            if (!pie){
-                sentApply = @"NO";
-                [self switchHeaderView:vc];
-                return;
-            }
-            PFQuery *applyByMe = [PFQuery queryWithClassName:@"PartnerApplyList"];
-            [applyByMe whereKey:@"familyId" equalTo:pie.familyId];
-            [applyByMe findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-                if ([objects count] > 0) {
-                    sentApply = @"YES";
-                } else {
-                    sentApply = @"NO";
-                }
-                [self switchHeaderView:vc];
-                return;
-            }];
-        }
-    }];
-}
-
-- (void)setRectToHeaderView:(UIView *)headerView
-{
-    CGRect rect = headerView.frame;
-    rect.origin.x = 0;
-    rect.origin.y = 64;
-    headerView.frame = rect;
-}
-
-- (void)switchHeaderView:(PageContentViewController *)vc
-{
-    if (receivedApply == nil || sentApply == nil) {
-        return;
-    }
-    
-    if ([receivedApply isEqualToString:@"YES"]) {
-        // viewを「申請がきています」viewに変更
-        TutorialReceivedApplyView *headerView = [TutorialReceivedApplyView view];
-        [headerView.openReceivedApplyButton addTarget:vc action:@selector(openFamilyApplyList) forControlEvents:UIControlEventTouchUpInside];
-        [vc.familyApplyIntroduceView removeFromSuperview];
-        vc.familyApplyIntroduceView = nil;
-        vc.familyApplyIntroduceView = headerView;
-        [self setRectToHeaderView:vc.familyApplyIntroduceView];
-        [vc.view addSubview:vc.familyApplyIntroduceView];
-        return;
-    }
-    if ([sentApply isEqualToString:@"YES"]) {
-        // viewを 「承認待ちです」viewに変更
-        TutorialSentApplyView *headerView = [TutorialSentApplyView view];
-        [headerView.openPartnerApplyListButton addTarget:vc action:@selector(openPartnerWait) forControlEvents:UIControlEventTouchUpInside];
-        [vc.familyApplyIntroduceView removeFromSuperview];
-        vc.familyApplyIntroduceView = nil;
-        vc.familyApplyIntroduceView = headerView;
-        [self setRectToHeaderView:vc.familyApplyIntroduceView];
-        [vc.view addSubview:vc.familyApplyIntroduceView];
-        return;
-    }
-    // viewを「パートナーと始める」viewに変更
-    TutorialFamilyApplyIntroduceView *headerView = [TutorialFamilyApplyIntroduceView view];
-    [headerView.openFamilyApplyButton addTarget:vc action:@selector(openFamilyApply) forControlEvents:UIControlEventTouchUpInside];
-    [vc.familyApplyIntroduceView removeFromSuperview];
-    vc.familyApplyIntroduceView = nil;
-    vc.familyApplyIntroduceView = headerView;
-    [self setRectToHeaderView:vc.familyApplyIntroduceView];
-    [vc.view addSubview:vc.familyApplyIntroduceView];
-    
-    TutorialStage *currentStage = [Tutorial currentStage];
-    if ([currentStage.currentStage isEqualToString:@"familyApply"]) {
-        [self.pageContentViewController showTutorialNavigator];
-    }
-}
-
 - (void)getChildImagesWithYear:(NSInteger)year withMonth:(NSInteger)month withReload:(BOOL)reload
 {
     // 画像のリストを生成する
@@ -317,10 +193,11 @@
 - (void)forwardNextTutorial
 {
     [Tutorial forwardStageWithNextStage:@"familyApply"];
-    [self setupHeaderView];
+    ViewController *vc = self.pageContentViewController.parentViewController.parentViewController;
+    [vc setupHeaderView];
+    [vc showTutorialNavigator];
     [self.pageContentViewController.pageContentCollectionView reloadData];
     [self.pageContentViewController viewDidAppear:YES];
-    [self.pageContentViewController showTutorialNavigator];
 }
 
 // Tutorial中はnotification出さない

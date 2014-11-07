@@ -11,7 +11,7 @@
 #import "ImageCache.h"
 #import "Logger.h"
 #import "DateUtils.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "Config.h"
 #import "AppSetting.h"
 #import "NotificationHistory.h"
@@ -429,29 +429,6 @@
 
 - (void)finalizeProcess
 {}
-
-- (void)setupHeaderView
-{
-    [self hideFamilyApplyIntroduceView];
-}
-
-- (void)hideFamilyApplyIntroduceView
-{
-    PageContentViewController *vc = self.pageContentViewController;
-    if (!vc.familyApplyIntroduceView) {
-        return;
-    }
-    
-    // パートナー申請誘導viewの分collection viewを大きくする
-    CGRect rect = vc.familyApplyIntroduceView.frame;
-    CGRect collectionRect = vc.pageContentCollectionView.frame;
-    collectionRect.size.height = collectionRect.size.height + rect.size.height;
-    collectionRect.origin.y = collectionRect.origin.y - rect.size.height;
-    vc.pageContentCollectionView.frame = collectionRect;
-    
-    [vc.familyApplyIntroduceView removeFromSuperview];
-    vc.familyApplyIntroduceView = nil;
-}
 
 - (void)forwardNextTutorial
 {}

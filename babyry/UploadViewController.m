@@ -13,7 +13,7 @@
 #import "ImageTrimming.h"
 #import "CommentViewController.h"
 #import "Navigation.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "NotificationHistory.h"
 #import "Config.h"
 #import "Logger.h"
@@ -43,7 +43,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    _configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     
     _defaultImageViewFrame = _uploadedImageView.frame;
     
@@ -218,7 +218,6 @@
     _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
     _operationViewController.fromMultiUpload = _fromMultiUpload;
     _operationViewController.imageFrame = _uploadedImageView.frame;
-    NSLog(@"oooooooooooo %@", _bestImageIndexArray);
     _operationViewController.bestImageIndexArray = _bestImageIndexArray;
     _operationViewController.pageIndex = _pageIndex;
     _operationViewController.myRole = _myRole;

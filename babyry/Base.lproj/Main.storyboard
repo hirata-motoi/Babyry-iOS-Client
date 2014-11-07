@@ -97,12 +97,7 @@
                                 <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="BeG-qK-A81">
-                                    <size key="itemSize" width="50" height="50"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
+                                <collectionViewLayout key="collectionViewLayout" id="GL5-vw-f8g" customClass="PDKTStickySectionHeadersCollectionViewLayout"/>
                                 <cells/>
                             </collectionView>
                         </subviews>
@@ -700,10 +695,10 @@
             </objects>
             <point key="canvasLocation" x="268" y="-1940"/>
         </scene>
-        <!--Nickname Edit View Controller-->
+        <!--Profile Edit View Controller-->
         <scene sceneID="GAV-Jp-2yu">
             <objects>
-                <viewController storyboardIdentifier="NicknameEditViewController" id="kSm-8q-T6b" customClass="NicknameEditViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ProfileEditViewController" id="kSm-8q-T6b" customClass="ProfileEditViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mcG-c9-wcP">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -735,9 +730,9 @@
                     </view>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
-                        <outlet property="nicknameCellContainer" destination="sf9-2t-YaM" id="R0z-WY-fHg"/>
-                        <outlet property="nicknameEditSaveLabel" destination="7w6-rT-N8R" id="DhL-iV-FY2"/>
-                        <outlet property="nicknameEditTextField" destination="ld7-AB-Ogv" id="So0-Up-wEG"/>
+                        <outlet property="profileCellContainer" destination="sf9-2t-YaM" id="KUn-nV-nU5"/>
+                        <outlet property="profileEditSaveLabel" destination="7w6-rT-N8R" id="1Ol-FC-Y1S"/>
+                        <outlet property="profileEditTextField" destination="ld7-AB-Ogv" id="1WO-9D-Is0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Chl-Re-F7Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -929,6 +924,54 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jXm-hc-DsG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1693" y="-1938"/>
+        <!--Password Change View Controller-->
+        <scene sceneID="OjQ-aD-UZ4">
+            <objects>
+                <viewController storyboardIdentifier="PasswordChangeViewController" id="0jJ-z5-XLA" customClass="PasswordChangeViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="fqi-7Q-dtG">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="新しいパスワードを入力してください" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Iuu-tf-dg1">
+                                <rect key="frame" x="10" y="67" width="300" height="51"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="新しいパスワード" minimumFontSize="17" id="mUv-Gb-hEe">
+                                <rect key="frame" x="54" y="112" width="213" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="新しいパスワード(確認用)" minimumFontSize="17" id="EFE-Bp-9KK">
+                                <rect key="frame" x="54" y="155" width="213" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                            </textField>
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="変更" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3IX-kJ-dXa">
+                                <rect key="frame" x="85" y="211" width="150" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.90196078430000004" green="0.90196078430000004" blue="0.90196078430000004" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <connections>
+                        <outlet property="changePasswordConfirmField" destination="EFE-Bp-9KK" id="2E2-SK-A4m"/>
+                        <outlet property="changePasswordField" destination="mUv-Gb-hEe" id="Yxv-6U-0Up"/>
+                        <outlet property="passwordChangeLabel" destination="3IX-kJ-dXa" id="FjT-ZI-zgu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BJd-x8-RKs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1676" y="-1938"/>
         </scene>
         <!--Intro First View Controller-->
         <scene sceneID="FDt-NI-94Y">
@@ -966,7 +1009,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                                 <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="確認メール再送信" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JEm-fj-1PB">
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="確認メール再送信" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JEm-fj-1PB">
                                 <rect key="frame" x="70" y="396" width="180" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>

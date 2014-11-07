@@ -16,5 +16,6 @@
 + (NSString *)checkDuplicateEmail:(NSString *)email;
 + (BOOL)validateEmailWithString:(NSString*)email;
 + (BOOL)validatePincode:(NSString *)pincode;
++ (void)sendVerifyEmail:(NSString *)email;
 
 @end
