@@ -11,14 +11,7 @@
 // 循環参照避けるため
 @class AlbumPickerViewController;
 
-@protocol AlbumPickerViewControllerDelegate <NSObject>
-- (void)disableNotificationHistory;
-@end
-
 @interface AlbumPickerViewController_Multi : NSObject
-{
-    id<AlbumPickerViewControllerDelegate>delegate;
-}
 
 @property (weak) AlbumPickerViewController *albumPickerViewController;
 

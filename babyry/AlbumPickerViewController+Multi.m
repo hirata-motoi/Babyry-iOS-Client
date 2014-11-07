@@ -59,8 +59,6 @@
     _albumPickerViewController.hud.labelText = @"データ準備中";
     [_albumPickerViewController.hud hide:NO];
     
-    [delegate disableNotificationHistory];
-    
     int __block saveCount = 0;
     
     // imageFileをフォアグランドで_uploadImageDataArrayに用意しておく

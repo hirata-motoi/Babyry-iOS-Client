@@ -10,9 +10,8 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "MultiUploadViewController.h"
 #import "MBProgressHUD.h"
-#import "AlbumPickerViewController+Multi.h"
 
-@interface AlbumPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, AlbumPickerViewControllerDelegate>
+@interface AlbumPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (strong, nonatomic) IBOutlet UICollectionView *albumImageCollectionView;
 @property (strong, nonatomic) IBOutlet UICollectionView *selectedImageCollectionView;

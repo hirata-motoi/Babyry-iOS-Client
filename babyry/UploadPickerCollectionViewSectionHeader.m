@@ -35,8 +35,6 @@
     _dateLabel.text = dateText;
     _dateLabel.textColor = [UIColor blackColor];
     _dateLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
-    
-    self.backgroundColor = [UIColor whiteColor];
 }
 
 /*

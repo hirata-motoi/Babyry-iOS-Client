@@ -53,11 +53,11 @@
     [_selectedImageCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumTableViewControllerSelectedCell"];
     
     _backLabel.layer.cornerRadius = 10;
-    _backLabel.layer.borderColor = [UIColor whiteColor].CGColor;
+    _backLabel.layer.borderColor = [UIColor blackColor].CGColor;
     _backLabel.layer.borderWidth = 2;
     
     _sendImageLabel.layer.cornerRadius = 10;
-    _sendImageLabel.layer.borderColor = [UIColor whiteColor].CGColor;
+    _sendImageLabel.layer.borderColor = [UIColor blackColor].CGColor;
     _sendImageLabel.layer.borderWidth = 2;
     
     if ([_uploadType isEqualToString:@"multi"]) {
@@ -276,19 +276,6 @@
 
 - (IBAction)sendImageButton:(id)sender {
     [[self logic] logicSendImageButton];
-}
-
-- (void)disableNotificationHistory
-{
-    NSArray *targetTypes = [NSArray arrayWithObjects:@"requestPhoto", nil];
-    for (NSString *type in targetTypes) {
-        if (_notificationHistoryByDay && _notificationHistoryByDay[type]) {
-            for (PFObject *notificationHistory in _notificationHistoryByDay[type]) {
-                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
-            }
-            [_notificationHistoryByDay[type] removeAllObjects];
-        }
-    }
 }
 
 - (IBAction)backButton:(id)sender {
