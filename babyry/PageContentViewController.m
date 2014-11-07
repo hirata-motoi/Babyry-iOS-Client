@@ -1358,7 +1358,8 @@
     UploadPastImagesIntroductionView *dialog = [UploadPastImagesIntroductionView view];
     CGRect rect = dialog.frame;
     rect.origin.x = (self.view.frame.size.width - rect.size.width) / 2;
-    rect.origin.y = 180;
+    CGRect containerFrame = UIEdgeInsetsInsetRect(self.view.bounds, UIEdgeInsetsMake(self.navigationController.toolbar.frame.size.height + 20, 0, 0, 0)); // 20はstatus barの高さ
+    rect.origin.y = containerFrame.size.height * 2 / 3;
     dialog.frame = rect;
     [self.view addSubview:dialog];
     
