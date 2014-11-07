@@ -924,6 +924,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jXm-hc-DsG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1693" y="-1938"/>
+        </scene>
         <!--Password Change View Controller-->
         <scene sceneID="OjQ-aD-UZ4">
             <objects>
