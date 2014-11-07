@@ -19,7 +19,6 @@
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
 #import "ImageEdit.h"
-#import "TagAlbumOperationViewController.h"
 #import "ArrayUtils.h"
 #import "Navigation.h"
 #import "Partner.h"

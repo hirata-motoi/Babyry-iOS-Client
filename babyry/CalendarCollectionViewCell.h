@@ -1,5 +1,5 @@
 //
-//  TagAlbumCollectionViewCell.h
+//  CalendarCollectionViewCell.h
 //  babyry
 //
 //  Created by 平田基 on 2014/07/14.
@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TagAlbumCollectionViewCell : UICollectionViewCell
+@interface CalendarCollectionViewCell : UICollectionViewCell
 
 @property NSInteger currentSection;
 @property NSInteger currentRow;
 @property BOOL isChoosed;
+
+- (void)rotate;
 
 @end

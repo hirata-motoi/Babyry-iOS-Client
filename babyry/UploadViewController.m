@@ -10,7 +10,6 @@
 #import "PageContentViewController.h"
 #import "ImageCache.h"
 #import "ViewController.h"
-#import "TagEditViewController.h"
 #import "ImageTrimming.h"
 #import "CommentViewController.h"
 #import "Navigation.h"

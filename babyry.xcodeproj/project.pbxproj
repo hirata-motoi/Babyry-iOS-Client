@@ -101,12 +101,7 @@
 		F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */; };
 		F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106705196E29B400187119 /* ImageOperationViewController.m */; };
 		F2106709196E33EE00187119 /* CommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106708196E33EE00187119 /* CommentViewController.m */; };
-		F210670C196E734D00187119 /* TagEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670B196E734D00187119 /* TagEditViewController.m */; };
-		F210670F196E805A00187119 /* TagView.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670E196E805A00187119 /* TagView.m */; };
-		F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106711196FD7F600187119 /* TagAlbumViewController.m */; };
-		F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */; };
-		F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDC8197402090092C712 /* TagAlbumPageViewController.m */; };
-		F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */; };
+		F215DDCC197409920092C712 /* CalendarCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */; };
 		F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDD719766ECC0092C712 /* ProfileViewController.m */; };
 		F215DDDB1976BFB70092C712 /* ProfileEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* ProfileEditViewController.m */; };
 		F215DDDE19777CD00092C712 /* PushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDD19777CD00092C712 /* PushNotification.m */; };
@@ -225,6 +220,11 @@
 		F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */; };
 		F2FAA56719E2DBF600546669 /* AddMonthToCalendarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */; };
 		F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */; };
+		F2FB3B9D1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */; };
+		F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */; };
+		F2FB3BA81A0A61D200B0A2DD /* ChildFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */; };
+		F2FB3BAA1A0A685900B0A2DD /* ChildFilterListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FB3BA91A0A685900B0A2DD /* ChildFilterListCell.xib */; };
+		F2FB3BAD1A0A68FE00B0A2DD /* ChildFilterListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3BAC1A0A68FE00B0A2DD /* ChildFilterListCell.m */; };
 		F2FB3B971A08E3F200B0A2DD /* HeaderViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3B961A08E3F200B0A2DD /* HeaderViewManager.m */; };
 /* End PBXBuildFile section */
 
@@ -403,18 +403,8 @@
 		F2106705196E29B400187119 /* ImageOperationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageOperationViewController.m; sourceTree = "<group>"; };
 		F2106707196E33EE00187119 /* CommentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentViewController.h; sourceTree = "<group>"; };
 		F2106708196E33EE00187119 /* CommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentViewController.m; sourceTree = "<group>"; };
-		F210670A196E734D00187119 /* TagEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagEditViewController.h; sourceTree = "<group>"; };
-		F210670B196E734D00187119 /* TagEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagEditViewController.m; sourceTree = "<group>"; };
-		F210670D196E805A00187119 /* TagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagView.h; sourceTree = "<group>"; };
-		F210670E196E805A00187119 /* TagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagView.m; sourceTree = "<group>"; };
-		F2106710196FD7F600187119 /* TagAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumViewController.h; sourceTree = "<group>"; };
-		F2106711196FD7F600187119 /* TagAlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumViewController.m; sourceTree = "<group>"; };
-		F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumOperationViewController.h; sourceTree = "<group>"; };
-		F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumOperationViewController.m; sourceTree = "<group>"; };
-		F215DDC7197402090092C712 /* TagAlbumPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumPageViewController.h; sourceTree = "<group>"; };
-		F215DDC8197402090092C712 /* TagAlbumPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumPageViewController.m; sourceTree = "<group>"; };
-		F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagAlbumCollectionViewCell.h; sourceTree = "<group>"; };
-		F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagAlbumCollectionViewCell.m; sourceTree = "<group>"; };
+		F215DDCA197409920092C712 /* CalendarCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCollectionViewCell.h; sourceTree = "<group>"; };
+		F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCollectionViewCell.m; sourceTree = "<group>"; };
 		F215DDD619766ECC0092C712 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		F215DDD719766ECC0092C712 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		F215DDD91976BFB70092C712 /* ProfileEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileEditViewController.h; sourceTree = "<group>"; };
@@ -606,6 +596,14 @@
 		F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddMonthToCalendarView.xib; sourceTree = "<group>"; };
 		F2FAA56819E2DE6300546669 /* AddMonthToCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddMonthToCalendarView.h; sourceTree = "<group>"; };
 		F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddMonthToCalendarView.m; sourceTree = "<group>"; };
+		F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadPastImagesIntroductionView.xib; sourceTree = "<group>"; };
+		F2FB3B9E1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadPastImagesIntroductionView.h; sourceTree = "<group>"; };
+		F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPastImagesIntroductionView.m; sourceTree = "<group>"; };
+		F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildFilterViewController.h; sourceTree = "<group>"; };
+		F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildFilterViewController.m; sourceTree = "<group>"; };
+		F2FB3BA91A0A685900B0A2DD /* ChildFilterListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildFilterListCell.xib; sourceTree = "<group>"; };
+		F2FB3BAB1A0A68FE00B0A2DD /* ChildFilterListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildFilterListCell.h; sourceTree = "<group>"; };
+		F2FB3BAC1A0A68FE00B0A2DD /* ChildFilterListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildFilterListCell.m; sourceTree = "<group>"; };
 		F2FB3B951A08E3F200B0A2DD /* HeaderViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeaderViewManager.h; sourceTree = "<group>"; };
 		F2FB3B961A08E3F200B0A2DD /* HeaderViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeaderViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -667,10 +665,8 @@
 				F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */,
 				8814A9981945469B0010F516 /* ImageCache.h */,
 				8814A9991945469B0010F516 /* ImageCache.m */,
-				F210670D196E805A00187119 /* TagView.h */,
-				F210670E196E805A00187119 /* TagView.m */,
-				F215DDCA197409920092C712 /* TagAlbumCollectionViewCell.h */,
-				F215DDCB197409920092C712 /* TagAlbumCollectionViewCell.m */,
+				F215DDCA197409920092C712 /* CalendarCollectionViewCell.h */,
+				F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */,
 				84ABD705194DBE8500BC3CDA /* Sequence.h */,
 				84ABD706194DBE8500BC3CDA /* Sequence.m */,
 				88AB3A0919AC31D100DA92D4 /* Logger.h */,
@@ -949,6 +945,8 @@
 				88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */,
 				F233421619A115D900928101 /* FamilyApplyListCell.h */,
 				F233421719A115D900928101 /* FamilyApplyListCell.m */,
+				F2FB3BAB1A0A68FE00B0A2DD /* ChildFilterListCell.h */,
+				F2FB3BAC1A0A68FE00B0A2DD /* ChildFilterListCell.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -967,6 +965,7 @@
 				F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */,
 				F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */,
 				F233421419A114E900928101 /* FamilyApplyListCell.xib */,
+				F2FB3BA91A0A685900B0A2DD /* ChildFilterListCell.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -1006,11 +1005,12 @@
 		F215DDCD19761CA50092C712 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */,
+				F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */,
 				F2694B001983A17B008239F6 /* PageView */,
 				F215DDD51976203C0092C712 /* MultiUpload */,
 				F215DDD219761DFB0092C712 /* Intro */,
 				F215DDD019761D6E0092C712 /* Upload */,
-				F215DDCF19761D3D0092C712 /* TagAlbum */,
 				F215DDCE19761D260092C712 /* GlobalSetting */,
 				88B89FB6193B2D52009474DC /* PageContentViewController.h */,
 				88B89FB7193B2D52009474DC /* PageContentViewController.m */,
@@ -1055,19 +1055,6 @@
 			name = GlobalSetting;
 			sourceTree = "<group>";
 		};
-		F215DDCF19761D3D0092C712 /* TagAlbum */ = {
-			isa = PBXGroup;
-			children = (
-				F215DDC7197402090092C712 /* TagAlbumPageViewController.h */,
-				F215DDC8197402090092C712 /* TagAlbumPageViewController.m */,
-				F215DDC41973B4D30092C712 /* TagAlbumOperationViewController.h */,
-				F215DDC51973B4D30092C712 /* TagAlbumOperationViewController.m */,
-				F2106710196FD7F600187119 /* TagAlbumViewController.h */,
-				F2106711196FD7F600187119 /* TagAlbumViewController.m */,
-			);
-			name = TagAlbum;
-			sourceTree = "<group>";
-		};
 		F215DDD019761D6E0092C712 /* Upload */ = {
 			isa = PBXGroup;
 			children = (
@@ -1077,8 +1064,6 @@
 				F2106705196E29B400187119 /* ImageOperationViewController.m */,
 				88B89FBC193EDC04009474DC /* UploadViewController.h */,
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
-				F210670A196E734D00187119 /* TagEditViewController.h */,
-				F210670B196E734D00187119 /* TagEditViewController.m */,
 				88CFF4E91997FFD300B56481 /* UploadPickerViewController.h */,
 				88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */,
 				88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */,
@@ -1289,6 +1274,7 @@
 			children = (
 				F2AD4F11199FD3AB00037C72 /* ImageRequestIntroductionView.xib */,
 				F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */,
+				F2FB3B9C1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib */,
 				F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */,
 			);
 			name = Xib;
@@ -1297,6 +1283,8 @@
 		F2AD4F10199FD37E00037C72 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2FB3B9E1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.h */,
+				F2FB3B9F1A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m */,
 				F2FAA56319DC576300546669 /* PageFlickIntroductionView.h */,
 				F2FAA56419DC576300546669 /* PageFlickIntroductionView.m */,
 				F2AD4F13199FD5F200037C72 /* ImageRequestIntroductionView.h */,
@@ -1503,6 +1491,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				88CFF52D199B68E400B56481 /* Localizable.strings in Resources */,
+				F2FB3BAA1A0A685900B0A2DD /* ChildFilterListCell.xib in Resources */,
 				F28DFD5019D527BE0080E5C2 /* TutorialReceivedApplyView.xib in Resources */,
 				F21BBBE019CA72D7002D4623 /* TutorialAddChildView.xib in Resources */,
 				F2A8332C19AB0F5C00E2AB58 /* babyry-config.plist in Resources */,
@@ -1547,6 +1536,7 @@
 				F285516919D15F0A00347BB6 /* TutorialImage_4.jpg in Resources */,
 				F285516A19D15F0A00347BB6 /* TutorialImage_5.jpg in Resources */,
 				F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */,
+				F2FB3B9D1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib in Resources */,
 				F226592119D434C3003A62BD /* TutorialImage_0_2.jpg in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */,
@@ -1609,7 +1599,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F2FAA56519DC576300546669 /* PageFlickIntroductionView.m in Sources */,
-				F215DDC9197402090092C712 /* TagAlbumPageViewController.m in Sources */,
 				F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */,
 				F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
@@ -1619,7 +1608,6 @@
 				88E2822219B4A8DE00225DD3 /* Child.m in Sources */,
 				88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
-				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
@@ -1632,9 +1620,10 @@
 				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
-				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
+				F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */,
 				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,
+				F2FB3BAD1A0A68FE00B0A2DD /* ChildFilterListCell.m in Sources */,
 				F271B31B1998CC2200C9952A /* Sharding.m in Sources */,
 				F21BBBB819C9EEA7002D4623 /* TutorialShowMultiUploadView.m in Sources */,
 				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
@@ -1647,7 +1636,6 @@
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				889F53ED19EAE4F5009B3123 /* PartnerInviteEntity.m in Sources */,
-				F215DDC61973B4D30092C712 /* TagAlbumOperationViewController.m in Sources */,
 				F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */,
 				F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */,
 				F21BBBF919CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.m in Sources */,
@@ -1670,7 +1658,6 @@
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
 				F21BBBE619CAA147002D4623 /* TutorialNavigator+AddChildExec.m in Sources */,
 				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
-				F2106712196FD7F600187119 /* TagAlbumViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
@@ -1710,7 +1697,7 @@
 				88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */,
 				F2FB3B971A08E3F200B0A2DD /* HeaderViewManager.m in Sources */,
 				F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */,
-				F215DDCC197409920092C712 /* TagAlbumCollectionViewCell.m in Sources */,
+				F215DDCC197409920092C712 /* CalendarCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
 				88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */,
@@ -1730,6 +1717,7 @@
 				889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */,
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
+				F2FB3BA81A0A61D200B0A2DD /* ChildFilterViewController.m in Sources */,
 				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
 				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,

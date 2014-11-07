@@ -17,7 +17,7 @@
 #import "FamilyApply.h"
 #import "ImagePageViewController.h"
 #import "ArrayUtils.h"
-#import "TagAlbumCollectionViewCell.h"
+#import "CalendarCollectionViewCell.h"
 #import "DateUtils.h"
 #import "DragView.h"
 #import "CellBackgroundViewToEncourageUpload.h"
@@ -53,6 +53,7 @@
 #import "ParseUtils.h"
 #import "ChildProperties.h"
 #import "Partner.h"
+#import "UploadPastImagesIntroductionView.h"
 
 @interface PageContentViewController ()
 
@@ -158,6 +159,7 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
+    [self showIntroductionForFillingEmptyCells];
 }
 
 - (void)reloadView
@@ -197,6 +199,8 @@
     _tn = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [self removeDialogs];
 }
 
 - (id)logic:(NSString *)methodName
@@ -248,7 +252,7 @@
     // UICollectionViewの土台を作成
     _pageContentCollectionView.delegate = self;
     _pageContentCollectionView.dataSource = self;
-    [_pageContentCollectionView registerClass:[TagAlbumCollectionViewCell class] forCellWithReuseIdentifier:@"PageContentCollectionView"];
+    [_pageContentCollectionView registerClass:[CalendarCollectionViewCell class] forCellWithReuseIdentifier:@"PageContentCollectionView"];
     [_pageContentCollectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader"];
     
     [self.view addSubview:_pageContentCollectionView];
@@ -287,10 +291,10 @@
 }
 
 // 指定された場所のセルを作るメソッド
--(TagAlbumCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+-(CalendarCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     //セルを再利用 or 再生成
-    TagAlbumCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PageContentCollectionView" forIndexPath:indexPath];
+    CalendarCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PageContentCollectionView" forIndexPath:indexPath];
     for (UIView *view in [cell subviews]) {
         [view removeFromSuperview];
     }
@@ -299,6 +303,10 @@
             [cell removeGestureRecognizer:gesture];
         }
     }
+    
+    // indexPathの設定
+    cell.currentSection = indexPath.section;
+    cell.currentRow = indexPath.row;
    
     // カレンダー追加用cell
     if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
@@ -864,7 +872,7 @@
     _dragView.center = movedPoint;
 }
 
-- (void)setBackgroundViewOfCell:(TagAlbumCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
+- (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
 {
     NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     NSString *role = _selfRole;
@@ -1004,7 +1012,7 @@
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     
-    TagAlbumCollectionViewCell *cell = [sender view];
+    CalendarCollectionViewCell *cell = [sender view];
     for (id elem in [cell subviews]) {
         if ([elem isKindOfClass:[CellBackgroundViewToWaitUpload class]] || [elem isKindOfClass:[CellBackgroundViewToWaitUploadLarge class]]) {
             for (UIImageView *imageView in [elem subviews]) {
@@ -1031,7 +1039,7 @@
 
 
 // コメントはコメントアイコン、それ以外はいわゆるbadgeを表示する
-- (void)setBadgeToCell:(TagAlbumCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
+- (void)setBadgeToCell:(CalendarCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
 {
     NSMutableDictionary *histories = _notificationHistory[ymd];
     if (!histories) {
@@ -1232,12 +1240,26 @@
     NSArray *views = [self.view subviews];
     for (int i = 0; i < views.count; i++) {
         if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
-            [views[i] isKindOfClass:[PageFlickIntroductionView class]]) {
+            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
+            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
             return YES;
         }
     }
     return NO;
 }
+
+- (void)removeDialogs
+{
+    NSArray *views = [self.view subviews];
+    for (int i = 0; i < views.count; i++) {
+        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
+            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
+            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
+            [views[i] removeFromSuperview];
+        }
+    }
+}
+
 
 - (void)showLoadingIcon
 {
@@ -1257,6 +1279,129 @@
     [self viewDidAppear:NO];
 }
 
+- (void)rotateViewYAxis: (NSArray *)indexPathList
+{
+    NSMutableDictionary *targetIndexPath = [[NSMutableDictionary alloc]init];
+    for (NSIndexPath *indexPath in indexPathList) {
+        NSNumber *section = [NSNumber numberWithInteger: indexPath.section];
+        NSNumber *row = [NSNumber numberWithInteger:indexPath.row];
+        
+        if (!targetIndexPath[section]) {
+            targetIndexPath[section] = [[NSMutableDictionary alloc]init];
+        }
+       
+        targetIndexPath[section][row] = @"YES";
+    }
+    
+    for (UIView *v in [_pageContentCollectionView subviews]) {
+        if (![v isKindOfClass:[CalendarCollectionViewCell class]]) {
+            continue;
+        }
+        CalendarCollectionViewCell *cell = (CalendarCollectionViewCell *)v;
+        if (targetIndexPath[ [NSNumber numberWithInteger:cell.currentSection] ][ [NSNumber numberWithInteger:cell.currentRow] ]) {
+            [cell rotate];
+        }
+    }
+}
+
+- (void)showIntroductionForFillingEmptyCells
+{
+    NSString *currentStage = [Tutorial currentStage].currentStage;
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:@"finishedIntroductionToUploadPastImages"];
+   
+    if (
+        as                                                 ||
+        ![currentStage isEqualToString:@"familyApplyExec"] ||
+        ![_selfRole isEqualToString:@"uploader"]           ||
+        [self alreadyDisplayedDialog]
+    ) {
+        return;
+    }
+    
+    AppSetting *newAppSetting = [AppSetting MR_createEntity];
+    newAppSetting.name = @"finishedIntroductionToUploadPastImages";
+    newAppSetting.value = @"1";
+    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    
+    // 対象cellのindexPathList
+    // 対象のcellがない場合 = 既に写真をアップしているユーザ なので、AppSettingのレコードはできたままにする
+    NSMutableArray *indexPathList = [self rotateTargetIndexPathList];
+    if (indexPathList.count < 1) {
+        return;
+    }
+    
+    // 透明のviewで画面をブロック
+    UIView *view = [[UIView alloc]init];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    view.frame = window.bounds;
+    [window addSubview:view];
+    [window bringSubviewToFront:view];
+    
+    // 少しスクロール
+    [_pageContentCollectionView scrollToItemAtIndexPath:indexPathList[ indexPathList.count - 1 ] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+  
+    // ダイアログを出す
+    UploadPastImagesIntroductionView *dialog = [UploadPastImagesIntroductionView view];
+    CGRect rect = dialog.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width) / 2;
+    CGRect containerFrame = UIEdgeInsetsInsetRect(self.view.bounds, UIEdgeInsetsMake(self.navigationController.toolbar.frame.size.height + 20, 0, 0, 0)); // 20はstatus barの高さ
+    rect.origin.y = containerFrame.size.height * 2 / 3;
+    dialog.frame = rect;
+    [self.view addSubview:dialog];
+    
+    [NSTimer scheduledTimerWithTimeInterval:1.0
+                                     target:self
+                                   selector:@selector(rotateEmptyCells:)
+                                   userInfo:[NSMutableDictionary dictionaryWithObjects:@[view, indexPathList, [NSNumber numberWithInt:0]] forKeys:@[@"clearView", @"indexPathList", @"repeatCount"]]
+                                    repeats:YES];
+    
+}
+
+- (NSMutableArray *)rotateTargetIndexPathList
+{
+    NSMutableArray *indexPathList = [[NSMutableArray alloc]init];
+    NSInteger totalIndex = 0;
+    for (NSInteger sectionIndex = 0; sectionIndex < _childImages.count; sectionIndex++) {
+        NSMutableDictionary *section = _childImages[sectionIndex];
+        for (NSInteger rowIndex = 0; rowIndex < [section[@"images"] count]; rowIndex++) {
+            PFObject *childImage = section[@"images"][rowIndex];
+            if (childImage.objectId) { // 画像upload済
+                totalIndex++;
+                continue;
+            }
+            
+            [indexPathList addObject:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]];
+            totalIndex++;
+            
+            if (totalIndex >= 6) {
+                return indexPathList;
+            }
+        }
+    }
+    return indexPathList;
+}
+
+- (void)rotateEmptyCells:(NSTimer *)timer
+{
+    NSMutableDictionary *userInfo = [timer userInfo];
+    
+    NSMutableArray *indexPathList = userInfo[@"indexPathList"];
+    [self rotateViewYAxis:indexPathList];
+    
+    // 透明viewを消す
+    [userInfo[@"clearView"] removeFromSuperview];
+ 
+    // 2回だけ繰り返す
+    NSNumber *repeatCountNumber = userInfo[@"repeatCount"];
+    NSNumber *addedRepeatCountNumber = [NSNumber numberWithInteger:[repeatCountNumber integerValue] + 1];
+    userInfo[@"repeatCount"] = addedRepeatCountNumber;
+    
+    if ([addedRepeatCountNumber integerValue] > 1) {
+        [timer invalidate];
+    }
+}
 
 /*
 #pragma mark - Navigation

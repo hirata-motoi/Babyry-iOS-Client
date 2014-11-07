@@ -12,7 +12,6 @@
 #import "PageContentViewController.h"
 #import "UploadViewController.h"
 #import "ImageCache.h"
-#import "TagEditViewController.h"
 #import "ImageTrimming.h"
 #import "PushNotification.h"
 #import "Navigation.h"
