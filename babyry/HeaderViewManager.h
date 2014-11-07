@@ -22,7 +22,7 @@
 }
 @property (nonatomic, assign) id<HeaderViewManagerDelegate> delegate;
 
-- (void)setupHeaderView:(BOOL)doBackground;
+- (void)setupHeaderView:(BOOL)localDataOnly;
 - (void)invalidateTimer;
 - (void)validateTimer;
 - (void)checkPartnerApplyStatus;

@@ -36,17 +36,17 @@
         [self invalidateTimer];
     }
     [FamilyRole updateCacheWithBlock:^(void) {
-        [self setupHeaderView:YES];
+        [self setupHeaderView:NO];
     }];
 }
 
 
-- (void)setupHeaderView:(BOOL)doBackground
+- (void)setupHeaderView:(BOOL)localDataOnly
 {
     TutorialStage *currentStage = [Tutorial currentStage];
     if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
         if (![PartnerApply linkComplete]) {
-            [self showFamilyApplyIntroduceView:doBackground];
+            [self showFamilyApplyIntroduceView:localDataOnly];
         } else {
             [self hideFamilyApplyIntroduceView];
         }
@@ -55,7 +55,7 @@
     }
 }
 
-- (void)showFamilyApplyIntroduceView:(BOOL)doBackground
+- (void)showFamilyApplyIntroduceView:(BOOL)localDataOnly
 {
     // familyApplyの時は即表示
     if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
@@ -65,7 +65,7 @@
         return;
     }
    
-    if (!doBackground) {
+    if (localDataOnly) {
         PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
         sentApply = (pie) ? @"YES" : @"NO";
         receivedApply = @"NO"; // これはParseを参照しないとわからない
@@ -151,6 +151,7 @@
 
 - (void)validateTimer
 {
+    [self checkPartnerApplyStatus];
     if (!timer || ![timer isValid]) {
         timer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(checkPartnerApplyStatus) userInfo:nil repeats:YES];
     }

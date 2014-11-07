@@ -365,7 +365,7 @@
         _headerViewManager = [[HeaderViewManager alloc]init];
         _headerViewManager.delegate = self;
     }
-    [_headerViewManager setupHeaderView:YES];
+    [_headerViewManager setupHeaderView:NO];
     if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
         [self showTutorialNavigator];
     }
@@ -583,7 +583,7 @@
 
 - (void)setupHeaderView
 {
-    [_headerViewManager setupHeaderView:NO];
+    [_headerViewManager setupHeaderView:YES];
 }
 
 - (void)showTutorialNavigator
