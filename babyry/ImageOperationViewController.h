@@ -29,7 +29,6 @@
 @property (weak, nonatomic) IBOutlet UIView *statusBarCoverView;
 
 @property UIView *commentView;
-@property UIView *tagEditView;
 @property NSString *holdedBy;
 @property UIView *toolbarView;
 

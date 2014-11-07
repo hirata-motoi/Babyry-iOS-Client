@@ -99,8 +99,6 @@
 		F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */; };
 		F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106705196E29B400187119 /* ImageOperationViewController.m */; };
 		F2106709196E33EE00187119 /* CommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106708196E33EE00187119 /* CommentViewController.m */; };
-		F210670C196E734D00187119 /* TagEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670B196E734D00187119 /* TagEditViewController.m */; };
-		F210670F196E805A00187119 /* TagView.m in Sources */ = {isa = PBXBuildFile; fileRef = F210670E196E805A00187119 /* TagView.m */; };
 		F215DDCC197409920092C712 /* CalendarCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */; };
 		F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDD719766ECC0092C712 /* ProfileViewController.m */; };
 		F215DDDB1976BFB70092C712 /* NicknameEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F215DDDA1976BFB70092C712 /* NicknameEditViewController.m */; };
@@ -397,10 +395,6 @@
 		F2106705196E29B400187119 /* ImageOperationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageOperationViewController.m; sourceTree = "<group>"; };
 		F2106707196E33EE00187119 /* CommentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentViewController.h; sourceTree = "<group>"; };
 		F2106708196E33EE00187119 /* CommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentViewController.m; sourceTree = "<group>"; };
-		F210670A196E734D00187119 /* TagEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagEditViewController.h; sourceTree = "<group>"; };
-		F210670B196E734D00187119 /* TagEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagEditViewController.m; sourceTree = "<group>"; };
-		F210670D196E805A00187119 /* TagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagView.h; sourceTree = "<group>"; };
-		F210670E196E805A00187119 /* TagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagView.m; sourceTree = "<group>"; };
 		F215DDCA197409920092C712 /* CalendarCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCollectionViewCell.h; sourceTree = "<group>"; };
 		F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCollectionViewCell.m; sourceTree = "<group>"; };
 		F215DDD619766ECC0092C712 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
@@ -658,8 +652,6 @@
 				F25D29D1199B228D00CD50D7 /* AcceptableUsePolicyViewController.m */,
 				8814A9981945469B0010F516 /* ImageCache.h */,
 				8814A9991945469B0010F516 /* ImageCache.m */,
-				F210670D196E805A00187119 /* TagView.h */,
-				F210670E196E805A00187119 /* TagView.m */,
 				F215DDCA197409920092C712 /* CalendarCollectionViewCell.h */,
 				F215DDCB197409920092C712 /* CalendarCollectionViewCell.m */,
 				84ABD705194DBE8500BC3CDA /* Sequence.h */,
@@ -1045,8 +1037,6 @@
 				F2106705196E29B400187119 /* ImageOperationViewController.m */,
 				88B89FBC193EDC04009474DC /* UploadViewController.h */,
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
-				F210670A196E734D00187119 /* TagEditViewController.h */,
-				F210670B196E734D00187119 /* TagEditViewController.m */,
 				88CFF4E91997FFD300B56481 /* UploadPickerViewController.h */,
 				88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */,
 				88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */,
@@ -1574,7 +1564,6 @@
 				88E2822219B4A8DE00225DD3 /* Child.m in Sources */,
 				88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */,
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
-				F210670F196E805A00187119 /* TagView.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
@@ -1587,7 +1576,6 @@
 				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
-				F210670C196E734D00187119 /* TagEditViewController.m in Sources */,
 				F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */,
 				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,
 				F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */,

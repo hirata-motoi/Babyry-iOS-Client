@@ -10,7 +10,6 @@
 #import <Parse/Parse.h>
 #import "UploadViewController.h"
 #import "UIPlaceHolderTextView.h"
-#import "TagEditViewController.h"
 
 @interface CommentViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *commentTableView;
