@@ -41,7 +41,8 @@
 #import "FamilyApplyListViewController.h"
 #import "PartnerInviteViewController.h"
 #import "TutorialNavigator.h"
-         
+#import "ImageUploadInBackground.h"
+
 @interface ViewController ()
 
 @end
@@ -95,6 +96,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(multiUploadImageInBackground) name:@"multiUploadImageInBackground" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -598,6 +600,11 @@
 - (void)checkHeaderView
 {
     [_headerViewManager checkPartnerApplyStatus];
+}
+
+- (void)multiUploadImageInBackground
+{
+    [ImageUploadInBackground multiUploadToParseInBackground];
 }
 
 @end

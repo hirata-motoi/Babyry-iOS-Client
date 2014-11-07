@@ -1,20 +1,27 @@
 //
-//  MultiUploadAlbumTableViewController.m
+//  AlbumTableViewController.m
 //  babyry
 //
-//  Created by Kenji Suzuki on 2014/08/10.
+//  Created by Kenji Suzuki on 2014/11/05.
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
-#import "MultiUploadAlbumTableViewController.h"
-#import "MultiUploadPickerViewController.h"
+#import "AlbumTableViewController.h"
+#import "AlbumPickerViewController.h"
 #import "Navigation.h"
 
-@interface MultiUploadAlbumTableViewController ()
+@interface AlbumTableViewController ()
 
 @end
 
-@implementation MultiUploadAlbumTableViewController
+@implementation AlbumTableViewController
+{
+    ALAssetsLibrary *library;
+    NSMutableArray *albumListArray;
+    NSMutableArray *albumImageAssetsArray;
+    UITableView *albumTableView;
+    BOOL accessAllowed;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -32,25 +39,25 @@
     
     [Navigation setTitle:self.navigationItem withTitle:@"アルバム一覧" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
-    _accessAllowed = NO;
+    accessAllowed = NO;
     
     // フォトアルバムからリスト取得しておく
     NSMutableArray *albumListAll = [[NSMutableArray alloc]init];
     
-    _albumListArray = [[NSMutableArray alloc] init];
-    _albumImageAssetsArray = [[NSMutableArray alloc] init];
-    _library = [[ALAssetsLibrary alloc] init];
-
+    albumListArray = [[NSMutableArray alloc] init];
+    albumImageAssetsArray = [[NSMutableArray alloc] init];
+    library = [[ALAssetsLibrary alloc] init];
+    
     if (![self isPhotoAccessEnableWithIsShowAlert:YES]) {
         return;
     }
-
-    [_library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+    
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         if (group) {
             [group setAssetsFilter:[ALAssetsFilter allPhotos]];
             [albumListAll addObject:group];
         } else if (!group) {
-            [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+            [library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                 if (group && [[group valueForProperty:ALAssetsGroupPropertyType] intValue] != 16) {
                     [group setAssetsFilter:[ALAssetsFilter allPhotos]];
                     [albumListAll addObject:group];
@@ -64,12 +71,12 @@
                         };
                         [group enumerateAssetsUsingBlock:assetsEnumerationBlock];
                         if ([albumImageArray count] > 0) {
-                            [_albumImageAssetsArray addObject:albumImageArray];
-                            [_albumListArray addObject:group];
+                            [albumImageAssetsArray addObject:albumImageArray];
+                            [albumListArray addObject:group];
                         }
                     }
                     [self createAlbumTable];
-                    _accessAllowed = YES;
+                    accessAllowed = YES;
                 }
             } failureBlock:nil];
         }
@@ -86,22 +93,22 @@
 {
     [super viewDidAppear:animated];
     
-    if (_accessAllowed) {
+    if (accessAllowed) {
         [self createAlbumTable];
     }
 }
 
 - (void) createAlbumTable
 {
-    _albumTableView = [[UITableView alloc] init];
-    _albumTableView.delegate = self;
-    _albumTableView.dataSource = self;
-    _albumTableView.backgroundColor = [UIColor whiteColor];
+    albumTableView = [[UITableView alloc] init];
+    albumTableView.delegate = self;
+    albumTableView.dataSource = self;
+    albumTableView.backgroundColor = [UIColor whiteColor];
     CGRect frame = self.view.frame;
     frame.origin.y += 64;
     frame.size.height -= 64;
-    _albumTableView.frame = frame;
-    [self.view addSubview:_albumTableView];
+    albumTableView.frame = frame;
+    [self.view addSubview:albumTableView];
 }
 
 /////////////////////////////////////////////////////////////////
@@ -113,7 +120,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [_albumListArray count];
+    return [albumListArray count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -130,10 +137,10 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"AlbumListTableViewCell"];
     }
     cell.backgroundColor = [UIColor whiteColor];
-    cell.textLabel.text = [[_albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld枚", [[_albumImageAssetsArray objectAtIndex:index] count]];
+    cell.textLabel.text = [[albumListArray objectAtIndex:index] valueForProperty:ALAssetsGroupPropertyName];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%d枚", [[albumImageAssetsArray objectAtIndex:index] count]];
     
-    UIImage *tmpImage = [UIImage imageWithCGImage:[[[_albumImageAssetsArray objectAtIndex:index] lastObject] thumbnail]];
+    UIImage *tmpImage = [UIImage imageWithCGImage:[[[albumImageAssetsArray objectAtIndex:index] lastObject] thumbnail]];
     cell.imageView.image = tmpImage;
     
     return cell;
@@ -143,17 +150,22 @@
 {
     NSInteger index = [indexPath indexAtPosition:[indexPath length] - 1];
     
-    MultiUploadPickerViewController *multiUploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadPickerViewController"];
-    multiUploadPickerViewController.alAssetsArr = [_albumImageAssetsArray objectAtIndex:index];
-    multiUploadPickerViewController.month = _month;
-    multiUploadPickerViewController.childObjectId = _childObjectId;
-    multiUploadPickerViewController.date = _date;
-    multiUploadPickerViewController.notificationHistoryByDay = _notificationHistoryByDay;
+    AlbumPickerViewController *albumPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumPickerViewController"];
+    albumPickerViewController.alAssetsArr = [albumImageAssetsArray objectAtIndex:index];
+    albumPickerViewController.month = _month;
+    albumPickerViewController.childObjectId = _childObjectId;
+    albumPickerViewController.date = _date;
+    albumPickerViewController.notificationHistoryByDay = _notificationHistoryByDay;
+    albumPickerViewController.uploadType = _uploadType;
     if (_totalImageNum){
-        multiUploadPickerViewController.totalImageNum = _totalImageNum;
-        multiUploadPickerViewController.indexPath = _indexPath;
+        albumPickerViewController.totalImageNum = _totalImageNum;
+        albumPickerViewController.indexPath = _indexPath;
     }
-    [self presentViewController:multiUploadPickerViewController animated:YES completion:NULL];
+    if ([_uploadType isEqualToString:@"single"]) {
+        albumPickerViewController.section = _section;
+        albumPickerViewController.uploadViewController = _uploadViewController;
+    }
+    [self presentViewController:albumPickerViewController animated:YES completion:NULL];
 }
 
 // このアプリの写真への認証状態を取得する
@@ -206,14 +218,15 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+ {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end
+

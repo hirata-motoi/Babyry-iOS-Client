@@ -10,7 +10,7 @@
 #import "ViewController.h"
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
-#import "MultiUploadAlbumTableViewController.h"
+#import "AlbumTableViewController.h"
 #import "ImageTrimming.h"
 #import "ImageCache.h"
 #import "FamilyRole.h"
@@ -30,7 +30,6 @@
 #import "AddMonthToCalendarView.h"
 #import "CalenderLabel.h"
 #import "PushNotification.h"
-#import "UploadPickerViewController.h"
 #import "NotificationHistory.h"
 #import "ColorUtils.h"
 #import "Badge.h"
@@ -392,19 +391,20 @@
     //    +ボタンがないパターン
     if ([[self logic:@"shouldShowMultiUploadView"] shouldShowMultiUploadView:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
-            MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
-            multiUploadAlbumTableViewController.childObjectId = _childObjectId;
-            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] stringValue];
-            multiUploadAlbumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
-            multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
+            AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+            albumTableViewController.childObjectId = _childObjectId;
+            albumTableViewController.date = [tappedChildImage[@"date"] stringValue];
+            albumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
+            albumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
             NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-            multiUploadAlbumTableViewController.totalImageNum = totalImageNum;
-            multiUploadAlbumTableViewController.indexPath = indexPath;
+            albumTableViewController.totalImageNum = totalImageNum;
+            albumTableViewController.indexPath = indexPath;
+            albumTableViewController.uploadType = @"multi";
             
-            [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
+            [self.navigationController pushViewController:albumTableViewController animated:YES];
         } else {
             [self moveToMultiUploadViewController:[tappedChildImage[@"date"] stringValue] index:indexPath];
         }
@@ -413,19 +413,22 @@
     
     if (![[self logic:@"isBestImageFixed"] isBestImageFixed:indexPath]) {
         // ベストショット決まってなければ即Pickerを開く
-        UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
-        uploadPickerViewController.month = [[tappedChildImage[@"date"]  stringValue ] substringWithRange:NSMakeRange(0, 6)];
-        uploadPickerViewController.childObjectId = _childObjectId;
-        uploadPickerViewController.date = [tappedChildImage[@"date"] stringValue];
+        AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+        albumTableViewController.month = [[tappedChildImage[@"date"]  stringValue ] substringWithRange:NSMakeRange(0, 6)];
+        albumTableViewController.childObjectId = _childObjectId;
+        albumTableViewController.date = [tappedChildImage[@"date"] stringValue];
         
         // _childImage更新用
         NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
         NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-        uploadPickerViewController.totalImageNum = totalImageNum;
-        uploadPickerViewController.indexPath = indexPath;
-        uploadPickerViewController.section = section;
-        [self.navigationController pushViewController:uploadPickerViewController animated:YES];
+        albumTableViewController.totalImageNum = totalImageNum;
+        albumTableViewController.indexPath = indexPath;
+        albumTableViewController.section = section;
+        albumTableViewController.uploadType = @"single";
+        [self.navigationController pushViewController:albumTableViewController animated:YES];
         return;
+
+    
     }
     
     [self moveToImagePageViewController:indexPath];

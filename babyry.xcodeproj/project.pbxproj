@@ -17,12 +17,18 @@
 		882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A22196B796E00E07D60 /* MaintenanceViewController.m */; };
 		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
-		8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */; };
 		883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */; };
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
 		886A90F61A03A4AB007849DB /* AWSCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90F51A03A4AB007849DB /* AWSCommon.m */; };
 		886A90FA1A03A84F007849DB /* AWSSESUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90F91A03A84F007849DB /* AWSSESUtils.m */; };
 		886A90FD1A051E3D007849DB /* PasswordChangeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90FC1A051E3D007849DB /* PasswordChangeViewController.m */; };
+		88610B561A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88610B551A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib */; };
+		88610B591A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B581A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m */; };
+		88610B5D1A09FFD30042854B /* AlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B5C1A09FFD30042854B /* AlbumTableViewController.m */; };
+		88610B601A0A04560042854B /* AlbumPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B5F1A0A04560042854B /* AlbumPickerViewController.m */; };
+		88610B631A0A15690042854B /* AlbumPickerViewController+Multi.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B621A0A15690042854B /* AlbumPickerViewController+Multi.m */; };
+		88610B661A0A5F210042854B /* ImageUploadInBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B651A0A5F210042854B /* ImageUploadInBackground.m */; };
+		88610B691A0AC1E60042854B /* AlbumPickerViewController+Single.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B681A0AC1E60042854B /* AlbumPickerViewController+Single.m */; };
 		887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */; };
 		8881CFA119A0C67800B909C8 /* MyLogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8881CFA019A0C67800B909C8 /* MyLogInViewController.m */; };
 		8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */; };
@@ -80,10 +86,8 @@
 		88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
-		88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */; };
 		88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */; };
 		88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */; };
-		88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */; };
 		88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */; };
 		88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */; };
 		88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4FF1999312100B56481 /* ImageToolbarTrashIcon.m */; };
@@ -258,8 +262,6 @@
 		882A6A24196B7D4A00E07D60 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		882A6A25196B7D4A00E07D60 /* Config.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Config.m; sourceTree = "<group>"; };
 		882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = 3_5_inch.storyboard; sourceTree = "<group>"; };
-		8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadPickerViewController.h; sourceTree = "<group>"; };
-		8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadPickerViewController.m; sourceTree = "<group>"; };
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		883A92F119D2257C00F82A34 /* PartnerWaitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerWaitViewController.h; sourceTree = "<group>"; };
 		883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerWaitViewController.m; sourceTree = "<group>"; };
@@ -271,6 +273,19 @@
 		886A90F91A03A84F007849DB /* AWSSESUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSSESUtils.m; sourceTree = "<group>"; };
 		886A90FB1A051E3D007849DB /* PasswordChangeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordChangeViewController.h; sourceTree = "<group>"; };
 		886A90FC1A051E3D007849DB /* PasswordChangeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasswordChangeViewController.m; sourceTree = "<group>"; };
+		88610B551A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadPickerCollectionViewSectionHeader.xib; sourceTree = "<group>"; };
+		88610B571A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadPickerCollectionViewSectionHeader.h; sourceTree = "<group>"; };
+		88610B581A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPickerCollectionViewSectionHeader.m; sourceTree = "<group>"; };
+		88610B5B1A09FFD30042854B /* AlbumTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumTableViewController.h; sourceTree = "<group>"; };
+		88610B5C1A09FFD30042854B /* AlbumTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumTableViewController.m; sourceTree = "<group>"; };
+		88610B5E1A0A04560042854B /* AlbumPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumPickerViewController.h; sourceTree = "<group>"; };
+		88610B5F1A0A04560042854B /* AlbumPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumPickerViewController.m; sourceTree = "<group>"; };
+		88610B611A0A15690042854B /* AlbumPickerViewController+Multi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AlbumPickerViewController+Multi.h"; sourceTree = "<group>"; };
+		88610B621A0A15690042854B /* AlbumPickerViewController+Multi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AlbumPickerViewController+Multi.m"; sourceTree = "<group>"; };
+		88610B641A0A5F210042854B /* ImageUploadInBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUploadInBackground.h; sourceTree = "<group>"; };
+		88610B651A0A5F210042854B /* ImageUploadInBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUploadInBackground.m; sourceTree = "<group>"; };
+		88610B671A0AC1E60042854B /* AlbumPickerViewController+Single.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AlbumPickerViewController+Single.h"; sourceTree = "<group>"; };
+		88610B681A0AC1E60042854B /* AlbumPickerViewController+Single.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AlbumPickerViewController+Single.m"; sourceTree = "<group>"; };
 		887CF8E01987822300B90C2E /* UIPlaceHolderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPlaceHolderTextView.h; sourceTree = "<group>"; };
 		887CF8E11987822300B90C2E /* UIPlaceHolderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPlaceHolderTextView.m; sourceTree = "<group>"; };
 		8881CF9F19A0C67800B909C8 /* MyLogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyLogInViewController.h; sourceTree = "<group>"; };
@@ -367,13 +382,9 @@
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
-		88CFF4DD199763CA00B56481 /* MultiUploadAlbumTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiUploadAlbumTableViewController.h; sourceTree = "<group>"; };
-		88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiUploadAlbumTableViewController.m; sourceTree = "<group>"; };
 		88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellBackgroundViewNoImage.xib; sourceTree = "<group>"; };
 		88CFF4E61997B91400B56481 /* CellBackgroundViewNoImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewNoImage.h; sourceTree = "<group>"; };
 		88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewNoImage.m; sourceTree = "<group>"; };
-		88CFF4E91997FFD300B56481 /* UploadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadPickerViewController.h; sourceTree = "<group>"; };
-		88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPickerViewController.m; sourceTree = "<group>"; };
 		88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarViewController.h; sourceTree = "<group>"; };
 		88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarViewController.m; sourceTree = "<group>"; };
 		88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageToolbarTrashIcon.xib; sourceTree = "<group>"; };
@@ -731,6 +742,8 @@
 				889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */,
 				F2FB3B951A08E3F200B0A2DD /* HeaderViewManager.h */,
 				F2FB3B961A08E3F200B0A2DD /* HeaderViewManager.m */,
+				88610B641A0A5F210042854B /* ImageUploadInBackground.h */,
+				88610B651A0A5F210042854B /* ImageUploadInBackground.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -744,6 +757,21 @@
 				886A90F91A03A84F007849DB /* AWSSESUtils.m */,
 			);
 			name = AWS;
+            sourceTree = "<group>";
+        };
+		88610B5A1A09FF8E0042854B /* ImagePicker */ = {
+			isa = PBXGroup;
+			children = (
+				88610B5B1A09FFD30042854B /* AlbumTableViewController.h */,
+				88610B5C1A09FFD30042854B /* AlbumTableViewController.m */,
+				88610B5E1A0A04560042854B /* AlbumPickerViewController.h */,
+				88610B5F1A0A04560042854B /* AlbumPickerViewController.m */,
+				88610B611A0A15690042854B /* AlbumPickerViewController+Multi.h */,
+				88610B621A0A15690042854B /* AlbumPickerViewController+Multi.m */,
+				88610B671A0AC1E60042854B /* AlbumPickerViewController+Single.h */,
+				88610B681A0AC1E60042854B /* AlbumPickerViewController+Single.m */,
+			);
+			name = ImagePicker;
 			sourceTree = "<group>";
 		};
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
@@ -1007,6 +1035,7 @@
 			children = (
 				F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */,
 				F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */,
+				88610B5A1A09FF8E0042854B /* ImagePicker */,
 				F2694B001983A17B008239F6 /* PageView */,
 				F215DDD51976203C0092C712 /* MultiUpload */,
 				F215DDD219761DFB0092C712 /* Intro */,
@@ -1064,8 +1093,6 @@
 				F2106705196E29B400187119 /* ImageOperationViewController.m */,
 				88B89FBC193EDC04009474DC /* UploadViewController.h */,
 				88B89FBD193EDC04009474DC /* UploadViewController.m */,
-				88CFF4E91997FFD300B56481 /* UploadPickerViewController.h */,
-				88CFF4EA1997FFD300B56481 /* UploadPickerViewController.m */,
 				88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */,
 				88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */,
 			);
@@ -1102,10 +1129,6 @@
 			children = (
 				8814A99B194ADB330010F516 /* MultiUploadViewController.h */,
 				8814A99C194ADB330010F516 /* MultiUploadViewController.m */,
-				88CFF4DD199763CA00B56481 /* MultiUploadAlbumTableViewController.h */,
-				88CFF4DE199763CA00B56481 /* MultiUploadAlbumTableViewController.m */,
-				8833BC811963C5BE0040FD2A /* MultiUploadPickerViewController.h */,
-				8833BC821963C5BE0040FD2A /* MultiUploadPickerViewController.m */,
 				F2D934EE19C78D3B001F33D0 /* MultiUploadViewController+Logic.h */,
 				F2D934EF19C78D3B001F33D0 /* MultiUploadViewController+Logic.m */,
 				F2D934F119C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.h */,
@@ -1196,6 +1219,7 @@
 			isa = PBXGroup;
 			children = (
 				F25D29DD199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib */,
+				88610B551A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -1205,6 +1229,8 @@
 			children = (
 				F25D29E1199B3E9800CD50D7 /* CollectionViewSectionHeader.h */,
 				F25D29E2199B3E9800CD50D7 /* CollectionViewSectionHeader.m */,
+				88610B571A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.h */,
+				88610B581A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -1519,6 +1545,7 @@
 				F21BBBCA19CA0265002D4623 /* TutorialUpperArrowView.xib in Resources */,
 				F226590F19D22575003A62BD /* TutorialSelectBestShotFinishedView.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
+				88610B561A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib in Resources */,
 				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
 				F2A8332A19AB0F0F00E2AB58 /* babyrydev-config.plist in Resources */,
 				F2AD4F12199FD3AB00037C72 /* ImageRequestIntroductionView.xib in Resources */,
@@ -1639,17 +1666,20 @@
 				F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */,
 				F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */,
 				F21BBBF919CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.m in Sources */,
+				88610B661A0A5F210042854B /* ImageUploadInBackground.m in Sources */,
 				F271B31E1999E5E800C9952A /* Badge.m in Sources */,
 				F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */,
 				883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */,
 				886A90F61A03A4AB007849DB /* AWSCommon.m in Sources */,
 				88C072CB19C60E1600BF6F6F /* UserRegisterViewController.m in Sources */,
+				88610B691A0AC1E60042854B /* AlbumPickerViewController+Single.m in Sources */,
 				889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */,
 				8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */,
 				F2B7E0EE19C742520052981B /* PageContentViewController+Logic.m in Sources */,
 				F21BBBE319CA7359002D4623 /* TutorialAddChildView.m in Sources */,
 				886A90FD1A051E3D007849DB /* PasswordChangeViewController.m in Sources */,
 				F28DFD5319D5285F0080E5C2 /* TutorialReceivedApplyView.m in Sources */,
+				88610B5D1A09FFD30042854B /* AlbumTableViewController.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
@@ -1657,7 +1687,7 @@
 				F21BBBD019CA1245002D4623 /* TutorialNavigator+PartChangeExec.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
 				F21BBBE619CAA147002D4623 /* TutorialNavigator+AddChildExec.m in Sources */,
-				8833BC831963C5BE0040FD2A /* MultiUploadPickerViewController.m in Sources */,
+				88610B601A0A04560042854B /* AlbumPickerViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
@@ -1673,7 +1703,6 @@
 				88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */,
 				F2AD4F0D199F97AC00037C72 /* BadgeNotify.m in Sources */,
 				F2ABB123197D295B009E35CB /* CommentTableViewCell.m in Sources */,
-				88CFF4DF199763CA00B56481 /* MultiUploadAlbumTableViewController.m in Sources */,
 				F21BBBF119CAD748002D4623 /* TutorialUploadByUserView.m in Sources */,
 				88C072F119CAB50100BF6F6F /* ChildListCell.m in Sources */,
 				F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */,
@@ -1706,10 +1735,10 @@
 				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				F226591D19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m in Sources */,
 				88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */,
-				88CFF4EB1997FFD300B56481 /* UploadPickerViewController.m in Sources */,
 				F215DDDB1976BFB70092C712 /* ProfileEditViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
 				88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */,
+				88610B591A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m in Sources */,
 				F226591219D225AC003A62BD /* TutorialSelectBestShotFinishedView.m in Sources */,
 				F2B7E0D919C1666F0052981B /* TutorialStage.m in Sources */,
 				88C072E919C9E58D00BF6F6F /* TrackingLogEntity.m in Sources */,
@@ -1736,6 +1765,7 @@
 				F2B7E0E119C1F3A00052981B /* LogoutIntroduceView.m in Sources */,
 				88B18C83193814CE00ED630C /* main.m in Sources */,
 				F2AC1A4E19947CC900DBFE91 /* Partner.m in Sources */,
+				88610B631A0A15690042854B /* AlbumPickerViewController+Multi.m in Sources */,
 				F21BBBC019C9F9D3002D4623 /* TutorialNavigator+SelectBestShot.m in Sources */,
 				F22F208619E46A600089A592 /* ChildPropertyEntity.m in Sources */,
 				F230522C19907927000F5E32 /* PageViewController.m in Sources */,

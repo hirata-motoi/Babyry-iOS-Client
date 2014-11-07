@@ -15,7 +15,7 @@
 #import "ImageTrimming.h"
 #import "PushNotification.h"
 #import "Navigation.h"
-#import "UploadPickerViewController.h"
+#import "AlbumTableViewController.h"
 #import "ImageToolbarViewController.h"
 #import "Partner.h"
 #import "NotificationHistory.h"
@@ -102,12 +102,13 @@
             break;
         case 1:
         {
-            UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
-            uploadPickerViewController.month = _month;
-            uploadPickerViewController.childObjectId = _childObjectId;
-            uploadPickerViewController.date = _date;
-            uploadPickerViewController.uploadViewController = _uploadViewController;
-            [self.navigationController pushViewController:uploadPickerViewController animated:YES];
+            AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+            albumTableViewController.month = _month;
+            albumTableViewController.childObjectId = _childObjectId;
+            albumTableViewController.date = _date;
+            albumTableViewController.uploadViewController = _uploadViewController;
+            albumTableViewController.uploadType = @"single";
+            [self.navigationController pushViewController:albumTableViewController animated:YES];
         }
             break;
     }

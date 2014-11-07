@@ -28,6 +28,7 @@
 #import "Tutorial.h"
 #import "TutorialNavigator.h"
 #import "ChildProperties.h"
+#import "AlbumTableViewController.h"
 
 @interface MultiUploadViewController ()
 
@@ -103,8 +104,6 @@
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
     _bestImageId = @"";
-    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -355,14 +354,15 @@
 
 -(void)openPhotoAlbumList
 {
-    MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
-    multiUploadAlbumTableViewController.childObjectId = _childObjectId;
-    multiUploadAlbumTableViewController.date = _date;
-    multiUploadAlbumTableViewController.month = _month;
-    multiUploadAlbumTableViewController.totalImageNum = _totalImageNum;
-    multiUploadAlbumTableViewController.indexPath = _indexPath;
-    multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
-    [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
+    AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+    albumTableViewController.childObjectId = _childObjectId;
+    albumTableViewController.date = _date;
+    albumTableViewController.month = _month;
+    albumTableViewController.totalImageNum = _totalImageNum;
+    albumTableViewController.indexPath = _indexPath;
+    albumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
+    albumTableViewController.uploadType = @"multi";
+    [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
 
 -(void)selectBestShot:(id)sender
