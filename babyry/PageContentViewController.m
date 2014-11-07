@@ -1331,18 +1331,19 @@
         return;
     }
     
-    // 対象cellのindexPathList
-    NSMutableArray *indexPathList = [self rotateTargetIndexPathList];
-    if (indexPathList.count < 1) {
-        return;
-    }
-    
     AppSetting *newAppSetting = [AppSetting MR_createEntity];
     newAppSetting.name = @"finishedIntroductionToUploadPastImages";
     newAppSetting.value = @"1";
     newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
     newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    
+    // 対象cellのindexPathList
+    // 対象のcellがない場合 = 既に写真をアップしているユーザ なので、AppSettingのレコードはできたままにする
+    NSMutableArray *indexPathList = [self rotateTargetIndexPathList];
+    if (indexPathList.count < 1) {
+        return;
+    }
     
     // 透明のviewで画面をブロック
     UIView *view = [[UIView alloc]init];
