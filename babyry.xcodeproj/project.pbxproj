@@ -218,6 +218,7 @@
 		F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */; };
 		F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350419C97982001F33D0 /* TutorialNavigator.m */; };
 		F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */; };
+		F2F8E4491A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F2F8E4481A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m */; };
 		F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA55619DC04C900546669 /* CloseButtonView.xib */; };
 		F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA55B19DC16EA00546669 /* CloseButtonView.m */; };
 		F2FAA56219DC4ABB00546669 /* PageFlickIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA56119DC4ABB00546669 /* PageFlickIntroductionView.xib */; };
@@ -593,6 +594,8 @@
 		F2D9350419C97982001F33D0 /* TutorialNavigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialNavigator.m; sourceTree = "<group>"; };
 		F2D9350A19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+ShowMultiUpload.h"; sourceTree = "<group>"; };
 		F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+ShowMultiUpload.m"; sourceTree = "<group>"; };
+		F2F8E4471A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDKTStickySectionHeadersCollectionViewLayout.h; sourceTree = "<group>"; };
+		F2F8E4481A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDKTStickySectionHeadersCollectionViewLayout.m; sourceTree = "<group>"; };
 		F2FAA55619DC04C900546669 /* CloseButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CloseButtonView.xib; sourceTree = "<group>"; };
 		F2FAA55A19DC16EA00546669 /* CloseButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloseButtonView.h; sourceTree = "<group>"; };
 		F2FAA55B19DC16EA00546669 /* CloseButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloseButtonView.m; sourceTree = "<group>"; };
@@ -745,6 +748,7 @@
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				F2F8E4461A0B6917007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout */,
 				88B58B7619F6E85000B6E86B /* UINavigationController+Block */,
 				88AA2FFC196FE04600F4B40C /* MBProgressHUD */,
 				88AA2FF8196E91A700F4B40C /* ICTutorialOverlay */,
@@ -1363,6 +1367,15 @@
 			name = TutorialNavigator;
 			sourceTree = "<group>";
 		};
+		F2F8E4461A0B6917007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout */ = {
+			isa = PBXGroup;
+			children = (
+				F2F8E4471A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.h */,
+				F2F8E4481A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m */,
+			);
+			name = PDKTStickySectionHeadersCollectionViewLayout;
+			sourceTree = "<group>";
+		};
 		F2FAA55519DC04A700546669 /* Gadget */ = {
 			isa = PBXGroup;
 			children = (
@@ -1713,6 +1726,7 @@
 				F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
 				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
+				F2F8E4491A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m in Sources */,
 				8814A9AA194F56620010F516 /* ImageTrimming.m in Sources */,
 				88C072F919CC3A3C00BF6F6F /* InputPinCodeViewController.m in Sources */,
 				F2AD4F15199FD5F200037C72 /* ImageRequestIntroductionView.m in Sources */,
