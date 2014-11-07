@@ -11,8 +11,9 @@
 #import "PageContentViewController.h"
 #import "MBProgressHUD.h"
 #import "PageViewController.h"
+#import "HeaderViewManager.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate>
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate>
 
 //- (IBAction)startWalkthrough:(id)sender;
 
@@ -27,5 +28,12 @@
 @property int only_first_load;
 @property MBProgressHUD *hud;
 @property UIView *tagAlbumOperationView;
+@property HeaderViewManager *headerViewManager;
+@property UIView *headerView;
+
+- (void)showHeaderView:(NSString *)type;
+- (void)hideHeaderView;
+- (void)setupHeaderView;
+- (void)showTutorialNavigator;
 
 @end

@@ -17,11 +17,12 @@ typedef void (^UpdateFamilyRoleCacheBlock)();
 + (PFObject *)getFamilyRole:(NSString *)cacheType;
 + (NSString *)selfRole:(NSString *)cacheType;
 + (void)updateCache;
++ (void)updateCacheWithBlock:(UpdateFamilyRoleCacheBlock)block;
 + (void)createFamilyRole: (NSMutableDictionary *)data;
 + (void)createFamilyRoleWithBlock:(NSMutableDictionary *)data withBlock:(PFBooleanResultBlock)block;
 + (void)fetchFamilyRole:(NSString *)familyId withBlock:(PFArrayResultBlock)block;
 + (void)switchRole:(NSString *)role;
-+ (void) unlinkFamily:(PFBooleanResultBlock)block;
++ (void)unlinkFamily:(PFBooleanResultBlock)block;
 + (void)updateFamilyRoleCacheWithBlock:(UpdateFamilyRoleCacheBlock)block;
 
 @end

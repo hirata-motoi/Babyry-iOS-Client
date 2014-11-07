@@ -24,8 +24,6 @@
 - (BOOL)isNoImage:(NSIndexPath *)indexPath;
 - (BOOL)isBestImageFixed:(NSIndexPath *)indexPath;
 - (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath;
-- (void)setupHeaderView;
-- (void)hideFamilyApplyIntroduceView;
 - (void)setupImagesCount;
 - (NSDateComponents *)compsToAdd:(NSNumber *)oldestChildImageDate;
 - (void)addMonthToCalendar:(NSIndexPath *)indexPath;

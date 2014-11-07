@@ -104,7 +104,7 @@
             navigator_ = navigator;
         }
     } else if ([stage.currentStage isEqualToString:@"familyApply"]) {
-        if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
+        if ([_targetViewController isKindOfClass:[ViewController class]]) {
             TutorialNavigator_TutorialFinished *navigator = [[TutorialNavigator_TutorialFinished alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
