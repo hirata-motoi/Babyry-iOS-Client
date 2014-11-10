@@ -30,6 +30,7 @@
 @property (nonatomic, assign) id<ChildFilterViewControllerDelegate> delegate;
 @property NSMutableArray *childList;
 @property NSNumber *indexNumber;
+@property NSString *inviterFamilyId;
 
 - (void)refreshChildListTable:(NSMutableArray *)childList;
 - (BOOL)switchSelected:(BOOL)selected withIndexPath:(NSIndexPath *)indexPath;
