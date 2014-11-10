@@ -59,6 +59,10 @@
         }
     }
     
+    if ([self validateChildCount:childFamilyMap]) {
+        return;
+    }
+                             
     [_delegate executeAdmit:_indexNumber withChildFamilyMap:childFamilyMap];
 }
 
@@ -196,6 +200,24 @@
                                           cancelButtonTitle:nil
                                           otherButtonTitles:@"OK", nil];
     [alert show];
+}
+
+- (BOOL)validateChildCount:(NSMutableDictionary *)childFamilyMap
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self != %@", @""];
+    NSArray *selected = [[childFamilyMap allValues] filteredArrayUsingPredicate:predicate];
+   
+    if (selected.count <= 5) {
+        return NO;
+    }
+    
+    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"選択できるこどもは5人までです"
+                                                   message:@""
+                                                  delegate:nil
+                                         cancelButtonTitle:nil
+                                         otherButtonTitles:@"OK", nil];
+    [alert show];
+    return YES;
 }
 
 /*
