@@ -53,6 +53,7 @@
 #import "ChildProperties.h"
 #import "Partner.h"
 #import "UploadPastImagesIntroductionView.h"
+#import "AnnounceBoardView.h"
 
 @interface PageContentViewController ()
 
@@ -158,6 +159,7 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
+    [self showAnnounceBoard];
     [self showIntroductionForFillingEmptyCells];
 }
 
@@ -1305,6 +1307,41 @@
             [cell rotate];
         }
     }
+}
+
+-(void)showAnnounceBoard
+{
+    NSString *currentStage = [Tutorial currentStage].currentStage;
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:@"finishedIntroductionToUploadPastImages"];
+    
+//    // as が無ければshowIntroductionForFillingEmptyCellsを優先
+//    // チュートリアル中、既に他のDialogを表示中はreturn
+//    if (!as || [currentStage isEqualToString:@"familyApplyExec"] || [self alreadyDisplayedDialog]) {
+//        return;
+//    }
+    
+    NSDictionary *info = [AnnounceBoardView getAnnounceInfo];
+    if (!info || !info[@"title"] || [info[@"title"] isEqualToString:@""]) {
+        return;
+    }
+    
+    // 透明のviewで画面をブロック
+    UIView *view = [[UIView alloc]init];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    view.frame = window.bounds;
+    [window addSubview:view];
+    [window bringSubviewToFront:view];
+    
+    AnnounceBoardView *dialog = [AnnounceBoardView view];
+    CGRect rect = dialog.frame;
+    rect.origin.x = (view.frame.size.width - rect.size.width) / 2;
+    rect.origin.y = (view.frame.size.height - rect.size.height) / 2;
+    dialog.frame = rect;
+    dialog.titleLabel.text = info[@"title"];
+    dialog.messageLabel.text = info[@"message"];
+    dialog.pageContentViewController = self;
+    dialog.childObjectId = _childObjectId;
+    [view addSubview:dialog];
 }
 
 - (void)showIntroductionForFillingEmptyCells

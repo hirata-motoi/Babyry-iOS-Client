@@ -42,6 +42,8 @@
 #import "PartnerInviteViewController.h"
 #import "TutorialNavigator.h"
 #import "ImageUploadInBackground.h"
+#import <AFNetworking.h>
+#import "AnnounceBoardView.h"
 
 @interface ViewController ()
 
@@ -270,6 +272,7 @@
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
             }
+            
             _only_first_load = 0;
             
             [_hud hide:YES];
@@ -282,6 +285,9 @@
                 return;
             }
         }
+        
+        // PageContentViewControllerでやるとDBアクセスが多すぎるのでViewControllerで
+        [self getAnnounceInfo];
         
         if (_headerViewManager) {
             [_headerViewManager validateTimer];
@@ -605,6 +611,19 @@
 - (void)multiUploadImageInBackground
 {
     [ImageUploadInBackground multiUploadToParseInBackground];
+}
+
+- (void)getAnnounceInfo
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    NSDictionary* param = @{@"userid" : [PFUser currentUser][@"userId"]};
+    [manager GET:@"http://babyrydev.parseapp.com/announce_board" parameters:param
+         success:^(AFHTTPRequestOperation *operation, id responseObject) {
+             [AnnounceBoardView setAnnounceInfo:responseObject[@"key"] title:responseObject[@"title"] message:responseObject[@"message"]];
+         }
+         failure:^(AFHTTPRequestOperation *operation, NSError *error){
+             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getAnnounceInfo, %@", error]];
+         }];
 }
 
 @end
