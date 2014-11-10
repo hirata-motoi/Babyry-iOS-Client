@@ -139,6 +139,16 @@
     return _childList[section][@"nameOfCreatedBy"];
 }
 
+// iOS7以降ではsection headerに含まれるアルファベットが大文字に変換されてしまうので
+// 表示直前に上書きする
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
+{
+    if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
+        UITableViewHeaderFooterView *sectionHeader = (UITableViewHeaderFooterView *)view;
+        sectionHeader.textLabel.text = _childList[section][@"nameOfCreatedBy"];
+    }
+}
+
 - (BOOL)switchSelected:(BOOL)selected withIndexPath:(NSIndexPath *)indexPath
 {
     _childList[indexPath.section][@"childList"][indexPath.row][@"selected"] = [NSNumber numberWithBool:selected];
