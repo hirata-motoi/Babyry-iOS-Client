@@ -1314,11 +1314,11 @@
     NSString *currentStage = [Tutorial currentStage].currentStage;
     AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:@"finishedIntroductionToUploadPastImages"];
     
-//    // as が無ければshowIntroductionForFillingEmptyCellsを優先
-//    // チュートリアル中、既に他のDialogを表示中はreturn
-//    if (!as || [currentStage isEqualToString:@"familyApplyExec"] || [self alreadyDisplayedDialog]) {
-//        return;
-//    }
+    // as が無ければshowIntroductionForFillingEmptyCellsを優先
+    // チュートリアル中、既に他のDialogを表示中はreturn
+    if (!as || [currentStage isEqualToString:@"familyApplyExec"] || [self alreadyDisplayedDialog]) {
+        return;
+    }
     
     NSDictionary *info = [AnnounceBoardView getAnnounceInfo];
     if (!info || !info[@"title"] || [info[@"title"] isEqualToString:@""]) {
