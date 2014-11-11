@@ -73,15 +73,20 @@
         return;
     }
     
-    [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        if (object) {
+    // familyIdはタイミングによっては[PFUser currentUser]ではキャッシュが古い可能性があるので直接クエリを引く
+    // [user refresh]の場合、数秒送れたキャッシュがとれる場合があるのでそれも使わない
+    PFQuery *user = [PFQuery queryWithClassName:@"_User"];
+    [user whereKey:@"userId" equalTo:[PFUser currentUser][@"userId"]];
+    user.cachePolicy = kPFCachePolicyNetworkElseCache;
+    [user findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if ([objects count] > 0) {
             
             // initialize
             receivedApply = nil;
             sentApply = nil;
             
             PFQuery *applyList = [PFQuery queryWithClassName:@"PartnerApplyList"];
-            [applyList whereKey:@"familyId" equalTo:object[@"familyId"]];
+            [applyList whereKey:@"familyId" equalTo:objects[0][@"familyId"]];
             [applyList findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
                 if ([objects count] > 0) {
                     receivedApply = @"YES";

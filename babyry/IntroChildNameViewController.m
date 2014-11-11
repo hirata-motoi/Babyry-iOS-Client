@@ -161,9 +161,12 @@
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.labelText = @"データ更新中";
     [self.view endEditing:YES];
-    // 念のためrefresh
-    PFObject *user = [PFUser currentUser];
-    [user refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
+    // familyIdはタイミングによっては[PFUser currentUser]ではキャッシュが古い可能性があるので直接クエリを引く
+    // [user refresh]の場合、数秒送れたキャッシュがとれる場合があるのでそれも使わない
+    PFQuery *user = [PFQuery queryWithClassName:@"_User"];
+    [user whereKey:@"userId" equalTo:[PFUser currentUser][@"userId"]];
+    user.cachePolicy = kPFCachePolicyNetworkElseCache;
+    [user findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
                                                             message:@"エラーが発生しました。もう一度お試しください。"
@@ -175,11 +178,11 @@
             [_hud hide:YES];
             return;
         }
-        if (object) {
+        if ([objects count] > 0) {
             PFObject *child = [PFObject objectWithClassName:@"Child"];
-            [child setObject:object forKey:@"createdBy"];
+            [child setObject:objects[0] forKey:@"createdBy"];
             child[@"name"] = _childNameField.text;
-            child[@"familyId"] = object[@"familyId"];
+            child[@"familyId"] = objects[0][@"familyId"];
             
             if (_childSexSegment.selectedSegmentIndex == 0) {
                 child[@"sex"] = @"male";
