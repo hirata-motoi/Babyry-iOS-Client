@@ -67,10 +67,12 @@
    
     if (localDataOnly) {
         PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-        sentApply = (pie) ? @"YES" : @"NO";
-        receivedApply = @"NO"; // これはParseを参照しないとわからない
-        [self switchHeaderView];
-        return;
+        if (pie) {
+            sentApply = @"YES";
+            receivedApply = @"NO"; // これはParseを参照しないとわからない
+            [self switchHeaderView];
+            return;
+        }
     }
     
     // familyIdはタイミングによっては[PFUser currentUser]ではキャッシュが古い可能性があるので直接クエリを引く
