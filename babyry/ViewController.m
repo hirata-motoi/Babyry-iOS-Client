@@ -143,6 +143,9 @@
         [_pageViewController removeFromParentViewController];
         _pageViewController = nil;
         
+        // header view初期化
+        [self resetHeaderView];
+        
         // ログインしてない場合は、イントロ+ログインViewを出す
         IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
         [self presentViewController:introFirstViewController animated:YES completion:NULL];
@@ -368,11 +371,13 @@
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [self setupGlobalSetting];
-    
+   
     if (!_headerViewManager) {
         _headerViewManager = [[HeaderViewManager alloc]init];
         _headerViewManager.delegate = self;
     }
+   
+    [self resetHeaderView];
     [_headerViewManager setupHeaderView:NO];
     if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
         [self showTutorialNavigator];
@@ -558,9 +563,17 @@
 - (void)hideHeaderView
 {
     // header ViewをremoveFromSuperviewする
-    [_headerView removeFromSuperview];
+    [self resetHeaderView];
     // pageViewControllerの大きさを戻す
     [self fitToScreen];
+}
+
+- (void)resetHeaderView
+{
+    if (_headerView) {
+        [_headerView removeFromSuperview];
+        _headerView = nil;
+    }
 }
 
 - (void)shrinkPageView:(CGRect)headerViewRect
