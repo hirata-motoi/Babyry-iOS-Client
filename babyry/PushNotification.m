@@ -33,7 +33,7 @@
             PFQuery *queryFamily = [PFQuery queryWithClassName:@"_User"];
             [queryFamily whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
             [queryFamily whereKey:@"userId" notEqualTo:[PFUser currentUser][@"userId"]];
-            queryFamily.cachePolicy = kPFCachePolicyCacheElseNetwork;
+            queryFamily.cachePolicy = kPFCachePolicyNetworkElseCache;
             [queryFamily findObjectsInBackgroundWithBlock:^(NSArray *familyObjects, NSError *familyError){
                 if (!error && familyObjects.count > 0) { // familyが自分だけだったら送らない
                     PFPush *push = [[PFPush alloc]init];

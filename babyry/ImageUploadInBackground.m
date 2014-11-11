@@ -24,7 +24,6 @@ NSMutableArray *tmpImageArray;
 NSString *targetDate;
 NSIndexPath *targetIndexPath;
 AWSServiceConfiguration *configuration;
-BOOL uploadSucceeded;
 
 @implementation ImageUploadInBackground
 
@@ -51,11 +50,7 @@ BOOL uploadSucceeded;
     [tmpImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (objects) {
             tmpImageArray = [[NSMutableArray alloc] initWithArray:objects];
-            uploadSucceeded = NO;
             [self recursiveUploadImageToS3];
-            if (uploadSucceeded) {
-                [self afterUpload];
-            }
         }
         if (error) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get TmpImage : %@", error]];
@@ -66,7 +61,13 @@ BOOL uploadSucceeded;
 + (void)recursiveUploadImageToS3
 {
     if ([tmpImageArray count] > 0) {
-        //NSLog(@"S3に上げる");
+        
+        if ([multiUploadImageDataArray count] == 0) {
+            [self removeTmpImages:tmpImageArray];
+            [self afterUpload];
+            return;
+        }
+        
         PFObject *object = tmpImageArray[0];
         AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
         putRequest.bucket = [Config config][@"AWSBucketName"];
@@ -76,24 +77,16 @@ BOOL uploadSucceeded;
         putRequest.contentType = [multiUploadImageDataTypeArray objectAtIndex:0];
         putRequest.cacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-        //NSLog(@"start put to S3");
         [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
             if (!task.error) {
-                //NSLog(@"エラーがなければisTmpDataを更新");
                 object[@"isTmpData"] = @"FALSE";
                 [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if (error) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update isTmpData record : %@", error]];
                     }
-                    //NSLog(@"tmpImageArrayは0以上だけどmultiUploadImageDataArrayが0の可能性あり (前回にゴミが残っているパターン)");
-                    if ([multiUploadImageDataArray count] == 0) {
-                        [self removeTmpImages:tmpImageArray];
-                        return;
-                    }
                     [multiUploadImageDataArray removeObjectAtIndex:0];
                     [multiUploadImageDataTypeArray removeObjectAtIndex:0];
                     [tmpImageArray removeObjectAtIndex:0];
-                    uploadSucceeded = YES;
                     [self recursiveUploadImageToS3];
                 }];
             } else {
@@ -102,10 +95,6 @@ BOOL uploadSucceeded;
                 [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if (error) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete record for failed data : %@", error]];
-                    }
-                    if ([multiUploadImageDataArray count] == 0) {
-                        [self removeTmpImages:tmpImageArray];
-                        return;
                     }
                     [multiUploadImageDataArray removeObjectAtIndex:0];
                     [multiUploadImageDataTypeArray removeObjectAtIndex:0];
@@ -140,7 +129,6 @@ BOOL uploadSucceeded;
                             // エラーがなければisTmpDataを更新
                             [multiUploadImageDataArray removeObjectAtIndex:0];
                             [multiUploadImageDataTypeArray removeObjectAtIndex:0];
-                            uploadSucceeded = YES;
                             [self recursiveUploadImageToS3];
                         } else {
                             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %@", task.error]];
@@ -162,6 +150,8 @@ BOOL uploadSucceeded;
                     [self recursiveUploadImageToS3];
                 }
             }];
+        } else {
+            [self afterUpload];
         }
     }
 }
