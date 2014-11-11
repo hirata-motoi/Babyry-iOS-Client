@@ -274,26 +274,58 @@
                 }
 
                 PFObject *childImage = objects[0];
-                AWSS3GetObjectRequest *request = [AWSS3GetObjectRequest new];
-                request.bucket = [Config config][@"AWSBucketName"];
-                request.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)childImageShardIndex], childImage.objectId];
-                request.responseCacheControl = @"no-cache";
-                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:[AWSCommon getAWSServiceConfiguration:@"S3"]];
-                [[awsS3 getObject:request] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                    if (!task.error && task.result) {
-                        AWSS3GetObjectOutput *result = (AWSS3GetObjectOutput *)task.result;
-                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:result.body]];
-                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                        lastImageByChild[childObjectId] = [ImageTrimming makeRectTopImage:[UIImage imageWithData:thumbData] ratio:1.0f];
-                        
-                        // 大したcell数がないので毎回reload
-                        [_childListTable reloadData];
-                    }
-                    return nil;
-                }];
+                [self setImageData:childImage withChild:child];
             }];
         }
     }
+}
+
+- (void)setImageData:(PFObject *)childImage withChild:(NSMutableDictionary *)child
+{
+    NSString *childObjectId = child[@"childObjectId"];
+    
+    // キャッシュからデータを取得
+    NSData *imageCacheData = [self getCachedImage:childImage];
+    if (imageCacheData) {
+        lastImageByChild[childObjectId] = [ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:1.0f];
+        [_childListTable reloadData];
+        return;
+    }
+   
+    AWSS3GetObjectRequest *request = [AWSS3GetObjectRequest new];
+    request.bucket = [Config config][@"AWSBucketName"];
+    request.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]], childImage.objectId];
+    request.responseCacheControl = @"no-cache";
+    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:[AWSCommon getAWSServiceConfiguration:@"S3"]];
+    [[awsS3 getObject:request] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (!task.error && task.result) {
+            AWSS3GetObjectOutput *result = (AWSS3GetObjectOutput *)task.result;
+            UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:result.body]];
+            NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+            lastImageByChild[childObjectId] = [ImageTrimming makeRectTopImage:[UIImage imageWithData:thumbData] ratio:1.0f];
+            
+            // 大したcell数がないので毎回reload
+            [_childListTable reloadData];
+        }
+        return nil;
+    }];
+}
+
+- (NSData *)getCachedImage: (PFObject *)childImage
+{
+    NSString *cacheDir = [NSString stringWithFormat:@"%@/candidate/%ld/thumbnail", childImage[@"imageOf"], (long)[childImage[@"date"] integerValue]];
+    NSString *imageCachePath = [childImage[@"date"] stringValue];
+    NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:cacheDir];
+    
+    if (imageCacheData) {
+        return imageCacheData;
+    }
+    
+    cacheDir = [NSString stringWithFormat:@"%@/bestShot/%ld/thumbnail", childImage[@"imageOf"], (long)[childImage[@"date"] integerValue]];
+    imageCachePath = childImage.objectId;
+    imageCacheData = [ImageCache getCache:imageCachePath dir:cacheDir];
+    
+    return imageCacheData;
 }
 
 /*
