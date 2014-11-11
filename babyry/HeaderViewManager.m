@@ -67,10 +67,12 @@
    
     if (localDataOnly) {
         PartnerInvitedEntity *pie = [PartnerInvitedEntity MR_findFirst];
-        sentApply = (pie) ? @"YES" : @"NO";
-        receivedApply = @"NO"; // これはParseを参照しないとわからない
-        [self switchHeaderView];
-        return;
+        if (pie) {
+            sentApply = @"YES";
+            receivedApply = @"NO"; // これはParseを参照しないとわからない
+            [self switchHeaderView];
+            return;
+        }
     }
     
     [[PFUser currentUser] refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
