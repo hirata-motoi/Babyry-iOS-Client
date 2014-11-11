@@ -123,7 +123,8 @@
     [self setupHeaderView];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     // 強制アップデート用 (backgroundメソッド)
@@ -293,6 +294,7 @@
             [_headerViewManager validateTimer];
         }
         [self showPageViewController];
+        [_pageViewController showFillingEmptyCellsDialog];
     }
 }
 
@@ -503,9 +505,14 @@
 
 - (void)showHeaderView:(NSString *)type
 {
+    // 既にheader viewが表示済の場合は何もしない
+    NSString *currentHeaderViewType = [self headerViewType];
+    if (currentHeaderViewType && [currentHeaderViewType isEqualToString:type]) {
+        return;
+    }
+    
     [_headerView removeFromSuperview];
     _headerView = nil;
-    // typeに基づいてheaderviewを取得(TutorialHeaderViewクラスを作る？)
     if ([type isEqualToString:@"receivedApply"]) {
         TutorialReceivedApplyView *headerView = [TutorialReceivedApplyView view];
         UITapGestureRecognizer *openPartnerWait = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openFamilyApplyList)];
@@ -530,6 +537,22 @@
     [self.view addSubview:_headerView];
     // pageViewControllerの大きさをチェック。必要なら小さくする
     [self shrinkPageView:_headerView.frame];
+}
+
+- (NSString *)headerViewType
+{
+    if (!_headerView) {
+        return nil;
+    }
+    
+    if ([_headerView isKindOfClass:[TutorialReceivedApplyView class]]) {
+        return @"receivedApply";
+    } else if ([_headerView isKindOfClass:[TutorialSentApplyView class]]) {
+        return @"sentApply";
+    } else if ([_headerView isKindOfClass:[TutorialFamilyApplyIntroduceView class]]) {
+        return @"familyApplyIntroduce";
+    }
+    return nil;
 }
 
 - (void)hideHeaderView

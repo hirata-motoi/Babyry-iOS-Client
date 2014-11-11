@@ -18,6 +18,8 @@
 
 @property (weak, nonatomic) IBOutlet UISwitch *selectSwitch;
 @property (weak, nonatomic) IBOutlet UILabel *childNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *imageCountLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *lastImageView;
 
 @property (nonatomic,assign) id<ChildFilterListCellDelegate> delegate;
 @property NSIndexPath *indexPath;

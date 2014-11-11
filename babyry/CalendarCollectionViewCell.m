@@ -28,7 +28,7 @@
     
     // Y軸での回転アニメーション
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.y"];
-    animation.duration = 0.4;   // 速度(秒数)
+    animation.duration = 1.0;   // 速度(秒数)
     animation.repeatCount = 1;  // 繰り返す回数
     animation.fromValue = [NSNumber numberWithFloat:0.0];       // 開始角度
     animation.toValue = [NSNumber numberWithFloat:2 * M_PI];    // 終了角度（１周）

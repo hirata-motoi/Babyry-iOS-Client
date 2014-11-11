@@ -160,7 +160,6 @@
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
     [self showAnnounceBoard];
-    [self showIntroductionForFillingEmptyCells];
 }
 
 - (void)reloadView
