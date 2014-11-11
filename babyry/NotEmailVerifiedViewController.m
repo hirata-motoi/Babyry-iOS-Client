@@ -68,15 +68,19 @@
 {
     if (!_isTimerRunning) {
         _isTimerRunning = YES;
-        PFUser *user = [PFUser currentUser];
-        [user refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        // familyIdはタイミングによっては[PFUser currentUser]ではキャッシュが古い可能性があるので直接クエリを引く
+        // [user refresh]の場合、数秒送れたキャッシュがとれる場合があるのでそれも使わない
+        PFQuery *user = [PFQuery queryWithClassName:@"_User"];
+        [user whereKey:@"userId" equalTo:[PFUser currentUser][@"userId"]];
+        user.cachePolicy = kPFCachePolicyNetworkElseCache;
+        [user findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if(error) {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in refresh user in checkEmailVerified : %@", error]];
                 _isTimerRunning = NO;
                 return;
             }
             
-            if ([[user objectForKey:@"emailVerified"] boolValue]) {
+            if ([[objects[0] objectForKey:@"emailVerified"] boolValue]) {
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
             _isTimerRunning = NO;
