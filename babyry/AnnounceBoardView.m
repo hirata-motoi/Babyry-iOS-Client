@@ -81,6 +81,10 @@ NSString *announceKey;
 
 + (void)setAnnounceInfo:(NSString *)key title:(NSString *)title message:(NSString *)message
 {
+    if (!announceKey || !announceTitle || !announceMessage) {
+        return;
+    }
+    
     if (title) {
         announceTitle = title;
     }

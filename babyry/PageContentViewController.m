@@ -1246,7 +1246,8 @@
     for (int i = 0; i < views.count; i++) {
         if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
             [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
-            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
+            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]] ||
+            [views[i] isKindOfClass:[AnnounceBoardView class]]) {
             return YES;
         }
     }
