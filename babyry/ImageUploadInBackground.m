@@ -61,7 +61,13 @@ AWSServiceConfiguration *configuration;
 + (void)recursiveUploadImageToS3
 {
     if ([tmpImageArray count] > 0) {
-        //NSLog(@"S3に上げる");
+        
+        if ([multiUploadImageDataArray count] == 0) {
+            [self removeTmpImages:tmpImageArray];
+            [self afterUpload];
+            return;
+        }
+        
         PFObject *object = tmpImageArray[0];
         AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
         putRequest.bucket = [Config config][@"AWSBucketName"];
@@ -78,10 +84,6 @@ AWSServiceConfiguration *configuration;
                     if (error) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update isTmpData record : %@", error]];
                     }
-                    if ([multiUploadImageDataArray count] == 0) {
-                        [self removeTmpImages:tmpImageArray];
-                        [self afterUpload];
-                    }
                     [multiUploadImageDataArray removeObjectAtIndex:0];
                     [multiUploadImageDataTypeArray removeObjectAtIndex:0];
                     [tmpImageArray removeObjectAtIndex:0];
@@ -93,10 +95,6 @@ AWSServiceConfiguration *configuration;
                 [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if (error) {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete record for failed data : %@", error]];
-                    }
-                    if ([multiUploadImageDataArray count] == 0) {
-                        [self removeTmpImages:tmpImageArray];
-                        [self afterUpload];
                     }
                     [multiUploadImageDataArray removeObjectAtIndex:0];
                     [multiUploadImageDataTypeArray removeObjectAtIndex:0];
