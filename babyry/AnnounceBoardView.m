@@ -37,7 +37,7 @@ NSString *announceKey;
     if ([announceKey isEqualToString:@"childBirthday"]){
         [self openChildProfile];
     } else if ([announceKey isEqualToString:@"registerAccount"]) {
-        [self openEmailVerifyView];
+        [self openUserRegisterView];
     }
     [self close];
 }
@@ -51,7 +51,7 @@ NSString *announceKey;
     [_pageContentViewController.navigationController pushViewController:childProfileViewController animated:YES];
 }
 
--(void)openEmailVerifyView
+-(void)openUserRegisterView
 {
     UserRegisterViewController * userRegisterViewController = [_pageContentViewController.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
     [_pageContentViewController.navigationController pushViewController:userRegisterViewController animated:YES];
