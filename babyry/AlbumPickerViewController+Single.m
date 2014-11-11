@@ -35,7 +35,6 @@
 - (void) logicSendImageButton:(NSIndexPath *)indexPath
 {
     // 引数で受け取るindexPathはalbumに表示されている画像の位置
-    NSLog(@"logicSendImageButton %@", indexPath);
     AWSServiceConfiguration *configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     ALAsset *asset = _albumPickerViewController.sectionImageDic[_albumPickerViewController.sectionDateByIndex[indexPath.section]][indexPath.row];
     ALAssetRepresentation *representation = [asset defaultRepresentation];
@@ -68,10 +67,9 @@
     [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
     
     NSArray *imageArray = [imageQuery findObjects];
-    NSLog(@"imageArrayが一つ以上あったら(objectId指定だから一つしか無いはずだけど)上書き");
+    //imageArrayが一つ以上あったら(objectId指定だから一つしか無いはずだけど)上書き"
     if ([imageArray count] > 1) {
     } else if ([imageArray count] == 1) {
-        NSLog(@"found one object");
         PFObject *tmpImageObject = imageArray[0];
         //imageArray[0][@"imageFile"] = imageFile;
         imageArray[0][@"bestFlag"] = @"choosed";
@@ -98,7 +96,6 @@
             }
         }];
     } else {
-        NSLog(@"not found object");
         PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]]];
         childImage[@"date"] = [NSNumber numberWithInteger:[_albumPickerViewController.date integerValue]];
         childImage[@"imageOf"] = _albumPickerViewController.childObjectId;
@@ -149,7 +146,6 @@
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_albumPickerViewController.childObjectId withDate:[_albumPickerViewController.date integerValue]];
     
-    NSLog(@"popViewController");
     [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
     //アルバム表示のViewも消す
     UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;

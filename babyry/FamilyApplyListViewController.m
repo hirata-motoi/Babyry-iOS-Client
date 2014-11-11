@@ -125,7 +125,9 @@
 {
     NSMutableArray *familyIds = [[NSMutableArray alloc]init];
     for (PFObject *inviterUser in inviterUsers) {
-        [familyIds addObject:inviterUser[@"familyId"]];
+        if (inviterUser[@"familyId"]) {
+            [familyIds addObject:inviterUser[@"familyId"]];
+        }
     }
     
     // self familyId
@@ -146,7 +148,6 @@
         
         if (childObjectList.count < 1) {
             [hud hide:YES];
-            [self executeAdmit:[NSNumber numberWithInteger:index] withChildFamilyMap:nil];
             return;
         }
 
@@ -166,7 +167,7 @@
 - (void)setupImageCount:(PFObject *)child
 {
     NSInteger childImageShardIndex = [child[@"childImageShardIndex"] integerValue];
-    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", childImageShardIndex]];
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%d", childImageShardIndex]];
     [query whereKey:@"imageOf" equalTo:child.objectId];
     [query whereKey:@"bestFlag" notEqualTo:@"removed"];
     query.limit = 1000;

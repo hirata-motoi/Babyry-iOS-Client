@@ -642,7 +642,10 @@
     NSDictionary* param = @{@"userid" : [PFUser currentUser][@"userId"]};
     [manager GET:@"http://babyrydev.parseapp.com/announce_board" parameters:param
          success:^(AFHTTPRequestOperation *operation, id responseObject) {
-             [AnnounceBoardView setAnnounceInfo:responseObject[@"key"] title:responseObject[@"title"] message:responseObject[@"message"]];
+             if (responseObject[@"key"]) {
+                 [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Get announceInfo key:%@", responseObject[@"key"]]];
+                 [AnnounceBoardView setAnnounceInfo:responseObject[@"key"] title:responseObject[@"title"] message:responseObject[@"message"]];
+             }
          }
          failure:^(AFHTTPRequestOperation *operation, NSError *error){
              [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getAnnounceInfo, %@", error]];

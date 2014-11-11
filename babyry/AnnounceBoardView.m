@@ -9,7 +9,7 @@
 #import "AnnounceBoardView.h"
 #import "UIColor+Hex.h"
 #import "ProfileViewController.h"
-#import "NotEmailVerifiedViewController.h"
+#import "UserRegisterViewController.h"
 #import "ChildProfileViewController.h"
 #import "ChildProperties.h"
 
@@ -53,8 +53,8 @@ NSString *announceKey;
 
 -(void)openEmailVerifyView
 {
-    NotEmailVerifiedViewController *emailVerifiedViewController = [_pageContentViewController.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
-    [_pageContentViewController.navigationController pushViewController:emailVerifiedViewController animated:YES];
+    UserRegisterViewController * userRegisterViewController = [_pageContentViewController.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
+    [_pageContentViewController.navigationController pushViewController:userRegisterViewController animated:YES];
 }
 
 + (instancetype)view
@@ -81,19 +81,13 @@ NSString *announceKey;
 
 + (void)setAnnounceInfo:(NSString *)key title:(NSString *)title message:(NSString *)message
 {
-    if (!announceKey || !announceTitle || !announceMessage) {
+    if (!key || !title || !message) {
         return;
     }
-    
-    if (title) {
-        announceTitle = title;
-    }
-    if (message) {
-        announceMessage = message;
-    }
-    if (key) {
-        announceKey = key;
-    }
+
+    announceTitle = title;
+    announceMessage = message;
+    announceKey = key;
 }
 
 + (NSDictionary *) getAnnounceInfo
