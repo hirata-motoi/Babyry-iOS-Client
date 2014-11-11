@@ -169,6 +169,7 @@
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", childImageShardIndex]];
     [query whereKey:@"imageOf" equalTo:child.objectId];
     [query whereKey:@"bestFlag" notEqualTo:@"removed"];
+    query.limit = 1000;
     [query countObjectsInBackgroundWithBlock:^(int count, NSError *error){
         childInfoByFamily[ child[@"familyId"] ][child.objectId][@"imageCount"] = [NSNumber numberWithInt:count];
         // ぐるぐるを隠す
