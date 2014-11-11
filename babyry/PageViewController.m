@@ -128,6 +128,12 @@
     return [[childProperties objectAtIndex:_currentPageIndex] objectForKey:@"objectId"];
 }
 
+- (void)showFillingEmptyCellsDialog
+{
+    PageContentViewController *vc = [self viewControllers][0];
+    [vc showIntroductionForFillingEmptyCells];
+}
+
 /*
 #pragma mark - Navigation
 

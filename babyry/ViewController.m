@@ -121,7 +121,8 @@
     [self setupHeaderView];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     // 強制アップデート用 (backgroundメソッド)
@@ -287,6 +288,7 @@
             [_headerViewManager validateTimer];
         }
         [self showPageViewController];
+        [_pageViewController showFillingEmptyCellsDialog];
     }
 }
 
