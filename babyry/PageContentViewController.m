@@ -1343,6 +1343,8 @@
     dialog.childObjectId = _childObjectId;
     [view addSubview:dialog];
     
+    [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Show announce %@:", info[@"key"]]];
+    
     // 表示済みフラグを立てる
     PFObject *announceHist = [PFObject objectWithClassName:@"AnnounceInfoHistory"];
     announceHist[@"userId"] = _currentUser[@"userId"];
