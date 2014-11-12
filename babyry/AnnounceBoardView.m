@@ -63,6 +63,7 @@ NSString *announceKey;
     AnnounceBoardView *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
     view.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.7];
     view.layer.cornerRadius = 5;
+    view.autoresizingMask = UIViewAutoresizingNone;
     
     UITapGestureRecognizer *closeGesture = [[UITapGestureRecognizer alloc]initWithTarget:view action:@selector(close)];
     closeGesture.numberOfTapsRequired = 1;
