@@ -105,6 +105,7 @@
             // 重複が無いのでUserを更新
             PFUser *currentUser = [PFUser currentUser];
             currentUser[@"username"] = email;
+            currentUser[@"email"] = email;
             currentUser[@"emailCommon"] = email;
             [currentUser saveInBackground];
             // viewを書き換え
