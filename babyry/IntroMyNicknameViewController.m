@@ -262,7 +262,7 @@
     [ImageCache removeAllCache];
     [PartnerApply removePartnerInviteFromCoreData];
     [PartnerApply removePartnerInvitedFromCoreData];
-    [AnnounceBoardView removeAnnounceInfoByOuter];
+//    [AnnounceBoardView removeAnnounceInfoByOuter];
     [PushNotification removeSelfUserIdFromChannels:^(){
         [PFUser logOut];
     }];

@@ -145,7 +145,7 @@
                     [TmpUser removeTmpUserFromCoreData];
                     [PartnerApply removePartnerInviteFromCoreData];
                     [PartnerApply removePartnerInvitedFromCoreData];
-                    [AnnounceBoardView removeAnnounceInfoByOuter];
+//                    [AnnounceBoardView removeAnnounceInfoByOuter];
                     [_viewController viewDidAppear:YES];
                 }];
             }];
