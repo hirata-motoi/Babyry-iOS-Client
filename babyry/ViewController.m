@@ -653,7 +653,7 @@
 {
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     NSDictionary* param = @{@"userid" : [PFUser currentUser][@"userId"]};
-    [manager GET:@"http://babyrydev.parseapp.com/announce_board" parameters:param
+    [manager GET:[NSString stringWithFormat:@"%@/announce_board", [Config config][@"CloudCodeURL"]] parameters:param
          success:^(AFHTTPRequestOperation *operation, id responseObject) {
              if (responseObject[@"key"]) {
                  [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Get announceInfo key:%@", responseObject[@"key"]]];
