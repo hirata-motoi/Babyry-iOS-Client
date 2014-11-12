@@ -221,7 +221,7 @@
                     }
                     
                     if (reload) {
-                        [self.pageContentViewController.pageContentCollectionView reloadData];
+                        [self executeReload];
                         [NSThread sleepForTimeInterval:0.1];
                     }
                     if (i == concurrency - 1) {
@@ -233,7 +233,7 @@
         }
     } else {
         if (reload) {
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         }
     }
 }
@@ -325,9 +325,9 @@
             for (NSString *ymd in history) {
                 [self.pageContentViewController.notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
             }
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         }
-        [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];
     }];
@@ -444,7 +444,7 @@
             [[NSNotificationCenter defaultCenter] postNotification:n];
         } else if ([reloadType isEqualToString:@"reloadPageContentViewDate"]) {
             [self.pageContentViewController adjustChildImages];
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         } else {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
         }
@@ -495,7 +495,7 @@
             shouldReload = YES;
         }
         if (shouldReload) {
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         }
     }];
 }
@@ -718,7 +718,7 @@
                 // _childImagesにPFObjectを追加
                 [self addEmptyChildImages:compsToAdd];
                 // PageContentViewControllerをreload
-                [self.pageContentViewController.pageContentCollectionView reloadData];
+                [self executeReload];
                 
                 [self.pageContentViewController hideLoadingIcon];
                 
@@ -835,5 +835,16 @@
 
 - (void)removeDialogs
 {}
+
+// cell回転中にreloadDataが呼ばれるとアニメーションが停止してしまうので
+// 回転中はreloadDataを呼ばない
+- (void)executeReload
+{
+    if (!self.pageContentViewController.isRotatingCells) {
+        [self.pageContentViewController.pageContentCollectionView reloadData];
+    } else {
+        self.pageContentViewController.skippedReloadData = YES;
+    }
+}
 
 @end

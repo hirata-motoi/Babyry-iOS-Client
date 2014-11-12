@@ -51,6 +51,8 @@
 @property BOOL isLoading;
 @property NSDateComponents *dateComp;
 @property NSMutableDictionary *notificationHistory;
+@property BOOL isRotatingCells;
+@property BOOL skippedReloadData;
 
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
@@ -62,7 +64,6 @@
 - (void)showTutorialNavigator;
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
-//- (void) dispatchForPushReceivedTransition;
 - (void)adjustChildImages;
 - (void)showLoadingIcon;
 - (void)hideLoadingIcon;
