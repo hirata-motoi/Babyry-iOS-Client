@@ -159,7 +159,7 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
-    [self showAnnounceBoard];
+//    [self showAnnounceBoard];
 }
 
 - (void)reloadView
