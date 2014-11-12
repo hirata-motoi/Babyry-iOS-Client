@@ -199,6 +199,7 @@
     _tn = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    alreadyRegisteredObserver = NO;
     
     [self removeDialogs];
 }

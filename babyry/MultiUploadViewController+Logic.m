@@ -254,11 +254,17 @@
         // ランダムでどれか1つをbestshotに選ぶ
         // TODO arc4random_uniformで得られる数値の範囲を確認
         int bestShotIndex = (int)arc4random_uniform((int)objects.count);
+        // 最後の画像のsaveが終わった段階でdidUpdatedChildImageInfoを発行する用のindex
+        int maxCount = objects.count;
+        int __block execCount = 0;
         for (int i = 0; i < objects.count; i++) {
             PFObject *childImage = objects[i];
             childImage[@"bestFlag"] = (i == bestShotIndex) ? @"choosed" : @"unchoosed";
             [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                [[NSNotificationCenter defaultCenter] postNotification: [NSNotification notificationWithName:@"didUpdatedChildImageInfo" object:self]];
+                execCount++;
+                if (execCount == maxCount) {
+                    [[NSNotificationCenter defaultCenter] postNotification: [NSNotification notificationWithName:@"didUpdatedChildImageInfo" object:self]];
+                }
             }];
         }
     }];
