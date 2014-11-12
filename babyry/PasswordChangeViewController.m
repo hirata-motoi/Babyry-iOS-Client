@@ -41,9 +41,6 @@
     changePasswordGesture.numberOfTapsRequired = 1;
     [_passwordChangeLabel addGestureRecognizer:changePasswordGesture];
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [hud hide:YES];
-    
     [Navigation setTitle:self.navigationItem withTitle:@"パスワード変更" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
     [_changePasswordField becomeFirstResponder];
@@ -57,8 +54,12 @@
 
 - (void) changePassword
 {
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"パスワード保存中";
+    
     NSString *errorMessage = [Account checkEmailRegisterFields:@"dummy@aaa.bbb" password:_changePasswordField.text passwordConfirm:_changePasswordConfirmField.text];
     if (![errorMessage isEqualToString:@""]) {
+        [hud hide:YES];
         // アラート
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:errorMessage
                                                         message:@""
@@ -72,8 +73,6 @@
     
     PFUser *user = [PFUser currentUser];
     user.password = _changePasswordField.text;
-    hud.labelText = @"パスワード保存中";
-    [hud hide:NO];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (error) {
             [Logger writeOneShot:@"cirt" message:[NSString stringWithFormat:@"Error in save password : %@", error]];
