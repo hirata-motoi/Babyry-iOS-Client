@@ -17,6 +17,7 @@
 #import "ImageCache.h"
 #import "PushNotification.h"
 #import "TmpUser.h"
+#import "AnnounceBoardView.h"
 
 @interface IntroMyNicknameViewController ()
 
@@ -261,6 +262,7 @@
     [ImageCache removeAllCache];
     [PartnerApply removePartnerInviteFromCoreData];
     [PartnerApply removePartnerInvitedFromCoreData];
+//    [AnnounceBoardView removeAnnounceInfoByOuter];
     [PushNotification removeSelfUserIdFromChannels:^(){
         [PFUser logOut];
     }];

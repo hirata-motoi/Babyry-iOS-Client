@@ -159,7 +159,7 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
-    [self showAnnounceBoard];
+//    [self showAnnounceBoard];
 }
 
 - (void)reloadView
@@ -1335,7 +1335,7 @@
     
     // as が無ければshowIntroductionForFillingEmptyCellsを優先
     // チュートリアル中、既に他のDialogを表示中はreturn
-    if (!as || [currentStage isEqualToString:@"familyApplyExec"] || [self alreadyDisplayedDialog]) {
+    if (!as || ![currentStage isEqualToString:@"tutorialFinished"] || [self alreadyDisplayedDialog]) {
         return;
     }
     

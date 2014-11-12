@@ -291,7 +291,7 @@
         }
         
         // PageContentViewControllerでやるとDBアクセスが多すぎるのでViewControllerで
-        [self getAnnounceInfo];
+        //[self getAnnounceInfo];
         
         if (_headerViewManager) {
             [_headerViewManager validateTimer];

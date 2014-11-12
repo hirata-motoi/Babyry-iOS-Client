@@ -19,6 +19,7 @@
 + (instancetype)view;
 + (void)setAnnounceInfo:(NSString *)key title:(NSString *)title message:(NSString *)message;
 + (NSDictionary *) getAnnounceInfo;
++ (void)removeAnnounceInfoByOuter;
 
 @property PageContentViewController *pageContentViewController;
 @property NSString *childObjectId;
