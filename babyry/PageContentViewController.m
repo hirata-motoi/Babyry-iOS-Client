@@ -1423,7 +1423,7 @@
             [indexPathList addObject:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]];
             totalIndex++;
             
-            if (totalIndex >= 6) {
+            if (totalIndex >= 7) {
                 return indexPathList;
             }
         }
@@ -1440,13 +1440,13 @@
     
     // 透明viewを消す
     [userInfo[@"clearView"] removeFromSuperview];
- 
-    // 2回だけ繰り返す
+    
+    // 1回だけ繰り返す
     NSNumber *repeatCountNumber = userInfo[@"repeatCount"];
     NSNumber *addedRepeatCountNumber = [NSNumber numberWithInteger:[repeatCountNumber integerValue] + 1];
     userInfo[@"repeatCount"] = addedRepeatCountNumber;
     
-    if ([addedRepeatCountNumber integerValue] > 1) {
+    if ([addedRepeatCountNumber integerValue] > 0) {
         [timer invalidate];
     }
 }
