@@ -1295,10 +1295,17 @@
         if (!targetIndexPath[section]) {
             targetIndexPath[section] = [[NSMutableDictionary alloc]init];
         }
+        
+        // 非同期でchildImagesが更新されるので、念のためここでもchildImagesをチェック
+        PFObject *childImage = _childImages[indexPath.section][@"images"][indexPath.row];
+        if (childImage.objectId) {
+            continue;
+        }
        
         targetIndexPath[section][row] = @"YES";
     }
-    
+
+    _isRotatingCells = YES;
     for (UIView *v in [_pageContentCollectionView subviews]) {
         if (![v isKindOfClass:[CalendarCollectionViewCell class]]) {
             continue;
@@ -1308,6 +1315,17 @@
             [cell rotate];
         }
     }
+    // 1.0fはCalendarCollectionViewCellのdurationに合わせている
+    [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(resetRotatingCells) userInfo:nil repeats:NO];
+}
+
+- (void)resetRotatingCells
+{
+    if (_skippedReloadData) {
+        [_pageContentCollectionView reloadData];
+    }
+    _isRotatingCells = NO;
+    _skippedReloadData = NO;
 }
 
 -(void)showAnnounceBoard
@@ -1400,11 +1418,11 @@
     dialog.frame = rect;
     [self.view addSubview:dialog];
     
-    [NSTimer scheduledTimerWithTimeInterval:1.0
+    [NSTimer scheduledTimerWithTimeInterval:1.0f
                                      target:self
                                    selector:@selector(rotateEmptyCells:)
                                    userInfo:[NSMutableDictionary dictionaryWithObjects:@[view, indexPathList, [NSNumber numberWithInt:0]] forKeys:@[@"clearView", @"indexPathList", @"repeatCount"]]
-                                    repeats:YES];
+                                    repeats:NO];
     
 }
 
@@ -1436,20 +1454,11 @@
 {
     NSMutableDictionary *userInfo = [timer userInfo];
     
-    NSMutableArray *indexPathList = userInfo[@"indexPathList"];
-    [self rotateViewYAxis:indexPathList];
-    
     // 透明viewを消す
     [userInfo[@"clearView"] removeFromSuperview];
     
-    // 1回だけ繰り返す
-    NSNumber *repeatCountNumber = userInfo[@"repeatCount"];
-    NSNumber *addedRepeatCountNumber = [NSNumber numberWithInteger:[repeatCountNumber integerValue] + 1];
-    userInfo[@"repeatCount"] = addedRepeatCountNumber;
-    
-    if ([addedRepeatCountNumber integerValue] > 0) {
-        [timer invalidate];
-    }
+    NSMutableArray *indexPathList = userInfo[@"indexPathList"];
+    [self rotateViewYAxis:indexPathList];
 }
 
 /*
