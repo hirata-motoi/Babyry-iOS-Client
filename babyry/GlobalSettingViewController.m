@@ -26,6 +26,7 @@
 #import "NotEmailVerifiedViewController.h"
 #import "PartnerApply.h"
 #import "UINavigationController+Block.h"
+#import "AnnounceBoardView.h"
 
 @interface GlobalSettingViewController ()
 
@@ -144,6 +145,7 @@
                     [TmpUser removeTmpUserFromCoreData];
                     [PartnerApply removePartnerInviteFromCoreData];
                     [PartnerApply removePartnerInvitedFromCoreData];
+                    [AnnounceBoardView removeAnnounceInfoByOuter];
                     [_viewController viewDidAppear:YES];
                 }];
             }];

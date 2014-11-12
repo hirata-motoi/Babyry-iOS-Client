@@ -106,4 +106,11 @@ NSString *announceKey;
     announceKey = nil;
 }
 
++ (void)removeAnnounceInfoByOuter
+{
+    announceTitle = nil;
+    announceMessage = nil;
+    announceKey = nil;
+}
+
 @end
