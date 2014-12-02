@@ -13,12 +13,16 @@
 #import "Logger.h"
 #import "Tutorial.h"
 #import "PushNotification.h"
+#import "ChildFilterViewController.h"
 
 @interface FamilyApplyListViewController ()
 
 @end
 
-@implementation FamilyApplyListViewController
+@implementation FamilyApplyListViewController {
+    NSMutableDictionary *childInfoByFamily;
+    MBProgressHUD *hud;
+}
 
 @synthesize inviterUsers;
 @synthesize familyApplys;
@@ -49,6 +53,7 @@
     
     UINib *nib = [UINib nibWithNibName:@"FamilyApplyListCell" bundle:nil];
     [_familyApplyList registerNib:nib forCellReuseIdentifier:@"Cell"];
+    
 }
 
 
@@ -60,14 +65,16 @@
 
 - (void)showFamilyApplyList
 {
-    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    _hud.labelText = @"申請データ確認";
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"申請データ確認";
+    
     familyApplys = [[NSMutableDictionary alloc]init];
     PFQuery *query = [PFQuery queryWithClassName:@"PartnerApplyList"];
     [query whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (objects.count < 1) {
             [self showNoApplyMessage];
+            [hud hide:YES];
         } else {
             NSMutableArray * applyingUserIds = [[NSMutableArray alloc] init];
             for (int i = 0; i < objects.count; i++) {
@@ -82,9 +89,11 @@
         }
         if (error) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in showFamilyApplyList : %@", error]];
+            [self showErrorAlert];
+            [self disableAdmitButton];
+            [hud hide:YES];
         }
         
-        [_hud hide:YES];
     }];
 }
 
@@ -95,14 +104,77 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (error) {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in setupInviterUsers : %@", error]];
+            [hud hide:YES];
+            [self showErrorAlert];
+            [self disableAdmitButton];
             return;
         }
         if (!objects || [objects count] < 1) {
             [Logger writeOneShot:@"crit" message:@"Error in setupInviterUsers : There is no Inviter"];
+            [hud hide:YES];
             return;
         }
         inviterUsers = objects;
         [_familyApplyList reloadData];
+        
+        [self setupChildInfo];
+    }];
+}
+
+- (void)setupChildInfo
+{
+    NSMutableArray *familyIds = [[NSMutableArray alloc]init];
+    for (PFObject *inviterUser in inviterUsers) {
+        if (inviterUser[@"familyId"]) {
+            [familyIds addObject:inviterUser[@"familyId"]];
+        }
+    }
+    
+    // self familyId
+    [familyIds addObject:[PFUser currentUser][@"familyId"] ];
+   
+    childInfoByFamily = [[NSMutableDictionary alloc]init];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
+    [query whereKey:@"familyId" containedIn:familyIds];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *childObjectList, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get Child familyIds:%@ error:%@", familyIds, error]];
+            [hud hide:YES];
+            [self showErrorAlert];
+            [self disableAdmitButton];
+            return;
+        }
+        
+        if (childObjectList.count < 1) {
+            [hud hide:YES];
+            return;
+        }
+
+        for (PFObject *child in childObjectList) {
+            if (!childInfoByFamily[ child[@"familyId"] ]) {
+                childInfoByFamily[ child[@"familyId"] ] = [[NSMutableDictionary alloc]init];
+            }
+            childInfoByFamily[ child[@"familyId"] ][child.objectId] = [[NSMutableDictionary alloc]init];
+            childInfoByFamily[ child[@"familyId"] ][child.objectId][@"object"] = child;
+            
+            // 写真アップ枚数
+            [self setupImageCount:child];
+        }
+    }];
+}
+
+- (void)setupImageCount:(PFObject *)child
+{
+    NSInteger childImageShardIndex = [child[@"childImageShardIndex"] integerValue];
+    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%d", childImageShardIndex]];
+    [query whereKey:@"imageOf" equalTo:child.objectId];
+    [query whereKey:@"bestFlag" notEqualTo:@"removed"];
+    query.limit = 1000;
+    [query countObjectsInBackgroundWithBlock:^(int count, NSError *error){
+        childInfoByFamily[ child[@"familyId"] ][child.objectId][@"imageCount"] = [NSNumber numberWithInt:count];
+        // ぐるぐるを隠す
+        [hud hide:YES];
     }];
 }
 
@@ -116,7 +188,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     // 再利用できるセルがあれば再利用する
-    FamilyApplyListCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    FamilyApplyListCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     if (!cell) {
         // 再利用できない場合は新規で作成
@@ -174,12 +246,73 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-//- (void)admit: (UIButton *)sender event:(UIEvent *)event
 - (void)admit: (NSInteger)index
 {
-    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    _hud.labelText = @"データ更新";
+    NSString *inviterFamilyId = inviterUsers[index][@"familyId"];
+    // 相手が「招待された人」からはじめた場合
+    if (!inviterFamilyId) {
+        [self executeAdmit:[NSNumber numberWithInteger:index] withChildFamilyMap:nil];
+        return;
+    }
     
+    ChildFilterViewController *childFilterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildFilterViewController"];
+    childFilterViewController.delegate = self;
+    childFilterViewController.indexNumber = [NSNumber numberWithInteger:index];
+    childFilterViewController.childList = [self createChildListForFilter:inviterUsers[index]];
+    [self addChildViewController:childFilterViewController];
+    [self.view addSubview:childFilterViewController.view];
+}
+
+- (NSMutableArray *)createChildListForFilter:(PFObject *)inviter
+{
+    NSMutableDictionary *childList = [[NSMutableDictionary alloc]init];
+    NSString *selfFamilyId = [PFUser currentUser][@"familyId"];
+    NSString *inviterFamilyId = inviter[@"familyId"];
+
+    // 自分
+    if (!childList[selfFamilyId]) {
+        childList[selfFamilyId] = [[NSMutableDictionary alloc]init];
+    }
+    childList[selfFamilyId][@"childList"] = [[NSMutableArray alloc]init];
+    childList[selfFamilyId][@"index"] = [NSNumber numberWithInt:1]; // 自分のこどもは基本残すはずなので下に表示
+    childList[selfFamilyId][@"nameOfCreatedBy"] = [PFUser currentUser][@"nickName"];
+    for (NSString *childObjectId in childInfoByFamily[selfFamilyId]) {
+        PFObject *childObject = childInfoByFamily[selfFamilyId][childObjectId][@"object"];
+        NSNumber *imageCount = childInfoByFamily[selfFamilyId][childObjectId][@"imageCount"];
+        
+        [childList[selfFamilyId][@"childList"] addObject:[NSMutableDictionary
+                                                     dictionaryWithObjects:@[childObject[@"name"], childObjectId, childObject[@"childImageShardIndex"], [NSNumber numberWithBool:YES], imageCount]
+                                         forKeys:@[@"name", @"childObjectId", @"childImageShardIndex", @"selected", @"imageCount"]]];
+    }
+    
+    // 申請者
+    if (!childList[inviterFamilyId]) {
+        childList[inviterFamilyId] = [[NSMutableDictionary alloc]init];
+    }
+    childList[inviterFamilyId][@"childList"] = [[NSMutableArray alloc]init];
+    childList[inviterFamilyId][@"index"] = [NSNumber numberWithInt:0];
+    childList[inviterFamilyId][@"nameOfCreatedBy"] = inviter[@"nickName"];
+    for (NSString *childObjectId in childInfoByFamily[inviterFamilyId]) {
+        PFObject *childObject = childInfoByFamily[inviterFamilyId][childObjectId][@"object"];
+        NSNumber *imageCount = childInfoByFamily[inviterFamilyId][childObjectId][@"imageCount"];
+        
+        [childList[inviterFamilyId][@"childList"] addObject:[NSMutableDictionary
+                                                     dictionaryWithObjects:@[childObject[@"name"], childObjectId, childObject[@"childImageShardIndex"], [NSNumber numberWithBool:YES], imageCount]
+                                         forKeys:@[@"name", @"childObjectId", @"childImageShardIndex", @"selected", @"imageCount"]]];
+    }
+    
+    // 自分のこどもが後になるようにsort
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
+    NSMutableArray *sortedChildren = [[childList allValues] sortedArrayUsingDescriptors:@[sortDescriptor]];
+    return sortedChildren;
+}
+
+- (void)executeAdmit:(NSNumber *)indexNumber withChildFamilyMap:(NSMutableDictionary *)childFamilyMap
+{
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"データ更新";
+    
+    NSInteger index = [indexNumber integerValue];
     // FamilyRoleのchooserにapplyingUserIdを突っ込む
     PFQuery *familyRole = [PFQuery queryWithClassName:@"FamilyRole"];
     [familyRole whereKey:@"familyId" equalTo:[PFUser currentUser][@"familyId"]];
@@ -188,7 +321,7 @@
             // かならず一つが見つかるはず
             // エラーならレコード作るでも良いけど、やり過ぎな気はする
             [Logger writeOneShot:@"cirt" message:[NSString stringWithFormat:@"Error in find familyRole : %@", error]];
-            [_hud hide:YES];
+            [hud hide:YES];
             return;
         }
         
@@ -201,7 +334,7 @@
         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if (error) {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update chooser : %@", error]];
-                [_hud hide:YES];
+                [hud hide:YES];
                 return;
             }
             // PartnerApplyListから削除
@@ -231,8 +364,10 @@
                 }];
             }
             
+            [self updateFamilyIdOfChild:childFamilyMap];
+            
             [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
-            [_hud hide:YES];
+            [hud hide:YES];
             
             // push通知
             NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
@@ -255,6 +390,51 @@
 - (void)showNoApplyMessage
 {
     _noApplyMessageView.hidden = NO;
+}
+
+- (void)updateFamilyIdOfChild:(NSMutableDictionary *)childFamilyMap
+{
+    NSArray *childObjectIdList = [childFamilyMap allKeys];
+    if (childObjectIdList.count < 1) {
+        return;
+    }
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
+    [query whereKey:@"objectId" containedIn:childObjectIdList];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get child:%@ error:%@", childObjectIdList, error]];
+            return;
+        }
+        
+        if (objects.count < 1) {
+            [Logger writeOneShot:@"warn" message:[NSString stringWithFormat:@"Child not found :%@", childObjectIdList]];
+            return;
+        }
+        
+        for (PFObject *child in objects) {
+            child[@"familyId"] = childFamilyMap[child.objectId];
+            [child saveInBackground];
+        }
+    }];
+}
+
+- (void)showErrorAlert
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
+                                                    message:@"ネットワークエラーが発生しました。\n再度お試しください。"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
+}
+
+- (void)disableAdmitButton
+{
+    for (FamilyApplyListCell *cell in [_familyApplyList visibleCells]) {
+        cell.admitButton.enabled = NO;
+    }
 }
 
 /*

@@ -11,10 +11,9 @@
 #import "PageContentViewController.h"
 #import "MBProgressHUD.h"
 #import "PageViewController.h"
+#import "HeaderViewManager.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate>
-
-//- (IBAction)startWalkthrough:(id)sender;
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate>
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
@@ -23,9 +22,15 @@
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;
 
-//@property NSUInteger currentPageIndex;
 @property int only_first_load;
 @property MBProgressHUD *hud;
 @property UIView *tagAlbumOperationView;
+@property HeaderViewManager *headerViewManager;
+@property UIView *headerView;
+
+- (void)showHeaderView:(NSString *)type;
+- (void)hideHeaderView;
+- (void)setupHeaderView;
+- (void)showTutorialNavigator;
 
 @end

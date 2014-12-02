@@ -2,6 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CloudCodeURL</key>
+	<string>http://babyrydev.parseapp.com</string>
+	<key>EmailVerifyMessage</key>
+	<string>Babyryへのご登録ありがとうございます
+
+以下のURLをクリックしてアカウントを有効化してください:
+http://babyrydev.parseapp.com/email_verify?token=%token</string>
+	<key>EmailVerifySubject</key>
+	<string>Babyry登録メールアドレス認証</string>
 	<key>PartnerInviteEntityKeyName</key>
 	<string>partnerInviteEntity</string>
 	<key>InviteMailTextWithPinCode</key>
@@ -133,7 +142,7 @@
 	<key>InquiryEmail</key>
 	<string>info@meaning.co.jp</string>
 	<key>AppVersion</key>
-	<string>1.0.5</string>
+	<string>1.0.7</string>
 	<key>AWSBucketName</key>
 	<string>babyrydev-images</string>
 </dict>

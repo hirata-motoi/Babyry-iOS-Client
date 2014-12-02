@@ -37,6 +37,7 @@
     closeGesture.numberOfTapsRequired = 1;
     [view.closeButton addGestureRecognizer:closeGesture];
     view.closeButton.userInteractionEnabled = YES;
+    view.autoresizingMask = UIViewAutoresizingNone;
     
     UITapGestureRecognizer *logoutGesture = [[UITapGestureRecognizer alloc]initWithTarget:view action:@selector(doLogout)];
     logoutGesture.numberOfTapsRequired = 1;

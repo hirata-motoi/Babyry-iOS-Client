@@ -8,6 +8,8 @@
 
 #import "NotEmailVerifiedViewController.h"
 #import "Logger.h"
+#import "AWSCommon.h"
+#import "AWSSESUtils.h"
 
 @interface NotEmailVerifiedViewController ()
 
@@ -66,15 +68,19 @@
 {
     if (!_isTimerRunning) {
         _isTimerRunning = YES;
-        PFUser *user = [PFUser currentUser];
-        [user refreshInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        // familyIdはタイミングによっては[PFUser currentUser]ではキャッシュが古い可能性があるので直接クエリを引く
+        // [user refresh]の場合、数秒送れたキャッシュがとれる場合があるのでそれも使わない
+        PFQuery *user = [PFQuery queryWithClassName:@"_User"];
+        [user whereKey:@"userId" equalTo:[PFUser currentUser][@"userId"]];
+        user.cachePolicy = kPFCachePolicyNetworkElseCache;
+        [user findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if(error) {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in refresh user in checkEmailVerified : %@", error]];
                 _isTimerRunning = NO;
                 return;
             }
             
-            if ([[user objectForKey:@"emailVerified"] boolValue]) {
+            if ([[objects[0] objectForKey:@"emailVerified"] boolValue]) {
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
             _isTimerRunning = NO;
@@ -82,24 +88,14 @@
     }
 }
 
-- (void)logOut
-{
-    [PFUser logOut];
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 - (void)resend
 {
     [Logger writeOneShot:@"crit" message:@"Resend email"];
-    PFUser *selfUser = [PFUser currentUser];
-    NSString *email = selfUser[@"email"];
-    selfUser[@"email"] = email;
-    [selfUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        [[PFUser currentUser]refresh];
-    }];
+
+    [AWSSESUtils resendVerifyEmail:[AWSCommon getAWSServiceConfiguration:@"SES"] email:[PFUser currentUser][@"emailCommon"]];
     
     // 再送信をした旨をalertで表示
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"以下のアドレスへ再度メールを送信しました"
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"登録されているアドレスへ再度メールを送信しました"
                                                     message:[PFUser currentUser][@"email"]
                                                    delegate:nil
                                           cancelButtonTitle:@"閉じる"

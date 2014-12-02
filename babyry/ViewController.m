@@ -18,9 +18,7 @@
 #import "IntroChildNameViewController.h"
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
-#import "AWSS3Utils.h"
 #import "ImageEdit.h"
-#import "TagAlbumOperationViewController.h"
 #import "ArrayUtils.h"
 #import "Navigation.h"
 #import "Partner.h"
@@ -36,6 +34,16 @@
 #import "ParseUtils.h"
 #import "ChildProperties.h"
 #import "PartnerApply.h"
+#import "HeaderViewManager.h"
+#import "TutorialFamilyApplyIntroduceView.h"
+#import "TutorialReceivedApplyView.h"
+#import "TutorialSentApplyView.h"
+#import "FamilyApplyListViewController.h"
+#import "PartnerInviteViewController.h"
+#import "TutorialNavigator.h"
+#import "ImageUploadInBackground.h"
+#import <AFNetworking.h>
+#import "AnnounceBoardView.h"
 
 @interface ViewController ()
 
@@ -43,6 +51,10 @@
 
 @implementation ViewController {
     NSMutableDictionary *oldestChildImageDate;
+    NSString *receivedApply;
+    NSString *sentApply;
+    CGRect pageViewRect;
+    TutorialNavigator *tn;
 }
 
 - (void)viewDidLoad
@@ -84,6 +96,9 @@
     // notification center
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(multiUploadImageInBackground) name:@"multiUploadImageInBackground" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -102,7 +117,14 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:YES];
+    [self setupHeaderView];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     // 強制アップデート用 (backgroundメソッド)
@@ -120,6 +142,9 @@
         [_pageViewController.view removeFromSuperview];
         [_pageViewController removeFromParentViewController];
         _pageViewController = nil;
+        
+        // header view初期化
+        [self resetHeaderView];
         
         // ログインしてない場合は、イントロ+ログインViewを出す
         IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
@@ -251,6 +276,7 @@
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
             }
+            
             _only_first_load = 0;
             
             [_hud hide:YES];
@@ -260,9 +286,25 @@
             TutorialStage *currentStage = [Tutorial currentStage];
             if ([currentStage.currentStage isEqualToString:@"familyApplyExec"] && [[ChildProperties getChildProperties] count] == 0) {
                 [self setChildNames];
+                return;
             }
         }
+        
+        // PageContentViewControllerでやるとDBアクセスが多すぎるのでViewControllerで
+        //[self getAnnounceInfo];
+        
+        if (_headerViewManager) {
+            [_headerViewManager validateTimer];
+        }
         [self showPageViewController];
+        [_pageViewController showFillingEmptyCellsDialog];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    if (_headerViewManager) {
+        [_headerViewManager invalidateTimer];
     }
 }
 
@@ -276,6 +318,7 @@
 -(void) showPageViewController
 {
     if (_pageViewController) {
+        [self setupHeaderView];
         [self setupGlobalSetting];
         return;
     }
@@ -323,9 +366,22 @@
         return;
     }
     _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
+    pageViewRect = _pageViewController.view.frame;
+    
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [self setupGlobalSetting];
+   
+    if (!_headerViewManager) {
+        _headerViewManager = [[HeaderViewManager alloc]init];
+        _headerViewManager.delegate = self;
+    }
+   
+    [self resetHeaderView];
+    [_headerViewManager setupHeaderView:NO];
+    if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
+        [self showTutorialNavigator];
+    }
 }
 
 - (void)setupGlobalSetting
@@ -450,6 +506,163 @@
         }
         [FamilyRole updateCache];
     }];
+}
+
+- (void)showHeaderView:(NSString *)type
+{
+    // 既にheader viewが表示済の場合は何もしない
+    NSString *currentHeaderViewType = [self headerViewType];
+    if (currentHeaderViewType && [currentHeaderViewType isEqualToString:type]) {
+        return;
+    }
+    
+    [_headerView removeFromSuperview];
+    _headerView = nil;
+    if ([type isEqualToString:@"receivedApply"]) {
+        TutorialReceivedApplyView *headerView = [TutorialReceivedApplyView view];
+        UITapGestureRecognizer *openPartnerWait = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openFamilyApplyList)];
+        openPartnerWait.numberOfTapsRequired = 1;
+        [headerView.openReceivedApplyButton addGestureRecognizer:openPartnerWait];
+        _headerView = headerView;
+    } else if ([type isEqualToString:@"sentApply"]) {
+        TutorialSentApplyView *headerView = [TutorialSentApplyView view];
+        UITapGestureRecognizer *openPartnerWait = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openPartnerWait)];
+        openPartnerWait.numberOfTapsRequired = 1;
+        [headerView.openPartnerApplyListButton addGestureRecognizer:openPartnerWait];
+        _headerView = headerView;
+    } else if ([type isEqualToString:@"familyApplyIntroduce"]) {
+        TutorialFamilyApplyIntroduceView *headerView = [TutorialFamilyApplyIntroduceView view];
+        UITapGestureRecognizer *openFamilyApply = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openFamilyApply)];
+        openFamilyApply.numberOfTapsRequired = 1;
+        [headerView.openFamilyApplyButton addGestureRecognizer:openFamilyApply];
+        _headerView = headerView;
+    }
+    [self setRectToHeaderView:_headerView];
+    // addSubviewする
+    [self.view addSubview:_headerView];
+    // pageViewControllerの大きさをチェック。必要なら小さくする
+    [self shrinkPageView:_headerView.frame];
+}
+
+- (NSString *)headerViewType
+{
+    if (!_headerView) {
+        return nil;
+    }
+    
+    if ([_headerView isKindOfClass:[TutorialReceivedApplyView class]]) {
+        return @"receivedApply";
+    } else if ([_headerView isKindOfClass:[TutorialSentApplyView class]]) {
+        return @"sentApply";
+    } else if ([_headerView isKindOfClass:[TutorialFamilyApplyIntroduceView class]]) {
+        return @"familyApplyIntroduce";
+    }
+    return nil;
+}
+
+- (void)hideHeaderView
+{
+    // header ViewをremoveFromSuperviewする
+    [self resetHeaderView];
+    // pageViewControllerの大きさを戻す
+    [self fitToScreen];
+}
+
+- (void)resetHeaderView
+{
+    if (_headerView) {
+        [_headerView removeFromSuperview];
+        _headerView = nil;
+    }
+}
+
+- (void)shrinkPageView:(CGRect)headerViewRect
+{
+    if (_pageViewController.view.frame.size.height != pageViewRect.size.height) {
+        return;
+    }
+    CGRect rect = _pageViewController.view.frame;
+    rect.size.height -= headerViewRect.size.height;
+    rect.origin.y += headerViewRect.size.height;
+    _pageViewController.view.frame = rect;
+}                   
+
+- (void)fitToScreen
+{
+    _pageViewController.view.frame = pageViewRect;
+}
+
+- (void)setRectToHeaderView:(UIView *)headerView
+{
+    CGRect rect = headerView.frame;
+    rect.origin.x = 0;
+    rect.origin.y = 64;
+    headerView.frame = rect;
+}
+
+- (void)openPartnerWait
+{
+    PartnerWaitViewController * partnerWaitViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerWaitViewController"];
+    [self.navigationController pushViewController:partnerWaitViewController animated:YES];
+}
+
+- (void)openFamilyApplyList
+{
+    FamilyApplyListViewController * familyApplyListViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FamilyApplyListViewController"];
+    [self.navigationController pushViewController:familyApplyListViewController animated:YES];
+}
+
+- (void)openFamilyApply
+{
+    [Tutorial forwardStageWithNextStage:@"familyApplyExec"];
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+    PartnerInviteViewController * partnerInviteViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PartnerInviteViewController"];
+    [self.navigationController pushViewController:partnerInviteViewController animated:YES];
+}
+
+- (void)setupHeaderView
+{
+    [_headerViewManager setupHeaderView:YES];
+}
+
+- (void)showTutorialNavigator
+{
+    if (tn) {
+        [tn removeNavigationView];
+        tn = nil;
+    }
+    tn = [[TutorialNavigator alloc]init];
+    tn.targetViewController = self;
+    [tn showNavigationView];
+}
+
+- (void)checkHeaderView
+{
+    [_headerViewManager checkPartnerApplyStatus];
+}
+
+- (void)multiUploadImageInBackground
+{
+    [ImageUploadInBackground multiUploadToParseInBackground];
+}
+
+- (void)getAnnounceInfo
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    NSDictionary* param = @{@"userid" : [PFUser currentUser][@"userId"]};
+    [manager GET:[NSString stringWithFormat:@"%@/announce_board", [Config config][@"CloudCodeURL"]] parameters:param
+         success:^(AFHTTPRequestOperation *operation, id responseObject) {
+             if (responseObject[@"key"]) {
+                 [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Get announceInfo key:%@", responseObject[@"key"]]];
+                 [AnnounceBoardView setAnnounceInfo:responseObject[@"key"] title:responseObject[@"title"] message:responseObject[@"message"]];
+             }
+         }
+         failure:^(AFHTTPRequestOperation *operation, NSError *error){
+             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getAnnounceInfo, %@", error]];
+         }];
 }
 
 @end

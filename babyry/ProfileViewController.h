@@ -9,16 +9,18 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import <QuartzCore/QuartzCore.h>
-#import "NicknameEditViewController.h"
+#import "ProfileEditViewController.h"
 
-@interface ProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, NicknameEditViewDelegate>
+@interface ProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, ProfileEditViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *profileTableView;
 @property NSInteger numberOfChild;
 @property PFObject *partnerInfo;
 @property UITableViewCell *nicknameCell;
 @property NSInteger editedChildIndex;
+@property UITableViewCell *emailCell;
 
 - (void)changeNickname:(NSString *)nickname;
+- (void)changeEmail:(NSString *)email;
 
 @end

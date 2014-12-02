@@ -155,6 +155,9 @@
     // 本登録完了なのでCoreDataのisRegisteredをtureにする
     [TmpUser registerComplete];
     
+    // Email Verify
+    [Account sendVerifyEmail:user[@"emailCommon"]];
+    
     _isSignUpCompleted = YES;
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
 }

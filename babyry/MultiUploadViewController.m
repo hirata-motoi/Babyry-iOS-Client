@@ -14,7 +14,7 @@
 #import "MBProgressHUD.h"
 #import "PushNotification.h"
 #import "Navigation.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "NotificationHistory.h"
 #import "Partner.h"
 #import "ImagePageViewController.h"
@@ -28,6 +28,7 @@
 #import "Tutorial.h"
 #import "TutorialNavigator.h"
 #import "ChildProperties.h"
+#import "AlbumTableViewController.h"
 
 @interface MultiUploadViewController ()
 
@@ -81,7 +82,7 @@
         _instructionLabel.text = @"ベストショットを選択しましょう。\n[写真の星マークをタップして選択できます]";
     }
     
-    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    _configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     _imageLoadComplete = NO;
     _currentUser = [PFUser currentUser];
     
@@ -103,8 +104,6 @@
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
     _bestImageId = @"";
-    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -355,14 +354,15 @@
 
 -(void)openPhotoAlbumList
 {
-    MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
-    multiUploadAlbumTableViewController.childObjectId = _childObjectId;
-    multiUploadAlbumTableViewController.date = _date;
-    multiUploadAlbumTableViewController.month = _month;
-    multiUploadAlbumTableViewController.totalImageNum = _totalImageNum;
-    multiUploadAlbumTableViewController.indexPath = _indexPath;
-    multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
-    [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
+    AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+    albumTableViewController.childObjectId = _childObjectId;
+    albumTableViewController.date = _date;
+    albumTableViewController.month = _month;
+    albumTableViewController.totalImageNum = _totalImageNum;
+    albumTableViewController.indexPath = _indexPath;
+    albumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
+    albumTableViewController.uploadType = @"multi";
+    [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
 
 -(void)selectBestShot:(id)sender

@@ -11,7 +11,7 @@
 #import "ImageCache.h"
 #import "Logger.h"
 #import "DateUtils.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "Config.h"
 #import "AppSetting.h"
 #import "NotificationHistory.h"
@@ -221,7 +221,7 @@
                     }
                     
                     if (reload) {
-                        [self.pageContentViewController.pageContentCollectionView reloadData];
+                        [self executeReload];
                         [NSThread sleepForTimeInterval:0.1];
                     }
                     if (i == concurrency - 1) {
@@ -233,7 +233,7 @@
         }
     } else {
         if (reload) {
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         }
     }
 }
@@ -325,9 +325,9 @@
             for (NSString *ymd in history) {
                 [self.pageContentViewController.notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
             }
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         }
-        [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];
     }];
@@ -430,29 +430,6 @@
 - (void)finalizeProcess
 {}
 
-- (void)setupHeaderView
-{
-    [self hideFamilyApplyIntroduceView];
-}
-
-- (void)hideFamilyApplyIntroduceView
-{
-    PageContentViewController *vc = self.pageContentViewController;
-    if (!vc.familyApplyIntroduceView) {
-        return;
-    }
-    
-    // パートナー申請誘導viewの分collection viewを大きくする
-    CGRect rect = vc.familyApplyIntroduceView.frame;
-    CGRect collectionRect = vc.pageContentCollectionView.frame;
-    collectionRect.size.height = collectionRect.size.height + rect.size.height;
-    collectionRect.origin.y = collectionRect.origin.y - rect.size.height;
-    vc.pageContentCollectionView.frame = collectionRect;
-    
-    [vc.familyApplyIntroduceView removeFromSuperview];
-    vc.familyApplyIntroduceView = nil;
-}
-
 - (void)forwardNextTutorial
 {}
 
@@ -467,7 +444,7 @@
             [[NSNotificationCenter defaultCenter] postNotification:n];
         } else if ([reloadType isEqualToString:@"reloadPageContentViewDate"]) {
             [self.pageContentViewController adjustChildImages];
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         } else {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
         }
@@ -518,7 +495,7 @@
             shouldReload = YES;
         }
         if (shouldReload) {
-            [self.pageContentViewController.pageContentCollectionView reloadData];
+            [self executeReload];
         }
     }];
 }
@@ -741,7 +718,7 @@
                 // _childImagesにPFObjectを追加
                 [self addEmptyChildImages:compsToAdd];
                 // PageContentViewControllerをreload
-                [self.pageContentViewController.pageContentCollectionView reloadData];
+                [self executeReload];
                 
                 [self.pageContentViewController hideLoadingIcon];
                 
@@ -854,6 +831,20 @@
                         initWithObjects:@[@"Increment", transitionInfoDic, [NSNumber numberWithInt:1]]
                         forKeys:@[@"badge", @"transitionInfo", @"content-available"]];
     [PushNotification sendInBackground:@"calendarAdded" withOptions:options];
+}
+
+- (void)removeDialogs
+{}
+
+// cell回転中にreloadDataが呼ばれるとアニメーションが停止してしまうので
+// 回転中はreloadDataを呼ばない
+- (void)executeReload
+{
+    if (!self.pageContentViewController.isRotatingCells) {
+        [self.pageContentViewController.pageContentCollectionView reloadData];
+    } else {
+        self.pageContentViewController.skippedReloadData = YES;
+    }
 }
 
 @end

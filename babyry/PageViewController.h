@@ -18,5 +18,6 @@
 - (void)openTagSelectView;
 - (NSMutableDictionary *)getYearMonthMap;
 - (NSString *)getDisplayedChildObjectId;
+- (void)showFillingEmptyCellsDialog;
 
 @end

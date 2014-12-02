@@ -10,14 +10,14 @@
 #import "ViewController.h"
 #import "UploadViewController.h"
 #import "MultiUploadViewController.h"
-#import "MultiUploadAlbumTableViewController.h"
+#import "AlbumTableViewController.h"
 #import "ImageTrimming.h"
 #import "ImageCache.h"
 #import "FamilyRole.h"
 #import "FamilyApply.h"
 #import "ImagePageViewController.h"
 #import "ArrayUtils.h"
-#import "TagAlbumCollectionViewCell.h"
+#import "CalendarCollectionViewCell.h"
 #import "DateUtils.h"
 #import "DragView.h"
 #import "CellBackgroundViewToEncourageUpload.h"
@@ -30,8 +30,6 @@
 #import "AddMonthToCalendarView.h"
 #import "CalenderLabel.h"
 #import "PushNotification.h"
-#import "UploadPickerViewController.h"
-#import "AWSS3Utils.h"
 #import "NotificationHistory.h"
 #import "ColorUtils.h"
 #import "Badge.h"
@@ -54,6 +52,8 @@
 #import "ParseUtils.h"
 #import "ChildProperties.h"
 #import "Partner.h"
+#import "UploadPastImagesIntroductionView.h"
+#import "AnnounceBoardView.h"
 
 @interface PageContentViewController ()
 
@@ -90,7 +90,7 @@
     logic.pageContentViewController = self;
     
     // Do any additional setup after loading the view.
-    _configuration = [AWSS3Utils getAWSServiceConfiguration];
+    _configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
@@ -146,7 +146,6 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"resetImage" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
         alreadyRegisteredObserver = YES;
     }
     
@@ -160,6 +159,7 @@
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
+//    [self showAnnounceBoard];
 }
 
 - (void)reloadView
@@ -177,16 +177,14 @@
     }
     
     [FamilyRole updateCache];
-    [[self logic:@"setupHeaderView"] setupHeaderView];
     _selfRole = [FamilyRole selfRole:@"useCache"];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     [_pageContentCollectionView reloadData];
  
     // ベストショット選択を促すとき(chooseByUser)と写真のアップロードを促す時(uploadByUser)は
     // cellにholeをあてるためcell表示後にoverlayを出す必要がある
-    // familyApplyは非同期でheader viewを出した後にチュートリアルを表示しているので、ここでも表示するとちかちかする
     TutorialStage *currentStage = [Tutorial currentStage];
-    if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"] || [currentStage.currentStage isEqualToString:@"familyApply"]) ) {
+    if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) ) {
         [self showTutorialNavigator];
     }
 }
@@ -201,17 +199,16 @@
     _tn = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    alreadyRegisteredObserver = NO;
+    
+    [self removeDialogs];
 }
 
 - (id)logic:(NSString *)methodName
 {
     TutorialStage *currentStage = [Tutorial currentStage];
     
-    if ([methodName isEqualToString:@"setupHeaderView"]) {
-        if ([Tutorial shouldShowFamilyApplyLead]) {
-            return logicTutorial;
-        }
-    } else if ([methodName isEqualToString:@"setImages"]) {
+    if ([methodName isEqualToString:@"setImages"]) {
         if ([Tutorial shouldShowDefaultImage]) {
             return logicTutorial;
         }
@@ -256,7 +253,7 @@
     // UICollectionViewの土台を作成
     _pageContentCollectionView.delegate = self;
     _pageContentCollectionView.dataSource = self;
-    [_pageContentCollectionView registerClass:[TagAlbumCollectionViewCell class] forCellWithReuseIdentifier:@"PageContentCollectionView"];
+    [_pageContentCollectionView registerClass:[CalendarCollectionViewCell class] forCellWithReuseIdentifier:@"PageContentCollectionView"];
     [_pageContentCollectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader"];
     
     [self.view addSubview:_pageContentCollectionView];
@@ -295,10 +292,10 @@
 }
 
 // 指定された場所のセルを作るメソッド
--(TagAlbumCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+-(CalendarCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     //セルを再利用 or 再生成
-    TagAlbumCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PageContentCollectionView" forIndexPath:indexPath];
+    CalendarCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PageContentCollectionView" forIndexPath:indexPath];
     for (UIView *view in [cell subviews]) {
         [view removeFromSuperview];
     }
@@ -307,6 +304,10 @@
             [cell removeGestureRecognizer:gesture];
         }
     }
+    
+    // indexPathの設定
+    cell.currentSection = indexPath.section;
+    cell.currentRow = indexPath.row;
    
     // カレンダー追加用cell
     if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
@@ -392,19 +393,20 @@
     //    +ボタンがないパターン
     if ([[self logic:@"shouldShowMultiUploadView"] shouldShowMultiUploadView:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
-            MultiUploadAlbumTableViewController *multiUploadAlbumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MultiUploadAlbumTableViewController"];
-            multiUploadAlbumTableViewController.childObjectId = _childObjectId;
-            multiUploadAlbumTableViewController.date = [tappedChildImage[@"date"] stringValue];
-            multiUploadAlbumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
-            multiUploadAlbumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
+            AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+            albumTableViewController.childObjectId = _childObjectId;
+            albumTableViewController.date = [tappedChildImage[@"date"] stringValue];
+            albumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
+            albumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
             NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-            multiUploadAlbumTableViewController.totalImageNum = totalImageNum;
-            multiUploadAlbumTableViewController.indexPath = indexPath;
+            albumTableViewController.totalImageNum = totalImageNum;
+            albumTableViewController.indexPath = indexPath;
+            albumTableViewController.uploadType = @"multi";
             
-            [self.navigationController pushViewController:multiUploadAlbumTableViewController animated:YES];
+            [self.navigationController pushViewController:albumTableViewController animated:YES];
         } else {
             [self moveToMultiUploadViewController:[tappedChildImage[@"date"] stringValue] index:indexPath];
         }
@@ -413,19 +415,22 @@
     
     if (![[self logic:@"isBestImageFixed"] isBestImageFixed:indexPath]) {
         // ベストショット決まってなければ即Pickerを開く
-        UploadPickerViewController *uploadPickerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UploadPickerViewController"];
-        uploadPickerViewController.month = [[tappedChildImage[@"date"]  stringValue ] substringWithRange:NSMakeRange(0, 6)];
-        uploadPickerViewController.childObjectId = _childObjectId;
-        uploadPickerViewController.date = [tappedChildImage[@"date"] stringValue];
+        AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+        albumTableViewController.month = [[tappedChildImage[@"date"]  stringValue ] substringWithRange:NSMakeRange(0, 6)];
+        albumTableViewController.childObjectId = _childObjectId;
+        albumTableViewController.date = [tappedChildImage[@"date"] stringValue];
         
         // _childImage更新用
         NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
         NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-        uploadPickerViewController.totalImageNum = totalImageNum;
-        uploadPickerViewController.indexPath = indexPath;
-        uploadPickerViewController.section = section;
-        [self.navigationController pushViewController:uploadPickerViewController animated:YES];
+        albumTableViewController.totalImageNum = totalImageNum;
+        albumTableViewController.indexPath = indexPath;
+        albumTableViewController.section = section;
+        albumTableViewController.uploadType = @"single";
+        [self.navigationController pushViewController:albumTableViewController animated:YES];
         return;
+
+    
     }
     
     [self moveToImagePageViewController:indexPath];
@@ -872,7 +877,7 @@
     _dragView.center = movedPoint;
 }
 
-- (void)setBackgroundViewOfCell:(TagAlbumCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
+- (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
 {
     NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     NSString *role = _selfRole;
@@ -1012,7 +1017,7 @@
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     
-    TagAlbumCollectionViewCell *cell = [sender view];
+    CalendarCollectionViewCell *cell = [sender view];
     for (id elem in [cell subviews]) {
         if ([elem isKindOfClass:[CellBackgroundViewToWaitUpload class]] || [elem isKindOfClass:[CellBackgroundViewToWaitUploadLarge class]]) {
             for (UIImageView *imageView in [elem subviews]) {
@@ -1039,7 +1044,7 @@
 
 
 // コメントはコメントアイコン、それ以外はいわゆるbadgeを表示する
-- (void)setBadgeToCell:(TagAlbumCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
+- (void)setBadgeToCell:(CalendarCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
 {
     NSMutableDictionary *histories = _notificationHistory[ymd];
     if (!histories) {
@@ -1235,22 +1240,32 @@
     [[self logic:@"forwardNextTutorial"] forwardNextTutorial];
 }
 
-- (void)hideHeaderView
-{
-    [[self logic:@"hideFamilyApplyIntroduceView"] hideFamilyApplyIntroduceView];
-}
-
 - (BOOL)alreadyDisplayedDialog
 {
     NSArray *views = [self.view subviews];
     for (int i = 0; i < views.count; i++) {
         if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
-            [views[i] isKindOfClass:[PageFlickIntroductionView class]]) {
+            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
+            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]] ||
+            [views[i] isKindOfClass:[AnnounceBoardView class]]) {
             return YES;
         }
     }
     return NO;
 }
+
+- (void)removeDialogs
+{
+    NSArray *views = [self.view subviews];
+    for (int i = 0; i < views.count; i++) {
+        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
+            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
+            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
+            [views[i] removeFromSuperview];
+        }
+    }
+}
+
 
 - (void)showLoadingIcon
 {
@@ -1270,6 +1285,181 @@
     [self viewDidAppear:NO];
 }
 
+- (void)rotateViewYAxis: (NSArray *)indexPathList
+{
+    NSMutableDictionary *targetIndexPath = [[NSMutableDictionary alloc]init];
+    for (NSIndexPath *indexPath in indexPathList) {
+        NSNumber *section = [NSNumber numberWithInteger: indexPath.section];
+        NSNumber *row = [NSNumber numberWithInteger:indexPath.row];
+        
+        if (!targetIndexPath[section]) {
+            targetIndexPath[section] = [[NSMutableDictionary alloc]init];
+        }
+        
+        // 非同期でchildImagesが更新されるので、念のためここでもchildImagesをチェック
+        PFObject *childImage = _childImages[indexPath.section][@"images"][indexPath.row];
+        if (childImage.objectId) {
+            continue;
+        }
+       
+        targetIndexPath[section][row] = @"YES";
+    }
+
+    _isRotatingCells = YES;
+    for (UIView *v in [_pageContentCollectionView subviews]) {
+        if (![v isKindOfClass:[CalendarCollectionViewCell class]]) {
+            continue;
+        }
+        CalendarCollectionViewCell *cell = (CalendarCollectionViewCell *)v;
+        if (targetIndexPath[ [NSNumber numberWithInteger:cell.currentSection] ][ [NSNumber numberWithInteger:cell.currentRow] ]) {
+            [cell rotate];
+        }
+    }
+    // 1.0fはCalendarCollectionViewCellのdurationに合わせている
+    [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(resetRotatingCells) userInfo:nil repeats:NO];
+}
+
+- (void)resetRotatingCells
+{
+    if (_skippedReloadData) {
+        [_pageContentCollectionView reloadData];
+    }
+    _isRotatingCells = NO;
+    _skippedReloadData = NO;
+}
+
+-(void)showAnnounceBoard
+{
+    NSString *currentStage = [Tutorial currentStage].currentStage;
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:@"finishedIntroductionToUploadPastImages"];
+    
+    // as が無ければshowIntroductionForFillingEmptyCellsを優先
+    // チュートリアル中、既に他のDialogを表示中はreturn
+    if (!as || ![currentStage isEqualToString:@"tutorialFinished"] || [self alreadyDisplayedDialog]) {
+        return;
+    }
+    
+    NSDictionary *info = [AnnounceBoardView getAnnounceInfo];
+    if (!info || !info[@"title"] || [info[@"title"] isEqualToString:@""]) {
+        return;
+    }
+    
+    // 透明のviewで画面をブロック
+    UIView *view = [[UIView alloc]init];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    view.frame = window.bounds;
+    [window addSubview:view];
+    [window bringSubviewToFront:view];
+    
+    AnnounceBoardView *dialog = [AnnounceBoardView view];
+    CGRect rect = dialog.frame;
+    rect.origin.x = (view.frame.size.width - rect.size.width) / 2;
+    rect.origin.y = (view.frame.size.height - rect.size.height) / 2;
+    dialog.frame = rect;
+    dialog.titleLabel.text = info[@"title"];
+    dialog.messageLabel.text = info[@"message"];
+    dialog.pageContentViewController = self;
+    dialog.childObjectId = _childObjectId;
+    [view addSubview:dialog];
+    
+    [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Show announce %@:", info[@"key"]]];
+    
+    // 表示済みフラグを立てる
+    PFObject *announceHist = [PFObject objectWithClassName:@"AnnounceInfoHistory"];
+    announceHist[@"userId"] = _currentUser[@"userId"];
+    announceHist[@"displayed"] = info[@"key"];
+    [announceHist saveInBackground];
+}
+
+- (void)showIntroductionForFillingEmptyCells
+{
+    NSString *currentStage = [Tutorial currentStage].currentStage;
+    AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:@"finishedIntroductionToUploadPastImages"];
+   
+    if (
+        as                                                 ||
+        ![currentStage isEqualToString:@"familyApplyExec"] ||
+        ![_selfRole isEqualToString:@"uploader"]           ||
+        [self alreadyDisplayedDialog]
+    ) {
+        return;
+    }
+    
+    AppSetting *newAppSetting = [AppSetting MR_createEntity];
+    newAppSetting.name = @"finishedIntroductionToUploadPastImages";
+    newAppSetting.value = @"1";
+    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    
+    // 対象cellのindexPathList
+    // 対象のcellがない場合 = 既に写真をアップしているユーザ なので、AppSettingのレコードはできたままにする
+    NSMutableArray *indexPathList = [self rotateTargetIndexPathList];
+    if (indexPathList.count < 1) {
+        return;
+    }
+    
+    // 透明のviewで画面をブロック
+    UIView *view = [[UIView alloc]init];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    view.frame = window.bounds;
+    [window addSubview:view];
+    [window bringSubviewToFront:view];
+    
+    // 少しスクロール
+    [_pageContentCollectionView scrollToItemAtIndexPath:indexPathList[ indexPathList.count - 1 ] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+  
+    // ダイアログを出す
+    UploadPastImagesIntroductionView *dialog = [UploadPastImagesIntroductionView view];
+    CGRect rect = dialog.frame;
+    rect.origin.x = (self.view.frame.size.width - rect.size.width) / 2;
+    CGRect containerFrame = UIEdgeInsetsInsetRect(self.view.bounds, UIEdgeInsetsMake(self.navigationController.toolbar.frame.size.height + 20, 0, 0, 0)); // 20はstatus barの高さ
+    rect.origin.y = containerFrame.size.height * 2 / 3;
+    dialog.frame = rect;
+    [self.view addSubview:dialog];
+    
+    [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                     target:self
+                                   selector:@selector(rotateEmptyCells:)
+                                   userInfo:[NSMutableDictionary dictionaryWithObjects:@[view, indexPathList, [NSNumber numberWithInt:0]] forKeys:@[@"clearView", @"indexPathList", @"repeatCount"]]
+                                    repeats:NO];
+    
+}
+
+- (NSMutableArray *)rotateTargetIndexPathList
+{
+    NSMutableArray *indexPathList = [[NSMutableArray alloc]init];
+    NSInteger totalIndex = 0;
+    for (NSInteger sectionIndex = 0; sectionIndex < _childImages.count; sectionIndex++) {
+        NSMutableDictionary *section = _childImages[sectionIndex];
+        for (NSInteger rowIndex = 0; rowIndex < [section[@"images"] count]; rowIndex++) {
+            PFObject *childImage = section[@"images"][rowIndex];
+            if (childImage.objectId) { // 画像upload済
+                totalIndex++;
+                continue;
+            }
+            
+            [indexPathList addObject:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]];
+            totalIndex++;
+            
+            if (totalIndex >= 7) {
+                return indexPathList;
+            }
+        }
+    }
+    return indexPathList;
+}
+
+- (void)rotateEmptyCells:(NSTimer *)timer
+{
+    NSMutableDictionary *userInfo = [timer userInfo];
+    
+    // 透明viewを消す
+    [userInfo[@"clearView"] removeFromSuperview];
+    
+    NSMutableArray *indexPathList = userInfo[@"indexPathList"];
+    [self rotateViewYAxis:indexPathList];
+}
 
 /*
 #pragma mark - Navigation

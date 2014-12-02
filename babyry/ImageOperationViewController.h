@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <Parse/Parse.h>
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 
 @class UploadViewController;
 
@@ -29,7 +29,6 @@
 @property (weak, nonatomic) IBOutlet UIView *statusBarCoverView;
 
 @property UIView *commentView;
-@property UIView *tagEditView;
 @property NSString *holdedBy;
 @property UIView *toolbarView;
 

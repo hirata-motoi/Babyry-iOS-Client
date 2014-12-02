@@ -118,8 +118,6 @@ const NSInteger dragViewHideInterval = 4;
 
 - (void)hideDragView:(id)sender
 {
-    
-    NSLog(@"hideDragView");
     NSDate *currentDate = [NSDate date];
     if ( [currentDate timeIntervalSinceDate:_lastTachDate] >= dragViewHideInterval ) {
         self.hidden = YES;

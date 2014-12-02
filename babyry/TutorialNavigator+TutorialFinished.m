@@ -9,9 +9,9 @@
 #import "TutorialNavigator+TutorialFinished.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 #import "TutorialBestShotSelectedView.h"
-#import "PageContentViewController.h"
 #import "ICTutorialOverlay.h"
 #import "Tutorial.h"
+#import "ViewController.h"
 
 @implementation TutorialNavigator_TutorialFinished {
     TutorialBestShotSelectedView *messageView;
@@ -20,12 +20,12 @@
 
 - (void)show
 {
-    PageContentViewController *vc = (PageContentViewController *)self.targetViewController;
+    ViewController *vc = (ViewController *)self.targetViewController;
     overlay = [[ICTutorialOverlay alloc] init];
     overlay.hideWhenTapped = NO;
     overlay.animated = YES;
     
-    TutorialFamilyApplyIntroduceView *headerView = (TutorialFamilyApplyIntroduceView *)vc.familyApplyIntroduceView;
+    TutorialFamilyApplyIntroduceView *headerView = (TutorialFamilyApplyIntroduceView *)vc.headerView;
     [overlay addHoleWithView:headerView.openFamilyApplyButton padding:4.0f offset:CGSizeZero form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
     [overlay show];
     

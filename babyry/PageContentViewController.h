@@ -9,10 +9,10 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import "DragView.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "MBProgressHUD.h"
 #import <AudioToolbox/AudioServices.h>
-#import "TagAlbumCollectionViewCell.h"
+#import "CalendarCollectionViewCell.h"
 #import "TutorialNavigator.h"
 #import "TutorialFamilyApplyIntroduceView.h"
 
@@ -51,6 +51,8 @@
 @property BOOL isLoading;
 @property NSDateComponents *dateComp;
 @property NSMutableDictionary *notificationHistory;
+@property BOOL isRotatingCells;
+@property BOOL skippedReloadData;
 
 - (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
@@ -62,10 +64,10 @@
 - (void)showTutorialNavigator;
 - (void)openFamilyApplyList;
 - (void)openPartnerWait;
-//- (void) dispatchForPushReceivedTransition;
 - (void)adjustChildImages;
 - (void)showLoadingIcon;
 - (void)hideLoadingIcon;
+- (void)showIntroductionForFillingEmptyCells;
 
 @property AWSServiceConfiguration *configuration;
 
@@ -74,7 +76,7 @@
 @property NSTimer *tm;
 
 // for tutorial
-@property TagAlbumCollectionViewCell *cellOfToday;
+@property CalendarCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;
 @property UIView *familyApplyIntroduceView;
 @property NSTimer *instructionTimer;

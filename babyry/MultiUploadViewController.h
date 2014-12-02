@@ -10,7 +10,6 @@
 #import <Parse/Parse.h>
 #import "CommentViewController.h"
 #import "UIViewController+MJPopupViewController.h"
-#import "MultiUploadAlbumTableViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MBProgressHUD.h"
 #import "PageContentViewController.h"

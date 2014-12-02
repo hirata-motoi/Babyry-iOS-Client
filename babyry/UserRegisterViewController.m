@@ -130,6 +130,7 @@
             
             [hud hide:YES];
             [TmpUser registerComplete];
+            [Account sendVerifyEmail:user[@"emailCommon"]];
             [[[UIAlertView alloc] initWithTitle:@"登録が完了しました"
                                         message:@"入力されたメールアドレスに確認メールをお送りしましたので、本文に記載されているURLをクリックしてメールアドレスを有効化してください。"
                                        delegate:nil

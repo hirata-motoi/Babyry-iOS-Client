@@ -62,6 +62,11 @@
 
 + (void)updateCache
 {
+    [self updateCacheWithBlock:nil];
+}
+
++ (void)updateCacheWithBlock:(UpdateFamilyRoleCacheBlock)block
+{
     PFUser *user = [PFUser currentUser];
     PFQuery *query = [PFQuery queryWithClassName:@"FamilyRole"];
     query.cachePolicy = kPFCachePolicyNetworkOnly;
@@ -106,6 +111,9 @@
                 [PartnerApply setLinkComplete];
                 return;
             }
+        }
+        if (block) {
+            block();
         }
     }];
 }

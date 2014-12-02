@@ -9,7 +9,7 @@
 #import "ImagePageViewController.h"
 #import "UploadViewController.h"
 #import "ImageCache.h"
-#import "AWSS3Utils.h"
+#import "AWSCommon.h"
 #import "DateUtils.h"
 #import "Config.h"
 #import "Logger.h"
@@ -398,7 +398,7 @@
     NSString *ymd = [childImage[@"date"] stringValue];
     
     // まずはS3に接続
-    AWSServiceConfiguration *configuration = [AWSS3Utils getAWSServiceConfiguration];
+    AWSServiceConfiguration *configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
     getRequest.bucket = [Config config][@"AWSBucketName"];
     getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];

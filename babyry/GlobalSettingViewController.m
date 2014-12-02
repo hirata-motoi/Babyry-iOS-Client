@@ -26,6 +26,7 @@
 #import "NotEmailVerifiedViewController.h"
 #import "PartnerApply.h"
 #import "UINavigationController+Block.h"
+#import "AnnounceBoardView.h"
 
 @interface GlobalSettingViewController ()
 
@@ -59,7 +60,7 @@
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
-    [self checkEmailVerified];
+//    [self checkEmailVerified];
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,19 +85,23 @@
     tn = nil;
 }
 
-- (void) checkEmailVerified
-{
-    PFUser *user = [PFUser currentUser];
-    if (user[@"emailVerified"]) {
-        if ([user[@"emailVerified"] boolValue]) {
-            _emailVerified = @"done";
-        } else {
-            _emailVerified = @"notYet";
-        }
-    } else {
-        _emailVerified = @"noNeed";
-    }
-}
+//- (void) checkEmailVerified
+//{
+//    // Facebookログイン: user[@"email"]なし => noNeed
+//    // 簡単ログイン : user[@"emailCommon"]がメアド形式でない => notYet
+//    // 本登録&認証済み : user[@"email"]あり、EmailVerifyのisVerifedがTRUE => done
+//    // 本登録&認証未済 : user[@"email"]あり、EmailVerifyのisVerifedがFALSE => doing
+//    PFUser *user = [PFUser currentUser];
+//    if (user[@"emailVerified"]) {
+//        if ([user[@"emailVerified"] boolValue]) {
+//            _emailVerified = @"done";
+//        } else {
+//            _emailVerified = @"notYet";
+//        }
+//    } else {
+//        _emailVerified = @"noNeed";
+//    }
+//}
 
 #pragma mark - Table view data source
 
@@ -140,6 +145,7 @@
                     [TmpUser removeTmpUserFromCoreData];
                     [PartnerApply removePartnerInviteFromCoreData];
                     [PartnerApply removePartnerInvitedFromCoreData];
+//                    [AnnounceBoardView removeAnnounceInfoByOuter];
                     [_viewController viewDidAppear:YES];
                 }];
             }];
@@ -175,16 +181,16 @@
                     _roleControl = [self createRoleSwitchSegmentControl];
                     [cell addSubview:_roleControl];
                     break;
-                case 2:
-                    if (![TmpUser checkRegistered]) {
-                        cell.textLabel.text = @"本登録を完了する";
-                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    } else {
-                        cell.textLabel.text = @"メールアドレス認証";
-                        cell.detailTextLabel.text = @"未認証";
-                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    }
-                    break;
+//                case 2:
+//                    if (![TmpUser checkRegistered]) {
+//                        cell.textLabel.text = @"本登録を完了する";
+//                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//                    } else {
+//                        cell.textLabel.text = @"メールアドレス認証";
+//                        cell.detailTextLabel.text = @"未認証";
+//                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//                    }
+//                    break;
                 default:
                     break;
             }
@@ -246,11 +252,11 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
-            if (![TmpUser checkRegistered] || ![_emailVerified isEqualToString:@"noNeed"]) {
-                rowCount = 3;
-            } else {
+//            if (![TmpUser checkRegistered] || ![_emailVerified isEqualToString:@"noNeed"]) {
+//                rowCount = 3;
+//            } else {
                 rowCount = 2;
-            }
+//            }
             break;
         case 1:
             rowCount = 1;
@@ -283,13 +289,13 @@
                     break;
                 case 1:
                     break;
-                case 2:
-                    if (![TmpUser checkRegistered]) {
-                        [self openRegisterView];
-                    } else {
-                        [self openEmailVerifiedView];
-                    }
-                    break;
+//                case 2:
+//                    if (![TmpUser checkRegistered]) {
+//                        [self openRegisterView];
+//                    } else {
+//                        [self openEmailVerifiedView];
+//                    }
+//                    break;
                 default:
                     break;
             }
@@ -365,11 +371,11 @@
     }
 }
 
-- (void)openRegisterView
-{
-    UserRegisterViewController * userRegisterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
-    [self.navigationController pushViewController:userRegisterViewController animated:YES];
-}
+//- (void)openRegisterView
+//{
+//    UserRegisterViewController * userRegisterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
+//    [self.navigationController pushViewController:userRegisterViewController animated:YES];
+//}
 
 - (void)openAddChildAddView
 {

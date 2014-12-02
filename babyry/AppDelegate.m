@@ -126,7 +126,16 @@
             NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
-    }
+        if (userInfo[@"transitionInfo"] &&
+            (
+                [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]  ||
+                [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
+             )
+        ) {
+            NSNotification *n = [NSNotification notificationWithName:@"receivedApplyEvent" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
+    }                                                                                  
     
     if (application.applicationState == UIApplicationStateInactive) {
         // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
