@@ -115,6 +115,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+	[_multiUploadedImages reloadData];
     [super viewDidAppear:animated];
     
     [[self logic] disableNotificationHistory];

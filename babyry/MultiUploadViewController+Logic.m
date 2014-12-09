@@ -79,7 +79,6 @@
             _multiUploadViewController.childImageArray = [[NSMutableArray alloc] initWithArray:objects];
 
             //再起的にgetDataしてキャッシュを保存する
-//            _multiUploadViewController.indexForCache = 0;
             _multiUploadViewController.tmpCacheCount = 0;
             
             _multiUploadViewController.imageLoadComplete = NO;
