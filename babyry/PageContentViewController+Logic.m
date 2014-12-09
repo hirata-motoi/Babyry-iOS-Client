@@ -20,6 +20,7 @@
 #import "ChildProperties.h"
 #import "FamilyRole.h"
 #import "PushNotification.h"
+#import "AWSS3Utils.h"
 
 @implementation PageContentViewController_Logic
 
@@ -68,6 +69,7 @@
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
     [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 1] integerValue]]];
     [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 31] integerValue]]];
+	[query whereKey:@"bestFlag" notEqualTo:@"removed"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
@@ -90,6 +92,7 @@
 
                 if (childImageDic[date]) {
                     BOOL bestshotExist = NO;
+					NSIndexPath *ip = [NSIndexPath indexPathForRow:i inSection:index];
                     for (PFObject *childImageDate in childImageDic[date]) {
                         if ([childImageDate[@"bestFlag"] isEqualToString:@"choosed"]) {
                             [images replaceObjectAtIndex:i withObject:childImageDate];
@@ -99,6 +102,7 @@
                                 
                                 NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
                                 queueForCache[@"objectId"] = childImageDate.objectId;
+								queueForCache[@"childObjectId"] = self.pageContentViewController.childObjectId;
                                 queueForCache[@"date"] = childImageDate[@"date"];
                                 if ([self isToday:index withRow:i]) {
                                     queueForCache[@"imageType"] = @"fullsize";
@@ -107,10 +111,25 @@
                                 [cacheSetQueueArray addObject:queueForCache];
                             }
                             bestshotExist = YES;
+							
+							if ([self withinTwoDay:ip]) {
+								self.pageContentViewController.bestImageIds[[date stringValue]] = childImageDate.objectId;
+							}
                         }
+						if ([self withinTwoDay:ip]) {
+							NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail", self.pageContentViewController.childObjectId, [date stringValue]];
+                            if ([childImageDate.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+                                
+                                NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
+                                queueForCache[@"objectId"] = childImageDate.objectId;
+								queueForCache[@"childObjectId"] = self.pageContentViewController.childObjectId;
+                                queueForCache[@"date"] = childImageDate[@"date"];
+								queueForCache[@"imageType"] = @"candidate";
+                                
+                                [cacheSetQueueArray addObject:queueForCache];
+                            }
+						}
                     }
-                    
-                    NSIndexPath *ip = [NSIndexPath indexPathForRow:i inSection:index];
                     if ([self withinTwoDay:ip]) {
                         // 昨日、今日の場合は単に写真の枚数を突っ込む
                         [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[childImageDic[date] count]]];
@@ -136,7 +155,10 @@
                     [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/fullsize/%@", self.pageContentViewController.childObjectId, [date stringValue]]]; // fullsize
                 }
             }
-            [self setImageCache:cacheSetQueueArray withReload:reload];
+			AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
+			[awsS3Utils makeCacheFromS3:cacheSetQueueArray configuration:self.pageContentViewController.configuration withBlock:^(void){
+				[self executeReload];
+			}];
             
             self.pageContentViewController.isLoading = NO;
            
@@ -174,68 +196,6 @@
     NSDateComponents *diff = [cal components:NSDayCalendarUnit fromDate:dateTappedImage toDate:dateToday options:0];
     
     return [diff day] < 2;
-}
-
-- (void)setImageCache:(NSMutableArray *)cacheSetQueueArray withReload:(BOOL)reload
-{
-    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
-    // 並列実行数
-    int concurrency = 3;
-    
-    if ([cacheSetQueueArray count] > 0) {
-        for (int i = 0; i < concurrency; i++) {
-            // キャッシュ取り出し
-            if ([cacheSetQueueArray count] > 0) {
-                NSMutableDictionary *queue = [cacheSetQueueArray objectAtIndex:0];
-                [cacheSetQueueArray removeObjectAtIndex:0];
-                
-                NSString *ymd = [queue[@"date"] stringValue];
-                
-                AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-                getRequest.bucket = [Config config][@"AWSBucketName"];
-
-                getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], queue[@"objectId"]];
-                // no-cache必須
-                getRequest.responseCacheControl = @"no-cache";
-                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:self.pageContentViewController.configuration];
-                
-                [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                    
-                    if (!task.error && task.result) {
-                        AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                       
-                        if ([queue[@"imageType"] isEqualToString:@"fullsize"]) {
-                            // fullsizeのimageをcache
-                            [ImageCache
-                                setCache:ymd
-                                image:getResult.body
-                                dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", self.pageContentViewController.childObjectId]
-                            ];
-                        }
-                        // ChileImageオブジェクトのupdatedAtとtimestampを比較するためthumbnailは常に作る
-                        UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                        NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
-                        [ImageCache setCache:ymd image:thumbData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
-                    } else {
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequsetOfS3 in setImageCache : %@", task.error]];
-                    }
-                    
-                    if (reload) {
-                        [self executeReload];
-                        [NSThread sleepForTimeInterval:0.1];
-                    }
-                    if (i == concurrency - 1) {
-                        [self setImageCache:cacheSetQueueArray withReload:reload];
-                    }
-                    return nil;
-                }];
-            }
-        }
-    } else {
-        if (reload) {
-            [self executeReload];
-        }
-    }
 }
 
 - (void)compensateDateOfChildImage:(NSArray *)objects

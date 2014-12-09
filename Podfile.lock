@@ -20,7 +20,7 @@ PODS:
   - AFNetworking/UIKit (2.4.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - AWSiOSSDKv2 (2.0.7):
+  - AWSiOSSDKv2 (2.0.8):
     - AWSiOSSDKv2/AutoScaling
     - AWSiOSSDKv2/AWSCore
     - AWSiOSSDKv2/CloudWatch
@@ -40,7 +40,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/AutoScaling (2.0.7):
+  - AWSiOSSDKv2/AutoScaling (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -49,7 +49,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/AWSCore (2.0.7):
+  - AWSiOSSDKv2/AWSCore (2.0.8):
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
     - Mantle (~> 1.4.1)
@@ -57,7 +57,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/CloudWatch (2.0.7):
+  - AWSiOSSDKv2/CloudWatch (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -66,7 +66,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/DynamoDB (2.0.7):
+  - AWSiOSSDKv2/DynamoDB (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -75,7 +75,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/EC2 (2.0.7):
+  - AWSiOSSDKv2/EC2 (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -84,7 +84,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/ElasticLoadBalancing (2.0.7):
+  - AWSiOSSDKv2/ElasticLoadBalancing (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -93,7 +93,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/Kinesis (2.0.7):
+  - AWSiOSSDKv2/Kinesis (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -102,7 +102,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/S3 (2.0.7):
+  - AWSiOSSDKv2/S3 (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -111,7 +111,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SES (2.0.7):
+  - AWSiOSSDKv2/SES (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -120,7 +120,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SimpleDB (2.0.7):
+  - AWSiOSSDKv2/SimpleDB (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -129,7 +129,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SNS (2.0.7):
+  - AWSiOSSDKv2/SNS (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -138,7 +138,7 @@ PODS:
     - TMCache (~> 1.2.1)
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
-  - AWSiOSSDKv2/SQS (2.0.7):
+  - AWSiOSSDKv2/SQS (2.0.8):
     - AWSiOSSDKv2/AWSCore
     - Bolts (~> 1.1.0)
     - GZIP (~> 1.0.3)
@@ -170,7 +170,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (= 2.4.1)
-  - AWSiOSSDKv2 (= 2.0.7)
+  - AWSiOSSDKv2 (= 2.0.8)
   - CrittercismSDK (= 4.3.7)
   - Facebook-iOS-SDK (= 3.18)
   - MagicalRecord (= 2.2)
@@ -179,7 +179,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
-  AWSiOSSDKv2: 2fd1741ec9f72024f6820ed92b815a5a82d563c6
+  AWSiOSSDKv2: 47e457fefef3b521c6e37c037578a13912af37c1
   Bolts: 3db0a875235e0c9042b013af13af0f00f79b102c
   CrittercismSDK: 4da8d0e407fb1ef29eef98678c1f90be4943b85e
   Facebook-iOS-SDK: fa12c51cc57bfb6f92e47793c9d4d2c65bc92741

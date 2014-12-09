@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "491B6B93AC594C659589F54F"
+               BlueprintIdentifier = "23B3269009754BA781259CAB"
                BuildableName = "libPods-CrittercismSDK.a"
                BlueprintName = "Pods-CrittercismSDK"
                ReferencedContainer = "container:Pods.xcodeproj">

@@ -19,6 +19,7 @@
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */; };
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
+		885A8C151A3191D00049E7A1 /* AWSS3Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A8C141A3191D00049E7A1 /* AWSS3Utils.m */; };
 		88610B561A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88610B551A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib */; };
 		88610B591A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B581A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m */; };
 		88610B5D1A09FFD30042854B /* AlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B5C1A09FFD30042854B /* AlbumTableViewController.m */; };
@@ -269,6 +270,8 @@
 		883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerWaitViewController.m; sourceTree = "<group>"; };
 		885A223519750DD20039B263 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
 		885A223619750DD20039B263 /* DateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtils.m; sourceTree = "<group>"; };
+		885A8C131A3191D00049E7A1 /* AWSS3Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSS3Utils.h; sourceTree = "<group>"; };
+		885A8C141A3191D00049E7A1 /* AWSS3Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSS3Utils.m; sourceTree = "<group>"; };
 		88610B551A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadPickerCollectionViewSectionHeader.xib; sourceTree = "<group>"; };
 		88610B571A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadPickerCollectionViewSectionHeader.h; sourceTree = "<group>"; };
 		88610B581A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadPickerCollectionViewSectionHeader.m; sourceTree = "<group>"; };
@@ -775,6 +778,8 @@
 				886A90F51A03A4AB007849DB /* AWSCommon.m */,
 				886A90F81A03A84F007849DB /* AWSSESUtils.h */,
 				886A90F91A03A84F007849DB /* AWSSESUtils.m */,
+				885A8C131A3191D00049E7A1 /* AWSS3Utils.h */,
+				885A8C141A3191D00049E7A1 /* AWSS3Utils.m */,
 			);
 			name = AWS;
 			sourceTree = "<group>";
@@ -1765,6 +1770,7 @@
 				F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */,
 				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,
 				F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */,
+				885A8C151A3191D00049E7A1 /* AWSS3Utils.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
 				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
 				F2F8E4491A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m in Sources */,

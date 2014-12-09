@@ -38,7 +38,7 @@
 
 @property NSString *bestImageId;
 
-@property int indexForCache;
+//@property int indexForCache;
 
 @property NSTimer *myTimer;
 @property BOOL needTimer;
@@ -68,8 +68,6 @@
 
 // for tutorial
 @property UIView *firstCellUnselectedBestShotView;
-
-@property int totalNewCacheNum;
 
 - (void)showTutorialNavigator;
 - (void)removeNavigationView;
