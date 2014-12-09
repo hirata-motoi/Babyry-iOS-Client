@@ -117,7 +117,7 @@
 							}
                         }
 						if ([self withinTwoDay:ip]) {
-							NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail", self.pageContentViewController.childObjectId, [date stringValue]];
+							NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", self.pageContentViewController.childObjectId, [date stringValue], childImageDate.objectId];
                             if ([childImageDate.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
                                 
                                 NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
