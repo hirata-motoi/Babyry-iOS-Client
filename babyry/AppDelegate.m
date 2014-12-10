@@ -16,6 +16,7 @@
 #import "DateUtils.h"
 #import "Logger.h"
 #import "FamilyRole.h"
+#import "ImageDownloadInBackground.h"
 
 @implementation AppDelegate
 
@@ -57,7 +58,7 @@
      UIRemoteNotificationTypeSound |
      UIRemoteNotificationTypeNewsstandContentAvailability];
     
-    //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     // Crittercism
     [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
@@ -96,11 +97,64 @@
     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"failed to get device token %@", err]];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    if (![PFUser currentUser]) {
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+//    /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
+//    NSInteger badgeNumber = [application applicationIconBadgeNumber];
+//    [application setApplicationIconBadgeNumber:++badgeNumber];
+//    NSLog(@"receive remote notification %d", badgeNumber);
+//    */
+//}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+{
+	if (![PFUser currentUser]) {
         return;
     }
-    if (application.applicationState == UIApplicationStateActive) {
+
+	if (application.applicationState == UIApplicationStateInactive) {
+        // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
+        [PFPush handlePush:userInfo];
+        if (userInfo[@"transitionInfo"]) {
+            if ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"imageUpload"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
+            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+            }
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
+            // キャッシュを更新しておく
+            [FamilyRole selfRole:@"noCache"];
+            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }];
+        }
+
+		completionHandler(UIBackgroundFetchResultNewData);
+		
+		// 各クラスに通知用
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+    }
+
+// バックグラウンドで任意の通信処理が出来ない使用なので一旦ペンディング
+// NSURLSessionを利用すれば出来る。HTTPのみ通信可能で、APIを用意しておけば良い。が、面倒。
+//	if (application.applicationState == UIApplicationStateBackground) {
+//		// backgourndでpushを受け取った時に発動、裏で画像データを読む
+//
+//		NSLog(@"%@", userInfo);
+//		
+//		ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+//		[imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"][@"date"] childObjectId:userInfo[@"transitionInfo"][@"childObjectId"]];
+//
+//        completionHandler(UIBackgroundFetchResultNewData);
+//
+//    }
+	
+	if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
         
         // パート変更の場合にはフォラグラウンドでもお知らせ
@@ -135,40 +189,12 @@
             NSNotification *n = [NSNotification notificationWithName:@"receivedApplyEvent" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
-    }                                                                                  
-    
-    if (application.applicationState == UIApplicationStateInactive) {
-        // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
-        [PFPush handlePush:userInfo];
-        if (userInfo[@"transitionInfo"]) {
-            if ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"imageUpload"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
-            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
-            }
-        }
-        
-        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
-            // キャッシュを更新しておく
-            [FamilyRole selfRole:@"noCache"];
-            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
-                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotification:n];
-            }];
-        }
+		
+		completionHandler(UIBackgroundFetchResultNewData);
+		
+		// 各クラスに通知用
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
-    
-    /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
-    NSInteger badgeNumber = [application applicationIconBadgeNumber];
-    [application setApplicationIconBadgeNumber:++badgeNumber];
-    NSLog(@"receive remote notification %d", badgeNumber);
-    */
-    
-    // 各クラスに通知用
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

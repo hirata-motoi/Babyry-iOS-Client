@@ -27,6 +27,7 @@
 		88610B631A0A15690042854B /* AlbumPickerViewController+Multi.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B621A0A15690042854B /* AlbumPickerViewController+Multi.m */; };
 		88610B661A0A5F210042854B /* ImageUploadInBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B651A0A5F210042854B /* ImageUploadInBackground.m */; };
 		88610B691A0AC1E60042854B /* AlbumPickerViewController+Single.m in Sources */ = {isa = PBXBuildFile; fileRef = 88610B681A0AC1E60042854B /* AlbumPickerViewController+Single.m */; };
+		88641DD91A3814BD00ED1A75 /* ImageDownloadInBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = 88641DD81A3814BD00ED1A75 /* ImageDownloadInBackground.m */; };
 		886A90F61A03A4AB007849DB /* AWSCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90F51A03A4AB007849DB /* AWSCommon.m */; };
 		886A90FA1A03A84F007849DB /* AWSSESUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90F91A03A84F007849DB /* AWSSESUtils.m */; };
 		886A90FD1A051E3D007849DB /* PasswordChangeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 886A90FC1A051E3D007849DB /* PasswordChangeViewController.m */; };
@@ -285,6 +286,8 @@
 		88610B651A0A5F210042854B /* ImageUploadInBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUploadInBackground.m; sourceTree = "<group>"; };
 		88610B671A0AC1E60042854B /* AlbumPickerViewController+Single.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AlbumPickerViewController+Single.h"; sourceTree = "<group>"; };
 		88610B681A0AC1E60042854B /* AlbumPickerViewController+Single.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AlbumPickerViewController+Single.m"; sourceTree = "<group>"; };
+		88641DD71A3814BD00ED1A75 /* ImageDownloadInBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageDownloadInBackground.h; sourceTree = "<group>"; };
+		88641DD81A3814BD00ED1A75 /* ImageDownloadInBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageDownloadInBackground.m; sourceTree = "<group>"; };
 		886A90F41A03A4AB007849DB /* AWSCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSCommon.h; sourceTree = "<group>"; };
 		886A90F51A03A4AB007849DB /* AWSCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWSCommon.m; sourceTree = "<group>"; };
 		886A90F81A03A84F007849DB /* AWSSESUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSSESUtils.h; sourceTree = "<group>"; };
@@ -752,6 +755,8 @@
 				F2FB3B961A08E3F200B0A2DD /* HeaderViewManager.m */,
 				88610B641A0A5F210042854B /* ImageUploadInBackground.h */,
 				88610B651A0A5F210042854B /* ImageUploadInBackground.m */,
+				88641DD71A3814BD00ED1A75 /* ImageDownloadInBackground.h */,
+				88641DD81A3814BD00ED1A75 /* ImageDownloadInBackground.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1766,6 +1771,7 @@
 				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
+				88641DD91A3814BD00ED1A75 /* ImageDownloadInBackground.m in Sources */,
 				F21BBBD519CA6B6E002D4623 /* TutorialPartChangeExecView.m in Sources */,
 				F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */,
 				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,

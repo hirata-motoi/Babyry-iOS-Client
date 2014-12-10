@@ -73,6 +73,10 @@
                         // デフォルトの着信音
                         data[@"sound"] = @"";
                     }
+					if ([event isEqualToString:@"imageUpload"]) {
+						// push通知後のバックグラウンド処理用
+						data[@"content-available"] = [NSNumber numberWithInt:1];
+					}
                     [push setData:[options objectForKey:@"data"]];
                     
                     // 送信
