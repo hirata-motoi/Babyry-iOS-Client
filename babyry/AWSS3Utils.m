@@ -16,6 +16,10 @@
 
 - (void)makeCacheFromS3:(NSMutableArray *)downloadQueue configuration:(AWSServiceConfiguration *)configuration withBlock:(makeCacheFromS3Block)block
 {
+	if ([downloadQueue count] == 0) {
+		block();
+	}
+
 	AWSS3TransferManager *transferManager = [[AWSS3TransferManager alloc] initWithConfiguration:configuration identifier:@"S3"];
 	
 	int __block executedCount = 0;

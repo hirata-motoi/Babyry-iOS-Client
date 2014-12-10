@@ -37,7 +37,7 @@
     self.multiUploadViewController.childImageArray = source[@"images"]; // ほんとはPFObjectの配列を入れるべきだが、tutorial中はchildImageArray.countしかみないのでこれでよし
     
     self.multiUploadViewController.imageLoadComplete = YES;
-    [self.multiUploadViewController.hud hide:YES];
+//    [self.multiUploadViewController.hud hide:YES];
     [self showCacheImages];
 }
 

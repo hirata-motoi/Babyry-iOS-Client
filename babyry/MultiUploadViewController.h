@@ -61,8 +61,6 @@
 
 @property BOOL imageLoadComplete;
 
-@property MBProgressHUD *hud;
-
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
 

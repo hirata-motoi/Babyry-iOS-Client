@@ -140,7 +140,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
 
-// バックグラウンドで任意の通信処理が出来ない使用なので一旦ペンディング
+// バックグラウンドで任意の通信処理が出来ない仕様なので一旦ペンディング
 // NSURLSessionを利用すれば出来る。HTTPのみ通信可能で、APIを用意しておけば良い。が、面倒。
 //	if (application.applicationState == UIApplicationStateBackground) {
 //		// backgourndでpushを受け取った時に発動、裏で画像データを読む

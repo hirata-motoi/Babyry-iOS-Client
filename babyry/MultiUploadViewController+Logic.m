@@ -112,6 +112,7 @@
 			 dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", queue[@"childObjectId"], queue[@"date"]]
 			 ];
 			 _multiUploadViewController.tmpCacheCount++;
+			NSLog(@"tmpCacheCount++ %d", _multiUploadViewController.tmpCacheCount);
 		} else {
 			// S3からダウンロードするものだけ別queueに切り出す
 			[downloadQueueFromS3 addObject:queue];
@@ -128,16 +129,13 @@
     _multiUploadViewController.imageLoadComplete = YES;
     [self showCacheImages];
     
+	NSLog(@"tmpCacheCount %d", _multiUploadViewController.tmpCacheCount);
     if (_multiUploadViewController.tmpCacheCount == 0){
         _multiUploadViewController.needTimer = NO;
         [_multiUploadViewController.myTimer invalidate];
     }
     
-    [_multiUploadViewController.hud hide:YES];
-    
     _multiUploadViewController.isTimperExecuting = NO;
-    
-//    [self.multiUploadViewController dispatchForPushReceivedTransition];
 }
 
 - (void)updateBestShot
