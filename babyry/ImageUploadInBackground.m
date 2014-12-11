@@ -77,8 +77,10 @@ AWSServiceConfiguration *configuration;
         putRequest.contentType = [multiUploadImageDataTypeArray objectAtIndex:0];
         putRequest.cacheControl = @"no-cache";
         AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+		NSLog(@"start");
         [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
             if (!task.error) {
+				NSLog(@"end");
                 object[@"isTmpData"] = @"FALSE";
                 [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if (error) {
