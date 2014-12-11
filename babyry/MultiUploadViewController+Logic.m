@@ -77,12 +77,12 @@
             
             // 注意 : ここは深いコピーをしないとだめ
             _multiUploadViewController.childImageArray = [[NSMutableArray alloc] initWithArray:objects];
-
+            
             //再起的にgetDataしてキャッシュを保存する
             _multiUploadViewController.tmpCacheCount = 0;
             
             _multiUploadViewController.imageLoadComplete = NO;
-
+            
             if ([downloadQueue count] > 0) {
                 [self setCacheOfParseImage:downloadQueue];
             } else {
@@ -111,7 +111,7 @@
 			 image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])
 			 dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", queue[@"childObjectId"], queue[@"date"]]
 			 ];
-			 _multiUploadViewController.tmpCacheCount++;
+            _multiUploadViewController.tmpCacheCount++;
 		} else {
 			// S3からダウンロードするものだけ別queueに切り出す
 			[downloadQueueFromS3 addObject:queue];
@@ -184,7 +184,7 @@
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get images : %@", error]];
         }
     }];
-
+    
 }
 
 - (void)updateBestShotWithChild:(NSString *)childObjectId withDate:(NSString *)date
@@ -203,7 +203,7 @@
         if (objects.count < 1) {
             return;
         }
-       
+        
         // ランダムでどれか1つをbestshotに選ぶ
         // TODO arc4random_uniformで得られる数値の範囲を確認
         int bestShotIndex = (int)arc4random_uniform((int)objects.count);

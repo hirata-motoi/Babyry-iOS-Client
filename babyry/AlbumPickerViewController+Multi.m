@@ -97,7 +97,7 @@
             if ([_albumPickerViewController.checkedImageArray count] == saveCount) {
                 [_albumPickerViewController.hud hide:YES];
                 if (_albumPickerViewController.totalImageNum) {
-					int totalNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue] + saveCount;
+                    int totalNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue] + saveCount;
                     [_albumPickerViewController.totalImageNum replaceObjectAtIndex:_albumPickerViewController.indexPath.row withObject:[NSNumber numberWithInt:totalNum]];
                 }
                 _albumPickerViewController.uploadedImageCount = 0; // initialize
