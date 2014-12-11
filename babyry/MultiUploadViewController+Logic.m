@@ -52,12 +52,12 @@
                     _multiUploadViewController.bestImageId = object.objectId;
                 }
                 if (![ImageCache getCache:object.objectId dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _multiUploadViewController.childObjectId, _multiUploadViewController.date]]) {
-					NSMutableDictionary *queue = [[NSMutableDictionary alloc] init];
-					queue[@"isTmpData"] = object[@"isTmpData"];
-					queue[@"objectId"] = object.objectId;
-					queue[@"childObjectId"] = _multiUploadViewController.childObjectId;
-					queue[@"date"] = object[@"date"];
-					queue[@"imageType"] = @"candidate";
+                    NSMutableDictionary *queue = [[NSMutableDictionary alloc] init];
+                    queue[@"isTmpData"] = object[@"isTmpData"];
+                    queue[@"objectId"] = object.objectId;
+                    queue[@"childObjectId"] = _multiUploadViewController.childObjectId;
+                    queue[@"date"] = object[@"date"];
+                    queue[@"imageType"] = @"candidate";
                     [downloadQueue addObject:queue];
                 }
             }
@@ -102,25 +102,25 @@
 
 -(void)setCacheOfParseImage:(NSMutableArray *)downloadQueue
 {
-	NSMutableArray *downloadQueueFromS3 = [[NSMutableArray alloc] init];
-	for (NSMutableDictionary *queue in downloadQueue) {
-		// ParseにはあるけどまだS3にアップロード中の画像の場合
-		if (queue[@"isTmpData"] && [queue[@"isTmpData"] isEqualToString:@"TRUE"]) {
-			[ImageCache
-			 setCache:[NSString stringWithFormat:@"%@-tmp", queue[@"objectId"]]
-			 image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])
-			 dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", queue[@"childObjectId"], queue[@"date"]]
-			 ];
+    NSMutableArray *downloadQueueFromS3 = [[NSMutableArray alloc] init];
+    for (NSMutableDictionary *queue in downloadQueue) {
+        // ParseにはあるけどまだS3にアップロード中の画像の場合
+        if (queue[@"isTmpData"] && [queue[@"isTmpData"] isEqualToString:@"TRUE"]) {
+            [ImageCache
+                setCache:[NSString stringWithFormat:@"%@-tmp", queue[@"objectId"]]
+                image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])
+                dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", queue[@"childObjectId"], queue[@"date"]]
+                ];
             _multiUploadViewController.tmpCacheCount++;
-		} else {
-			// S3からダウンロードするものだけ別queueに切り出す
-			[downloadQueueFromS3 addObject:queue];
-		}
-	}
-	AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
-	[awsS3Utils makeCacheFromS3:downloadQueueFromS3 configuration:_multiUploadViewController.configuration withBlock:^(void){
-		[self completeSetCache];
-	}];
+        } else {
+            // S3からダウンロードするものだけ別queueに切り出す
+            [downloadQueueFromS3 addObject:queue];
+        }
+    }
+    AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
+    [awsS3Utils makeCacheFromS3:downloadQueueFromS3 configuration:_multiUploadViewController.configuration withBlock:^(void){
+        [self completeSetCache];
+    }];
 }
 
 - (void) completeSetCache

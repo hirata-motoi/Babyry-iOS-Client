@@ -17,63 +17,58 @@
 
 - (void) downloadByPushInBackground:(NSNumber *)date childObjectId:(NSString *)childObjectId
 {
-	// pushを受けたらバックグラウンドで画像をダウンロードするメソッド
-	// ダウンロードに時間かかる&pushの度によばれるのでインスタンスメソッドにする
+    // pushを受けたらバックグラウンドで画像をダウンロードするメソッド
+    // ダウンロードに時間かかる&pushの度によばれるのでインスタンスメソッドにする
     NSMutableDictionary *child = [ChildProperties getChildProperty:childObjectId];
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
     query.limit = 1000;
     [query whereKey:@"imageOf" equalTo:childObjectId];
-	[query whereKey:@"date" equalTo:date];
-	[query whereKey:@"bestFlag" notEqualTo:@"removed"];
+    [query whereKey:@"date" equalTo:date];
+    [query whereKey:@"bestFlag" notEqualTo:@"removed"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
-			NSLog(@"objects %@", objects);
-			NSMutableArray *cacheSetQueueArray = [[NSMutableArray alloc] init];
-			// candidate用
-			if ([date isEqual:[DateUtils getTodayYMD]] || [date isEqual:[DateUtils getYesterdayYMD]]) {
-				for (PFObject *object in objects) {
-					NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", childObjectId, [date stringValue], object.objectId];
-					if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-						
-						NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
-						queueForCache[@"objectId"] = object.objectId;
-						queueForCache[@"childObjectId"] = childObjectId;
-						queueForCache[@"date"] = date;
-						queueForCache[@"imageType"] = @"candidate";
-						
-						NSLog(@"queue %@", queueForCache);
-						
-						[cacheSetQueueArray addObject:queueForCache];
-					}
-				}
-			}
-			
-			// bestshot用
-			for (PFObject *object in objects) {
-				if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
-					NSString *thumbPath = [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", childObjectId, [date stringValue]];
-					if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-						
-						NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
-						queueForCache[@"objectId"] = object.objectId;
-						queueForCache[@"childObjectId"] = childObjectId;
-						queueForCache[@"date"] = date;
-						if ([date isEqual:[DateUtils getTodayYMD]] || [date isEqual:[DateUtils getYesterdayYMD]]) {
-							queueForCache[@"imageType"] = @"fullsize";
-						}
-						
-						NSLog(@"queue %@", queueForCache);
-						
-						[cacheSetQueueArray addObject:queueForCache];
-					}
-				}
-			}
-			AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
-			[awsS3Utils makeCacheFromS3:cacheSetQueueArray configuration:[AWSCommon getAWSServiceConfiguration:@"S3"] withBlock:^(void){
-				NSLog(@"complete");
-			}];
-		}
-	}];
+            NSMutableArray *cacheSetQueueArray = [[NSMutableArray alloc] init];
+            // candidate用
+            if ([date isEqual:[DateUtils getTodayYMD]] || [date isEqual:[DateUtils getYesterdayYMD]]) {
+                for (PFObject *object in objects) {
+                    NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", childObjectId, [date stringValue], object.objectId];
+                    if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+
+                        NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
+                        queueForCache[@"objectId"] = object.objectId;
+                        queueForCache[@"childObjectId"] = childObjectId;
+                        queueForCache[@"date"] = date;
+                        queueForCache[@"imageType"] = @"candidate";
+
+                        [cacheSetQueueArray addObject:queueForCache];
+                    }
+                }
+            }
+
+            // bestshot用
+            for (PFObject *object in objects) {
+                if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
+                    NSString *thumbPath = [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", childObjectId, [date stringValue]];
+                    if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
+
+                        NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
+                        queueForCache[@"objectId"] = object.objectId;
+                        queueForCache[@"childObjectId"] = childObjectId;
+                        queueForCache[@"date"] = date;
+                        if ([date isEqual:[DateUtils getTodayYMD]] || [date isEqual:[DateUtils getYesterdayYMD]]) {
+                            queueForCache[@"imageType"] = @"fullsize";
+                        }
+
+                        [cacheSetQueueArray addObject:queueForCache];
+                    }
+                }
+            }
+            AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
+            [awsS3Utils makeCacheFromS3:cacheSetQueueArray configuration:[AWSCommon getAWSServiceConfiguration:@"S3"] withBlock:^(void){
+                // 特に何もしない
+            }];
+        }
+    }];
 }
 
 @end
