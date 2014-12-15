@@ -32,8 +32,8 @@ static NSMutableDictionary *_secretConfig = nil;
 {
     if (_config == nil) {
         NSString *configName =
-            ([[app env] isEqualToString:@"prod"]) ? @"babyry-config.plist"    :
-            ([[app env] isEqualToString:@"dev"])  ? @"babyrydev-config.plist" : nil;
+            ([[app env] isEqualToString:@"prod"]) ? @"babyry-config"    :
+            ([[app env] isEqualToString:@"dev"])  ? @"babyrydev-config" : nil;
         if (configName == nil) {
             NSString *exceptionString = [NSString stringWithFormat:@"invalid configName due to unknown env:%@", [app env]];
             [Logger writeOneShot:@"crit" message:exceptionString];
@@ -49,8 +49,8 @@ static NSMutableDictionary *_secretConfig = nil;
 {
     if (_secretConfig == nil) {
         NSString *configName =
-            ([[app env] isEqualToString:@"prod"]) ? @"babyry-secret-config.plist"    :
-            ([[app env] isEqualToString:@"dev"])  ? @"babyrydev-secret-config.plist" : nil;
+            ([[app env] isEqualToString:@"prod"]) ? @"babyry-secret-config"    :
+            ([[app env] isEqualToString:@"dev"])  ? @"babyrydev-secret-config" : nil;
         if (configName == nil) {
             NSString *exceptionString = [NSString stringWithFormat:@"invalid secretConfigName due to unknown env:%@", [app env]];
             [Logger writeOneShot:@"crit" message:exceptionString];
@@ -64,10 +64,10 @@ static NSMutableDictionary *_secretConfig = nil;
 
 + (NSMutableDictionary *)load:(NSString *)configName
 {
+    
     NSMutableDictionary *config;
-    NSString *homeDir = NSHomeDirectory();
-    NSString *appDir = [NSString stringWithFormat:@"%@/%@", homeDir, @"babyry.app"];
-    NSString *filePath = [appDir stringByAppendingPathComponent:configName];
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *filePath = [bundle pathForResource:configName ofType:@"plist"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:filePath]) {
         config = [NSDictionary dictionaryWithContentsOfFile:filePath];
