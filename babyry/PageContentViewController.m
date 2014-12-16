@@ -1484,6 +1484,11 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
         [indexPaths addObject:indexPath];
     }
+    if (sectionIndex == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:sectionIndex]) {
+        i++;
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
+        [indexPaths addObject:indexPath];
+    }
     
     // insert or delete
     [_pageContentCollectionView performBatchUpdates:^{
