@@ -49,6 +49,12 @@
     self.backgroundColor = [ColorUtils getSectionHeaderColor];
 }
 
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    _isExpanded = !_isExpanded;
+    [_delegate toggleCells:_sectionIndex doExpand:_isExpanded];
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
