@@ -68,6 +68,7 @@
     CGSize bigRect;
     CGSize smallRect;
     BOOL alreadyRegisteredObserver;
+    NSMutableDictionary *sectionHeaderExpandState;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -82,6 +83,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    sectionHeaderExpandState = [[NSMutableDictionary alloc]init];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
   
     logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
@@ -262,9 +264,16 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    // sectionが縮んでいる場合
+    NSString *expandStatus = sectionHeaderExpandState[ [NSNumber numberWithInteger:section] ];
+    if (expandStatus && [expandStatus isEqualToString:@"contracted"]) {
+        return 0;
+    }
+    
     if (section == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:section]) {
         return [_childImages[section][@"images"] count] + 1;
     }
+  
     return [_childImages[section][@"images"] count];
 }
 
@@ -449,6 +458,10 @@
     NSString *month = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"month"];
     
     CollectionViewSectionHeader *header = [CollectionViewSectionHeader view];
+    header.delegate = self;
+    header.sectionIndex = indexPath.section;
+    NSString *expandStatus = sectionHeaderExpandState[ [NSNumber numberWithInteger:indexPath.section] ];
+    header.isExpanded =  (expandStatus && [expandStatus isEqualToString:@"contracted"]) ? NO : YES;
     [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue] withName:childProperty[@"name"]];
    
     [headerView addSubview:header];
@@ -1459,6 +1472,35 @@
     
     NSMutableArray *indexPathList = userInfo[@"indexPathList"];
     [self rotateViewYAxis:indexPathList];
+}
+
+- (void)toggleCells:(NSInteger)sectionIndex doExpand:(BOOL)doExpand
+{
+    // sectionIndexに含まれるcellのindexPathを作成
+    NSMutableArray *indexPaths = [[NSMutableArray alloc]init];
+    NSInteger i = -1;
+    for (PFObject *childImage in _childImages[sectionIndex][@"images"]) {
+        i++;
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
+        [indexPaths addObject:indexPath];
+    }
+    if (sectionIndex == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:sectionIndex]) {
+        i++;
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
+        [indexPaths addObject:indexPath];
+    }
+    
+    // insert or delete
+    [_pageContentCollectionView performBatchUpdates:^{
+        if (doExpand) {
+            sectionHeaderExpandState[ [NSNumber numberWithInteger:sectionIndex] ] = @"expanded";
+            [_pageContentCollectionView insertItemsAtIndexPaths:indexPaths];
+        } else {
+            sectionHeaderExpandState[ [NSNumber numberWithInteger:sectionIndex] ] = @"contracted";
+            [_pageContentCollectionView deleteItemsAtIndexPaths:indexPaths];
+        }
+    } completion:^(BOOL finished){
+    }];
 }
 
 /*
