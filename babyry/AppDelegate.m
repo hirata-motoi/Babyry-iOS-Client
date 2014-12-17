@@ -51,11 +51,23 @@
     
     // Register for push notifications
     [application unregisterForRemoteNotifications];
-    [application registerForRemoteNotificationTypes:
-     UIRemoteNotificationTypeBadge |
-     UIRemoteNotificationTypeAlert |
-     UIRemoteNotificationTypeSound |
-     UIRemoteNotificationTypeNewsstandContentAvailability];
+    NSString *currentVersion = [[UIDevice currentDevice] systemVersion];
+    if([currentVersion compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending){
+        // i0S7以前の処理
+        [application registerForRemoteNotificationTypes:
+         UIRemoteNotificationTypeBadge |
+         UIRemoteNotificationTypeAlert |
+         UIRemoteNotificationTypeSound |
+         UIRemoteNotificationTypeNewsstandContentAvailability];
+    } else {
+        // iOS8の処理
+        UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+        
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        
+        [application registerForRemoteNotifications];
+        [application registerUserNotificationSettings:settings];
+    }
     
     //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
