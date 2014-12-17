@@ -107,6 +107,10 @@
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.hidden = YES;
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc]init];
+    [refreshControl addTarget:self action:@selector(pulldown:) forControlEvents:UIControlEventValueChanged];
+    [_pageContentCollectionView addSubview:refreshControl];
 }
 
 - (void)applicationDidBecomeActive
@@ -1459,6 +1463,11 @@
     
     NSMutableArray *indexPathList = userInfo[@"indexPathList"];
     [self rotateViewYAxis:indexPathList];
+}
+
+- (void)pulldown:(id)sender
+{
+    [sender endRefreshing];
 }
 
 /*
