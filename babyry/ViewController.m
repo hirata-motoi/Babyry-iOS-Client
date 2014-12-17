@@ -253,7 +253,10 @@
         childQuery.cachePolicy = kPFCachePolicyNetworkElseCache;
         // 起動して一発目はfrontで引く
         if (_only_first_load == 1) {
-            NSMutableArray *childProperties = [ChildProperties syncChildProperties];
+            NSMutableArray *childProperties = [ChildProperties getChildProperties];
+            if ([childProperties count] == 0) {
+                childProperties = [ChildProperties syncChildProperties];
+            }
             if (childProperties.count < 1) {
                 if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApplyExec"]) {
                     [self setChildNames];
