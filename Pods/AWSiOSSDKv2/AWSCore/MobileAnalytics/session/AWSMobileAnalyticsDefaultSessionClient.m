@@ -27,98 +27,88 @@
 #import "AWSLogging.h"
 
 //Event Type Constants ---------------------------
-NSString *const SESSION_START_EVENT_TYPE = @"_session.start";
-NSString *const SESSION_STOP_EVENT_TYPE = @"_session.stop";
-NSString *const SESSION_PAUSE_EVENT_TYPE = @"_session.pause";
-NSString *const SESSION_RESUME_EVENT_TYPE = @"_session.resume";
+NSString *const AWSSessionStartEventType = @"_session.start";
+NSString *const AWSSessionStopEventType = @"_session.stop";
+NSString *const AWSSessionPauseEventType = @"_session.pause";
+NSString *const AWSSessionResumeEventType = @"_session.resume";
 
 //Event Attribute/Metric Key Constants -----------
-NSString *const SESSION_ID_ATTRIBUTE_KEY = @"_session.id";
-NSString *const SESSION_DURATION_METRIC_KEY = @"_session.duration";
-NSString *const SESSION_START_TIME_ATTRIBUTE_KEY = @"_session.startTime";
-NSString *const SESSION_END_TIME_ATTRIBUTE_KEY = @"_session.stopTime";
+NSString *const AWSSessionIDAttributeKey = @"_session.id";
+NSString *const AWSSessionDurationMetricKey = @"_session.duration";
+NSString *const AWSSessionStartTimeAttributeKey = @"_session.startTime";
+NSString *const AWSSessionEndTimeAttributeKey = @"_session.stopTime";
 
 //Session State Constants ------------------------
-static AWSMobileAnalyticsInactiveSessionState* INACTIVE_SESSION_STATE;
-static AWSMobileAnalyticsPausedSessionState* PAUSED_SESSION_STATE;
-static AWSMobileAnalyticsActiveSessionState* ACTIVE_SESSION_STATE;
+static AWSMobileAnalyticsInactiveSessionState *INACTIVE_SESSION_STATE;
+static AWSMobileAnalyticsPausedSessionState *PAUSED_SESSION_STATE;
+static AWSMobileAnalyticsActiveSessionState *ACTIVE_SESSION_STATE;
 
 @interface AWSMobileAnalyticsDefaultSessionClient()
+
 @property (nonatomic, weak) id<AWSMobileAnalyticsInternalEventClient> eventClient;
 @property (nonatomic, weak) id<AWSMobileAnalyticsDeliveryClient> deliveryClient;
-@property (nonatomic) id<AWSMobileAnalyticsContext> context;
-@property (nonatomic) id<AWSMobileAnalyticsLifeCycleManager> lifeCycleManager;
-@property (nonatomic) id foregroundObserverHandle;
-@property (nonatomic) id backgroundObserverHandle;
-@property (nonatomic) NSRecursiveLock* lockObject;
-@property (nonatomic) AWSMobileAnalyticsSessionStore* sessionStore;
-@property (nonatomic) id<AWSMobileAnalyticsSessionClientState> state;
-@property (nonatomic) long sessionRestartDelayMs;
-@property (nonatomic) long sessionResumeDelayMs;
-@property (nonatomic) AWSMobileAnalyticsDelayedBlock* delayedBlock;
+@property (nonatomic, strong) id<AWSMobileAnalyticsContext> context;
+@property (nonatomic, strong) id<AWSMobileAnalyticsLifeCycleManager> lifeCycleManager;
+@property (nonatomic, strong) id foregroundObserverHandle;
+@property (nonatomic, strong) id backgroundObserverHandle;
+@property (nonatomic, strong) NSRecursiveLock* lockObject;
+@property (nonatomic, strong) AWSMobileAnalyticsSessionStore* sessionStore;
+@property (nonatomic, strong) id<AWSMobileAnalyticsSessionClientState> state;
+@property (nonatomic, assign) long sessionRestartDelayMs;
+@property (nonatomic, assign) long sessionResumeDelayMs;
+@property (nonatomic, strong) AWSMobileAnalyticsDelayedBlock* delayedBlock;
+
 @end
 
 @implementation AWSMobileAnalyticsDefaultSessionClient
 
-+(void)initialize{
-    INACTIVE_SESSION_STATE = [[AWSMobileAnalyticsInactiveSessionState alloc] init];
-    PAUSED_SESSION_STATE = [[AWSMobileAnalyticsPausedSessionState alloc] init];
-    ACTIVE_SESSION_STATE = [[AWSMobileAnalyticsActiveSessionState alloc] init];
++ (void)initialize {
+    if (self == [AWSMobileAnalyticsDefaultSessionClient class]) {
+        INACTIVE_SESSION_STATE = [AWSMobileAnalyticsInactiveSessionState new];
+        PAUSED_SESSION_STATE = [AWSMobileAnalyticsPausedSessionState new];
+        ACTIVE_SESSION_STATE = [AWSMobileAnalyticsActiveSessionState new];
+    }
 }
 
 //~ CONSTRUCTORS ================================================= ~\\ =
-/**
- * Constructor - Static Factory
- */
-+ (id) sessionClientWithEventClient: (id<AWSMobileAnalyticsInternalEventClient>) eventClient
-                 withDeliveryClient: (id<AWSMobileAnalyticsDeliveryClient>)      deliveryClient
-                        withContext: (id<AWSMobileAnalyticsContext>)     context
-{
-    return [[AWSMobileAnalyticsDefaultSessionClient alloc] initWithEventClient:eventClient
-                                                   withDeliveryClient:deliveryClient
-                                                   withContext:context];
-}
-/**
- * Constructor - Actual
- */
-- (id) initWithEventClient: (id <AWSMobileAnalyticsInternalEventClient>) eventClient
-        withDeliveryClient: (id<AWSMobileAnalyticsDeliveryClient>)       deliveryClient
-               withContext: (id <AWSMobileAnalyticsContext>)     context
-{
+
+- (instancetype)initWithEventClient:(id<AWSMobileAnalyticsInternalEventClient>)eventClient
+                 withDeliveryClient:(id<AWSMobileAnalyticsDeliveryClient>)deliveryClient
+                        withContext:(id<AWSMobileAnalyticsContext>)context {
     NSAssert(eventClient != nil, @"event client should not have been nil");
     NSAssert(context != nil, @"context should not have been nil");
-    if (self = [super init])
-    {        
-        self.sessionStore = [[AWSMobileAnalyticsSessionStore alloc] initWithFileManager:context.system.fileManager];
-        self.session = [self.sessionStore retrievePersistedSessionDetails]; //READ PERSISTED SESSION
-        
-        self.eventClient = eventClient;
-        self.context = context;
-        self.deliveryClient = deliveryClient;
-        
-        self.state = (self.session == nil) ? INACTIVE_SESSION_STATE : PAUSED_SESSION_STATE;
-        
-        self.sessionRestartDelayMs = [[self.context configuration] longForKey:KeySessionRestartDelay withOptValue:ValueSessionRestartDelay];
-        self.sessionResumeDelayMs = [[self.context configuration] longForKey:KeySessionResumeDelay withOptValue:ValueSessionResumeDelay];
-        
+    if (self = [super init]) {
+        _sessionStore = [[AWSMobileAnalyticsSessionStore alloc] initWithFileManager:context.system.fileManager];
+        _session = [self.sessionStore retrievePersistedSessionDetails]; //READ PERSISTED SESSION
+
+        _eventClient = eventClient;
+        _context = context;
+        _deliveryClient = deliveryClient;
+
+        _state = (self.session == nil) ? INACTIVE_SESSION_STATE : PAUSED_SESSION_STATE;
+
+        _sessionRestartDelayMs = [[self.context configuration] longForKey:AWSKeySessionRestartDelay
+                                                             withOptValue:AWSValueSessionRestartDelay];
+        _sessionResumeDelayMs = [[self.context configuration] longForKey:AWSKeySessionResumeDelay
+                                                            withOptValue:AWSValueSessionResumeDelay];
+
         //- FG/BG Lifecycle hooks --------------------------------=
-        __weak AWSMobileAnalyticsDefaultSessionClient* client = self;
-        self.lifeCycleManager = [[context system] lifeCycleManager];
-        self.foregroundObserverHandle = [self.lifeCycleManager addForegroundObserverUsingBlock:^(NSNotification* notification) {
-            [client resumeSession];
+        __weak AWSMobileAnalyticsDefaultSessionClient *weakSelf = self;
+        _lifeCycleManager = [[context system] lifeCycleManager];
+        _foregroundObserverHandle = [self.lifeCycleManager addForegroundObserverUsingBlock:^(NSNotification* notification) {
+            [weakSelf resumeSession];
         }];
         self.backgroundObserverHandle = [self.lifeCycleManager addBackgroundObserverUsingBlock:^(NSNotification* notification) {
-            [client pauseSession];
+            [weakSelf pauseSession];
         }];
-        
-        self.lockObject = [[NSRecursiveLock alloc] init];
+
+        self.lockObject = [NSRecursiveLock new];
     }
-    
+
     return self;
 }
 
-- (void) dealloc
-{
+- (void)dealloc {
     // Remove lifecycle hooks
     [self.lifeCycleManager removeForegroundObserver:self.foregroundObserverHandle];
     [self.lifeCycleManager removeBackgroundObserver:self.backgroundObserverHandle];
@@ -126,18 +116,18 @@ static AWSMobileAnalyticsActiveSessionState* ACTIVE_SESSION_STATE;
 //~ ============================================================== ~// =
 
 /**
- * Starts an Application Session if session is inactive 
+ * Starts an Application Session if session is inactive
  *      OR sufficient time has passed since last start.
  *
  * - Generates new Session Object
  * - Makes the session's id a global event attribute (event tagging)
  * - Fires Session Start Event
  */
-- (void) startSession{
+- (void)startSession {
     [self.lockObject lock];
-    @try{    
+    @try {
         [self.state startWithSessionClient:self];
-    }@finally{
+    } @finally {
         [self.lockObject unlock];
     }
 }
@@ -149,159 +139,143 @@ static AWSMobileAnalyticsActiveSessionState* ACTIVE_SESSION_STATE;
  * - Removes session id global attribute (event tagging teardown)
  * - Deactivates session (set to nil)
  */
-- (void) stopSession{
+- (void)stopSession{
     [self.lockObject lock];
-    @try{
+    @try {
         [self.state stopWithSessionClient:self];
-    }@finally{
+    } @finally {
         [self.lockObject unlock];
     }
 }
 
--(void)pauseSession
-{
+- (void)pauseSession {
     [self.lockObject lock];
-    @try{
+    @try {
         [self.state pauseWithSessionClient:self];
-    }@finally{
+    } @finally {
         [self.lockObject unlock];
     }
 }
 
--(void)resumeSession
-{
+- (void)resumeSession {
     [self.lockObject lock];
-    @try{
+    @try {
         [self.state resumeWithSessionClient:self];
-    }@finally{
+    } @finally {
         [self.lockObject unlock];
     }
 }
 
--(void)startNewSession{
-    
+- (void)startNewSession{
     // Generate new session object
-    self.session = [AWSMobileAnalyticsSession sessionWithContext:self.context];
+    self.session = [[AWSMobileAnalyticsSession alloc] initWithContext:self.context];
     AWSLogVerbose( @"Firing Session Event: Start");
-    
+
     // Prepare Event Tagging
-    [self.eventClient addGlobalAttribute:[self.session sessionId] forKey:SESSION_ID_ATTRIBUTE_KEY];
-    
-    
-    
+    [self.eventClient addGlobalAttribute:self.session.sessionId
+                                  forKey:AWSSessionIDAttributeKey];
+
     //latest ERS Server's API Change, SessionStartTime need to be included in every request
     NSString* sessionStartTimeString = [self.session.startTime aws_stringValue:AWSDateISO8601DateFormat3];
-    [self.eventClient addGlobalAttribute:sessionStartTimeString forKey:SESSION_START_TIME_ATTRIBUTE_KEY];
-    
+    [self.eventClient addGlobalAttribute:sessionStartTimeString
+                                  forKey:AWSSessionStartTimeAttributeKey];
+
     // Fire Session start Event
-    
-    id<AWSMobileAnalyticsInternalEvent> startEvent = [self.eventClient createInternalEvent:SESSION_START_EVENT_TYPE];
+
+    id<AWSMobileAnalyticsInternalEvent> startEvent = [self.eventClient createInternalEvent:AWSSessionStartEventType];
     [self.eventClient recordEvent:startEvent andApplyGlobalAttributes:YES];
-    
+
     AWSLogInfo( "Session Started.");
 }
 
--(void)endCurrentSession{
+- (void)endCurrentSession{
     if(![self.session isPaused]){
         [self.session pause];
     }
-    
+
     // Fire Session stop Event
     AWSLogVerbose( @"Firing Session Event: Stop");
     NSString* sessionStartTimeString = [self.session.startTime aws_stringValue:AWSDateISO8601DateFormat3];
     NSString* sessionStopTimeString = [self.session.stopTime aws_stringValue:AWSDateISO8601DateFormat3];
-    id<AWSMobileAnalyticsInternalEvent> stopEvent = [self.eventClient createInternalEvent:SESSION_STOP_EVENT_TYPE];
-    [stopEvent addMetric:[NSNumber numberWithUnsignedLongLong:[self.session timeDurationInMillis]] forKey:SESSION_DURATION_METRIC_KEY];
-    [stopEvent addAttribute:self.session.sessionId forKey:SESSION_ID_ATTRIBUTE_KEY];
-    [stopEvent addAttribute:sessionStartTimeString forKey:SESSION_START_TIME_ATTRIBUTE_KEY];
-    [stopEvent addAttribute:sessionStopTimeString forKey:SESSION_END_TIME_ATTRIBUTE_KEY];
+    id<AWSMobileAnalyticsInternalEvent> stopEvent = [self.eventClient createInternalEvent:AWSSessionStopEventType];
+    [stopEvent addMetric:[NSNumber numberWithUnsignedLongLong:[self.session timeDurationInMillis]] forKey:AWSSessionDurationMetricKey];
+    [stopEvent addAttribute:self.session.sessionId forKey:AWSSessionIDAttributeKey];
+    [stopEvent addAttribute:sessionStartTimeString forKey:AWSSessionStartTimeAttributeKey];
+    [stopEvent addAttribute:sessionStopTimeString forKey:AWSSessionEndTimeAttributeKey];
     [self.eventClient recordEvent:stopEvent andApplyGlobalAttributes:YES];
-    
+
     // TearDown Event Tagging
-    [self.eventClient removeGlobalAttributeForKey:SESSION_ID_ATTRIBUTE_KEY];
-    
+    [self.eventClient removeGlobalAttributeForKey:AWSSessionIDAttributeKey];
+
     // Kill current session object
     self.session = nil;
     AWSLogInfo( "Session Stopped.");
-    
+
     [self.deliveryClient forceDeliveryAndWaitForCompletion:NO];
 }
 
--(void)pauseCurrentSession{
+- (void)pauseCurrentSession{
     [self.session pause];
     AWSLogVerbose( @"Firing Session Event: Pause");
-    id<AWSMobileAnalyticsInternalEvent> pauseEvent = [self.eventClient createInternalEvent:SESSION_PAUSE_EVENT_TYPE];
-    [pauseEvent addMetric:[NSNumber numberWithUnsignedLongLong:[self.session timeDurationInMillis]] forKey:SESSION_DURATION_METRIC_KEY];
+    id<AWSMobileAnalyticsInternalEvent> pauseEvent = [self.eventClient createInternalEvent:AWSSessionPauseEventType];
+    [pauseEvent addMetric:[NSNumber numberWithUnsignedLongLong:[self.session timeDurationInMillis]] forKey:AWSSessionDurationMetricKey];
     [self.eventClient recordEvent:pauseEvent andApplyGlobalAttributes:YES];
-    AWSLogInfo( "Session Paused.");    
+    AWSLogInfo( "Session Paused.");
 }
 
--(void)resumeCurrentSession{
-   
+- (void)resumeCurrentSession {
     [self.session resume];
     AWSLogVerbose( @"Firing Session Event: Resume");
-    id<AWSMobileAnalyticsInternalEvent> resumeEvent = [self.eventClient createInternalEvent:SESSION_RESUME_EVENT_TYPE];
+    id<AWSMobileAnalyticsInternalEvent> resumeEvent = [self.eventClient createInternalEvent:AWSSessionResumeEventType];
     [self.eventClient recordEvent:resumeEvent andApplyGlobalAttributes:YES];
     AWSLogInfo( "Session Resumed.");
 }
 
-
--(SessionState)getSessionState{
-    if(self.session != nil){
-        if (self.state == ACTIVE_SESSION_STATE)
-        {
+- (SessionState)getSessionState {
+    if(self.session != nil) {
+        if (self.state == ACTIVE_SESSION_STATE) {
             return SESSION_STATE_ACTIVE;
-        }
-        else if (self.state == PAUSED_SESSION_STATE)
-        {
+        } else if (self.state == PAUSED_SESSION_STATE) {
             return SESSION_STATE_PAUSED;
-        }
-        else
-        {
+        } else {
             return SESSION_STATE_INACTIVE;
         }
     }
     return SESSION_STATE_INACTIVE;
 }
 
--(void)changeState:(SessionState)sessionState{
+- (void)changeState:(SessionState)sessionState {
     [self.lockObject lock];
-    @try{
+    @try {
         [self.state exitStateWithSessionClient:self];
-        if(sessionState == SESSION_STATE_INACTIVE){
+        if(sessionState == SESSION_STATE_INACTIVE) {
             self.state = INACTIVE_SESSION_STATE;
-        }else if(sessionState == SESSION_STATE_ACTIVE){
+        } else if(sessionState == SESSION_STATE_ACTIVE) {
             self.state = ACTIVE_SESSION_STATE;
-        }else if(sessionState == SESSION_STATE_PAUSED){
+        } else if(sessionState == SESSION_STATE_PAUSED) {
             self.state = PAUSED_SESSION_STATE;
         }
         [self.state enterStateWithSessionClient:self];
-    }
-    @finally
-    {
+    } @finally {
         [self.lockObject unlock];
     }
 }
 
--(void)cancelDelayedBlock{
+- (void)cancelDelayedBlock {
     [self.lockObject lock];
-    @try{
-        if(self.delayedBlock)
-        {
+    @try {
+        if(self.delayedBlock) {
             [self.delayedBlock cancel];
             self.delayedBlock = nil;
         }
-    }
-    @finally
-    {
+    } @finally {
         [self.lockObject unlock];
     }
 }
 
--(void)waitForSessionTimeout{
-    
+- (void)waitForSessionTimeout {
     [self.lockObject lock];
-    @try{
+    @try {
         // create a delayed block of sessionResumeDelayMs seconds that will check to see if we are still
         // in the BG. If so, execute the code to stop the session and send all events.
         // If the block gets cancelled before it runs, then we won't execute it
@@ -316,26 +290,23 @@ static AWSMobileAnalyticsActiveSessionState* ACTIVE_SESSION_STATE;
             {
                 [client.lockObject unlock];
             }
-            
+
             // a stop will trigger a force submission of all events. However, since
             // this block is running the in bg, we need to make sure the delivery
             // completes before returning.
             [client.deliveryClient waitForDeliveryOperations];
         }];
-        
+
         // execute our delayed block in the background queue so that apple
         // will allow this code to run even though the app is in the background
-        AIBackgroundQueue* queue = [AIBackgroundQueue emptyQueue];
+        AWSBackgroundQueue* queue = [AWSBackgroundQueue emptyQueue];
         [queue addBackgroundTaskUsingBlock:^(void) {
             [client.delayedBlock execute];
         }];
         [self.lifeCycleManager executeBackgroundTasks:queue];
-    }
-    @finally
-    {
+    } @finally {
         [self.lockObject unlock];
     }
 }
-
 
 @end

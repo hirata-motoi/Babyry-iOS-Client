@@ -16,8 +16,6 @@
 #import "AWSMobileAnalyticsDefaultEvent.h"
 #import "AWSMobileAnalyticsSDKInfo.h"
 
-static NSString* const PLATFORM = @"iOS";
-
 @interface AWSMobileAnalyticsDefaultEvent()
 @property (nonatomic, readwrite) NSString* eventType;
 @property (nonatomic, readwrite) UTCTimeMillis eventTimestamp;
@@ -27,25 +25,23 @@ static NSString* const PLATFORM = @"iOS";
 
 @implementation AWSMobileAnalyticsDefaultEvent
 
-+(AWSMobileAnalyticsDefaultEvent*) defaultEventFromEvent:(id<AWSMobileAnalyticsEvent>) theEvent
-                     withInsightsContext:(id<AWSMobileAnalyticsContext>) theContext
-                      withEventTimestamp:(UTCTimeMillis) theTimestamp
-{
++ (instancetype)defaultEventFromEvent:(id<AWSMobileAnalyticsEvent>) theEvent
+                  withInsightsContext:(id<AWSMobileAnalyticsContext>) theContext
+                   withEventTimestamp:(UTCTimeMillis) theTimestamp {
     return [[AWSMobileAnalyticsDefaultEvent alloc] initWithEventType:theEvent.eventType
-                                     withAttributes:theEvent.allAttributes
-                                        withMetrics:theEvent.allMetrics
-                                 withEventTimestamp:theTimestamp];
+                                                      withAttributes:theEvent.allAttributes
+                                                         withMetrics:theEvent.allMetrics
+                                                  withEventTimestamp:theTimestamp];
 }
 
 
-+(AWSMobileAnalyticsDefaultEvent*) defaultEventWithInsightsContext:(id<AWSMobileAnalyticsContext>)theContext
-                                withEventTimestamp:(UTCTimeMillis) theTimestamp
-                                     withEventType:(NSString*) theEventType
-{
++ (instancetype)defaultEventWithInsightsContext:(id<AWSMobileAnalyticsContext>)theContext
+                             withEventTimestamp:(UTCTimeMillis) theTimestamp
+                                  withEventType:(NSString*) theEventType {
     return [[AWSMobileAnalyticsDefaultEvent alloc] initWithEventType:theEventType
-                                      withAttributes:[NSDictionary dictionary]
-                                        withMetrics:[NSDictionary dictionary]
-                                  withEventTimestamp:theTimestamp];
+                                                      withAttributes:[NSDictionary dictionary]
+                                                         withMetrics:[NSDictionary dictionary]
+                                                  withEventTimestamp:theTimestamp];
 }
 
 -(id) initWithEventType:(NSString*) theEventType
@@ -75,7 +71,7 @@ static NSString* const PLATFORM = @"iOS";
 {
     if(!theKey)
         return;
-    
+
     @synchronized(self.attributes)
     {
         [self.attributes setValue:theValue forKey:theKey];
@@ -86,7 +82,7 @@ static NSString* const PLATFORM = @"iOS";
 {
     if(!theKey)
         return NO;
-    
+
     @synchronized(self.attributes)
     {
         if([self.attributes objectForKey:theKey])
@@ -126,7 +122,7 @@ static NSString* const PLATFORM = @"iOS";
 {
     if(!theKey)
         return NO;
-    
+
     @synchronized(self.metrics)
     {
         if([self.metrics objectForKey:theKey])
@@ -134,7 +130,7 @@ static NSString* const PLATFORM = @"iOS";
         else
             return NO;
     }
-    
+
 }
 
 - (NSDictionary*) allMetrics
@@ -154,16 +150,16 @@ static NSString* const PLATFORM = @"iOS";
 -(NSDictionary *) toDictionary
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    
+
     [dictionary setValue:self.eventType forKey:@"event_type"];
     [dictionary setValue:[AWSMobileAnalyticsDateUtils isoDateTimeWithTimestamp:self.eventTimestamp] forKey:@"timestamp"];
-    
+
     NSDictionary* attrs = self.allAttributes;
     if(attrs.count > 0)
     {
         [dictionary setValue:attrs forKey:@"attributes"];
     }
-    
+
     NSDictionary* metrs = self.allMetrics;
     if(metrs.count > 0)
     {

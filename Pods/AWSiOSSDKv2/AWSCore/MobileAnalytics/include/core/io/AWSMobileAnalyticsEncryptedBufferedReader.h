@@ -13,9 +13,15 @@
  * permissions and limitations under the License.
  */
 
+#import <Foundation/Foundation.h>
 
+@class AWSMobileAnalyticsBufferedReader;
 
-@interface AWSMobileAnalyticsBase64Utils : NSObject
-+(NSString *) base64EncodedString:(NSData*)theData;
-+(NSData *)   dataWithBase64EncodedString: (NSString *) encodedString;
+@interface AWSMobileAnalyticsEncryptedBufferedReader : NSObject
+
++(AWSMobileAnalyticsEncryptedBufferedReader*)readerWithReader:(AWSMobileAnalyticsBufferedReader *)reader
+                                                    secretKey:(NSString *)secretKey;
+-(BOOL)readLine:(NSString**)line withError:(NSError**)readError;
+-(void)close;
+
 @end
