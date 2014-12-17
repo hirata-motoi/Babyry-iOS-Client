@@ -41,8 +41,6 @@
 
 @property MBProgressHUD *hud;
 
-@property NSInteger uploadedImageCount;
-
 @property int multiUploadMax;
 
 @property NSMutableDictionary *notificationHistoryByDay;

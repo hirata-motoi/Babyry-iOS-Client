@@ -26,6 +26,11 @@ typedef NS_ENUM(NSInteger, AWSCognitoLoginProviderKey) {
     AWSCognitoLoginProviderKeyLoginWithAmazon,
 };
 
+FOUNDATION_EXPORT NSString *const AWSCognitoIdentityProviderErrorDomain;
+typedef NS_ENUM(NSInteger, AWSCognitoIdentityProviderErrorType) {
+    AWSCognitoIdentityProviderErrorIdentityIsNil,
+};
+
 @class BFTask;
 
 @protocol AWSIdentityProvider <NSObject>
@@ -39,7 +44,7 @@ typedef NS_ENUM(NSInteger, AWSCognitoLoginProviderKey) {
 @protocol AWSCognitoIdentityProvider <AWSIdentityProvider>
 
 @property (nonatomic, strong, readonly) NSString *identityPoolId;
-@property (nonatomic, strong, readonly) NSString *identityId;
+@property (nonatomic, strong) NSString *identityId;
 @property (nonatomic, strong) NSDictionary *logins;
 
 - (BFTask *)getIdentityId;
@@ -55,7 +60,18 @@ typedef NS_ENUM(NSInteger, AWSCognitoLoginProviderKey) {
 
 @end
 
-@interface AWSBasicCognitoIdentityProvider : AWSAbstractIdentityProvider
+@interface AWSAbstractCognitoIdentityProvider : AWSAbstractIdentityProvider
+
+@property (nonatomic, strong, readonly) NSString *providerName;
+
+- (instancetype)initWithRegionType:(AWSRegionType)regionType
+                        identityId:(NSString *)identityId
+                         accountId:(NSString *)accountId
+                    identityPoolId:(NSString *)identityPoolId
+                            logins:(NSDictionary *)logins;
+@end
+
+@interface AWSBasicCognitoIdentityProvider : AWSAbstractCognitoIdentityProvider
 
 - (instancetype)initWithRegionType:(AWSRegionType)regionType
                         identityId:(NSString *)identityId

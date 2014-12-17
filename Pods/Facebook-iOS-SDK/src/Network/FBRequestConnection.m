@@ -67,13 +67,13 @@ typedef void (^KeyValueActionHandler)(NSString *key, id value);
 // ----------------------------------------------------------------------------
 // FBRequestConnectionState
 
-typedef NS_ENUM(NSUInteger, FBRequestConnectionState) {
+typedef enum FBRequestConnectionState {
     kStateCreated,
     kStateSerialized,
     kStateStarted,
     kStateCompleted,
     kStateCancelled,
-};
+} FBRequestConnectionState;
 
 // ----------------------------------------------------------------------------
 // Graph API error codes
@@ -979,8 +979,8 @@ typedef NS_ENUM(NSInteger, FBGraphApiErrorAccessTokenSubcode) {
 
     if (self.state != kStateCancelled) {
         NSAssert(self.state == kStateStarted,
-                 @"Unexpected state %lu in completeWithResponse",
-                 (unsigned long)self.state);
+                 @"Unexpected state %d in completeWithResponse",
+                 self.state);
         self.state = kStateCompleted;
     }
 

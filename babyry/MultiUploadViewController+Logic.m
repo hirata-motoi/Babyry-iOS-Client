@@ -17,6 +17,7 @@
 #import "DateUtils.h"
 #import "ChildProperties.h"
 #import "AWSS3Utils.h"
+#import "ImageUploadInBackground.h"
 
 @implementation MultiUploadViewController_Logic
 
@@ -38,9 +39,12 @@
     [childImageQuery whereKey:@"imageOf" equalTo:_multiUploadViewController.childObjectId];
     [childImageQuery whereKey:@"date" equalTo:[self compensateTargetDate:[NSNumber numberWithInteger:[_multiUploadViewController.date integerValue]]]];
     [childImageQuery orderByAscending:@"createdAt"];
+    [childImageQuery whereKey:@"isTmpData" notEqualTo:@"TRUE"];
     [childImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(!error) {
-            [_multiUploadViewController.totalImageNum replaceObjectAtIndex:_multiUploadViewController.indexPath.row withObject:[NSNumber numberWithInteger:objects.count]];
+            
+            int uploadingQueueCount = [ImageUploadInBackground getUploadingQueueCount];
+            [_multiUploadViewController.totalImageNum replaceObjectAtIndex:_multiUploadViewController.indexPath.row withObject:[NSNumber numberWithInteger:objects.count + uploadingQueueCount]];
             
             [self compensateDateOfChildImage:objects];
             [self compensateBestImageId:objects];
@@ -53,7 +57,6 @@
                 }
                 if (![ImageCache getCache:object.objectId dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _multiUploadViewController.childObjectId, _multiUploadViewController.date]]) {
                     NSMutableDictionary *queue = [[NSMutableDictionary alloc] init];
-                    queue[@"isTmpData"] = object[@"isTmpData"];
                     queue[@"objectId"] = object.objectId;
                     queue[@"childObjectId"] = _multiUploadViewController.childObjectId;
                     queue[@"date"] = object[@"date"];
@@ -79,7 +82,7 @@
             _multiUploadViewController.childImageArray = [[NSMutableArray alloc] initWithArray:objects];
             
             //再起的にgetDataしてキャッシュを保存する
-            _multiUploadViewController.tmpCacheCount = 0;
+            //_multiUploadViewController.tmpCacheCount = 0;
             
             _multiUploadViewController.imageLoadComplete = NO;
             
@@ -102,23 +105,8 @@
 
 -(void)setCacheOfParseImage:(NSMutableArray *)downloadQueue
 {
-    NSMutableArray *downloadQueueFromS3 = [[NSMutableArray alloc] init];
-    for (NSMutableDictionary *queue in downloadQueue) {
-        // ParseにはあるけどまだS3にアップロード中の画像の場合
-        if (queue[@"isTmpData"] && [queue[@"isTmpData"] isEqualToString:@"TRUE"]) {
-            [ImageCache
-                setCache:[NSString stringWithFormat:@"%@-tmp", queue[@"objectId"]]
-                image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])
-                dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", queue[@"childObjectId"], queue[@"date"]]
-                ];
-            _multiUploadViewController.tmpCacheCount++;
-        } else {
-            // S3からダウンロードするものだけ別queueに切り出す
-            [downloadQueueFromS3 addObject:queue];
-        }
-    }
     AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
-    [awsS3Utils makeCacheFromS3:downloadQueueFromS3 configuration:_multiUploadViewController.configuration withBlock:^(void){
+    [awsS3Utils makeCacheFromS3:downloadQueue configuration:_multiUploadViewController.configuration withBlock:^(void){
         [self completeSetCache];
     }];
 }
@@ -128,7 +116,7 @@
     _multiUploadViewController.imageLoadComplete = YES;
     [self showCacheImages];
     
-    if (_multiUploadViewController.tmpCacheCount == 0){
+    if (![ImageUploadInBackground getIsUploading]) {
         _multiUploadViewController.needTimer = NO;
         [_multiUploadViewController.myTimer invalidate];
     }

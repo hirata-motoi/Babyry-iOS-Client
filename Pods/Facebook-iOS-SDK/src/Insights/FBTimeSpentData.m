@@ -200,10 +200,7 @@ long _lastRestoreTime;
             if (_shouldLogActivateEvent) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"  // event name has been deprecated
-                [FBAppEvents logEvent:FBAppEventNameActivatedApp
-                           parameters:@{
-                                        FBAppEventParameterLaunchSource: [FBAppEvents getSourceApplication]
-                                        }];
+                [FBAppEvents logEvent:FBAppEventNameActivatedApp];
 #pragma clang diagnostic pop
             }
 
@@ -218,8 +215,7 @@ long _lastRestoreTime;
                            valueToSum:_secondsSpentInCurrentSession
                            parameters:
                             @{ FBAppEventParameterNameSessionInterruptions : @(_numInterruptionsInCurrentSession),
-                               FBAppEventParameterNameTimeBetweenSessions : [NSString stringWithFormat:@"session_quanta_%d", quantaIndex],
-                               FBAppEventParameterLaunchSource: [FBAppEvents getSourceApplication],
+                               FBAppEventParameterNameTimeBetweenSessions : [NSString stringWithFormat:@"session_quanta_%d", quantaIndex]
                             }
                  ];
 

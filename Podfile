@@ -1,7 +1,6 @@
 pod 'Parse', '1.4.1'
 pod 'ParseFacebookUtils', '1.4.1'
-pod 'AWSiOSSDKv2', '2.0.8'
-pod 'Facebook-iOS-SDK', '3.18'
+pod 'AWSiOSSDKv2', '2.0.13'
 pod 'CrittercismSDK', '4.3.7'
 pod 'MagicalRecord', '2.2'
 pod 'AFNetworking', '2.4.1'

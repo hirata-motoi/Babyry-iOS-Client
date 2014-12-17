@@ -29,6 +29,7 @@
 #import "TutorialNavigator.h"
 #import "ChildProperties.h"
 #import "AlbumTableViewController.h"
+#import "ImageUploadInBackground.h"
 
 @interface MultiUploadViewController ()
 
@@ -294,7 +295,7 @@
     _imageLoadComplete = YES;
     [[self logic] showCacheImages];
     
-    if (_tmpCacheCount == 0){
+    if ([ImageUploadInBackground getUploadingQueueCount] == 0){
         _needTimer = NO;
         [_myTimer invalidate];
     }
