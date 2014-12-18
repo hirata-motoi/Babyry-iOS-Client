@@ -27,6 +27,7 @@ AWSServiceConfiguration *configuration;
 int completeUploadCount;
 int uploadingQueueCount = 0;
 BOOL isUploading = NO;
+int uploadErrorCount;
 
 @implementation ImageUploadInBackground
 
@@ -43,6 +44,7 @@ BOOL isUploading = NO;
     // アップロード中のキュー数を保持
     // MultiUpload画面のクルクル表示に使う
     uploadingQueueCount = [multiUploadImageDataArray count];
+    uploadErrorCount = 0;
 }
 
 + (int)getUploadingQueueCount
@@ -97,8 +99,9 @@ BOOL isUploading = NO;
                 BFTask *task = [awsS3 putObject:putRequest];
                 if (task.error) {
                     // S3にアップが失敗したらEventuallyでchildImageを削除する
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %@", task.error]];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image(%@) to S3 : %@", childImage.objectId, task.error]];
                     [childImage deleteEventually];
+                    uploadErrorCount++;
                 } else {
                     // 3. ParseのtmpDataをFalseにセットする
                     childImage[@"isTmpData"] = @"FALSE";
@@ -106,10 +109,14 @@ BOOL isUploading = NO;
                     [childImage save:&error];
                     if (!error) {
                         completeUploadCount++;
+                    } else {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in changing tmpData true to false : %@", error]];
+                        uploadErrorCount++;
                     }
                 }
             } else {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in making new object for new image : %@", error]];
+                uploadErrorCount++;
             }
             // キューカウントを減らす
             uploadingQueueCount--;
@@ -123,6 +130,16 @@ BOOL isUploading = NO;
 + (void)afterUpload
 {
     isUploading = NO;
+    
+    if (uploadErrorCount > 0) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d枚の画像アップロードに失敗しました", uploadErrorCount]
+                                                        message:@"もう一度アップロードを行ってください。"
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        [alert show];
+    }
 
     // NotificationHistoryに登録
     PFObject *partner = (PFObject *)[Partner partnerUser];
