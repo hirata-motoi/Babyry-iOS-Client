@@ -41,6 +41,17 @@
 
 - (void) logicSendImageButton
 {
+    if ([ImageUploadInBackground getIsUploading]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"アップロード処理中です"
+                                                        message:@"現在アップロード処理中ですので、しばらく時間をおいて次のアップロードを行ってください。"
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        [alert show];
+        return;
+    }
+
     if ([_albumPickerViewController.checkedImageArray count] + [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue] > 15) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限数を超えています"
                                                         message:[NSString stringWithFormat:@"1日あたりアップロード可能なベストショット候補の写真は15枚です。既に%d枚アップロード済みです。アップロード済みの写真は拡大画面から削除も可能です", [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue]]

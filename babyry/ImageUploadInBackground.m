@@ -71,13 +71,9 @@ BOOL isUploading = NO;
     dispatch_group_t g = dispatch_group_create();
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(concurrency);
     
-    NSLog(@"Start Uploading");
-    
     for (int i = 0; i < [multiUploadImageDataArray count]; i++) {
         dispatch_group_async(g,q,^{
-            NSLog(@"Start Queue %d", i);
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-            NSLog(@"Start Queue after %d", i);
             NSData *imageData = [multiUploadImageDataArray objectAtIndex:i];
             NSString *imageType = [multiUploadImageDataTypeArray objectAtIndex:i];
             
@@ -126,7 +122,6 @@ BOOL isUploading = NO;
 
 + (void)afterUpload
 {
-    NSLog(@"afterUpload");
     isUploading = NO;
 
     // NotificationHistoryに登録
