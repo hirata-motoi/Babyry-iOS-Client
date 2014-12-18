@@ -10,19 +10,16 @@
 
 @class CollectionViewSectionHeader;
 @protocol CollectionViewSectionHeaderDelegate <NSObject>
-- (void)toggleCells:(NSInteger)sectionIndex doExpand:(BOOL)doExpand;
+- (void)toggleCells:(NSInteger)sectionIndex;
 @end
 
 
-@interface CollectionViewSectionHeader : UIView {
-    id<CollectionViewSectionHeaderDelegate>delegate;
-}
+@interface CollectionViewSectionHeader : UIView
 @property (nonatomic,assign) id<CollectionViewSectionHeaderDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UILabel *monthLabel;
 @property (weak, nonatomic) IBOutlet UILabel *yearLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property NSInteger sectionIndex;
-@property BOOL isExpanded;
 
 + (instancetype)view;
 - (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month withName:(NSString *)name;

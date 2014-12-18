@@ -68,7 +68,8 @@
     CGSize bigRect;
     CGSize smallRect;
     BOOL alreadyRegisteredObserver;
-    NSMutableDictionary *sectionHeaderExpandState;
+    NSMutableDictionary *closedCellCountBySection;
+    BOOL isTogglingCells;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -83,7 +84,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    sectionHeaderExpandState = [[NSMutableDictionary alloc]init];
+    closedCellCountBySection = [[NSMutableDictionary alloc]init];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
   
     logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
@@ -264,17 +265,16 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    // sectionが縮んでいる場合
-    NSString *expandStatus = sectionHeaderExpandState[ [NSNumber numberWithInteger:section] ];
-    if (expandStatus && [expandStatus isEqualToString:@"contracted"]) {
-        return 0;
-    }
+    NSInteger closedCellCount = 0;
+    if (closedCellCountBySection[ [NSNumber numberWithInteger:section] ]) {
+        closedCellCount = [closedCellCountBySection[ [NSNumber numberWithInteger:section] ] integerValue];
+    }                               
     
     if (section == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:section]) {
-        return [_childImages[section][@"images"] count] + 1;
+        return [_childImages[section][@"images"] count] + 1 - closedCellCount;
     }
   
-    return [_childImages[section][@"images"] count];
+    return [_childImages[section][@"images"] count] - closedCellCount;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -313,7 +313,7 @@
             [cell removeGestureRecognizer:gesture];
         }
     }
-    
+   
     // indexPathの設定
     cell.currentSection = indexPath.section;
     cell.currentRow = indexPath.row;
@@ -321,7 +321,7 @@
     // カレンダー追加用cell
     if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
         [self setBackgroundViewOfCell:cell withImageCachePath:@"" withIndexPath:indexPath];
-        
+    
         if (indexPath.section == 0 && indexPath.row == 1) {
             CGRect rect = cell.frame;
             rect.origin.x = 0;
@@ -452,7 +452,9 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     UICollectionReusableView *headerView = [_pageContentCollectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader" forIndexPath:indexPath];
-    
+    for (UIView *v in [headerView subviews]) {
+        [v removeFromSuperview];
+    }
     
     NSString *year = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"year"];
     NSString *month = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"month"];
@@ -460,8 +462,6 @@
     CollectionViewSectionHeader *header = [CollectionViewSectionHeader view];
     header.delegate = self;
     header.sectionIndex = indexPath.section;
-    NSString *expandStatus = sectionHeaderExpandState[ [NSNumber numberWithInteger:indexPath.section] ];
-    header.isExpanded =  (expandStatus && [expandStatus isEqualToString:@"contracted"]) ? NO : YES;
     [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue] withName:childProperty[@"name"]];
    
     [headerView addSubview:header];
@@ -1474,8 +1474,22 @@
     [self rotateViewYAxis:indexPathList];
 }
 
-- (void)toggleCells:(NSInteger)sectionIndex doExpand:(BOOL)doExpand
+- (void)toggleCells:(NSInteger)sectionIndex
 {
+    // 処理中はsection headerのタップをblockする
+    if (isTogglingCells) {
+        return;
+    }
+    isTogglingCells = YES;
+ 
+    BOOL doExpand = NO;
+    if (closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ]) {
+        NSInteger closedCellCount = [closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] integerValue];
+        if (closedCellCount > 0) {
+            doExpand = YES;
+        }
+    }
+    
     // sectionIndexに含まれるcellのindexPathを作成
     NSMutableArray *indexPaths = [[NSMutableArray alloc]init];
     NSInteger i = -1;
@@ -1490,17 +1504,26 @@
         [indexPaths addObject:indexPath];
     }
     
-    // insert or delete
-    [_pageContentCollectionView performBatchUpdates:^{
-        if (doExpand) {
-            sectionHeaderExpandState[ [NSNumber numberWithInteger:sectionIndex] ] = @"expanded";
+    if (doExpand) {
+        [_pageContentCollectionView performBatchUpdates:^{
+            closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] = [NSNumber numberWithInteger:0];
             [_pageContentCollectionView insertItemsAtIndexPaths:indexPaths];
-        } else {
-            sectionHeaderExpandState[ [NSNumber numberWithInteger:sectionIndex] ] = @"contracted";
-            [_pageContentCollectionView deleteItemsAtIndexPaths:indexPaths];
+        } completion:nil];
+    } else {
+        NSMutableArray *ips = [[NSMutableArray alloc]init];
+        for (NSInteger i = indexPaths.count - 1; i >= 0 ; i--) {
+            [ips addObject:indexPaths[i]];
+            if (i % 3 == 0) {
+                [_pageContentCollectionView performBatchUpdates:^{
+                    NSNumber *n = closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ];
+                    closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] = [NSNumber numberWithInteger:[n integerValue] + ips.count];
+                    [_pageContentCollectionView deleteItemsAtIndexPaths:ips];
+                    [ips removeAllObjects];
+                } completion:nil];
+            }
         }
-    } completion:^(BOOL finished){
-    }];
+    }
+    isTogglingCells = NO;
 }
 
 /*

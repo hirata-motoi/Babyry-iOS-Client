@@ -72,4 +72,92 @@
     }
     return shouldStickToTop;
 }
+
+// for section expanding
+
+- (void)prepareForCollectionViewUpdates:(NSArray *)updateItems
+{
+    // Keep track of insert and delete index paths
+    [super prepareForCollectionViewUpdates:updateItems];
+    
+    self.deleteIndexPaths = [NSMutableArray array];
+    self.insertIndexPaths = [NSMutableArray array];
+    
+    for (UICollectionViewUpdateItem *update in updateItems)
+    {
+        if (update.updateAction == UICollectionUpdateActionDelete)
+        {
+            [self.deleteIndexPaths addObject:update.indexPathBeforeUpdate];
+        }
+        else if (update.updateAction == UICollectionUpdateActionInsert)
+        {
+            [self.insertIndexPaths addObject:update.indexPathAfterUpdate];
+        }
+    }
+}
+
+- (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewLayoutAttributes *at = [super layoutAttributesForSupplementaryViewOfKind:elementKind atIndexPath:indexPath];
+    return at;
+}
+
+- (UICollectionViewLayoutAttributes *)initialLayoutAttributesForAppearingItemAtIndexPath:(NSIndexPath *)itemIndexPath
+{
+    // Must call super
+    UICollectionViewLayoutAttributes *attributes = [super initialLayoutAttributesForAppearingItemAtIndexPath:itemIndexPath];
+    
+    if ([self.insertIndexPaths containsObject:itemIndexPath])
+    {
+        // only change attributes on inserted cells
+        if (!attributes)
+            attributes = [self layoutAttributesForItemAtIndexPath:itemIndexPath];
+        
+        // Configure attributes ...
+        attributes.alpha = 0.0;
+    }
+    if (itemIndexPath.section == 0 && itemIndexPath.row == 1) {
+        CGRect rect = attributes.frame;
+        rect.origin.x = 0;
+        attributes.frame = rect;
+    }
+    
+    return attributes;
+}
+
+- (UICollectionViewLayoutAttributes *)finalLayoutAttributesForDisappearingItemAtIndexPath:(NSIndexPath *)itemIndexPath
+{
+    // So far, calling super hasn't been strictly necessary here, but leaving it in
+    // for good measure
+    UICollectionViewLayoutAttributes *attributes = [super finalLayoutAttributesForDisappearingItemAtIndexPath:itemIndexPath];
+    
+    if ([self.deleteIndexPaths containsObject:itemIndexPath])
+    {
+        // only change attributes on deleted cells
+        if (!attributes)
+            attributes = [self layoutAttributesForItemAtIndexPath:itemIndexPath];
+        
+        // Configure attributes ...
+        attributes.alpha = 0.0;
+        CGRect rect = attributes.frame;
+        rect.size.height = 0;
+        attributes.frame = rect;
+    }
+    
+    if (itemIndexPath.section == 0 && itemIndexPath.row == 1) {
+        CGRect rect = attributes.frame;
+        rect.origin.x = 0;
+        attributes.frame = rect;
+    }
+    return attributes;
+}
+
+- (void)finalizeCollectionViewUpdates
+{
+    [super finalizeCollectionViewUpdates];
+    // release the insert and delete index paths
+    self.deleteIndexPaths = nil;
+    self.insertIndexPaths = nil;
+}
+
 @end
