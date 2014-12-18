@@ -26,7 +26,7 @@ NSIndexPath *targetIndexPath;
 AWSServiceConfiguration *configuration;
 int completeUploadCount;
 int uploadingQueueCount = 0;
-BOOL isUploading = false;
+BOOL isUploading = NO;
 
 @implementation ImageUploadInBackground
 
@@ -66,70 +66,68 @@ BOOL isUploading = false;
     
     isUploading = YES;
     
-    // multiUploadImageDataArrayをひとつづつ再帰的に処理していく
-    if ([multiUploadImageDataArray count] > 0) {
-        
-        // 1. ParseにtmpDataを作成する(tmpData = TRUE)
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
-        childImage[@"date"] = [NSNumber numberWithInteger:[targetDate integerValue]];
-        childImage[@"imageOf"] = childProperty[@"objectId"];
-        childImage[@"bestFlag"] = @"unchoosed";
-        childImage[@"isTmpData"] = @"TRUE";
-        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            if(succeeded) {
-                // 2. S3に画像を上げる
+    int concurrency = 3;
+    dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    dispatch_group_t g = dispatch_group_create();
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(concurrency);
+    
+    NSLog(@"Start Uploading");
+    
+    for (int i = 0; i < [multiUploadImageDataArray count]; i++) {
+        dispatch_group_async(g,q,^{
+            NSLog(@"Start Queue %d", i);
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            NSLog(@"Start Queue after %d", i);
+            NSData *imageData = [multiUploadImageDataArray objectAtIndex:i];
+            NSString *imageType = [multiUploadImageDataTypeArray objectAtIndex:i];
+            
+            // 1. ParseにtmpDataを作成する(tmpData = TRUE)
+            PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
+            childImage[@"date"] = [NSNumber numberWithInteger:[targetDate integerValue]];
+            childImage[@"imageOf"] = childProperty[@"objectId"];
+            childImage[@"bestFlag"] = @"unchoosed";
+            childImage[@"isTmpData"] = @"TRUE";
+            NSError *error = nil;
+            [childImage save:&error];
+            if (!error) {
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
-                putRequest.body = [multiUploadImageDataArray objectAtIndex:0];
-                putRequest.contentLength = [NSNumber numberWithLong:[[multiUploadImageDataArray objectAtIndex:0] length]];
-                putRequest.contentType = [multiUploadImageDataTypeArray objectAtIndex:0];
+                putRequest.body = imageData;
+                putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
+                putRequest.contentType = imageType;
                 putRequest.cacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-                [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
-                    if (task.error) {
-                        // S3にアップが失敗したらEventuallyでchildImageを削除する
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %@", task.error]];
-                        [childImage deleteEventually];
-                        // リトライした方が良いと思うけど、ひとまずキューを削除して次のキューにいく
-                        uploadingQueueCount--;
-                        [multiUploadImageDataArray removeObjectAtIndex:0];
-                        [multiUploadImageDataTypeArray removeObjectAtIndex:0];
-                        [self multiUploadImagesInBackground];
-                    } else {
-                        // 3. ParseのtmpDataをFalseにセットする
-                        childImage[@"isTmpData"] = @"FALSE";
-                        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                            if (succeeded) {
-                                completeUploadCount++;
-                            }
-                            if (error) {
-
-                            }
-                            // エラーでもエラーじゃなくても今のキューを削除して次のキューに
-                            uploadingQueueCount--;
-                            [multiUploadImageDataArray removeObjectAtIndex:0];
-                            [multiUploadImageDataTypeArray removeObjectAtIndex:0];
-                            [self multiUploadImagesInBackground];
-                        }];
+                BFTask *task = [awsS3 putObject:putRequest];
+                if (task.error) {
+                    // S3にアップが失敗したらEventuallyでchildImageを削除する
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %@", task.error]];
+                    [childImage deleteEventually];
+                } else {
+                    // 3. ParseのtmpDataをFalseにセットする
+                    childImage[@"isTmpData"] = @"FALSE";
+                    NSError *error = nil;
+                    [childImage save:&error];
+                    if (!error) {
+                        completeUploadCount++;
                     }
-                    return nil;
-                }];
-            }
-            if (error) {
+                }
+            } else {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in making new object for new image : %@", error]];
-                // PFObjectも出来ていないのでもう一回リトライ
-                [self multiUploadImagesInBackground];
             }
-        }];
-    } else {
-        [self afterUpload];
+            // キューカウントを減らす
+            uploadingQueueCount--;
+            dispatch_semaphore_signal(semaphore);
+        });
     }
+    dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
+    [self afterUpload];
 }
 
 + (void)afterUpload
 {
-    isUploading = false;
+    NSLog(@"afterUpload");
+    isUploading = NO;
 
     // NotificationHistoryに登録
     PFObject *partner = (PFObject *)[Partner partnerUser];
