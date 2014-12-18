@@ -197,6 +197,7 @@ DEPENDENCIES:
   - CrittercismSDK (= 4.3.7)
   - Facebook-iOS-SDK (= 3.21.1)
   - MagicalRecord (= 2.2)
+  - Parse (= 1.6.0)
   - ParseCrashReporting (= 1.6.0)
   - ParseFacebookUtils (= 1.6.0)
   - ParseUI (= 1.0.2)

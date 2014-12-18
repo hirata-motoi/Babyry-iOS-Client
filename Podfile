@@ -1,3 +1,4 @@
+pod 'Parse', '1.6.0'
 pod 'ParseFacebookUtils', '1.6.0'
 pod 'ParseUI', '1.0.2'
 pod 'ParseCrashReporting', '1.6.0'
