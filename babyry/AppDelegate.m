@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
 #import <ParseFacebookUtils/PFFacebookUtils.h>
+#import <ParseCrashReporting/ParseCrashReporting.h>
 #import "PageContentViewController.h"
 #import "Crittercism.h"
 #import "Config.h"
@@ -37,6 +38,9 @@
     // CoreData
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"babyry.sqlite"];
     [self setupFirstLaunchUUID];
+    
+    // Parse Crash Report
+    [ParseCrashReporting enable];
     
     // Parse Authentification
     [Parse setApplicationId:[Config secretConfig][@"ParseApplicationId"] clientKey:[Config secretConfig][@"ParseClientKey"]];
