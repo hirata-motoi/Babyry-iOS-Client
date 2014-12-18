@@ -117,6 +117,14 @@ long _lastRestoreTime;
 
     long now = [FBAppEvents unixTimeNow];
     long timeSinceRestore = now - _lastRestoreTime;
+
+    // Can happen if the clock on the device is changed
+    if (timeSinceRestore < 0) {
+        [FBLogger singleShotLogEntry:FBLoggingBehaviorAppEvents
+                        formatString:@"Clock skew detected"];
+        timeSinceRestore = 0;
+    }
+
     _secondsSpentInCurrentSession += timeSinceRestore;
 
     NSDictionary *timeSpentData =
@@ -200,7 +208,10 @@ long _lastRestoreTime;
             if (_shouldLogActivateEvent) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"  // event name has been deprecated
-                [FBAppEvents logEvent:FBAppEventNameActivatedApp];
+                [FBAppEvents logEvent:FBAppEventNameActivatedApp
+                           parameters:@{
+                                        FBAppEventParameterLaunchSource: [FBAppEvents getSourceApplication]
+                                        }];
 #pragma clang diagnostic pop
             }
 
@@ -215,7 +226,8 @@ long _lastRestoreTime;
                            valueToSum:_secondsSpentInCurrentSession
                            parameters:
                             @{ FBAppEventParameterNameSessionInterruptions : @(_numInterruptionsInCurrentSession),
-                               FBAppEventParameterNameTimeBetweenSessions : [NSString stringWithFormat:@"session_quanta_%d", quantaIndex]
+                               FBAppEventParameterNameTimeBetweenSessions : [NSString stringWithFormat:@"session_quanta_%d", quantaIndex],
+                               FBAppEventParameterLaunchSource: [FBAppEvents getSourceApplication],
                             }
                  ];
 

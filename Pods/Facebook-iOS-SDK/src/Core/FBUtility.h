@@ -19,17 +19,39 @@
 
 #import "FBFetchedAppSettings.h"
 #import "FBLogger.h"
+#import "FBSDKMacros.h"
 
 @class FBRequest;
 @class FBSession;
 
 @protocol FBGraphObject;
 
-typedef enum FBAdvertisingTrackingStatus {
+typedef NS_ENUM(NSUInteger, FBAdvertisingTrackingStatus) {
     AdvertisingTrackingAllowed,
     AdvertisingTrackingDisallowed,
     AdvertisingTrackingUnspecified
-} FBAdvertisingTrackingStatus;
+};
+
+typedef NS_ENUM(NSInteger, FBIOSVersion) {
+  FBIOSVersion_6_0,
+  FBIOSVersion_6_1,
+  FBIOSVersion_7_0,
+  FBIOSVersion_7_1,
+  FBIOSVersion_8_0,
+
+  FBIOSVersionCount
+};
+
+typedef NS_ENUM(NSUInteger, FBTriStateBOOL) {
+    FBTriStateBOOLValueNO = 0,
+    FBTriStateBOOLValueYES,
+    FBTriStateBOOLValueUnknown
+};
+
+FBSDK_EXTERN FBTriStateBOOL FBTriStateBOOLFromBOOL(BOOL value);
+FBSDK_EXTERN BOOL BOOLFromFBTriStateBOOL(FBTriStateBOOL value, BOOL defaultValue);
+
+FBSDK_EXTERN BOOL FBCheckObjectIsEqual(NSObject *a, NSObject *b);
 
 @interface FBUtility : NSObject
 
@@ -62,6 +84,7 @@ typedef enum FBAdvertisingTrackingStatus {
 + (NSBundle *)facebookSDKBundle;
 // Returns YES when the bundle identifier is for one of the native facebook apps
 + (BOOL)isFacebookBundleIdentifier:(NSString *)bundleIdentifier;
++ (BOOL)isSafariBundleIdentifier:(NSString *)bundleIdentifier;
 
 #pragma mark - Permissions
 
@@ -81,10 +104,12 @@ typedef enum FBAdvertisingTrackingStatus {
 
 + (NSString *)newUUIDString;
 + (NSString *)attributionID;
-+ (NSString *)advertiserID;
++ (NSString *)advertiserOrAnonymousID:(BOOL)accessAdvertisingID;
 + (FBAdvertisingTrackingStatus)advertisingTrackingStatus;
-+ (void)updateParametersWithEventUsageLimitsAndBundleInfo:(NSMutableDictionary *)parameters
-                          accessAdvertisingTrackingStatus:(BOOL)accessAdvertisingTrackingStatus;
++ (NSMutableDictionary<FBGraphObject> *)activityParametersDictionaryForEvent:(NSString *)eventCategory
+                                                        includeAttributionID:(BOOL)includeAttributionID
+                                                          implicitEventsOnly:(BOOL)implicitEventsOnly
+                                                   shouldAccessAdvertisingID:(BOOL)shouldAccessAdvertisingID;
 
 #pragma mark - JSON Encode / Decode
 
@@ -121,6 +146,8 @@ typedef enum FBAdvertisingTrackingStatus {
 + (BOOL)isRetinaDisplay;
 + (BOOL)isRegisteredURLScheme:(NSString *)urlScheme;
 + (BOOL)isMultitaskingSupported;
++ (BOOL)isUIKitLinkedOnOrAfter:(FBIOSVersion)version;
++ (BOOL)isRunningOnOrAfter:(FBIOSVersion)version;
 + (BOOL)isSystemAccountStoreAvailable;
 
 #pragma mark - Cookies

@@ -244,11 +244,9 @@ static FBSession *g_activeSession = nil;
 - (BOOL)initializeFromCachedToken:(FBAccessTokenData *)cachedToken withPermissions:(NSArray *)permissions
 {
     if (cachedToken && self.state == FBSessionStateCreated) {
-        BOOL isSubset = [FBSessionUtility areRequiredPermissions:permissions
-                                            aSubsetOfPermissions:cachedToken.permissions];
         BOOL isAppID = (!cachedToken.appID || [cachedToken.appID isEqualToString:self.appID]);
 
-        if (isSubset && isAppID && (NSOrderedDescending == [cachedToken.expirationDate compare:[NSDate date]])) {
+        if (isAppID && (NSOrderedDescending == [cachedToken.expirationDate compare:[NSDate date]])) {
             _loginBehavior = [FBSessionUtility loginBehaviorForLoginType:self.accessTokenData.loginType];
             [self transitionToState:FBSessionStateCreatedTokenLoaded
                 withAccessTokenData:cachedToken
@@ -341,7 +339,7 @@ static FBSession *g_activeSession = nil;
             // valid behavior; no-op.
             break;
         default:
-            [FBLogger singleShotLogEntry:FBLoggingBehaviorDeveloperErrors formatString:@"%d is not a valid FBSessionLoginBehavior. Ignoring open call.", behavior];
+            [FBLogger singleShotLogEntry:FBLoggingBehaviorDeveloperErrors formatString:@"%lu is not a valid FBSessionLoginBehavior. Ignoring open call.", (unsigned long)behavior];
             return;
     }
     if (!(self.state == FBSessionStateCreated ||
