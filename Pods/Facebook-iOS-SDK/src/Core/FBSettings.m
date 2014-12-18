@@ -18,6 +18,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "FBAppEvents+Internal.h"
 #import "FBBoltsMeasurementEventListener.h"
 #import "FBError.h"
 #import "FBInternalSettings.h"
@@ -46,6 +47,7 @@ NSString *const FBLoggingBehaviorPerformanceCharacteristics = @"perf_characteris
 NSString *const FBLoggingBehaviorAppEvents = @"app_events";
 NSString *const FBLoggingBehaviorInformational = @"informational";
 NSString *const FBLoggingBehaviorCacheErrors = @"cache_errors";
+NSString *const FBLoggingBehaviorUIControlErrors = @"ui_control_errors";
 NSString *const FBLoggingBehaviorDeveloperErrors = @"developer_errors";
 
 NSString *const FBLastAttributionPing = @"com.facebook.sdk:lastAttributionPing%@";
@@ -79,11 +81,11 @@ static BOOL g_enableLegacyGraphAPI = NO;
     // when the app becomes active by any mean,  kick off the initialization.
     __block __weak id initializeObserver;
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    initializeObserver = [center addObserverForName:UIApplicationDidBecomeActiveNotification
+    initializeObserver = [center addObserverForName:UIApplicationDidFinishLaunchingNotification
                                              object:nil
                                               queue:nil
                                          usingBlock:^(NSNotification *note) {
-                                             [self FBSDKInitialize];
+                                             [self FBSDKInitializeWithLaunchData:note.userInfo];
                                              // de-register the observer after initialization is done.
                                              [center removeObserver:initializeObserver];
                                          }];
@@ -91,10 +93,17 @@ static BOOL g_enableLegacyGraphAPI = NO;
 
 // Initialize SDK settings.
 // Don't call this function in any place else. It has been called when the class is loaded.
-+ (void)FBSDKInitialize {
++ (void)FBSDKInitializeWithLaunchData:(NSDictionary *)launchData {
     static dispatch_once_t sdkConfigDone = 0;
     dispatch_once(&sdkConfigDone, ^{
+        // Register Listener for Bolts measurement events
         [FBBoltsMeasurementEventListener defaultListener];
+
+        // Set App Event SourceApplication when launch. But this is not going to update the value if app has already launched.
+        [FBAppEvents setSourceApplication:launchData[UIApplicationLaunchOptionsSourceApplicationKey]
+                                  openURL:launchData[UIApplicationLaunchOptionsURLKey]];
+        // Register on UIApplicationDidEnterBackgroundNotification events to reset source application data.
+        [FBAppEvents registerAutoResetSourceApplication];
     });
 }
 
@@ -361,15 +370,9 @@ static BOOL g_enableLegacyGraphAPI = NO;
         NSString *responseKey = [NSString stringWithFormat:FBLastInstallResponse, appID, nil];
 
         NSDate *lastPing = [defaults objectForKey:pingKey];
-        NSString *attributionID = [FBUtility attributionID];
-        NSString *advertiserID = [FBUtility advertiserID];
 
         if (lastPing) {
             // Short circuit
-            return;
-        }
-
-        if (!(attributionID || advertiserID)) {
             return;
         }
 
@@ -398,20 +401,15 @@ static BOOL g_enableLegacyGraphAPI = NO;
                                    @try {
                                        if (settings.supportsAttribution) {
                                            // set up the HTTP POST to publish the attribution ID.
-                                           NSString *publishPath = [NSString stringWithFormat:FBPublishActivityPath, appID, nil];
-                                           NSMutableDictionary<FBGraphObject> *installActivity = [FBGraphObject graphObject];
-                                           [installActivity setObject:FBMobileInstallEvent forKey:@"event"];
-
-                                           if (attributionID) {
-                                               [installActivity setObject:attributionID forKey:@"attribution"];
-                                           }
-                                           if (advertiserID) {
-                                               [installActivity setObject:advertiserID forKey:@"advertiser_id"];
-                                           }
-                                           [FBUtility updateParametersWithEventUsageLimitsAndBundleInfo:installActivity accessAdvertisingTrackingStatus:YES];
+                                           NSMutableDictionary<FBGraphObject> *installActivity =
+                                               [FBUtility activityParametersDictionaryForEvent:FBMobileInstallEvent
+                                                                          includeAttributionID:YES
+                                                                            implicitEventsOnly:NO
+                                                                     shouldAccessAdvertisingID:settings.shouldAccessAdvertisingID];
 
                                            [installActivity setObject:[NSNumber numberWithBool:isAutoPublish].stringValue forKey:@"auto_publish"];
 
+                                           NSString *publishPath = [NSString stringWithFormat:FBPublishActivityPath, appID, nil];
                                            FBRequest *publishRequest = [[[FBRequest alloc] initForPostWithSession:nil graphPath:publishPath graphObject:installActivity] autorelease];
                                            [publishRequest startWithCompletionHandler:publishCompletionBlock];
                                        } else {

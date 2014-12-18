@@ -14,6 +14,7 @@
 #import "PartnerInvitedEntity.h"
 #import "Logger.h"
 #import "CloseButtonView.h"
+#import "ChildProperties.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -157,6 +158,9 @@
     
     // Email Verify
     [Account sendVerifyEmail:user[@"emailCommon"]];
+    
+    // 子供のデータがCoreDataにあれば全て消す
+    [ChildProperties removeChildPropertiesFromCoreData];
     
     _isSignUpCompleted = YES;
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
