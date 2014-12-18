@@ -17,27 +17,27 @@
 #import "AWSMobileAnalyticsFile.h"
 #import "../AWSMobileAnalyticsSerializerFactory.h"
 
-typedef NSData *(^ AIDataProcessor)(NSData *, NSError **);
+typedef NSData *(^ AWSDataProcessor)(NSData *, NSError **);
 
 @protocol AWSMobileAnalyticsFileManager <NSObject>
 -(AWSMobileAnalyticsFile*) createDirectory:(NSString*) theDirectoryPath
-                     error:(NSError **)theError;
+                                     error:(NSError **)theError;
 
 -(AWSMobileAnalyticsFile*) getDirectory:(NSString*) theDirectoryPath
-                  error:(NSError **)theError;
+                                  error:(NSError **)theError;
 
 -(NSArray*) listFilesInDirectoryWithPath:(NSString*) theDirectoryPath
-                                 error:(NSError **)theError;
+                                   error:(NSError **)theError;
 
 -(NSArray*) listFilesInDirectory:(AWSMobileAnalyticsFile*) theFile
-                         error:(NSError **)theError;
+                           error:(NSError **)theError;
 
 -(AWSMobileAnalyticsFile*) createFileWithPath:(NSString*) theFilepath
-                        error:(NSError **)theError;
+                                        error:(NSError **)theError;
 
 
 -(AWSMobileAnalyticsFile*) createFile:(AWSMobileAnalyticsFile*) theFile
-                error:(NSError **)theError;
+                                error:(NSError **)theError;
 
 -(BOOL) deleteFileWithPath:(NSString*) theFilepath
                      error:(NSError **)theError;
@@ -65,9 +65,14 @@ typedef NSData *(^ AIDataProcessor)(NSData *, NSError **);
 
 -(NSDictionary *) readDataFromFile:(AWSMobileAnalyticsFile *) theFile
                         withFormat:(FormatType) theFormatType
-                 withDataProcessor:(AIDataProcessor) theDataProcessor
+                 withDataProcessor:(AWSDataProcessor) theDataProcessor
                          withError:(NSError **) theError;
 
+-(NSDictionary *) readDataFromFile:(AWSMobileAnalyticsFile *) theFile
+                        withReader:(id) theReader
+                 withDataProcessor:(AWSDataProcessor) theDataProcessor
+                        withFormat:(FormatType) theFormatType
+                         withError:(NSError **) theError;
 
 -(BOOL) writeData:(id) theData
            toFile:(AWSMobileAnalyticsFile *) theFile
@@ -77,7 +82,7 @@ typedef NSData *(^ AIDataProcessor)(NSData *, NSError **);
 -(BOOL) writeData:(id) theData
            toFile:(AWSMobileAnalyticsFile *) theFile
        withFormat:(FormatType) theFormatType
-withDataProcessor:(AIDataProcessor) theDataProcessor
+withDataProcessor:(AWSDataProcessor) theDataProcessor
         withError:(NSError **) theError;
 
 @end

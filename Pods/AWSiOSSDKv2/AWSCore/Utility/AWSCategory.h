@@ -21,12 +21,6 @@ FOUNDATION_EXPORT NSString *const AWSDateISO8601DateFormat2;
 FOUNDATION_EXPORT NSString *const AWSDateISO8601DateFormat3;
 FOUNDATION_EXPORT NSString *const AWSDateShortDateFormat1;
 
-@interface NSData (AWS)
-
-- (NSString *)aws_base64EncodedString;
-
-@end
-
 @interface NSDate (AWS)
 
 + (NSDate *)aws_dateFromString:(NSString *)string;
@@ -55,6 +49,7 @@ FOUNDATION_EXPORT NSString *const AWSDateShortDateFormat1;
 @interface NSDictionary (AWS)
 
 - (NSDictionary *)aws_removeNullValues;
+- (id)aws_objectForCaseInsensitiveKey:(id)aKey;
 
 @end
 
@@ -74,6 +69,7 @@ FOUNDATION_EXPORT NSString *const AWSDateShortDateFormat1;
 - (BOOL)aws_isBase64Data;
 - (NSString *)aws_stringWithURLEncoding;
 - (NSString *)aws_stringWithURLEncodingPath;
+- (NSString *)aws_md5String;
 
 @end
 
@@ -82,10 +78,3 @@ FOUNDATION_EXPORT NSString *const AWSDateShortDateFormat1;
 - (NSURL *)aws_URLByAppendingQuery:(NSDictionary *)query;
 
 @end
-
-@interface NSDictionary (caseInsensitive)
-
--(id) aws_objectForCaseInsensitiveKey:(id)aKey;
-
-@end
-

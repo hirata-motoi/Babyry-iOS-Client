@@ -21,5 +21,6 @@ typedef void (^UpdateChildPropertiesAsyncBlock)(NSMutableArray *beforeSyncChildP
 + (NSMutableArray *)getChildProperties;
 + (void)updateChildPropertyWithObjectId:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;
 + (BOOL)deleteByObjectId:(NSString *)objectId;
++ (void)removeChildPropertiesFromCoreData;
 
 @end
