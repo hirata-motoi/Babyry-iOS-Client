@@ -155,7 +155,12 @@ ImageCache以下の構造
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if([fileManager fileExistsAtPath:imageCacheFilePath]) {
         NSMutableDictionary *fileAttribute = [NSMutableDictionary dictionaryWithDictionary:[[NSFileManager defaultManager] attributesOfItemAtPath:imageCacheFilePath error:nil]];
-        return [fileAttribute objectForKey:@"NSFileModificationDate"];
+		// ダウンロード失敗とかで、imageのサイズが0の時がある。この場合は、タイムスタンプを古くして再ダウンロードさせる
+		if ([[fileAttribute objectForKey:NSFileSize] intValue] == 0) {
+			return [NSDate dateWithTimeIntervalSinceNow:-30*365*24*60*60];
+		} else {
+			return [fileAttribute objectForKey:@"NSFileModificationDate"];
+		}
     } else {
         return [NSDate dateWithTimeIntervalSinceNow:-30*365*24*60*60];
     }

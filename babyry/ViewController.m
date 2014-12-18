@@ -649,7 +649,7 @@
 
 - (void)multiUploadImageInBackground
 {
-    [ImageUploadInBackground multiUploadToParseInBackground];
+    [ImageUploadInBackground multiUploadImagesInBackground];
 }
 
 - (void)getAnnounceInfo

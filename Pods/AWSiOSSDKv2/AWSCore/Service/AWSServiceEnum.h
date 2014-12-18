@@ -20,12 +20,13 @@ typedef NS_ENUM(NSInteger, AWSRegionType) {
     AWSRegionUnknown,
     AWSRegionUSEast1,
     AWSRegionUSWest1,
+    AWSRegionUSWest2,
     AWSRegionEUWest1,
+    AWSRegionEUCentral1,
     AWSRegionAPSoutheast1,
     AWSRegionAPNortheast1,
-    AWSRegionUSWest2,
-    AWSRegionSAEast1,
     AWSRegionAPSoutheast2,
+    AWSRegionSAEast1,
     AWSRegionCNNorth1,
 };
 
@@ -46,7 +47,7 @@ typedef NS_ENUM(NSInteger, AWSServiceType) {
     AWSServiceSNS,
     AWSServiceSQS,
     AWSServiceSTS,
-    AWSServiceGameLabEventRecorder,
+    AWSServiceMobileAnalytics,
 };
 
 #endif

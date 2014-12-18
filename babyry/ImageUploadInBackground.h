@@ -18,7 +18,8 @@
 @interface ImageUploadInBackground : NSObject
 
 + (void)setMultiUploadImageDataSet:(NSMutableDictionary *)property multiUploadImageDataArray:(NSMutableArray *)imageDataArray multiUploadImageDataTypeArray:(NSMutableArray *)imageDataTypeArray date:(NSString *)date indexPath:(NSIndexPath *)indexPath;
-+ (int)numOfWillUploadImages;
-+ (void)multiUploadToParseInBackground;
++ (void)multiUploadImagesInBackground;
++ (int)getUploadingQueueCount;
++ (int)getIsUploading;
 
 @end

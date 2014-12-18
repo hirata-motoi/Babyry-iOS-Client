@@ -82,8 +82,8 @@
 @property NSTimer *instructionTimer;
 
 
-//@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
-
 @property NSNotificationCenter *notificationCenter;
+
+@property NSMutableDictionary *bestImageIds;
 
 @end

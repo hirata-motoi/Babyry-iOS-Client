@@ -105,7 +105,7 @@ NSString *const FBTokenInformationUUIDKey = @"com.facebook.sdk:TokenInformationU
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *uuid = [defaults objectForKey:[self userDefaultsKeyForKeychainValidation]];
     if (!uuid) {
-        uuid = [[FBUtility newUUIDString] autorelease];
+        uuid = [FBUtility newUUIDString];
         [defaults setObject:uuid forKey:[self userDefaultsKeyForKeychainValidation]];
         [defaults synchronize];
     }
