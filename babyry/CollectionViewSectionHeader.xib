@@ -27,11 +27,16 @@
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <view alpha="0.5" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cqz-sG-bA4">
+                    <rect key="frame" x="9" y="43" width="302" height="1"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="borderBottom" destination="cqz-sG-bA4" id="jpC-4a-CKB"/>
                 <outlet property="monthLabel" destination="Wqs-zb-TEL" id="T8m-44-bfV"/>
                 <outlet property="nameLabel" destination="cT3-HN-Fcp" id="dao-7g-z5k"/>
                 <outlet property="yearLabel" destination="YDh-6D-cQN" id="2SR-MR-C0M"/>

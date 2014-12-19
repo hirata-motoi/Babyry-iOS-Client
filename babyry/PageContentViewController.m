@@ -442,6 +442,7 @@
     header.delegate = self;
     header.sectionIndex = indexPath.section;
     [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue] withName:childProperty[@"name"]];
+    [header adjustStyle:[self isExpandedSection:indexPath.section]];
    
     [headerView addSubview:header];
     
@@ -1402,22 +1403,16 @@
     [self rotateViewYAxis:indexPathList];
 }
 
-- (void)toggleCells:(NSInteger)sectionIndex
+- (BOOL)toggleCells:(NSInteger)sectionIndex
 {
+    BOOL doExpand = ![self isExpandedSection:sectionIndex];
+    
     // 処理中はsection headerのタップをblockする
     if (isTogglingCells) {
-        return;
+        return !doExpand; // blockした場合はdelegate元のisExpandを更新しない
     }
     isTogglingCells = YES;
  
-    BOOL doExpand = NO;
-    if (closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ]) {
-        NSInteger closedCellCount = [closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] integerValue];
-        if (closedCellCount > 0) {
-            doExpand = YES;
-        }
-    }
-    
     // sectionIndexに含まれるcellのindexPathを作成
     NSMutableArray *indexPaths = [[NSMutableArray alloc]init];
     NSInteger i = -1;
@@ -1447,6 +1442,8 @@
         }
     }
     isTogglingCells = NO;
+    
+    return doExpand;
 }
 
 // 7ヶ月以上前のsectionはデフォルトで閉じる
@@ -1459,6 +1456,18 @@
         }
     }
     
+}
+
+- (BOOL)isExpandedSection:(NSInteger)sectionIndex
+{
+    BOOL isExpand = YES;
+    if (closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ]) {
+        NSInteger closedCellCount = [closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] integerValue];
+        if (closedCellCount > 0) {
+            isExpand = NO;
+        }
+    }
+    return isExpand;
 }
 
 /*

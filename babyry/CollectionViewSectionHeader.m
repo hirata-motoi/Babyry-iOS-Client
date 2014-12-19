@@ -57,7 +57,14 @@
 
 - (void)toggleCells
 {
-    [_delegate toggleCells:_sectionIndex];
+    BOOL isExpanded = [_delegate toggleCells:_sectionIndex];
+    [self adjustStyle:isExpanded];
+}
+
+- (void)adjustStyle:(BOOL)isExpanded
+{
+    // 閉じている時はborderを表示
+    _borderBottom.hidden = isExpanded;
 }
 
 /*

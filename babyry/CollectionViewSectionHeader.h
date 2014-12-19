@@ -10,7 +10,7 @@
 
 @class CollectionViewSectionHeader;
 @protocol CollectionViewSectionHeaderDelegate <NSObject>
-- (void)toggleCells:(NSInteger)sectionIndex;
+- (BOOL)toggleCells:(NSInteger)sectionIndex;
 @end
 
 
@@ -19,8 +19,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *monthLabel;
 @property (weak, nonatomic) IBOutlet UILabel *yearLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UIView *borderBottom;
 @property NSInteger sectionIndex;
 
 + (instancetype)view;
 - (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month withName:(NSString *)name;
+- (void)adjustStyle:(BOOL)isExpanded;
 @end
