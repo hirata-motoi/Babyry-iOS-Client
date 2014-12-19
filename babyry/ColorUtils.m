@@ -33,7 +33,7 @@
 
 +(UIColor *) getSectionHeaderColor
 {
-    return [UIColor_Hex colorWithHexString:@"8feed0" alpha:1.0];
+    return [UIColor_Hex colorWithHexString:@"5C4300" alpha:0.9];
 }
 
 +(UIColor *) getCellBackgroundDefaultColor

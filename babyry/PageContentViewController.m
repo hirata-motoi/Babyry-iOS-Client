@@ -426,7 +426,7 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    return CGSizeMake(self.view.frame.size.width, 30);
+    return CGSizeMake(self.view.frame.size.width, [[Config config][@"CollectionViewSectionHeaderHeight"] intValue]);
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
@@ -779,7 +779,7 @@
     for (NSMutableDictionary *section in _childImages) {
         NSInteger cellCount = [[section objectForKey:@"images"] count];
         double verticalCellCount = ceil(cellCount / 3);
-        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + 30 + 60; // 30 : section header  60: わからんが微調整用に必要
+        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + [[Config config][@"CollectionViewSectionHeaderHeight"] intValue] + 60; // 60: わからんが微調整用に必要
         NSNumber *n = [NSNumber numberWithDouble:requiredHeight];
         NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
         [_scrollPositionData addObject:sectionHeightInfo];
