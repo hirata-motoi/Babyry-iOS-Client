@@ -289,7 +289,6 @@
     //   次の月
     //     データがなければさらに次の月を再帰的にとりにいく
     //     現在の月はpreviousviewControllers.monthで取得可能
-    
     if (!_imagesCountDic || !_imagesCountDic[@"imagesCountNumber"]) {
         return;
     }
@@ -329,17 +328,13 @@
     NSDate *date = [cal dateFromComponents:comps];
     
     // 画像が取得できるまで処理する
-    // oldestChildImageDateに達したら終了(誕生日がなければ2010年1月まで)
+    // 2010/01/01に達したら終了
     // 画像が取得できたら終了
-    
-    NSDateComponents *oldestChildImageDateComps;
-    if (childProperty[@"oldestChildImageDate"]) {
-        oldestChildImageDateComps = [DateUtils compsFromNumber:childProperty[@"oldestChildImageDate"]];
-    } else {
-        oldestChildImageDateComps = [[NSDateComponents alloc] init];
-        oldestChildImageDateComps.year = 2010;
-        oldestChildImageDateComps.month = 1;
-    }
+   
+    // TODO cloud codeで一気に取得
+    NSDateComponents *oldestChildImageDateComps = [[NSDateComponents alloc] init];
+    oldestChildImageDateComps.year = 2010;
+    oldestChildImageDateComps.month = 1;
     oldestChildImageDateComps.day = 1;
     NSDate *oldestChildImageMonth = [cal dateFromComponents:oldestChildImageDateComps];
     

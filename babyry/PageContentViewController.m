@@ -98,6 +98,7 @@
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
     [self initializeChildImages];
+    [self initializeClosedCellCountBySection];
     [self createCollectionView];
     //[self setupScrollBarView];
     
@@ -268,12 +269,8 @@
     NSInteger closedCellCount = 0;
     if (closedCellCountBySection[ [NSNumber numberWithInteger:section] ]) {
         closedCellCount = [closedCellCountBySection[ [NSNumber numberWithInteger:section] ] integerValue];
-    }                               
-    
-    if (section == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:section]) {
-        return [_childImages[section][@"images"] count] + 1 - closedCellCount;
     }
-  
+    
     return [_childImages[section][@"images"] count] - closedCellCount;
 }
 
@@ -318,18 +315,6 @@
     cell.currentSection = indexPath.section;
     cell.currentRow = indexPath.row;
    
-    // カレンダー追加用cell
-    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
-        [self setBackgroundViewOfCell:cell withImageCachePath:@"" withIndexPath:indexPath];
-    
-        if (indexPath.section == 0 && indexPath.row == 1) {
-            CGRect rect = cell.frame;
-            rect.origin.x = 0;
-            cell.frame = rect;
-        }
-        return cell;
-    }
-
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     
     // Cacheからはりつけ
@@ -371,12 +356,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([[self logic:@"forbiddenSelectCell"] forbiddenSelectCell:indexPath]) {
-        return;
-    }
-    
-    // カレンダー追加cell withinTwoDayがcallされる前にチェックしておく必要がある
-    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
-        [[self logic:@"addMonthToCalendar"] addMonthToCalendar:indexPath];
         return;
     }
     
@@ -639,6 +618,7 @@
     _dragging = NO;
 }
 
+
 - (void)adjustChildImages
 {
     PFObject *latestChildImage;
@@ -655,34 +635,22 @@
         return;
     }
     
-    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
     NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
     
-    NSNumber *calendarStartingDateNumber = [NSNumber numberWithInteger:
-                                            [[NSString stringWithFormat:@"%ld%02ld%02ld",
-                                              (long)calendarStartingDateComps.year,
-                                              (long)calendarStartingDateComps.month,
-                                              (long)calendarStartingDateComps.day
-                                              ] integerValue]];
     NSNumber *todayNumber = [NSNumber numberWithInteger:
                              [[NSString stringWithFormat:@"%ld%02ld%02ld",
                                (long)todayComps.year,
                                (long)todayComps.month,
                                (long)todayComps.day
                                ] integerValue]];
-                                                       
-    if (
-        [todayNumber compare:latestChildImage[@"date"]] == NSOrderedAscending ||
-        [calendarStartingDateNumber compare:oldestChildImage[@"date"]] == NSOrderedDescending
-    ) {
+    if ([todayNumber compare:latestChildImage[@"date"]] == NSOrderedAscending) {
         [_childImages removeAllObjects];
         [self initializeChildImages];
         return;
     }
-    
     if ( ! (
             [latestChildImage[@"date"] isEqualToNumber:todayNumber] &&
-            [oldestChildImage[@"date"] isEqualToNumber:calendarStartingDateNumber]
+            [oldestChildImage[@"date"] isEqualToNumber:[Config config][@"CalendarStartDate"]]
             
             )
     ) {
@@ -693,8 +661,8 @@
 
 - (void)initializeChildImages
 {
-    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
-    NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
+    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[Config config][@"CalendarStartDate"]];
+    NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];    
     
     if (!_childImages) {
         _childImages = [[NSMutableArray alloc]init];
@@ -707,36 +675,6 @@
     
     // scroll位置と表示月の関係
     [self setupScrollPositionData];
-}
-
-- (NSNumber *)getCalendarStartingDate
-{
-    childProperty = [ChildProperties getChildProperty:_childObjectId];
-    NSNumber *calendarStartDate = childProperty[@"calendarStartDate"];
-    NSNumber *oldestChildImageDate = childProperty[@"oldestChildImageDate"];
-    NSDate *birthday = childProperty[@"birthday"] ? childProperty[@"birthday"] : childProperty[@"createdAt"];
-    
-    if (calendarStartDate) {
-        // calendarStartDateがある場合はcalendarStartDateをカレンダー開始日とする
-        
-        // ただしoldestChildImageDate < calendarStartDateの場合はoldestChildImageDateを起点にする
-        if (oldestChildImageDate && [oldestChildImageDate compare:calendarStartDate] == NSOrderedAscending) {
-            return oldestChildImageDate;
-        } else {
-            return calendarStartDate;
-        }
-    } else {
-        // calendarStartDateがない場合は誕生日をカレンダー開始日とする
-        NSDateComponents *birthdayComps = [DateUtils dateCompsFromDate:birthday];
-        NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)birthdayComps.year, (long)birthdayComps.month, (long)birthdayComps.day] integerValue]];
-                                                                                                                                                                  
-        // ただしoldestChildImageDate < birthdayの場合はoldestChildImageDateを起点にする
-        if (oldestChildImageDate && [oldestChildImageDate compare:birthdayNumber] == NSOrderedAscending) {
-            return oldestChildImageDate;
-        } else {
-            return birthdayNumber;
-        }
-    }
 }
 
 - (void)addChildImages:(NSMutableArray *)childImages withStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
@@ -898,17 +836,7 @@
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     if (!imageCacheData) {
-        if ([section[@"images"] count] <= indexPath.row) {
-            // カレンダー追加用のcell
-            PFObject *oldestChildImage = section[@"images"][indexPath.row - 1];
-            NSNumber *oldestChildImageDate = oldestChildImage[@"date"];
-            NSDateComponents *comps = [[self logic:@"compsToAdd"] compsToAdd:oldestChildImageDate];
-            AddMonthToCalendarView *backgroundView = [AddMonthToCalendarView view];
-            CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-            backgroundView.frame = rect;
-            backgroundView.messageLabel.text = [NSString stringWithFormat:@"カレンダー追加\n(%ld月分)", comps.month];
-            [cell addSubview:backgroundView];
-        } else if ([role isEqualToString:@"uploader"]) {
+        if ([role isEqualToString:@"uploader"]) {
             // アップの出し分け
             // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
             // それ以外 : アップアイコン
@@ -1498,11 +1426,6 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
         [indexPaths addObject:indexPath];
     }
-    if (sectionIndex == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:sectionIndex]) {
-        i++;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
-        [indexPaths addObject:indexPath];
-    }
     
     if (doExpand) {
         [_pageContentCollectionView performBatchUpdates:^{
@@ -1524,6 +1447,18 @@
         }
     }
     isTogglingCells = NO;
+}
+
+// 7ヶ月以上前のsectionはデフォルトで閉じる
+- (void)initializeClosedCellCountBySection
+{
+    for (NSInteger i = 0; i < _childImages.count; i++) {
+        if (i > 6) { // TODO confに切り出し
+            closedCellCountBySection[ [NSNumber numberWithInteger:i] ]
+                = [NSNumber numberWithInteger: [_childImages[i][@"images"] count] ];
+        }
+    }
+    
 }
 
 /*
