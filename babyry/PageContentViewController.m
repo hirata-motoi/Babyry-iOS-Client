@@ -111,6 +111,11 @@
     
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.hidden = YES;
+	
+	_bestImageIds = [[NSMutableDictionary alloc] init];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
 }
 
 - (void)applicationDidBecomeActive
@@ -462,6 +467,11 @@
     multiUploadViewController.totalImageNum = totalImageNum;
     multiUploadViewController.indexPath = indexPath;
     multiUploadViewController.pCVC = self;
+	if (_bestImageIds[date]) {
+		multiUploadViewController.bestImageId = _bestImageIds[date];
+	} else {
+		multiUploadViewController.bestImageId = @"";
+	}
     
     [self.navigationController pushViewController:multiUploadViewController animated:YES];
 }
@@ -1470,15 +1480,8 @@
     return isExpand;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void) downloadComplete
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+	[logic executeReload];
 }
-*/
 
-@end

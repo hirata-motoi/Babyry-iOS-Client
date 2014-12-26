@@ -24,6 +24,10 @@ NSMutableArray *tmpImageArray;
 NSString *targetDate;
 NSIndexPath *targetIndexPath;
 AWSServiceConfiguration *configuration;
+int completeUploadCount;
+int uploadingQueueCount = 0;
+BOOL isUploading = NO;
+int uploadErrorCount;
 
 @implementation ImageUploadInBackground
 
@@ -34,154 +38,131 @@ AWSServiceConfiguration *configuration;
     multiUploadImageDataTypeArray = [[NSMutableArray alloc] initWithArray:imageDataTypeArray];
     targetDate = date;
     targetIndexPath = indexPath;
-}
-
-+ (int)numOfWillUploadImages
-{
-    return [multiUploadImageDataArray count];
-}
-
-+ (void)multiUploadToParseInBackground
-{
+    completeUploadCount = 0;
     configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
-    PFQuery *tmpImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
-    [tmpImageQuery whereKey:@"imageOf" equalTo:childProperty[@"objectId"]];
-    [tmpImageQuery whereKey:@"isTmpData" equalTo:@"TRUE"];
-    [tmpImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (objects) {
-            tmpImageArray = [[NSMutableArray alloc] initWithArray:objects];
-            [self recursiveUploadImageToS3];
-        }
-        if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get TmpImage : %@", error]];
-        }
-    }];
+    
+    // アップロード中のキュー数を保持
+    // MultiUpload画面のクルクル表示に使う
+    uploadingQueueCount = [multiUploadImageDataArray count];
+    uploadErrorCount = 0;
 }
 
-+ (void)recursiveUploadImageToS3
++ (int)getUploadingQueueCount
 {
-    if ([tmpImageArray count] > 0) {
-        
-        if ([multiUploadImageDataArray count] == 0) {
-            [self removeTmpImages:tmpImageArray];
-            [self afterUpload];
-            return;
-        }
-        
-        PFObject *object = tmpImageArray[0];
-        AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-        putRequest.bucket = [Config config][@"AWSBucketName"];
-        putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
-        putRequest.body = [multiUploadImageDataArray objectAtIndex:0];
-        putRequest.contentLength = [NSNumber numberWithLong:[[multiUploadImageDataArray objectAtIndex:0] length]];
-        putRequest.contentType = [multiUploadImageDataTypeArray objectAtIndex:0];
-        putRequest.cacheControl = @"no-cache";
-        AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-        [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
-            if (!task.error) {
-                object[@"isTmpData"] = @"FALSE";
-                [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    if (error) {
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in update isTmpData record : %@", error]];
-                    }
-                    [multiUploadImageDataArray removeObjectAtIndex:0];
-                    [multiUploadImageDataTypeArray removeObjectAtIndex:0];
-                    [tmpImageArray removeObjectAtIndex:0];
-                    [self recursiveUploadImageToS3];
-                }];
-            } else {
-                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in putRequest to S3 : %@", task.error]];
-                // 失敗したらレコードごと消す(でいいのかな？リトライ？)
-                [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    if (error) {
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete record for failed data : %@", error]];
-                    }
-                    [multiUploadImageDataArray removeObjectAtIndex:0];
-                    [multiUploadImageDataTypeArray removeObjectAtIndex:0];
-                    [tmpImageArray removeObjectAtIndex:0];
-                    [self recursiveUploadImageToS3];
-                }];
-            }
-            return nil;
-        }];
-    } else {
-        //NSLog(@"tmpDataは終わり");
-        if ([multiUploadImageDataArray count] > 0) {
-            //NSLog(@"TmpDataで取得した数よりもmultiUploadImageDataArrayの数の方が多い");
-            // => ParseにTmpDataの保存を失敗しているので最初から作る
+    return uploadingQueueCount;
+}
+
++ (int)getIsUploading
+{
+    return isUploading;
+}
+
++ (void)multiUploadImagesInBackground
+{
+    // tmpDataの運用を厳密にする (クルクルが消えないとかそうゆうのを無くす)
+    // 一つの画像をアップするのに時間がかかるけど、安全な方を選ぶ。時間がかかると言っても電波状況が通常であれば数秒
+    // 1. ParseにtmpDataを作成する
+    // 2. S3に画像を上げる
+    // 3. ParseのtmpDataをFalseにセットする
+    // 1~3が全て完了した画像のみ表示させる
+    
+    isUploading = YES;
+    
+    int concurrency = 3;
+    dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    dispatch_group_t g = dispatch_group_create();
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(concurrency);
+    
+    for (int i = 0; i < [multiUploadImageDataArray count]; i++) {
+        dispatch_group_async(g,q,^{
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            NSData *imageData = [multiUploadImageDataArray objectAtIndex:i];
+            NSString *imageType = [multiUploadImageDataTypeArray objectAtIndex:i];
+            
+            // 1. ParseにtmpDataを作成する(tmpData = TRUE)
             PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
             childImage[@"date"] = [NSNumber numberWithInteger:[targetDate integerValue]];
             childImage[@"imageOf"] = childProperty[@"objectId"];
             childImage[@"bestFlag"] = @"unchoosed";
-            [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                if(succeeded) {
-                    // S3に上げる
-                    AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                    putRequest.bucket = [Config config][@"AWSBucketName"];
-                    putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
-                    putRequest.body = [multiUploadImageDataArray objectAtIndex:0];
-                    putRequest.contentLength = [NSNumber numberWithLong:[[multiUploadImageDataArray objectAtIndex:0] length]];
-                    putRequest.contentType = [multiUploadImageDataTypeArray objectAtIndex:0];
-                    putRequest.cacheControl = @"no-cache";
-                    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-                    [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
-                        if (!task.error) {
-                            // エラーがなければisTmpDataを更新
-                            [multiUploadImageDataArray removeObjectAtIndex:0];
-                            [multiUploadImageDataTypeArray removeObjectAtIndex:0];
-                            [self recursiveUploadImageToS3];
-                        } else {
-                            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image to S3 : %@", task.error]];
-                            // PFObjectを消した上でリトライ(multiUploadImageDataArrayの対象行を消さなければもう一回同じ事してくれる)
-                            // TODO : 本当にNWの調子が悪いとき用に失敗したらゴミを消して終了の方が良いかも
-                            [childImage deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                                if (error) {
-                                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in delete record for failed data of new childimage : %@", error]];
-                                }
-                                [self recursiveUploadImageToS3];
-                            }];
-                        }
-                        return nil;
-                    }];
+            childImage[@"isTmpData"] = @"TRUE";
+            NSError *error = nil;
+            [childImage save:&error];
+            if (!error) {
+                AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+                putRequest.bucket = [Config config][@"AWSBucketName"];
+                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
+                putRequest.body = imageData;
+                putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
+                putRequest.contentType = imageType;
+                putRequest.cacheControl = @"no-cache";
+                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+                BFTask *task = [awsS3 putObject:putRequest];
+                if (task.error) {
+                    // S3にアップが失敗したらEventuallyでchildImageを削除する
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image(%@) to S3 : %@", childImage.objectId, task.error]];
+                    [childImage deleteEventually];
+                    uploadErrorCount++;
+                } else {
+                    // 3. ParseのtmpDataをFalseにセットする
+                    childImage[@"isTmpData"] = @"FALSE";
+                    NSError *error = nil;
+                    [childImage save:&error];
+                    if (!error) {
+                        completeUploadCount++;
+                    } else {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in changing tmpData true to false : %@", error]];
+                        uploadErrorCount++;
+                    }
                 }
-                if (error) {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in making new object for new image : %@", error]];
-                    // PFObjectも出来ていないのでもう一回リトライ
-                    [self recursiveUploadImageToS3];
-                }
-            }];
-        } else {
-            [self afterUpload];
-        }
+            } else {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in making new object for new image : %@", error]];
+                uploadErrorCount++;
+            }
+            // キューカウントを減らす
+            uploadingQueueCount--;
+            dispatch_semaphore_signal(semaphore);
+        });
     }
-}
-
-+ (void)removeTmpImages:(NSArray *)objects
-{
-    for (PFObject *object in objects) {
-        [object deleteInBackground];
-    }
+    dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
+    [self afterUpload];
 }
 
 + (void)afterUpload
 {
+    isUploading = NO;
+    
+    if (uploadErrorCount > 0) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%d枚の画像アップロードに失敗しました", uploadErrorCount]
+                                                        message:@"もう一度アップロードを行ってください。"
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        [alert show];
+    }
+
     // NotificationHistoryに登録
     PFObject *partner = (PFObject *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:childProperty[@"objectId"] withDate:[targetDate integerValue]];
     
-    // push通知
-    // message以外にも、タップしたところが分かる情報を飛ばす
-    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
-    transitionInfoDic[@"event"] = @"imageUpload";
-    transitionInfoDic[@"date"] = targetDate;
-    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", targetIndexPath.section];
-    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", targetIndexPath.row];
-    transitionInfoDic[@"childObjectId"] = childProperty[@"objectId"];
-    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    options[@"data"] = [[NSMutableDictionary alloc]
-                        initWithObjects:@[@"Increment", transitionInfoDic]
-                        forKeys:@[@"badge", @"transitionInfo"]];
-    [PushNotification sendInBackground:@"imageUpload" withOptions:options];
+    uploadingQueueCount = 0;
+    
+    if (completeUploadCount > 0) {
+        // push通知
+        // message以外にも、タップしたところが分かる情報を飛ばす
+        NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+        transitionInfoDic[@"event"] = @"imageUpload";
+        transitionInfoDic[@"date"] = targetDate;
+        transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%ld", (long)targetIndexPath.section];
+        transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%ld", (long)targetIndexPath.row];
+        transitionInfoDic[@"childObjectId"] = childProperty[@"objectId"];
+        NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+        options[@"data"] = [[NSMutableDictionary alloc]
+                            initWithObjects:@[@"Increment", transitionInfoDic]
+                            forKeys:@[@"badge", @"transitionInfo"]];
+        [PushNotification sendInBackground:@"imageUpload" withOptions:options];
+        completeUploadCount = 0;
+    }
     
     if ([Tutorial underTutorial]) {
         // best shotを選んであげる
@@ -189,5 +170,5 @@ AWSServiceConfiguration *configuration;
         [logic updateBestShotWithChild:childProperty[@"objectId"] withDate:targetDate];
     }
 }
- 
+
 @end

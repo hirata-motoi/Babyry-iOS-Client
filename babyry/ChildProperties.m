@@ -209,4 +209,13 @@
     return YES;
 }
 
++ (void)removeChildPropertiesFromCoreData
+{
+    NSArray *childProperties = [ChildPropertyEntity MR_findAll];
+    for (ChildPropertyEntity *childProperty in childProperties) {
+        [childProperty MR_deleteEntity];
+    }
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
 @end

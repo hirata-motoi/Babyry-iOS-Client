@@ -142,7 +142,7 @@ http://babyry.parseapp.com/email_verify?token=%token</string>
 	<key>InquiryEmail</key>
 	<string>info@meaning.co.jp</string>
 	<key>AppVersion</key>
-	<string>1.0.7</string>
+	<string>1.0.8</string>
 	<key>AWSBucketName</key>
 	<string>babyry-images</string>
 	<key>CalendarStartDate</key>

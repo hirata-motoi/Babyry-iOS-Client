@@ -71,8 +71,12 @@
                     }
                     if (!data[@"sound"]) {
                         // デフォルトの着信音
-                        data[@"sound"] = @"";
+                        data[@"sound"] = @"default";
                     }
+					if ([event isEqualToString:@"imageUpload"]) {
+						// push通知後のバックグラウンド処理用
+						data[@"content-available"] = [NSNumber numberWithInt:1];
+					}
                     [push setData:[options objectForKey:@"data"]];
                     
                     // 送信
@@ -124,7 +128,7 @@
             }
             if (!data[@"sound"]) {
                 // デフォルトの着信音
-                data[@"sound"] = @"";
+                data[@"sound"] = @"default";
             }
             [push setData:[options objectForKey:@"data"]];
             // 送信

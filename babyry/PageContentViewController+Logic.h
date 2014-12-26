@@ -24,6 +24,7 @@
 - (BOOL)isBestImageFixed:(NSIndexPath *)indexPath;
 - (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath;
 - (void)setupImagesCount;
+- (void)executeReload;
 
 // 循環参照(メモリリーク)が起きるので、弱参照にしないと駄目
 @property (weak) PageContentViewController *pageContentViewController;

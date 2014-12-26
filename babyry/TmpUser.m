@@ -65,24 +65,26 @@
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
-+ (void) loginTmpUserByCoreData
++ (BOOL) loginTmpUserByCoreData
 {
     NSString *TmpUserDataKeyName = [Config config][@"TmpUserDataKeyName"];
     TmpUserData *tud = [TmpUserData MR_findFirstByAttribute:@"name" withValue:TmpUserDataKeyName];
     if (tud){
         // 既に本会員登録済みなら飛ばす
         if (tud.isRegistered) {
-            return;
+            return NO;
         }
         // username passowrdが無くても飛ばす
         if (!tud.username || !tud.password){
-            return;
+            return NO;
         }
         PFUser *user = [PFUser logInWithUsername:tud.username password:tud.password];
         if (user) {
             [Logger writeOneShot:@"info" message:[NSString stringWithFormat:@"Login as %@", tud.username]];
+			return YES;
         }
     }
+	return NO;
 }
 
 + (BOOL) checkRegistered

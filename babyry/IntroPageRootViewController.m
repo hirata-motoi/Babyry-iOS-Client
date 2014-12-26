@@ -15,6 +15,7 @@
 #import "TmpUser.h"
 #import "InputPinCodeViewController.h"
 #import "PartnerInvitedEntity.h"
+#import "ChildProperties.h"
 
 @interface IntroPageRootViewController ()
 
@@ -219,6 +220,10 @@
     } else {
         [TmpUser registerComplete];
     }
+    
+    // 子供のデータがCoreDataにあれば全て消す
+    [ChildProperties removeChildPropertiesFromCoreData];
+    
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 

@@ -38,7 +38,7 @@
     if (as) {                                                              
         logObject[@"UUID"] = as.value;
     }
-    [logObject saveInBackground];
+    [logObject saveEventually];
 }
 
 + (void) resetTrackingLogName:(NSString *)type
