@@ -43,7 +43,7 @@
 							break;
 					}
 				} else {
-					[Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in makeCacheFromS3 : %@", task.error]];
+					[Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in makeCacheFromS3 (objectId:%@, childObjectId:%@) : %@", queue[@"objectId"], queue[@"childObjectId"], task.error]];
 				}
 			}
 			if (task.result) {
