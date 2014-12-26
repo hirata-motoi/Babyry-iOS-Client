@@ -27,9 +27,8 @@
         return nil;
     }
    
-    NSMutableDictionary *oldestChildImageDate = [self getOldestChildImageDate:childList];
     [self deleteUnavailableChildProperties:childList];
-    [self saveChildProperties:childList withOldestChildImageDate:oldestChildImageDate];
+    [self saveChildProperties:childList];
     return [self getChildProperties];
 }
 
@@ -46,9 +45,8 @@
         return nil;
     }
     
-    NSMutableDictionary *oldestChildImageDate = [[NSMutableDictionary alloc]init]; // 空でOK
     [self deleteUnavailableChildProperties:childList];
-    [self saveChildProperties:childList withOldestChildImageDate:oldestChildImageDate];
+    [self saveChildProperties:childList];
     return [self getChildProperty:childObjectId];
 }
 
@@ -80,28 +78,10 @@
             return;
         }
         
-        NSMutableDictionary *oldestChildImageDate = [[NSMutableDictionary alloc]init];
-        __block int queryCompletedCount = 0;
-        for (PFObject *child in objects) {
-            PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
-            [query whereKey:@"imageOf" equalTo:child.objectId];
-            [query orderByAscending:@"date"];
-            query.limit = 1;
-            [query findObjectsInBackgroundWithBlock:^(NSArray *childImages, NSError *error) {
-                queryCompletedCount++;
-                if (childImages.count > 0) {
-                    oldestChildImageDate[child.objectId] = childImages[0][@"date"];
-                }
-                
-                if (queryCompletedCount == objects.count) {
-                    [self deleteUnavailableChildProperties:objects];
-                    [self saveChildProperties:objects withOldestChildImageDate:oldestChildImageDate];
-                    
-                    if (block) {
-                        block(beforeSyncChildProperties);
-                    }
-                }
-            }];
+        [self deleteUnavailableChildProperties:objects];
+        [self saveChildProperties:objects];
+        if (block) {
+            block(beforeSyncChildProperties);
         }
     }];
 }
@@ -134,34 +114,6 @@
     return childProperties;
 }
 
-+ (NSMutableDictionary *)getOldestChildImageDate:(NSArray *)childList
-{
-    if (childList.count < 1) {
-        return nil;
-    }
-    
-    NSMutableDictionary *oldestChildImageDate = [[NSMutableDictionary alloc]init];
-    
-    dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
-    dispatch_group_t g = dispatch_group_create();
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(childList.count);
-    for (PFObject *child in childList) {
-        dispatch_group_async(g,q,^{
-            PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", [child[@"childImageShardIndex"] integerValue]]];
-            [query whereKey:@"imageOf" equalTo:child.objectId];
-            [query orderByAscending:@"date"];
-            PFObject *oldestChildImage = [query getFirstObject];
-            if (oldestChildImage) {
-                oldestChildImageDate[child.objectId] = oldestChildImage[@"date"];
-            }
-            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-            dispatch_semaphore_signal(semaphore);
-        });
-    }
-    dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
-    return oldestChildImageDate;
-}
-             
 + (ChildPropertyEntity *)findChildProperty:(NSArray *)childProperties withObjectId:(NSString *)childObjectId
 {
     for (ChildPropertyEntity *childProperty in childProperties) {
@@ -172,7 +124,7 @@
     return nil;
 }
 
-+ (void)saveChildProperties:(NSArray *)childList withOldestChildImageDate:(NSMutableDictionary *)oldestChildImageDate
++ (void)saveChildProperties:(NSArray *)childList
 {
     NSArray *childProperties = [ChildPropertyEntity MR_findAll];
     for (PFObject *child in childList) {
@@ -192,8 +144,6 @@
         childProperty.familyId             = child[@"familyId"];
         childProperty.childImageShardIndex = child[@"childImageShardIndex"];
         childProperty.commentShardIndex    = child[@"commentShardIndex"];
-        childProperty.calendarStartDate    = child[@"calendarStartDate"];
-        childProperty.oldestChildImageDate = oldestChildImageDate[child.objectId];
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }
 }

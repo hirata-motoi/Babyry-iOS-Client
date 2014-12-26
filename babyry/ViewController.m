@@ -50,7 +50,6 @@
 @end
 
 @implementation ViewController {
-    NSMutableDictionary *oldestChildImageDate;
     NSString *receivedApply;
     NSString *sentApply;
     CGRect pageViewRect;

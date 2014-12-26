@@ -487,9 +487,6 @@
 //    2. こどものidが一致しない時
 // 以下のケースではPageContentViewControllerをreloadする
 //    1. 名前
-//    2. calendarStartDate
-//    3. 誕生日
-//    4. 最古の写真の日付
 // Viewがいきなり変わるので、push通知で知らせた方が良いかもね(TODO)
 - (NSString *)getReloadTypeAfterChildPropertiesChanged:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
@@ -512,12 +509,7 @@
         
         NSString *objectId = beforeChild[@"objectId"];
         NSMutableDictionary *currentChild = currentChildDic[objectId];
-        if (                                
-            [self nameChanged:currentChild withBeforeChild:beforeChild]                 ||
-            [self calendarStartDateChanged:currentChild withBeforeChild:beforeChild]    ||
-            [self birthdayChanged:currentChild withBeforeChild:beforeChild]             ||
-            [self oldestChildImageDateChanged:currentChild withBeforeChild:beforeChild]
-        ) {
+        if ([self nameChanged:currentChild withBeforeChild:beforeChild]) {
             reloadType = @"reloadPageContentViewDate";
         }                
     }
@@ -536,47 +528,7 @@
 {
     return currentChildDic[ beforeChild[@"objectId"] ] ? NO : YES;
 }
-                     
-- (BOOL)birthdayChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
-{
-    NSDate *currentDate = currentChild[@"birthday"];
-    NSDate *beforeDate  = beforeChild[@"birthday"];
-    
-    if (!currentDate && !beforeDate) {
-        return NO;
-    }
-    
-    if ( !(currentDate && beforeDate) ) {
-        return YES;
-    }
-    
-    if (![currentDate isEqualToDate:beforeDate]) {
-        return YES;
-    }
-    
-    return NO;
-}
-                       
-- (BOOL)oldestChildImageDateChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
-{
-    NSNumber *currentDate = currentChild[@"oldestChildImageDate"];
-    NSNumber *beforeDate  = beforeChild[@"oldestChildImageDate"];
-    
-    if (!currentDate && !beforeDate) {
-        return NO;
-    }
-    
-    if ( !(currentDate && beforeDate) ) {
-        return YES;
-    }
-    
-    if (![currentDate isEqualToNumber:beforeDate]) {
-        return YES;
-    }
-    
-    return NO;
-}
-                                   
+
 - (BOOL)nameChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
 {
     if (![currentChild[@"name"] isEqualToString:beforeChild[@"name"]]) {
@@ -585,163 +537,6 @@
     return NO;
 }
                                                                         
-- (BOOL)calendarStartDateChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
-{
-    NSNumber *currentStartDate = currentChild[@"calendarStartDate"];
-    NSNumber *beforeStartDate  = beforeChild[@"calendarStartDate"];
-    
-    if (!currentStartDate && !beforeStartDate) {
-        return NO;
-    }
-    
-    if ( !(currentStartDate && beforeStartDate) ) {
-        return YES;
-    }
-
-    if (![currentStartDate isEqualToNumber:beforeStartDate]) {
-        return YES;
-    }
-    
-    return NO;
-}
-
-- (BOOL)isEqualDictionary:(NSDictionary *)child1 withCompare:(NSDictionary *)child2
-{
-    // createdByはPFUser objectのポインタが入っている
-    // Parseから取得する度に別のポインタをとるので異なるobjectと判定されるためここでは無視する
-    NSMutableDictionary *dic1 = [[NSMutableDictionary alloc]initWithDictionary:child1];
-    [dic1 removeObjectForKey:@"createdBy"];
-    NSMutableDictionary *dic2 = [[NSMutableDictionary alloc]initWithDictionary:child2];
-    [dic2 removeObjectForKey:@"createdBy"];
-    
-    return [dic1 isEqualToDictionary:dic2];
-}
-
-- (NSDateComponents *)compsToAdd:(NSNumber *)oldestChildImageDate
-{
-    NSDateComponents *comps = [DateUtils compsFromNumber:oldestChildImageDate];
-    if (comps.day == 1) {
-        // 月初であれば前の月
-        NSDateComponents *preMonthComps = [DateUtils addDateComps:comps withUnit:@"month" withValue:-1];
-        return preMonthComps;
-    } else {
-        // 月初でなければその月
-        comps.day = 1;
-        return comps;
-    }
-}
-
-- (void)addMonthToCalendar:(NSIndexPath *)indexPath
-{
-    if (![self canAddCalendar:indexPath.section]) {
-        return;
-    }
-    
-    PFObject *oldestChildImage = self.pageContentViewController.childImages[indexPath.section][@"images"][indexPath.row - 1];
-    NSNumber *date = oldestChildImage[@"date"];
-    NSDateComponents *compsToAdd = [self compsToAdd:date];
-  
-    [self.pageContentViewController showLoadingIcon];
-    
-    // Child.calendarStartDateを保存
-    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
-    [query whereKey:@"objectId" equalTo:self.pageContentViewController.childObjectId];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
-            // TODO ネットワークを確かめてalertを表示
-            [self.pageContentViewController hideLoadingIcon];
-            return;
-        }
-        
-        if (objects.count == 0) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Cannot find Child for saving calendarStartDate Child.objectId:%@", self.pageContentViewController.childObjectId]];
-            [self.pageContentViewController hideLoadingIcon];
-            return;
-        }
-        
-        if (objects.count > 0) {
-            NSString *ymd = [NSString stringWithFormat:@"%ld%02ld%02ld", (long)compsToAdd.year, (long)compsToAdd.month, (long)compsToAdd.day];
-            NSNumber *calendarStartDate = [NSNumber numberWithInteger:[ymd integerValue]];
-            PFObject *child = objects[0];
-            child[@"calendarStartDate"] = calendarStartDate;
-            [child saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (error) {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save Child.calendarStartDate Child.objectId:%@ calendarStartDate:%@", self.pageContentViewController.childObjectId, calendarStartDate]];
-                    // TODO ネットワークを確かめてalertを表示
-                    [self.pageContentViewController hideLoadingIcon];
-                    return;
-                }
-                // CoreDataに保存
-                [ChildProperties updateChildPropertyWithObjectId:self.pageContentViewController.childObjectId withParams:[NSMutableDictionary dictionaryWithObjects:@[calendarStartDate] forKeys:@[@"calendarStartDate"]]];
-                
-                // _childImagesにPFObjectを追加
-                [self addEmptyChildImages:compsToAdd];
-                // PageContentViewControllerをreload
-                [self executeReload];
-                
-                [self.pageContentViewController hideLoadingIcon];
-                
-                [self sendPushNotificationForCalendarAdded];
-            }];
-        }
-    }];
-}
-
-// compsToAddまでのchildImageを追加する
-- (void)addEmptyChildImages:(NSDateComponents *)compsToAdd
-{
-    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
-    NSMutableArray *childImages = self.pageContentViewController.childImages;
-    NSMutableDictionary *oldestSection = childImages[childImages.count - 1];
-    
-    NSInteger oldestSectionYear  = [oldestSection[@"year"] integerValue];
-    NSInteger oldestSectionMonth = [oldestSection[@"month"] integerValue];
-   
-    NSMutableArray *images;
-    NSMutableDictionary *section;
-    if (oldestSectionYear == compsToAdd.year && oldestSectionMonth == compsToAdd.month) {
-        // 最初のカレンダー追加時はその月の月初までを追加する
-        images = oldestSection[@"images"];
-        section = oldestSection;
-        
-    } else {
-        // 一ヶ月分のカレンダーを追加
-        section = [[NSMutableDictionary alloc]init];
-        images = [[NSMutableArray alloc]init];
-        section[@"images"] = images;
-        section[@"totalImageNum"] = [[NSMutableArray alloc]init];
-        section[@"weekdays"]      = [[NSMutableArray alloc]init];
-        section[@"year"]          = [NSString stringWithFormat:@"%ld", (long)compsToAdd.year];
-        section[@"month"]         = [NSString stringWithFormat:@"%02ld", (long)compsToAdd.month];
-        [childImages addObject:section];
-    }
-    
-    PFObject *oldestChildImage = oldestSection[@"images"][ [oldestSection[@"images"] count] - 1 ];
-    NSString *oldestChildImageDate = oldestChildImage[@"date"];
-    NSDateComponents *oldestComps = [DateUtils compsFromNumber:[NSNumber numberWithInteger:[oldestChildImageDate integerValue]]];
-  
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDate *dateToAdd = [DateUtils setSystemTimezone:[cal dateFromComponents:compsToAdd]];
-    NSDate *oldestDateToAdd = [DateUtils setSystemTimezone:[cal dateFromComponents:oldestComps]];
-    
-    int i = 0; // safty
-    while ([oldestDateToAdd compare:dateToAdd] == NSOrderedDescending) {
-        oldestComps = [DateUtils addDateComps:oldestComps withUnit:@"day" withValue:-1];
-        oldestDateToAdd = [cal dateFromComponents:oldestComps];
-        
-        PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
-        childImage[@"date"] = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)oldestComps.year, (long)oldestComps.month, (long)oldestComps.day] integerValue]];
-        [images addObject:childImage];
-        [section[@"totalImageNum"] addObject:[NSNumber numberWithInt:-1]];
-        [section[@"weekdays"] addObject: [NSNumber numberWithInteger:oldestComps.weekday]];
-        
-        i++;
-        if (i >= 31) {
-            break;
-        }
-    }
-}
 - (NSIndexPath *)indexPathFromYMD:(NSString *)ymd
 {
     NSNumber *ymdNumber = [NSNumber numberWithInteger:[ymd integerValue]];
@@ -769,28 +564,6 @@
         }
         [self.pageContentViewController.notificationHistory[ymd][type] removeAllObjects];
     }
-}
-
-// 2009年分のカレンダーまでは追加可能とする
-// こどもの誕生日の下限が2010/01/01なので、決めでその一年前とする
-- (BOOL)canAddCalendar:(NSInteger)section
-{
-    NSInteger year = [self.pageContentViewController.childImages[section][@"year"] integerValue];
-    NSInteger month = [self.pageContentViewController.childImages[section][@"month"] integerValue];
-    return !(year < 2009 || (year == 2009 && month == 1));
-    
-}
-
-// silent push
-- (void)sendPushNotificationForCalendarAdded
-{
-    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
-    transitionInfoDic[@"event"] = @"calendarAdded";
-    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    options[@"data"] = [[NSMutableDictionary alloc]
-                        initWithObjects:@[@"Increment", transitionInfoDic, [NSNumber numberWithInt:1]]
-                        forKeys:@[@"badge", @"transitionInfo", @"content-available"]];
-    [PushNotification sendInBackground:@"calendarAdded" withOptions:options];
 }
 
 - (void)removeDialogs

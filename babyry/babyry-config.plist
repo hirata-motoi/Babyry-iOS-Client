@@ -145,5 +145,9 @@ http://babyry.parseapp.com/email_verify?token=%token</string>
 	<string>1.0.8</string>
 	<key>AWSBucketName</key>
 	<string>babyry-images</string>
+	<key>CalendarStartDate</key>
+	<integer>20100101</integer>
+	<key>CollectionViewSectionHeaderHeight</key>
+	<integer>44</integer>
 </dict>
 </plist>
