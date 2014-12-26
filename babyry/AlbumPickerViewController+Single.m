@@ -119,7 +119,7 @@
                 if (error) {
                     [hud hide:YES];
                     [self showSingleUploadError];
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get bestShot : %@", error]];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving bestShot(childId:%@, date:%@) : %@", _albumPickerViewController.childObjectId, _albumPickerViewController.date, error]];
                 }
             }];
         }];
