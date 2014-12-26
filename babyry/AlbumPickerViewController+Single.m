@@ -59,14 +59,7 @@
             imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
             imageType = @"image/jpeg";
         }
-        
-        // ImageViewにセット
-        if (_albumPickerViewController.uploadViewController) {
-            _albumPickerViewController.uploadViewController.scrollView.frame = [self getUploadedImageFrame:resizedImage];
-            _albumPickerViewController.uploadViewController.uploadedImageView.frame = CGRectMake(0, 0, _albumPickerViewController.uploadViewController.scrollView.frame.size.width, _albumPickerViewController.uploadViewController.scrollView.frame.size.height);
-            [_albumPickerViewController.uploadViewController.uploadedImageView setImage:resizedImage];
-        }
-        
+                
         PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]]];
         [imageQuery whereKey:@"imageOf" equalTo:_albumPickerViewController.childObjectId];
         [imageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_albumPickerViewController.date integerValue]]];
