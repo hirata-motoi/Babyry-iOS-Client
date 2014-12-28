@@ -91,6 +91,11 @@
     [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 31] integerValue]]];
 	[query whereKey:@"bestFlag" notEqualTo:@"removed"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        // 上まで引っ張った時に出てくるクルクルを消す
+        // クルクルしている時にendRefreshingを呼び出しても無害っぽいので基本的に読んでおく(isRunnning的なフラグを立てるほどでもない)
+        // getChildImagesWithYearの対象が2つあるときもあり得るが、そこはあんまり気にしてない(2つをほぼ同時に呼ぶのでそれほど時間差はないはず)
+        [self.pageContentViewController.rc endRefreshing];
+        
         if (!error) {
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {

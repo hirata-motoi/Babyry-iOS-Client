@@ -71,6 +71,8 @@
 
 @property NSTimer *tm;
 
+@property UIRefreshControl *rc;
+
 // for tutorial
 @property CalendarCollectionViewCell *cellOfToday;
 @property TutorialNavigator *tn;

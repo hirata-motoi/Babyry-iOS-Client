@@ -112,6 +112,10 @@
     _hud.hidden = YES;
 	
 	_bestImageIds = [[NSMutableDictionary alloc] init];
+    
+    _rc = [[UIRefreshControl alloc] init];
+    [_rc addTarget:self action:@selector(onRefresh) forControlEvents:UIControlEventValueChanged];
+    [_pageContentCollectionView addSubview:_rc];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
@@ -194,6 +198,15 @@
     if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) ) {
         [self showTutorialNavigator];
     }
+}
+
+- (void)onRefresh
+{
+    // 上で引っ張って更新
+    // スクロールで読んで記録していたloadedComp(=dateComp)も初期化
+    [_rc beginRefreshing];
+    _dateComp = [logic dateComps];
+    [self setImages];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
