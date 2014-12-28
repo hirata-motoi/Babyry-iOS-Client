@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
-#import "DragView.h"
+//#import "DragView.h"
 #import "AWSCommon.h"
 #import "MBProgressHUD.h"
 #import <AudioToolbox/AudioServices.h>
@@ -21,7 +21,7 @@
 //- (void) moveToTargetPage:(int)index;
 //@end
 
-@interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate, CollectionViewSectionHeaderDelegate>
+@interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, CollectionViewSectionHeaderDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
 @property NSUInteger pageIndex;
@@ -35,11 +35,7 @@
 @property NSMutableDictionary *childImagesIndexMap;
 @property NSMutableArray *scrollPositionData;
 @property CGFloat nextSectionHeight;
-@property DragView *dragView;
 @property BOOL dragging;
-@property CGFloat dragViewUpperLimitOffset;
-@property CGFloat dragViewLowerLimitOffset;
-@property BOOL dragViewZoomed;
 @property NSString *selfRole;
 @property NSInteger dragCount;
 @property NSMutableDictionary *imagesCountDic;
@@ -55,7 +51,6 @@
 @property BOOL isRotatingCells;
 @property BOOL skippedReloadData;
 
-- (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
 - (void)showAlertMessage;
 - (void)addIntroductionOfImageRequestView:(NSTimer *)timer;

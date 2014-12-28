@@ -19,7 +19,6 @@
 #import "ArrayUtils.h"
 #import "CalendarCollectionViewCell.h"
 #import "DateUtils.h"
-#import "DragView.h"
 #import "CellBackgroundViewToEncourageUpload.h"
 #import "CellBackgroundViewToEncourageUploadLarge.h"
 #import "CellBackgroundViewToEncourageChoose.h"
@@ -164,7 +163,10 @@
         _hud.hidden = NO;
     }
     
-    [self setImages];
+    //[self setImages];
+    // 少し待ってあげないと、cellの描画がおわらないので、いま画面に映っているcellのindexPathが取得できない
+    [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(setImages) userInfo:nil repeats:NO];
+    
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
@@ -178,11 +180,7 @@
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
         [_instructionTimer invalidate];
         
-        [ChildProperties asyncChildPropertiesWithBlock:^(NSMutableArray *beforeSyncChildProperties) {
-            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-            [[NSNotificationCenter defaultCenter] postNotification:n];
-        
-        }];
+        [logic updateChildProperties];
     }
     
     [FamilyRole updateCache];
@@ -555,34 +553,28 @@
         _dragCount = 0;
     }
     
-    _dragView.hidden = NO;
-    // scroll位置からどの月を表示ようとしているかを判定
-    // その月のデータをまだとってなければ取得
-    [self reflectPageScrollToDragView];
-    
-    // 今のsection : _currentScrollSection
-    NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld%02ld", (long)currentYearMonth.year, (long)currentYearMonth.month];
+    NSArray* visibleCellIndex = _pageContentCollectionView.indexPathsForVisibleItems;
+    NSDateComponents *visibleDateComp = [logic dateComps];
+    int yyyymm = 999999;
+    for (NSIndexPath *ip in visibleCellIndex) {
+        int yyyymmTmp = [NSString stringWithFormat:@"%@%@", _childImages[ip.section][@"year"], _childImages[ip.section][@"month"]].intValue;
+        if (yyyymm > yyyymmTmp) {
+            yyyymm = yyyymmTmp;
+            visibleDateComp.year = [_childImages[ip.section][@"year"] intValue];
+            visibleDateComp.month = [_childImages[ip.section][@"month"] intValue];
+        }
+    }
     
     NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDate *currentDate = [cal dateFromComponents:currentYearMonth];
+    NSDate *visibleDate = [cal dateFromComponents:visibleDateComp];
     NSDate *loadedDate = [cal dateFromComponents:_dateComp];
-    if ([currentDate compare:loadedDate] == NSOrderedAscending) {
+    if ([visibleDate compare:loadedDate] == NSOrderedAscending) {
         if (_isLoading) {
             return;
         }
+        
         _dateComp = [DateUtils addDateComps:_dateComp withUnit:@"month" withValue:-1];
-        NSDate *firstDate = [[self logic:@"getCollectionViewFirstDay"] getCollectionViewFirstDay];
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyyMM"];
-        NSString *firstDateString = [dateFormatter stringFromDate:firstDate];
-        
-        int firstDateInt = [firstDateString intValue];
-        int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
-        
-        if (firstDateInt <= nextLoadInt) {
-            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
-        }                  
+        [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
     }
 }
 
@@ -597,38 +589,6 @@
         return NO;
     }
 }
-
-- (void)setupScrollBarView
-{
-    _dragViewUpperLimitOffset = 20;
-    _dragViewLowerLimitOffset = self.view.bounds.size.height - 44 - 20 - 60;
-    
-    _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 70, _dragViewUpperLimitOffset, 70, 60)];
-    _dragView.userInteractionEnabled = YES;
-    _dragView.delegate = self;
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", (long)_dateComp.year, (long)_dateComp.month];
-    _dragView.dragViewLowerLimitOffset = _dragViewLowerLimitOffset;
-    _dragView.dragViewUpperLimitOffset = _dragViewUpperLimitOffset;
-    
-    [self.view addSubview:_dragView];
-}
-
-- (void)drag:(DragView *)targetView
-{
-    _dragging = YES;
- 
-    // scrollViewを連動
-    CGFloat contentHeight = _pageContentCollectionView.contentSize.height - (self.view.bounds.size.height - 64);
-    CGFloat viewHeight = _dragViewLowerLimitOffset - _dragViewUpperLimitOffset;
-
-    CGFloat rate = contentHeight / viewHeight ;
-    
-    CGFloat scrolledHeight = (targetView.frame.origin.y - _dragViewUpperLimitOffset) * rate;
-    CGPoint scrolledPoint = CGPointMake(0, scrolledHeight);
-    [_pageContentCollectionView setContentOffset:scrolledPoint];
-    _dragging = NO;
-}
-
 
 - (void)adjustChildImages
 {
@@ -795,48 +755,6 @@
         NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
         [_scrollPositionData addObject:sectionHeightInfo];
     }
-}
-
-- (NSDateComponents *)getCurrentYearMonthByScrollPosition
-{
-    CGFloat hiddenHeight = _pageContentCollectionView.contentSize.height - (_pageContentCollectionView.contentOffset.y + (_pageContentCollectionView.bounds.size.height - 64)/2);
-    
-    NSDateComponents *c = [[NSDateComponents alloc]init];
-    [c setYear:[[[_childImages objectAtIndex:0] objectForKey:@"year"] intValue]];
-    [c setMonth:[[[_childImages objectAtIndex:0] objectForKey:@"month"] intValue]];
-    
-    CGFloat sectionHeightSum = 0.0f;
-    for (NSInteger i = [_scrollPositionData count] - 1; i >= 0; i--) {
-        CGFloat sectionHeight = [[[_scrollPositionData objectAtIndex:i] objectForKey:@"heightNumber"] floatValue];
-        sectionHeightSum += sectionHeight;
-        
-        if (sectionHeightSum >= hiddenHeight) {
-            
-            NSString *yearString = [[_scrollPositionData objectAtIndex:i] objectForKey:@"year"];
-            NSString *monthString = [[_scrollPositionData objectAtIndex:i] objectForKey:@"month"];
-            [c setYear: [yearString integerValue]];
-            [c setMonth: [monthString integerValue]];
-            break;
-        }
-    }
-    return c;
-}
-
-- (void)reflectPageScrollToDragView
-{
-    if (_dragging) {
-        return;
-    }
-    CGFloat contentHeight = _pageContentCollectionView.contentSize.height - (self.view.bounds.size.height - 64);
-    CGFloat viewHeight = _dragViewLowerLimitOffset - _dragViewUpperLimitOffset;
-
-    CGFloat rate = viewHeight / contentHeight;
-    CGFloat dragViewOffset = _pageContentCollectionView.contentOffset.y * rate;
-   
-    int dragViewOffsetInt = [[NSNumber numberWithFloat:dragViewOffset] intValue];
-    
-    CGPoint movedPoint = CGPointMake(_dragView.center.x, dragViewOffsetInt + _dragView.frame.size.height / 2 + _dragViewUpperLimitOffset);
-    _dragView.center = movedPoint;
 }
 
 - (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath

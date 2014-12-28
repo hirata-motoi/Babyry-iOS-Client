@@ -34,16 +34,36 @@
 
 - (void)showChildImages
 {
-    // 今月
-    NSDateComponents *comp = [self dateComps];
-    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
-   
-    // 先月
-    NSDateComponents *lastComp = [self dateComps];
-    lastComp.month--;
-    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
-  
-    self.pageContentViewController.dateComp = lastComp;
+    // 今画面に表示されている月を取得
+    NSArray* visibleCellIndex = self.pageContentViewController.pageContentCollectionView.indexPathsForVisibleItems;
+    NSMutableDictionary *visibleDateDic = [[NSMutableDictionary alloc] init];
+    for (NSIndexPath *ip in visibleCellIndex) {
+        NSString *yyyymm = [NSString stringWithFormat:@"%@%@", self.pageContentViewController.childImages[ip.section][@"year"], self.pageContentViewController.childImages[ip.section][@"month"]];
+        if (!visibleDateDic[yyyymm]) {
+            NSDateComponents *currentDateComp = [self dateComps];
+            currentDateComp.year = [self.pageContentViewController.childImages[ip.section][@"year"] intValue];
+            currentDateComp.month = [self.pageContentViewController.childImages[ip.section][@"month"] intValue];
+            visibleDateDic[yyyymm] = currentDateComp;
+        }
+    }
+    
+    for (NSString *yyyymm in visibleDateDic) {
+        NSDateComponents *comp = visibleDateDic[yyyymm];
+        [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
+        
+        // dateComp(スクロールで読み込み済みの日付)が空ならそのまま突っ込む
+        // 空じゃないなら、dateCompに比べて日付が古いときだけ突っ込む
+        if (!self.pageContentViewController.dateComp) {
+            self.pageContentViewController.dateComp = comp;
+        } else {
+            NSCalendar *cal = [NSCalendar currentCalendar];
+            NSDate *visibleDate = [cal dateFromComponents:comp];
+            NSDate *loadedDate = [cal dateFromComponents:self.pageContentViewController.dateComp];
+            if ([visibleDate compare:loadedDate] == NSOrderedAscending) {
+                self.pageContentViewController.dateComp = comp;
+            }
+        }
+    }
 }
 
 - (NSDateComponents *)dateComps
@@ -262,8 +282,8 @@
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
-    // imagesCountDicの用途的に15がmaxなので問題ないけど
-    // 用途が増えて100以上になったらlimitを設定する必要あり、1000以上を超える場合にはそれを考慮した書き方に変更しないとだめ
+    // bestshot1000枚 = 2.7年 とりあえず大丈夫か
+    query.limit = 1000;
     [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [self.pageContentViewController.imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
