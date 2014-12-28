@@ -44,6 +44,7 @@
 #import "ImageUploadInBackground.h"
 #import <AFNetworking.h>
 #import "AnnounceBoardView.h"
+#import "ChildSwitchControlView.h"
 
 @interface ViewController ()
 
@@ -52,7 +53,7 @@
 @implementation ViewController {
     NSString *receivedApply;
     NSString *sentApply;
-    CGRect pageViewRect;
+    CGRect pageContentViewRect;
     TutorialNavigator *tn;
 }
 
@@ -93,7 +94,7 @@
     [Sharding setupShardConf];
     
     // notification center
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageViewController) name:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentViewController) name:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
@@ -322,15 +323,16 @@
 
 -(void) showPageViewController
 {
-    if (_pageViewController) {
+    if (_pageContentViewController) {
         [self setupHeaderView];
         [self setupGlobalSetting];
+        [self setupChildSwitchView];
         return;
     }
 
     PFUser *user = [PFUser currentUser];
     if (user[@"familyId"]) {
-        [self instantiatePageViewController];
+        [self instantiatePageContentViewController];
         return;
     }
 
@@ -346,7 +348,7 @@
             }
             
             if (objects.count > 0) {
-                [self instantiatePageViewController];
+                [self instantiatePageContentViewController];
                 return;
             }
             
@@ -358,25 +360,28 @@
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving TutorialMap userId:%@ error:%@", user[@"userId"], error]];
                     return;
                 }
-                [self instantiatePageViewController];
+                [self instantiatePageContentViewController];
             }];
         }];
     }];
 }
 
-- (void)instantiatePageViewController
+//- (void)instantiatePageContentViewController
+- (void)instantiatePageContentViewController
 {
     NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (childProperties.count < 1) {
         return;
     }
-    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-    pageViewRect = _pageViewController.view.frame;
-    
-    [self addChildViewController:_pageViewController];
-    [self.view addSubview:_pageViewController.view];
+    // TODO 最初に表示するこどもを切り替えできるようにする
+    // 暫定で最初のレコード
+    _pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
+    _pageContentViewController.childObjectId = childProperties[0][@"objectId"];
+    pageContentViewRect = _pageContentViewController.view.frame;
+    [self addChildViewController:_pageContentViewController];
+    [self.view addSubview:_pageContentViewController.view];
     [self setupGlobalSetting];
-   
+    [self setupChildSwitchView];
     if (!_headerViewManager) {
         _headerViewManager = [[HeaderViewManager alloc]init];
         _headerViewManager.delegate = self;
@@ -387,6 +392,24 @@
     if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
         [self showTutorialNavigator];
     }
+    
+//    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
+//    pageViewRect = _pageViewController.view.frame;
+//    
+//    [self addChildViewController:_pageViewController];
+//    [self.view addSubview:_pageViewController.view];
+//    [self setupGlobalSetting];
+//   
+//    if (!_headerViewManager) {
+//        _headerViewManager = [[HeaderViewManager alloc]init];
+//        _headerViewManager.delegate = self;
+//    }
+//   
+//    [self resetHeaderView];
+//    [_headerViewManager setupHeaderView:NO];
+//    if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
+//        [self showTutorialNavigator];
+//    }
 }
 
 - (void)setupGlobalSetting
@@ -422,25 +445,13 @@
     return [idIssue issue:@"family"];
 }
 
-- (void)reloadPageViewController
+- (void)reloadPageContentViewController
 {
-    [_pageViewController.view removeFromSuperview];
-    [_pageViewController removeFromParentViewController];
+    [_pageContentViewController.view removeFromSuperview];
+    [_pageContentViewController removeFromParentViewController];
 
-    // pageViewControllerにのっているpageContentViewControllerとview, subviewも消す (そんなに大きなリークでもないけど(効果あるかも微妙だけど)とりあえず)
-    for (UIViewController __strong *vc in [_pageViewController viewControllers]){
-        for (UIView __strong *view in vc.view.subviews) {
-            [view removeFromSuperview];
-            view = nil;
-        }
-        [vc willMoveToParentViewController:nil];
-        [vc.view removeFromSuperview];
-        [[NSNotificationCenter defaultCenter] removeObserver:vc];
-        [vc removeFromParentViewController];
-    }
-    
-    _pageViewController = nil;
-    [self instantiatePageViewController];
+    _pageContentViewController = nil;
+    [self instantiatePageContentViewController];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
@@ -583,18 +594,21 @@
 
 - (void)shrinkPageView:(CGRect)headerViewRect
 {
-    if (_pageViewController.view.frame.size.height != pageViewRect.size.height) {
+    if (_pageContentViewController.view.frame.size.height != pageContentViewRect.size.height) {
         return;
     }
-    CGRect rect = _pageViewController.view.frame;
+    CGRect rect = _pageContentViewController.view.frame;
     rect.size.height -= headerViewRect.size.height;
     rect.origin.y += headerViewRect.size.height;
-    _pageViewController.view.frame = rect;
+    _pageContentViewController.view.frame = rect;
+    
+    // TODO ChildSwitchControlViewの位置を調整
 }                   
 
 - (void)fitToScreen
 {
-    _pageViewController.view.frame = pageViewRect;
+    _pageViewController.view.frame = pageContentViewRect;
+    // TODO ChildSwitchControlViewの位置を調整
 }
 
 - (void)setRectToHeaderView:(UIView *)headerView
@@ -668,6 +682,13 @@
          failure:^(AFHTTPRequestOperation *operation, NSError *error){
              [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getAnnounceInfo, %@", error]];
          }];
+}
+
+- (void)setupChildSwitchView
+{
+    ChildSwitchControlView *childSwitchControlView = [ChildSwitchControlView sharedManager];
+    [childSwitchControlView switchChildSwitchView:_pageContentViewController.childObjectId];
+    [self.view addSubview:childSwitchControlView];
 }
 
 @end
