@@ -34,96 +34,93 @@
 
 - (void) logicSendImageButton:(NSIndexPath *)indexPath
 {
-    // 引数で受け取るindexPathはalbumに表示されている画像の位置
-    AWSServiceConfiguration *configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
-    ALAsset *asset = _albumPickerViewController.sectionImageDic[_albumPickerViewController.sectionDateByIndex[indexPath.section]][indexPath.row];
-    ALAssetRepresentation *representation = [asset defaultRepresentation];
-    NSURL *assetURL = [[asset valueForProperty:ALAssetPropertyURLs] objectForKey:[[asset defaultRepresentation] UTI]];
-    NSString *fileExtension = [[assetURL path] pathExtension];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:_albumPickerViewController.self.view animated:YES];
+    hud.labelText = @"アップロード中";
     
-    UIImage *originalImage = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:[representation scale] orientation:(UIImageOrientation)[representation orientation]];
-    UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
-    
-    NSData *imageData = [[NSData alloc] init];
-    NSString *imageType = [[NSString alloc] init];
-    if ([fileExtension isEqualToString:@"PNG"]) {
-        imageData = UIImagePNGRepresentation(resizedImage);
-        imageType = @"image/png";
-    } else {
-        imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
-        imageType = @"image/jpeg";
-    }
-    
-    // ImageViewにセット
-    if (_albumPickerViewController.uploadViewController) {
-        _albumPickerViewController.uploadViewController.scrollView.frame = [self getUploadedImageFrame:resizedImage];
-        _albumPickerViewController.uploadViewController.uploadedImageView.frame = CGRectMake(0, 0, _albumPickerViewController.uploadViewController.scrollView.frame.size.width, _albumPickerViewController.uploadViewController.scrollView.frame.size.height);
-        [_albumPickerViewController.uploadViewController.uploadedImageView setImage:resizedImage];
-    }
-    
-    PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]]];
-    [imageQuery whereKey:@"imageOf" equalTo:_albumPickerViewController.childObjectId];
-    [imageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_albumPickerViewController.date integerValue]]];
-    [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
-    
-    NSArray *imageArray = [imageQuery findObjects];
-    //imageArrayが一つ以上あったら(objectId指定だから一つしか無いはずだけど)上書き"
-    if ([imageArray count] > 1) {
-    } else if ([imageArray count] == 1) {
-        PFObject *tmpImageObject = imageArray[0];
-        //imageArray[0][@"imageFile"] = imageFile;
-        imageArray[0][@"bestFlag"] = @"choosed";
-        [imageArray[0] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            if (succeeded) {
-                AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config config][@"AWSBucketName"];
-                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]], tmpImageObject.objectId];
-                putRequest.body = imageData;
-                putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
-                putRequest.contentType = imageType;
-                putRequest.cacheControl = @"no-cache";
+    // クルクルを即出す為にUI以外の処理をbackgroundにする
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
+        
+        // 引数で受け取るindexPathはalbumに表示されている画像の位置
+        AWSServiceConfiguration *configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
+        ALAsset *asset = _albumPickerViewController.sectionImageDic[_albumPickerViewController.sectionDateByIndex[indexPath.section]][indexPath.row];
+        ALAssetRepresentation *representation = [asset defaultRepresentation];
+        NSURL *assetURL = [[asset valueForProperty:ALAssetPropertyURLs] objectForKey:[[asset defaultRepresentation] UTI]];
+        NSString *fileExtension = [[assetURL path] pathExtension];
+        
+        UIImage *originalImage = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:[representation scale] orientation:(UIImageOrientation)[representation orientation]];
+        UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
+        
+        NSData *imageData = [[NSData alloc] init];
+        NSString *imageType = [[NSString alloc] init];
+        if ([fileExtension isEqualToString:@"PNG"]) {
+            imageData = UIImagePNGRepresentation(resizedImage);
+            imageType = @"image/png";
+        } else {
+            imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
+            imageType = @"image/jpeg";
+        }
                 
-                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-                [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
-                    if (task.error) {
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in Save to S3 : %@", task.error]];
-                    }
-                    return nil;
-                }];
-            }
+        PFQuery *imageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]]];
+        [imageQuery whereKey:@"imageOf" equalTo:_albumPickerViewController.childObjectId];
+        [imageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_albumPickerViewController.date integerValue]]];
+        [imageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
+        [imageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
             if (error) {
-                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in save best flag : %@", error]];
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get target date image : %@", error]];
+                [hud hide:YES];
+                return;
             }
+            // 本来このパターンはあり得ないけど、あった場合に困るので書いておく
+            if ([objects count] > 0) {
+                for (PFObject *object in objects) {
+                    [object deleteEventually];
+                }
+            }
+
+            PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]]];
+            childImage[@"date"] = [NSNumber numberWithInteger:[_albumPickerViewController.date integerValue]];
+            childImage[@"imageOf"] = _albumPickerViewController.childObjectId;
+            childImage[@"bestFlag"] = @"choosed";
+            [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                if (succeeded) {
+                    AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
+                    putRequest.bucket = [Config config][@"AWSBucketName"];
+                    putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
+                    putRequest.body = imageData;
+                    putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
+                    putRequest.contentType = imageType;
+                    putRequest.cacheControl = @"no-cache";
+                    
+                    AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
+                    [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
+                        [hud hide:YES];
+                        if (task.error) {
+                            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
+                            [self showSingleUploadError];
+                        } else {
+                            [self afterSingleUploadComplete:resizedImage indexPath:indexPath];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
+                                //アルバム表示のViewも消す
+                                UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;
+                                [naviController popViewControllerAnimated:YES];
+                            });
+                        }
+                        return nil;
+                    }];
+                }
+                if (error) {
+                    [hud hide:YES];
+                    [self showSingleUploadError];
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving bestShot(childId:%@, date:%@) : %@", _albumPickerViewController.childObjectId, _albumPickerViewController.date, error]];
+                }
+            }];
         }];
-    } else {
-        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]]];
-        childImage[@"date"] = [NSNumber numberWithInteger:[_albumPickerViewController.date integerValue]];
-        childImage[@"imageOf"] = _albumPickerViewController.childObjectId;
-        childImage[@"bestFlag"] = @"choosed";
-        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-            if (succeeded) {
-                AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
-                putRequest.bucket = [Config config][@"AWSBucketName"];
-                putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
-                putRequest.body = imageData;
-                putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
-                putRequest.contentType = imageType;
-                putRequest.cacheControl = @"no-cache";
-                
-                AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-                [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
-                    if (task.error) {
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
-                    }
-                    return nil;
-                }];
-            }
-            if (error) {
-                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get bestShot : %@", error]];
-            }
-        }];
-    }
-    
+    });
+}
+
+-(void) afterSingleUploadComplete:(UIImage *)resizedImage indexPath:(NSIndexPath *)indexPath
+{
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
     UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
     [ImageCache
@@ -145,11 +142,17 @@
     [PushNotification sendInBackground:@"imageUpload" withOptions:options];
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_albumPickerViewController.childObjectId withDate:[_albumPickerViewController.date integerValue]];
-    
-    [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
-    //アルバム表示のViewも消す
-    UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;
-    [naviController popViewControllerAnimated:YES];
+}
+
+- (void) showSingleUploadError
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"画像のアップロードに失敗しました"
+                                                    message:@"ネットワークエラーが発生しました。もう一度アップロードをお試しください。"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
 }
 
 -(CGRect) getUploadedImageFrame:(UIImage *) image
