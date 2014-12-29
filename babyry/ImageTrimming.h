@@ -13,5 +13,6 @@
 + (UIImage *) makeRectImage:(UIImage *)orgImage;
 + (UIImage *) makeRectTopImage:(UIImage *)orgImage ratio:(float)ratio;
 + (UIImage *) resizeImageForUpload:(UIImage *)orgImage;
++ (UIImage *) makeMultiCandidateImageWithBlur:(NSArray *)candidatePathArray childObjectId:(NSString *)chidObjectId ymd:(NSString *)ymd cellFrame:(CGRect)cellFrame;
 
 @end

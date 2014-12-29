@@ -54,6 +54,7 @@
 #import "Partner.h"
 #import "UploadPastImagesIntroductionView.h"
 #import "AnnounceBoardView.h"
+#import "UIImage+ImageEffects.h"
 
 @interface PageContentViewController ()
 
@@ -328,7 +329,7 @@
         ? [NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId , ymd]
         : [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId , ymd];
 
-    [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
+    [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath withYmd:ymd];
     
     // カレンダーラベル付ける
     [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
@@ -839,7 +840,7 @@
     _dragView.center = movedPoint;
 }
 
-- (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
+- (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath withYmd:(NSString *)ymd
 {
     NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     NSString *role = _selfRole;
@@ -847,6 +848,55 @@
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     if (!imageCacheData) {
+        // 2日以内の場合には、candidateがあれば表示させる
+        if ([[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+            NSArray *candidateCaches = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, ymd]]];
+            if ([candidateCaches count] > 0) {
+                // candidateの中から選択してはめる
+                UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
+                cell.backgroundView = [[UIImageView alloc] initWithImage:[multiCandidateImage applyBlurWithRadius:1 tintColor:[UIColor colorWithWhite:1 alpha:0.6] saturationDeltaFactor:1.5 maskImage:nil]];
+            } else {
+                // プロフィールの画像をはめる
+            }
+        }
+            
+            /*
+            if (candidateCount == 0) {
+            
+            } else if (candidateCount == 1) {
+                // 一枚の時はブラーかけてはめるだけ
+                NSData *imageCacheData = [ImageCache getCache:candidateCaches[0] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId , ymd]];
+                UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
+                UIImage *trimmedImage;
+                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+                    trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cell.frame.size.height/cell.frame.size.width)];
+                } else {
+                    trimmedImage = [ImageTrimming makeRectImage:cacheImage];
+                }
+                cell.backgroundView = [[UIImageView alloc] initWithImage:[trimmedImage applyBlurWithRadius:1 tintColor:[UIColor colorWithWhite:1 alpha:0.6] saturationDeltaFactor:1.5 maskImage:nil]];
+            } else if (candidateCount == 2) {
+                // 2枚の時は上下で分けてはめる
+                for (int i = 0; i < 2; i++) {
+                    NSLog(@"set 2 image %d", i);
+                    NSData *imageCacheData = [ImageCache getCache:candidateCaches[0] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId , ymd]];
+                    UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
+                    UIImage *trimmedImage;
+                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+                        trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cell.frame.size.height/cell.frame.size.width)];
+                    } else {
+                        trimmedImage = [ImageTrimming makeRectImage:cacheImage];
+                    }
+                    cell.backgroundView = [[UIImageView alloc] initWithImage:[trimmedImage applyBlurWithRadius:1 tintColor:[UIColor colorWithWhite:1 alpha:0.6] saturationDeltaFactor:1.5 maskImage:nil]];
+                }
+            } else if (candidateCount == 2) {
+                // 3枚の時は上に一枚、下に二枚
+            } else {
+                // 4枚以上は4枚固定で
+            }
+        }
+        */
+    
+    /*
         if ([role isEqualToString:@"uploader"]) {
             // アップの出し分け
             // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
@@ -937,6 +987,7 @@
                 [cell addSubview:backgroundView];
             }
         }
+        */
         return;
     }
     

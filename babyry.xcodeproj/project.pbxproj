@@ -18,6 +18,7 @@
 		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */; };
+		88449B9F1A51131B00839109 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 88449B9E1A51131B00839109 /* UIImage+ImageEffects.m */; };
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
 		885A8C151A3191D00049E7A1 /* AWSS3Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A8C141A3191D00049E7A1 /* AWSS3Utils.m */; };
 		88610B561A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88610B551A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib */; };
@@ -273,6 +274,8 @@
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		883A92F119D2257C00F82A34 /* PartnerWaitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerWaitViewController.h; sourceTree = "<group>"; };
 		883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerWaitViewController.m; sourceTree = "<group>"; };
+		88449B9D1A51131B00839109 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
+		88449B9E1A51131B00839109 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		885A223519750DD20039B263 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
 		885A223619750DD20039B263 /* DateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtils.m; sourceTree = "<group>"; };
 		885A8C131A3191D00049E7A1 /* AWSS3Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSS3Utils.h; sourceTree = "<group>"; };
@@ -775,6 +778,15 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		88449B9C1A5112EB00839109 /* iOS_UIImageEffects */ = {
+			isa = PBXGroup;
+			children = (
+				88449B9D1A51131B00839109 /* UIImage+ImageEffects.h */,
+				88449B9E1A51131B00839109 /* UIImage+ImageEffects.m */,
+			);
+			name = iOS_UIImageEffects;
+			sourceTree = "<group>";
+		};
 		88610B5A1A09FF8E0042854B /* ImagePicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -806,6 +818,7 @@
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				88449B9C1A5112EB00839109 /* iOS_UIImageEffects */,
 				F2F8E4461A0B6917007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout */,
 				88B58B7619F6E85000B6E86B /* UINavigationController+Block */,
 				88AA2FFC196FE04600F4B40C /* MBProgressHUD */,
@@ -1748,6 +1761,7 @@
 				F21BBBE319CA7359002D4623 /* TutorialAddChildView.m in Sources */,
 				886A90FD1A051E3D007849DB /* PasswordChangeViewController.m in Sources */,
 				F28DFD5319D5285F0080E5C2 /* TutorialReceivedApplyView.m in Sources */,
+				88449B9F1A51131B00839109 /* UIImage+ImageEffects.m in Sources */,
 				88610B5D1A09FFD30042854B /* AlbumTableViewController.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
