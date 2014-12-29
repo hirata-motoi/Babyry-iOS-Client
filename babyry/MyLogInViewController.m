@@ -57,7 +57,7 @@
     self.logInView.signUpLabel.hidden = YES;
     
     self.logInView.usernameField.placeholder = @"メールアドレス";
-    self.logInView.usernameField.keyboardType = UIKeyboardTypeASCIICapable;
+    self.logInView.usernameField.keyboardType = UIKeyboardTypeEmailAddress;
     self.logInView.passwordField.placeholder = @"パスワード";
     self.logInView.passwordField.keyboardType = UIKeyboardTypeASCIICapable;
     
