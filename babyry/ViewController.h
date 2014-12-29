@@ -12,8 +12,9 @@
 #import "MBProgressHUD.h"
 #import "PageViewController.h" // TODO 消す
 #import "HeaderViewManager.h"
+#import "ChildSwitchControlView.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate>
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate>
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
@@ -33,5 +34,6 @@
 - (void)hideHeaderView;
 - (void)setupHeaderView;
 - (void)showTutorialNavigator;
+- (void)reloadPageContentViewController:(NSString *)childObjectId;
 
 @end

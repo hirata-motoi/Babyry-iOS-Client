@@ -9,7 +9,7 @@
 #import "ChildSwitchView.h"
 #import "UIColor+Hex.h"
 
-@implementation ChildSwitchView
+@implementation ChildSwitchView;
 
 - (void)awakeFromNib
 {
@@ -20,17 +20,22 @@
 {
     NSString *className = NSStringFromClass([self class]);
     ChildSwitchView *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
-    view.layer.cornerRadius = view.frame.size.width/2;
-    view.layer.masksToBounds = YES;
+    view.iconView.layer.cornerRadius = view.iconView.frame.size.width/2;
+    view.iconView.layer.masksToBounds = YES;
+    [view.iconView.layer setBorderWidth:2.0f];
+    [view.iconView.layer setBorderColor:[[UIColor whiteColor] CGColor]];
     
     UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:view action:@selector(tagGesture)];
     gesture.numberOfTapsRequired = 1;
     [view addGestureRecognizer:gesture];
+  
+    view.overlay.layer.cornerRadius = view.overlay.frame.size.width/2;
+    view.overlay.hidden = YES;
     
     return view;
 }
 
-- (void)setValue:(id)value forKey:(NSString *)key
+- (void)setParams:(id)value forKey:(NSString *)key
 {
     if ([key isEqualToString:@"childName"]) {
         _childNameLabel.text = (NSString *)value;
@@ -42,17 +47,20 @@
 - (void)switch:(BOOL)active
 {
     _active = active;
-    
-    NSString *colorString = (_active) ? @"FFFFFF" : @"000000";
-    self.backgroundColor = [UIColor_Hex colorWithHexString:colorString alpha:0.7];
+    _overlay.hidden = _active;
+    NSString *textColor = (_active) ? @"FFFFFF" : @"A9A9A9";
+    _childNameLabel.textColor = [UIColor_Hex colorWithHexString:textColor alpha:1.0f];
 }
 
 - (void)tagGesture
 {
+    NSLog(@"tapGesture");
     // _switchAvailable:true -> こどもアイコンがopenになっている状態
     // _switchAvailable:false -> こどもアイコンが閉じている状態
     if (_switchAvailable) {
         // こども切り替え
+        NSLog(@"childName:%@ childObjectId:%@", _childNameLabel.text, _childObjectId);
+        [_delegate switchChildSwitchView:_childObjectId];
     } else {
         [_delegate openChildSwitchViews];
     }

@@ -55,6 +55,8 @@
     NSString *sentApply;
     CGRect pageContentViewRect;
     TutorialNavigator *tn;
+    ChildSwitchControlView *childSwitchControlView;
+    UIView *overlay;
 }
 
 - (void)viewDidLoad
@@ -329,10 +331,11 @@
         [self setupChildSwitchView];
         return;
     }
-
+    
     PFUser *user = [PFUser currentUser];
     if (user[@"familyId"]) {
-        [self instantiatePageContentViewController];
+        //[self instantiatePageContentViewController:childObjectId];
+        [self setupChildSwitchView];
         return;
     }
 
@@ -348,8 +351,9 @@
             }
             
             if (objects.count > 0) {
-                [self instantiatePageContentViewController];
-                return;
+                //[self instantiatePageContentViewController:childObjectId];
+                [self setupChildSwitchView];
+                return;                                   
             }
             
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
@@ -360,14 +364,15 @@
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving TutorialMap userId:%@ error:%@", user[@"userId"], error]];
                     return;
                 }
-                [self instantiatePageContentViewController];
+                //[self instantiatePageContentViewController:childObjectId];
+                [self setupChildSwitchView];
             }];
         }];
     }];
 }
 
 //- (void)instantiatePageContentViewController
-- (void)instantiatePageContentViewController
+- (void)instantiatePageContentViewController:(NSString *)childObjectId
 {
     NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (childProperties.count < 1) {
@@ -376,12 +381,21 @@
     // TODO 最初に表示するこどもを切り替えできるようにする
     // 暫定で最初のレコード
     _pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
-    _pageContentViewController.childObjectId = childProperties[0][@"objectId"];
+    _pageContentViewController.childObjectId = childObjectId;
     pageContentViewRect = _pageContentViewController.view.frame;
     [self addChildViewController:_pageContentViewController];
+    _pageContentViewController.view.alpha = 0.0f;
     [self.view addSubview:_pageContentViewController.view];
+    [UIView animateWithDuration:0.4f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                         _pageContentViewController.view.alpha = 1.0f;
+                     }
+                     completion:nil];
+    
     [self setupGlobalSetting];
-    [self setupChildSwitchView];
+    //[self setupChildSwitchView];
     if (!_headerViewManager) {
         _headerViewManager = [[HeaderViewManager alloc]init];
         _headerViewManager.delegate = self;
@@ -393,6 +407,7 @@
         [self showTutorialNavigator];
     }
     
+    [self.view bringSubviewToFront:childSwitchControlView];
 //    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
 //    pageViewRect = _pageViewController.view.frame;
 //    
@@ -445,13 +460,14 @@
     return [idIssue issue:@"family"];
 }
 
-- (void)reloadPageContentViewController
+- (void)reloadPageContentViewController:(NSString *)childObjectId
 {
     [_pageContentViewController.view removeFromSuperview];
     [_pageContentViewController removeFromParentViewController];
 
     _pageContentViewController = nil;
-    [self instantiatePageContentViewController];
+    [self instantiatePageContentViewController:childObjectId];
+    [self hideOverlay];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
@@ -686,9 +702,62 @@
 
 - (void)setupChildSwitchView
 {
-    ChildSwitchControlView *childSwitchControlView = [ChildSwitchControlView sharedManager];
-    [childSwitchControlView switchChildSwitchView:_pageContentViewController.childObjectId];
+    // TODO 暫定対応で1番目のこどもを表示
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    NSString *childObjectId = childProperties[0][@"objectId"];
+    
+    NSLog(@"childObjectId:%@", childObjectId);
+
+    childSwitchControlView = [ChildSwitchControlView sharedManager];
+    childSwitchControlView.delegate = self;
+    [childSwitchControlView switchChildSwitchView:childObjectId];
     [self.view addSubview:childSwitchControlView];
 }
+
+- (void)showOverlay
+{
+    if (!overlay) {
+        overlay = [[UIView alloc]initWithFrame:self.view.frame];
+        overlay.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.7f];
+        overlay.hidden = YES;
+   
+        // TODO overlayクラスを作る
+        UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideOverlay)];
+        gesture.numberOfTapsRequired = 1;
+        [overlay addGestureRecognizer:gesture];
+    
+        [self.view addSubview:overlay];
+    }
+    
+    [self.view bringSubviewToFront:overlay];
+    [self.view bringSubviewToFront:childSwitchControlView];
+    overlay.alpha = 0.0f;
+    overlay.hidden = NO;
+    
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                         overlay.alpha = 0.7f;
+                     }
+                     completion:nil];
+}
+
+- (void)hideOverlay
+{
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                         overlay.alpha = 0.0f;
+                     }
+                     completion:^(BOOL finished) {
+                         overlay.hidden = YES;
+                         overlay.alpha = 0.7f;
+                     }];
+    // childSwitchViewを閉じる
+    [childSwitchControlView closeChildSwitchViews];
+}
+
 
 @end

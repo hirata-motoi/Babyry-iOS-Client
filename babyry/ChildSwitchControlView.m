@@ -30,6 +30,7 @@ static ChildSwitchControlView* sharedObject = nil;
     self = [super init];
     if (self) {
         //Initialization
+        self.autoresizesSubviews = NO;
         // 全こどものChildSwitchViewを作成
         childSwitchViewList = [[NSMutableArray alloc]init];
         NSMutableArray *childProperties = [ChildProperties getChildProperties];
@@ -37,8 +38,8 @@ static ChildSwitchControlView* sharedObject = nil;
             NSLog(@"childProperty :%@", childProperty[@"name"]);
             ChildSwitchView *childSwitchView = [ChildSwitchView view];
             childSwitchView.delegate = self;
-            [childSwitchView setValue:childProperty[@"name"] forKey:@"childName"];
-            [childSwitchView setValue:childProperty[@"childObjectId"] forKey:@"objectId"];
+            [childSwitchView setParams:childProperty[@"name"] forKey:@"childName"];
+            [childSwitchView setParams:childProperty[@"objectId"] forKey:@"childObjectId"];
             [childSwitchViewList addObject:childSwitchView];
         }
         
@@ -56,42 +57,97 @@ static ChildSwitchControlView* sharedObject = nil;
 
 - (void)switchChildSwitchView: (NSString *)childObjectId
 {
+    NSLog(@"switchChildSwitchView :%@", childObjectId);
     // 指定されたchildのviewを最前面に持ってくる
     // activeを入れ替えする
     for (ChildSwitchView *view in childSwitchViewList) {
         if ([view.childObjectId isEqualToString:childObjectId]) {
+            NSLog(@"switchChildSwitchView yes");
             [self bringSubviewToFront:view];
             [view switch:YES];
         } else {
+            NSLog(@"switchChildSwitchView no");
             [view switch:NO];
         }
     }
+    
+    // delegateメソッドを叩いて表示切り替え
+    [_delegate reloadPageContentViewController:childObjectId];
 }
-
-// ChildSwitchViewをタップされた時のdelegateメソッド
-// 全こどものChildSwitchViewをactiveにする
-// 自身の大きさを調整
-// 位置を調節して表示
-// 自分の一つ下にoverlayを表示
-
-// こどもの切り替えが行われた時のdelegateメソッド
-// タップされたChildSwitchViewをactiveに、他のChildSwitchViewをinactiveにする
-// inactiveなChildSwitchViewを隠す
-// overlayを消す
-// ViewControllerのdelegateメソッドを実行してPageContentViewControllerを切り替える
 
 - (void)openChildSwitchViews
 {
-    // 自身の裏にoverlayを設定
-    // 自身の色を半透明黒に設定
+    NSLog(@"openChildSwitchViews");
+    // ViewControllerにoverlayを設定
+    [_delegate showOverlay];
+    // 自身を最前面に持ってくる
+    // 自身を広げる
+    CGRect rect = self.frame;
+    rect.size.width = [self superview].frame.size.width;
+    rect.origin.x = 0;
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                        self.frame = rect;
+                     }
+                     completion:nil];
+    
     // ChildSwitchViewの位置を調整
+    
     NSArray *subviews = [self subviews];
     for (int i = subviews.count - 1; i >= 0; i--) {
         ChildSwitchView *view = subviews[i];
+        view.switchAvailable = YES;
         
         CGRect rect = view.frame;
-        rect.origin.x -= 80 * i;
-        view.frame = rect;
+        rect.origin.x = self.frame.size.width - 80 * (i + 1);
+        
+        view.hidden = NO;
+        
+        [UIView animateWithDuration:0.2f
+                              delay:0.0f
+                            options:nil
+                         animations:^{
+                             view.frame = rect;
+                         }
+                         completion:nil];
+    }
+}
+
+- (void)closeChildSwitchViews
+{
+    // 自身のサイズを調整
+    CGRect rect = self.frame;
+    rect.size.width = 50;
+    rect.origin.x = 320 - 50;
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                         self.frame = rect;
+                     }
+                     completion:nil];
+    // 位置を調整
+    NSArray *subviews = [self subviews];
+    for (int i = subviews.count - 1; i >= 0; i--) {
+        ChildSwitchView *view = subviews[i];
+        view.switchAvailable = NO;
+        
+        CGRect rect = view.frame;
+        rect.origin.x = 0;
+        
+        [UIView animateWithDuration:0.2f
+                              delay:0.0f
+                            options:nil
+                         animations:^{
+                             view.frame = rect;
+                         }
+                         completion:^(BOOL finished){
+                             if (i != subviews.count - 1) {
+                                 view.hidden = YES;
+                             }
+                         }];
     }
 }
 
