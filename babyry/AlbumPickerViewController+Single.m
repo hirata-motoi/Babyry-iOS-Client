@@ -98,7 +98,7 @@
                             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
                             [self showSingleUploadError];
                         } else {
-                            [self afterSingleUploadComplete:resizedImage indexPath:indexPath];
+                            [self afterSingleUploadComplete:resizedImage];
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
                                 //アルバム表示のViewも消す
@@ -119,7 +119,7 @@
     });
 }
 
--(void) afterSingleUploadComplete:(UIImage *)resizedImage indexPath:(NSIndexPath *)indexPath
+-(void) afterSingleUploadComplete:(UIImage *)resizedImage
 {
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
     UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
@@ -132,9 +132,10 @@
     NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
     transitionInfoDic[@"event"] = @"imageUpload";
     transitionInfoDic[@"date"] = _albumPickerViewController.date;
-    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", indexPath.section];
-    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", indexPath.row];
+    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _albumPickerViewController.targetDateIndexPath.section];
+    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _albumPickerViewController.targetDateIndexPath.row];
     transitionInfoDic[@"childObjectId"] = _albumPickerViewController.childObjectId;
+    NSLog(@"transitionInfoDic before send %@", transitionInfoDic);
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]
                         initWithObjects:@[@"Increment", transitionInfoDic]
