@@ -109,10 +109,7 @@ static ChildSwitchControlView* sharedObject = nil;
 
 - (void)openChildSwitchViews
 {
-    // ViewControllerにoverlayを設定
     [_delegate showOverlay];
-    // 自身を最前面に持ってくる
-    // 自身を広げる
     CGRect rect = self.frame;
     rect.size.width = [self superview].frame.size.width;
     rect.origin.x = 0;
@@ -120,27 +117,25 @@ static ChildSwitchControlView* sharedObject = nil;
                           delay:0.0f
                         options:nil
                      animations:^{
-                        self.frame = rect;
+                         self.frame = rect;
                      }
                      completion:nil];
     
     // ChildSwitchViewの位置を調整
-    
-    NSArray *subviews = [self subviews];
-    for (int i = subviews.count - 1; i >= 0; i--) {
+    NSArray *subviews = [[[self subviews] reverseObjectEnumerator] allObjects];
+    for (NSInteger i = 0; i < subviews.count; i++) {
         ChildSwitchView *view = subviews[i];
         view.switchAvailable = YES;
         
-        CGRect rect = view.frame;
-        rect.origin.x = self.frame.size.width - 80 * (i + 1);
+        CGRect switchRect = view.frame;
+        switchRect.origin.x = rect.size.width - switchRect.size.width - (switchRect.size.width + 10) * i;
         
         view.hidden = NO;
-        
         [UIView animateWithDuration:0.2f
                               delay:0.0f
                             options:nil
                          animations:^{
-                             view.frame = rect;
+                             view.frame = switchRect;
                          }
                          completion:nil];
     }
@@ -161,7 +156,7 @@ static ChildSwitchControlView* sharedObject = nil;
                      completion:nil];
     // 位置を調整
     NSArray *subviews = [self subviews];
-    for (int i = subviews.count - 1; i >= 0; i--) {
+    for (NSInteger i = subviews.count - 1; i >= 0; i--) {
         ChildSwitchView *view = subviews[i];
         view.switchAvailable = NO;
         
