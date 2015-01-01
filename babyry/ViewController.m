@@ -128,6 +128,7 @@
 {
     [super viewWillAppear:YES];
     [self setupHeaderView];
+    [self adjustChildSwitchControlView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -159,6 +160,9 @@
             [_pageContentViewController removeFromParentViewController];
             _pageContentViewController = nil;
         }
+        
+        // childSwitchControlViewを隠す
+        childSwitchControlView.hidden = YES;
         
         // ログインしてない場合は、イントロ+ログインViewを出す
         IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
