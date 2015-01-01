@@ -21,6 +21,9 @@
 + (ChildSwitchControlView*)sharedManager;
 - (void)switchChildSwitchView: (NSString *)childObjectId;
 - (void)closeChildSwitchViews;
+- (void)setupChildSwitchViews;
+- (void)switchToInitialChild;
+- (void)resetChildSwitchControlView;
 
 @property (nonatomic,assign) id<ChildSwitchControlViewDelegate> delegate;
 

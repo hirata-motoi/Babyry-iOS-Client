@@ -604,6 +604,7 @@
 		F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildSwitchView.xib; sourceTree = "<group>"; };
 		F2CE8D3A1A4E9B2400F56FC2 /* ChildSwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildSwitchView.h; sourceTree = "<group>"; };
 		F2CE8D3B1A4E9B2400F56FC2 /* ChildSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildSwitchView.m; sourceTree = "<group>"; };
+		F2CE8D3F1A53DB2000F56FC2 /* babyry-coredata-v4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "babyry-coredata-v4.xcdatamodel"; sourceTree = "<group>"; };
 		F2D934EB19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PageContentViewController+Logic+Tutorial.h"; sourceTree = "<group>"; };
 		F2D934EC19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PageContentViewController+Logic+Tutorial.m"; sourceTree = "<group>"; };
 		F2D934EE19C78D3B001F33D0 /* MultiUploadViewController+Logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MultiUploadViewController+Logic.h"; sourceTree = "<group>"; };
@@ -2265,11 +2266,12 @@
 		F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				F2CE8D3F1A53DB2000F56FC2 /* babyry-coredata-v4.xcdatamodel */,
 				F22F208319E469700089A592 /* babyry-coredata-v3.xcdatamodel */,
 				88C072C119C458E000BF6F6F /* babyry-coredata-v2.xcdatamodel */,
 				F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */,
 			);
-			currentVersion = F22F208319E469700089A592 /* babyry-coredata-v3.xcdatamodel */;
+			currentVersion = F2CE8D3F1A53DB2000F56FC2 /* babyry-coredata-v4.xcdatamodel */;
 			path = "babyry-coredata.xcdatamodeld";
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

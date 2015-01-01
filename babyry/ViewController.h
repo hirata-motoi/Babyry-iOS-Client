@@ -10,7 +10,6 @@
 #import <Parse/Parse.h>
 #import "PageContentViewController.h"
 #import "MBProgressHUD.h"
-#import "PageViewController.h" // TODO 消す
 #import "HeaderViewManager.h"
 #import "ChildSwitchControlView.h"
 
@@ -19,8 +18,7 @@
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
 @property (strong, nonatomic) PFObject *currentInstallation;
-@property (strong, nonatomic) PageViewController *pageViewController; // TODO 消す
-@property (strong, nonatomic) PageContentViewController *pageContentViewController; // TODO 消す
+@property (strong, nonatomic) PageContentViewController *pageContentViewController;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;
 

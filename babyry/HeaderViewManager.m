@@ -35,7 +35,9 @@
     if ([[Tutorial currentStage].currentStage isEqualToString:@"tutorialFinished"]) {
         [self invalidateTimer];
     }
+    NSLog(@"checkPartnerApplyStatus");
     [FamilyRole updateCacheWithBlock:^(void) {
+    NSLog(@"checkPartnerApplyStatus finished");
         [self setupHeaderView:NO];
     }];
 }
@@ -44,6 +46,7 @@
 - (void)setupHeaderView:(BOOL)localDataOnly
 {
     TutorialStage *currentStage = [Tutorial currentStage];
+    NSLog(@"currentStage : %@", currentStage.currentStage);
     if ([currentStage.currentStage isEqualToString:@"familyApply"] || [currentStage.currentStage isEqualToString:@"familyApplyExec"]) {
         if (![PartnerApply linkComplete]) {
             [self showFamilyApplyIntroduceView:localDataOnly];

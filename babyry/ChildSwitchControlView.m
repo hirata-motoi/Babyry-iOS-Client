@@ -9,6 +9,8 @@
 #import "ChildSwitchControlView.h"
 #import "ChildSwitchView.h"
 #import "ChildProperties.h"
+#import "DateUtils.h"
+#import "Tutorial.h"
 
 @implementation ChildSwitchControlView {
     NSMutableArray *childSwitchViewList;
@@ -31,53 +33,82 @@ static ChildSwitchControlView* sharedObject = nil;
     if (self) {
         //Initialization
         self.autoresizesSubviews = NO;
-        // 全こどものChildSwitchViewを作成
-        childSwitchViewList = [[NSMutableArray alloc]init];
-        NSMutableArray *childProperties = [ChildProperties getChildProperties];
-        for (NSMutableDictionary *childProperty in childProperties) {
-            NSLog(@"childProperty :%@", childProperty[@"name"]);
-            ChildSwitchView *childSwitchView = [ChildSwitchView view];
-            childSwitchView.delegate = self;
-            [childSwitchView setParams:childProperty[@"name"] forKey:@"childName"];
-            [childSwitchView setParams:childProperty[@"objectId"] forKey:@"childObjectId"];
-            [childSwitchViewList addObject:childSwitchView];
-        }
-        
-        // 自身のサイズを調整
-        // 最初は40x40のレクタングルでOK
-        self.frame = CGRectMake(320 - 50, 70, 50, 50);
-        
-        // 自身にaddSubview
-        for (ChildSwitchView *view in childSwitchViewList) {
-            [self addSubview:view];
-        }
+        [self setupChildSwitchViews];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetChildSwitchControlView) name:@"childPropertiesChanged" object:nil];
     }
+  
     return self;
+}
+
+- (void)setupChildSwitchViews
+{
+    if (childSwitchViewList) {
+        for (ChildSwitchView *view in [self subviews]) {
+            [view removeFromSuperview];
+        }
+        [childSwitchViewList removeAllObjects];
+    }
+    // 全こどものChildSwitchViewを作成
+    if (!childSwitchViewList) {
+        childSwitchViewList = [[NSMutableArray alloc]init];
+    }
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    if (childProperties.count < 1) {
+        return;
+    }
+    
+    for (NSMutableDictionary *childProperty in childProperties) {
+        ChildSwitchView *childSwitchView = [ChildSwitchView view];
+        childSwitchView.delegate = self;
+        [childSwitchView setParams:childProperty[@"name"] forKey:@"childName"];
+        [childSwitchView setParams:childProperty[@"objectId"] forKey:@"childObjectId"];
+        [childSwitchViewList addObject:childSwitchView];
+    }
+    
+    // 自身のサイズを調整
+    // 最初は40x40のレクタングルでOK
+    self.frame = CGRectMake(320 - 50, 70, 50, 50);
+    
+    // 自身にaddSubview
+    for (ChildSwitchView *view in childSwitchViewList) {
+        [self addSubview:view];
+    }
+}
+
+- (void)switchToInitialChild
+{
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    if (childProperties.count < 1) {
+        return;
+    }
+
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastDisplayedAt" ascending:NO];
+    NSArray *sortedArray = [childProperties sortedArrayUsingDescriptors:@[sortDescriptor]];
+    [self switchChildSwitchView:sortedArray[0][@"objectId"]];
 }
 
 - (void)switchChildSwitchView: (NSString *)childObjectId
 {
-    NSLog(@"switchChildSwitchView :%@", childObjectId);
     // 指定されたchildのviewを最前面に持ってくる
     // activeを入れ替えする
     for (ChildSwitchView *view in childSwitchViewList) {
         if ([view.childObjectId isEqualToString:childObjectId]) {
-            NSLog(@"switchChildSwitchView yes");
             [self bringSubviewToFront:view];
             [view switch:YES];
         } else {
-            NSLog(@"switchChildSwitchView no");
             [view switch:NO];
         }
     }
     
     // delegateメソッドを叩いて表示切り替え
     [_delegate reloadPageContentViewController:childObjectId];
+    
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[DateUtils setSystemTimezone:[NSDate date]], @"lastDisplayedAt", nil];
+    [ChildProperties updateChildPropertyWithObjectId:childObjectId withParams:params];
 }
 
 - (void)openChildSwitchViews
 {
-    NSLog(@"openChildSwitchViews");
     // ViewControllerにoverlayを設定
     [_delegate showOverlay];
     // 自身を最前面に持ってくる
@@ -149,6 +180,12 @@ static ChildSwitchControlView* sharedObject = nil;
                              }
                          }];
     }
+}
+
+- (void)resetChildSwitchControlView
+{
+    [self setupChildSwitchViews];
+    [self switchToInitialChild];
 }
 
 

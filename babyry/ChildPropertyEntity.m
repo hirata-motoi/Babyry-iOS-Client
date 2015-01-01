@@ -23,5 +23,6 @@
 @dynamic sex;
 @dynamic calendarStartDate;
 @dynamic oldestChildImageDate;
+@dynamic lastDisplayedAt;
 
 @end

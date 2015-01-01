@@ -54,12 +54,10 @@
 
 - (void)tagGesture
 {
-    NSLog(@"tapGesture");
     // _switchAvailable:true -> こどもアイコンがopenになっている状態
     // _switchAvailable:false -> こどもアイコンが閉じている状態
     if (_switchAvailable) {
         // こども切り替え
-        NSLog(@"childName:%@ childObjectId:%@", _childNameLabel.text, _childObjectId);
         [_delegate switchChildSwitchView:_childObjectId];
     } else {
         [_delegate openChildSwitchViews];

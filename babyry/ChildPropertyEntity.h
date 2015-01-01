@@ -24,5 +24,6 @@
 @property (nonatomic, retain) NSString * sex;
 @property (nonatomic, retain) NSNumber * calendarStartDate;
 @property (nonatomic, retain) NSNumber * oldestChildImageDate;
+@property (nonatomic, retain) NSDate * lastDisplayedAt;
 
 @end
