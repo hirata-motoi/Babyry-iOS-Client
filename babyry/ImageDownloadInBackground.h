@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ImageDownloadInBackground : NSObject
+@interface ImageDownloadInBackground : NSObject <NSURLSessionDownloadDelegate>
 
-- (void) downloadByPushInBackground:(NSNumber *)date childObjectId:(NSString *)childObjectId;
+- (void) downloadByPushInBackground:(NSNumber *)date childObjectId:(NSString *)childObjectId preSignedURLs:(NSArray *)preSignedURLs;
 
 @end

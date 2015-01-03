@@ -15,10 +15,26 @@
 
 @implementation ImageDownloadInBackground
 
-- (void) downloadByPushInBackground:(NSNumber *)date childObjectId:(NSString *)childObjectId
+- (void) downloadByPushInBackground:(NSNumber *)date childObjectId:(NSString *)childObjectId preSignedURLs:(NSArray *)preSignedURLs
 {
     // pushを受けたらバックグラウンドで画像をダウンロードするメソッド
     // ダウンロードに時間かかる&pushの度によばれるのでインスタンスメソッドにする
+    
+    if ([date isEqual:[DateUtils getTodayYMD]] || [date isEqual:[DateUtils getYesterdayYMD]]) {
+        // 今日昨日ならcandidateに突っ込む
+        
+    } else {
+        NSLog(@"download!");
+        // それ以外ならbestshotなのでbestshot用のキャッシュを作る
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"BackgroundSessionConfiguration"];
+        configuration.allowsCellularAccess = YES;
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+        NSURL *assetURL = [NSURL URLWithString:preSignedURLs[0]];
+        NSURLSessionDownloadTask *task = [session downloadTaskWithURL:assetURL];
+        [task resume];
+    }
+    
+    /*
     NSMutableDictionary *child = [ChildProperties getChildProperty:childObjectId];
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
     query.limit = 1000;
@@ -69,6 +85,12 @@
             }];
         }
     }];
+    */
+}
+
+- (void) URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+{
+    NSLog(@"didFinishDownloadingToURL %@", location);
 }
 
 @end

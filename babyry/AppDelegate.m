@@ -156,19 +156,20 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
 
-// バックグラウンドで任意の通信処理が出来ない仕様なので一旦ペンディング
-// NSURLSessionを利用すれば出来る。HTTPのみ通信可能で、APIを用意しておけば良い。が、面倒。
-//	if (application.applicationState == UIApplicationStateBackground) {
-//		// backgourndでpushを受け取った時に発動、裏で画像データを読む
-//
-//		NSLog(@"%@", userInfo);
-//		
-//		ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
-//		[imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"][@"date"] childObjectId:userInfo[@"transitionInfo"][@"childObjectId"]];
-//
-//        completionHandler(UIBackgroundFetchResultNewData);
-//
-//    }
+	if (application.applicationState == UIApplicationStateBackground) {
+		// backgourndでpushを受け取った時に発動、裏で画像データを読む
+
+		NSLog(@"%@", userInfo);
+        
+        /*
+        if (userInfo[@"transitionInfo"][@"preSignedURLs"]) {
+            ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+            [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"][@"date"] childObjectId:userInfo[@"transitionInfo"][@"childObjectId"] preSignedURLs:userInfo[@"transitionInfo"][@"preSignedURLs"]];
+        }*/
+
+        completionHandler(UIBackgroundFetchResultNewData);
+
+    }
 	
 	if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動

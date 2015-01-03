@@ -16,6 +16,7 @@
 #import "Partner.h"
 #import "NotificationHistory.h"
 #import "AWSCommon.h"
+#import "AWSS3Utils.h"
 
 @implementation AlbumPickerViewController_Single
 
@@ -98,7 +99,12 @@
                             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
                             [self showSingleUploadError];
                         } else {
-                            [self afterSingleUploadComplete:resizedImage];
+                            NSLog(@"aaaaaaaaaaaaaaaa");
+                            AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
+                            NSString *preSingnedURL = [awsS3Utils getS3PreSignedURL:putRequest.bucket key:putRequest.key configuration:configuration];
+                            NSLog(@"bbbbbbbbbbbbbbbbb");
+                            [self afterSingleUploadComplete:resizedImage preSignedURL:preSingnedURL];
+                            NSLog(@"ccccccccccccccccc");
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
                                 //アルバム表示のViewも消す
@@ -119,7 +125,7 @@
     });
 }
 
--(void) afterSingleUploadComplete:(UIImage *)resizedImage
+-(void) afterSingleUploadComplete:(UIImage *)resizedImage preSignedURL:(NSString *)preSignedURL
 {
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
     UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
@@ -135,6 +141,19 @@
     transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _albumPickerViewController.targetDateIndexPath.section];
     transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _albumPickerViewController.targetDateIndexPath.row];
     transitionInfoDic[@"childObjectId"] = _albumPickerViewController.childObjectId;
+    if (preSignedURL) {
+        NSLog(@"%@", preSignedURL);
+        NSMutableArray *preSignedURLs = [[NSMutableArray alloc] init];
+        preSignedURLs[0] = [preSignedURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//        preSignedURLs[0] = @"http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+//        preSignedURLs[1] = @"http://aaaaaaaaaaa";
+//        preSignedURLs[2] = @"http://aaaaaaaaaaa";
+//        preSignedURLs[3] = @"http://aaaaaaaaaaa";
+//        preSignedURLs[4] = @"http://aaaaaaaaaaa";
+//        preSignedURLs[5] = @"http://aaaaaaaaaaa";
+//        preSignedURLs[6] = @"http://aaaaaaaaaaa";
+        transitionInfoDic[@"preSignedURLs"] = preSignedURLs;
+    }
     NSLog(@"transitionInfoDic before send %@", transitionInfoDic);
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]
