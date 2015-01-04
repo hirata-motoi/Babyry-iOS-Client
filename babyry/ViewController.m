@@ -388,6 +388,7 @@
 {
     NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (childProperties.count < 1) {
+        [Logger writeOneShot:@"crit" message:@"Child NOT FOUND in instantiatePageContentViewController"];
         return;
     }
     
