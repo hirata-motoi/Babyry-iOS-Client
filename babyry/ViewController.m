@@ -604,7 +604,7 @@
     _pageContentViewController.view.frame = rect;
     
     CGRect switchRect = childSwitchControlView.frame;
-    switchRect.origin.y = rect.origin.y + 70;
+    switchRect.origin.y = rect.origin.y + [[Config config][@"ChildSwitchControlViewMarginTop"] floatValue];
     childSwitchControlView.frame = switchRect;
 }
 

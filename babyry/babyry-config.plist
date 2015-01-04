@@ -149,5 +149,7 @@ http://babyry.parseapp.com/email_verify?token=%token</string>
 	<integer>20100101</integer>
 	<key>CollectionViewSectionHeaderHeight</key>
 	<integer>44</integer>
+	<key>ChildSwitchControlViewMarginTop</key>
+	<integer>70</integer>
 </dict>
 </plist>
