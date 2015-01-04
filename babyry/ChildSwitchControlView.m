@@ -42,16 +42,14 @@ static ChildSwitchControlView* sharedObject = nil;
 
 - (void)setupChildSwitchViews
 {
-    if (childSwitchViewList) {
-        for (ChildSwitchView *view in [self subviews]) {
-            [view removeFromSuperview];
-        }
-        [childSwitchViewList removeAllObjects];
-    }
-    // 全こどものChildSwitchViewを作成
     if (!childSwitchViewList) {
         childSwitchViewList = [[NSMutableArray alloc]init];
     }
+    for (ChildSwitchView *view in [self subviews]) {
+        [view removeFromSuperview];
+    }
+    [childSwitchViewList removeAllObjects];
+    
     NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (childProperties.count < 1) {
         return;
