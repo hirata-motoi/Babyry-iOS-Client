@@ -61,6 +61,7 @@ static ChildSwitchControlView* sharedObject = nil;
         childSwitchView.delegate = self;
         [childSwitchView setParams:childProperty[@"name"] forKey:@"childName"];
         [childSwitchView setParams:childProperty[@"objectId"] forKey:@"childObjectId"];
+        childSwitchView.childNameLabel.alpha = 0.0f;
         [childSwitchViewList addObject:childSwitchView];
     }
   
@@ -137,6 +138,7 @@ static ChildSwitchControlView* sharedObject = nil;
                             options:nil
                          animations:^{
                              view.frame = switchRect;
+                             view.childNameLabel.alpha = 1.0f;
                          }
                          completion:nil];
     }
@@ -169,6 +171,7 @@ static ChildSwitchControlView* sharedObject = nil;
                             options:nil
                          animations:^{
                              view.frame = rect;
+                             view.childNameLabel.alpha = 0.0f;
                          }
                          completion:^(BOOL finished){
                              if (i != subviews.count - 1) {
