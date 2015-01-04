@@ -716,6 +716,10 @@
                 
                 // _childImagesにPFObjectを追加
                 [self addEmptyChildImages:compsToAdd];
+               
+                // childImagesIndexMapを再生成
+                [self.pageContentViewController setupChildImagesIndexMap];
+                
                 // PageContentViewControllerをreload
                 [self executeReload];
                 
