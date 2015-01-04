@@ -128,7 +128,6 @@
 {
     [super viewWillAppear:YES];
     [self setupHeaderView];
-    [self adjustChildSwitchControlView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -319,8 +318,6 @@
         }
         [self showPageContentViewController];
 //        [_pageViewController showFillingEmptyCellsDialog]; TODO pageViewControllerで表示していたダイアログをこっちで表示
-        
-        [self adjustChildSwitchControlView];
     }
 }
 
@@ -643,6 +640,7 @@
 - (void)setupHeaderView
 {
     [_headerViewManager setupHeaderView:YES];
+    [self adjustChildSwitchControlView];
 }
 
 - (void)showTutorialNavigator
