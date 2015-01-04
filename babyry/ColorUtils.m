@@ -56,4 +56,14 @@
     return [UIColor_Hex colorWithHexString:@"ff77a1" alpha:1.0];
 }
 
++(UIColor *)getCalenderNumberColor
+{
+    return [UIColor_Hex colorWithHexString:@"1a1a1a" alpha:1.0];
+}
+
++(UIColor *)getBlurTintColor
+{
+    return [UIColor_Hex colorWithHexString:@"e7e4d6" alpha:0.4];
+}
+
 @end

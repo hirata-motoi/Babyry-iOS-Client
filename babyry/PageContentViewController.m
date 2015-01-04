@@ -26,7 +26,9 @@
 #import "CellBackgroundViewToEncourageChooseLarge.h"
 #import "CellBackgroundViewToWaitUpload.h"
 #import "CellBackgroundViewToWaitUploadLarge.h"
-#import "CellBackgroundViewNoImage.h"
+//#import "CellBackgroundViewNoImage.h"
+#import "CellImageFramePlaceHolder.h"
+#import "CellImageFramePlaceHolderLarge.h"
 #import "AddMonthToCalendarView.h"
 #import "CalenderLabel.h"
 #import "PushNotification.h"
@@ -506,15 +508,17 @@
     // カレンダーラベル組み立て
     CalenderLabel *calLabelView = [CalenderLabel view];
     if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/6, cellHeight/6);
+        calLabelView.frame = CGRectMake(2, 2, 54, 48);
+        calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, 16);
+        calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
     } else {
-        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/4, cellHeight/4);
+        calLabelView.frame = CGRectMake(2, 2, 26, 27);
+        calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, 9);
+        calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
     }
     calLabelView.calLabelBack.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height);
-    calLabelView.calLabelBack.layer.cornerRadius = calLabelView.calLabelBack.frame.size.width/20;
-    calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height/3);
-    calLabelView.calLabelTop.layer.cornerRadius = calLabelView.frame.size.width/20;
-    calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
+    calLabelView.calLabelBack.layer.cornerRadius = 3;
+    calLabelView.calLabelTop.layer.cornerRadius = 3;
     
     if ([weekdayString isEqualToString:@"SUN"]) {
         calLabelView.calLabelTop.backgroundColor = [ColorUtils getSunDayCalColor];
@@ -531,17 +535,23 @@
     UILabel *calWeekLabel = [[UILabel alloc] initWithFrame:calLabelView.calLabelTop.frame];
     calWeekLabel.textColor = [UIColor whiteColor];
     calWeekLabel.text = weekdayString;
-    calWeekLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height*0.8];
     calWeekLabel.textAlignment = NSTextAlignmentCenter;
     [calLabelView.calLabelTop addSubview:calWeekLabel];
     
     // 日付ラベル
     UILabel *calDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, calLabelView.frame.size.height/3, calLabelView.frame.size.width, calLabelView.frame.size.height*2/3)];
-    calDateLabel.textColor = [UIColor blackColor];
+    calDateLabel.textColor = [ColorUtils getCalenderNumberColor];
     calDateLabel.text = dd;
-    calDateLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height];
     calDateLabel.textAlignment = NSTextAlignmentCenter;
     [calLabelView.calLabelBack addSubview:calDateLabel];
+    
+    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+        calWeekLabel.font = [UIFont fontWithName:@"Helvetica Bold" size:12];
+        calDateLabel.font = [UIFont fontWithName:@"Helvetica" size:24];
+    } else {
+        calWeekLabel.font = [UIFont fontWithName:@"Helvetica Bold" size:9];
+        calDateLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
+    }
     
     return calLabelView;
 }
@@ -854,48 +864,44 @@
             if ([candidateCaches count] > 0) {
                 // candidateの中から選択してはめる
                 UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
-                cell.backgroundView = [[UIImageView alloc] initWithImage:[multiCandidateImage applyBlurWithRadius:1 tintColor:[UIColor colorWithWhite:1 alpha:0.6] saturationDeltaFactor:1.5 maskImage:nil]];
+                cell.backgroundView = [[UIImageView alloc] initWithImage:[multiCandidateImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil]];
             } else {
                 // プロフィールの画像をはめる
+                
             }
         }
-            
-            /*
-            if (candidateCount == 0) {
-            
-            } else if (candidateCount == 1) {
-                // 一枚の時はブラーかけてはめるだけ
-                NSData *imageCacheData = [ImageCache getCache:candidateCaches[0] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId , ymd]];
-                UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
-                UIImage *trimmedImage;
-                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                    trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cell.frame.size.height/cell.frame.size.width)];
-                } else {
-                    trimmedImage = [ImageTrimming makeRectImage:cacheImage];
-                }
-                cell.backgroundView = [[UIImageView alloc] initWithImage:[trimmedImage applyBlurWithRadius:1 tintColor:[UIColor colorWithWhite:1 alpha:0.6] saturationDeltaFactor:1.5 maskImage:nil]];
-            } else if (candidateCount == 2) {
-                // 2枚の時は上下で分けてはめる
-                for (int i = 0; i < 2; i++) {
-                    NSLog(@"set 2 image %d", i);
-                    NSData *imageCacheData = [ImageCache getCache:candidateCaches[0] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId , ymd]];
-                    UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
-                    UIImage *trimmedImage;
-                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                        trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cell.frame.size.height/cell.frame.size.width)];
-                    } else {
-                        trimmedImage = [ImageTrimming makeRectImage:cacheImage];
-                    }
-                    cell.backgroundView = [[UIImageView alloc] initWithImage:[trimmedImage applyBlurWithRadius:1 tintColor:[UIColor colorWithWhite:1 alpha:0.6] saturationDeltaFactor:1.5 maskImage:nil]];
-                }
-            } else if (candidateCount == 2) {
-                // 3枚の時は上に一枚、下に二枚
-            } else {
-                // 4枚以上は4枚固定で
-            }
+        // Give Me Photoの場合黄色いアイコン
+        
+        
+        // それ以外(Photo Uploaded!! or No Photo)は青いアイコン
+        if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+            CellImageFramePlaceHolderLarge *placeHolder = [CellImageFramePlaceHolderLarge view];
+            CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+            placeHolder.frame = rect;
+            // 文字にshadow with blurを付けているがここちょっと不満 あとで変えたい
+            placeHolder.placeHolderLabel.text = @"No Photo";
+            placeHolder.placeHolderLabel.layer.shadowColor = [UIColor whiteColor].CGColor;
+            placeHolder.placeHolderLabel.layer.shadowOffset = CGSizeMake(0, 0);
+            placeHolder.placeHolderLabel.layer.shadowRadius = 4.0;
+            placeHolder.placeHolderLabel.layer.shadowOpacity = 1.0;
+            placeHolder.placeHolderLabel.layer.masksToBounds = NO;
+            placeHolder.suggestLabel.text = @"今すぐアップロード!!";
+            placeHolder.suggestLabel.layer.shadowColor = [UIColor whiteColor].CGColor;
+            placeHolder.suggestLabel.layer.shadowOffset = CGSizeMake(0, 0);
+            placeHolder.suggestLabel.layer.shadowRadius = 4.0;
+            placeHolder.suggestLabel.layer.shadowOpacity = 1.0;
+            placeHolder.suggestLabel.layer.masksToBounds = NO;
+            [cell addSubview:placeHolder];
+        } else {
+            CellImageFramePlaceHolder *placeHolder = [CellImageFramePlaceHolder view];
+            placeHolder.placeHolderLabel.text = @"No Photo";
+            CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+            placeHolder.frame = rect;
+            [cell addSubview:placeHolder];
         }
-        */
-    
+        
+        
+        
     /*
         if ([role isEqualToString:@"uploader"]) {
             // アップの出し分け
@@ -996,6 +1002,9 @@
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
+        UIImageView *backgroundGridView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ImageBackgroundGrid"]];
+        backgroundGridView.frame = CGRectMake(0, 0, cell.frame.size.width, 24);
+        [cell.backgroundView addSubview:backgroundGridView];
     }
     cell.isChoosed = YES;
 }
