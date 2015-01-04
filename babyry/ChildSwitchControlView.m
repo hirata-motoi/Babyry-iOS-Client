@@ -11,6 +11,7 @@
 #import "ChildProperties.h"
 #import "DateUtils.h"
 #import "Tutorial.h"
+#import "Config.h"
 
 @implementation ChildSwitchControlView {
     NSMutableArray *childSwitchViewList;
@@ -62,10 +63,12 @@ static ChildSwitchControlView* sharedObject = nil;
         [childSwitchView setParams:childProperty[@"objectId"] forKey:@"childObjectId"];
         [childSwitchViewList addObject:childSwitchView];
     }
-    
-    // 自身のサイズを調整
-    // 最初は40x40のレクタングルでOK
-    self.frame = CGRectMake(320 - 50, 70, 50, 50);
+  
+    // サイズ・位置の調整
+    float width = [[Config config][@"ChildSwitchControlViewWidth"] floatValue];
+    float height = [[Config config][@"ChildSwitchControlViewHeight"] floatValue];
+    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    self.frame = CGRectMake(screenRect.size.width - width, [[Config config][@"ChildSwitchControlViewMarginTop"] floatValue], width, height);
     
     // 自身にaddSubview
     for (ChildSwitchView *view in childSwitchViewList) {
