@@ -38,8 +38,7 @@
     [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
    
     // 先月
-    NSDateComponents *lastComp = [self dateComps];
-    lastComp.month--;
+    NSDateComponents *lastComp = [DateUtils addDateComps:comp withUnit:@"month" withValue:-1];
     [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
   
     self.pageContentViewController.dateComp = lastComp;
@@ -717,6 +716,10 @@
                 
                 // _childImagesにPFObjectを追加
                 [self addEmptyChildImages:compsToAdd];
+               
+                // childImagesIndexMapを再生成
+                [self.pageContentViewController setupChildImagesIndexMap];
+                
                 // PageContentViewControllerをreload
                 [self executeReload];
                 

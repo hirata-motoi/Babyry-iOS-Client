@@ -71,7 +71,7 @@
                     }
                     if (!data[@"sound"]) {
                         // デフォルトの着信音
-                        data[@"sound"] = @"";
+                        data[@"sound"] = @"default";
                     }
                     [push setData:[options objectForKey:@"data"]];
                     
@@ -124,7 +124,7 @@
             }
             if (!data[@"sound"]) {
                 // デフォルトの着信音
-                data[@"sound"] = @"";
+                data[@"sound"] = @"default";
             }
             [push setData:[options objectForKey:@"data"]];
             // 送信

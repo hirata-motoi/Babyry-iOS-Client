@@ -1338,16 +1338,12 @@
 				F22F208519E46A600089A592 /* ChildPropertyEntity.m */,
 				F2D9350019C95DA8001F33D0 /* TutorialAttributes.h */,
 				F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */,
-				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
-				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
 				88C072E719C9E58D00BF6F6F /* TrackingLogEntity.h */,
 				88C072E819C9E58D00BF6F6F /* TrackingLogEntity.m */,
 				88C0730019CEAE8F00BF6F6F /* PartnerInvitedEntity.h */,
 				88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */,
 				F2D934FD19C9463E001F33D0 /* TutorialBestShot.h */,
 				F2D934FE19C9463E001F33D0 /* TutorialBestShot.m */,
-				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
-				F2AE04EB19B2EC8500B39C6F /* AppSetting.m */,
 				88C072C219C4599900BF6F6F /* TmpUserData.h */,
 				88C072C319C4599900BF6F6F /* TmpUserData.m */,
 				F2AE04EA19B2EC8500B39C6F /* AppSetting.h */,
@@ -2034,7 +2030,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "c410f3b0-d976-4ab0-b3af-3fd97f3668ba";
+				PROVISIONING_PROFILE = "ed0e4f80-add5-414f-92fe-98b2180ed6bb";
 				SDKROOT = iphoneos;
 			};
 			name = BabyryDev;
@@ -2057,7 +2053,7 @@
 				INFOPLIST_FILE = "babyry/babyrydev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "ed0e4f80-add5-414f-92fe-98b2180ed6bb";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2113,7 +2109,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				PROVISIONING_PROFILE = "6941dd87-7e46-47a7-8e47-f2a0348c2112";
+				PROVISIONING_PROFILE = "3946fda5-3638-49ce-8491-20b3d9a9027c";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2137,7 +2133,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "3946fda5-3638-49ce-8491-20b3d9a9027c";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
