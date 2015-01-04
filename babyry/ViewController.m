@@ -597,7 +597,7 @@
     }
 }
 
-- (void)fit
+- (void)fitToScreen
 {
     CGRect rect = [self getPageContentViewRect];
    
@@ -754,7 +754,7 @@
 // 表示位置
 - (void)adjustChildSwitchControlView
 {
-    [self fit];
+    [self fitToScreen];
     TutorialStage *currentStage = [Tutorial currentStage];
     if ([Tutorial underTutorial] && ![currentStage.currentStage isEqualToString:@"familyApplyExec"]) { // familyApply以前
         childSwitchControlView.hidden = YES;
