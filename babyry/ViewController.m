@@ -351,12 +351,17 @@
 
     user[@"familyId"] = [self createFamilyId];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving User.familyId userId:%@ familyId:%@ error:%@", user[@"userId"], user[@"familyId"], error]];
+            [self showAlertMessage];
+            return;
+        }
         PFQuery *query = [PFQuery queryWithClassName:@"TutorialMap"];
         [query whereKey:@"userId" equalTo:user[@"userId"]];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (error) {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting TutorialMap userId:%@ error:%@", user[@"userId"], error]];
-                // TODO ネットワークエラーが発生しました を表示
+                [self showAlertMessage];
                 return;
             }
             
@@ -369,9 +374,9 @@
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
             tutorialMap[@"userid"] = user[@"userId"];
             [tutorialMap saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (error || !succeeded) {
-                    // TODO ネットワークエラーが発生しました を表示
+                if (error) {
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving TutorialMap userId:%@ error:%@", user[@"userId"], error]];
+                    [self showAlertMessage];
                     return;
                 }
                 [self setupChildSwitchView];
@@ -760,6 +765,17 @@
     } else {
         childSwitchControlView.hidden = NO;
     }
+}
+
+- (void)showAlertMessage
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
+                                                    message:@"ネットワークエラーが発生しました。\nネットワーク状況をご確認の上、アプリを起動し直してください。"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
 }
 
 @end
