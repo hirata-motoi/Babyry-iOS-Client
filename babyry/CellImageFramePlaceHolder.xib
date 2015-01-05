@@ -20,17 +20,37 @@
                     <color key="textColor" red="0.49019607840000001" green="0.76470588240000004" blue="0.8980392157" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="PhotoSmile" translatesAutoresizingMaskIntoConstraints="NO" id="rwC-aR-j9l">
+                    <rect key="frame" x="46" y="46" width="8" height="8"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="/15" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AHd-aU-UGJ">
+                    <rect key="frame" x="50" y="41" width="13" height="19"/>
+                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="5"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="URu-70-8os">
+                    <rect key="frame" x="40" y="39" width="12" height="21"/>
+                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="6"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="photoSmileIcon" destination="rwC-aR-j9l" id="RKn-tV-APA"/>
+                <outlet property="placeHolderIcon" destination="Huj-gw-oFJ" id="IaU-2v-5YS"/>
                 <outlet property="placeHolderLabel" destination="wfj-Yj-8qo" id="6B6-C9-uCr"/>
+                <outlet property="uploadMaxNumLabel" destination="AHd-aU-UGJ" id="Z1X-wM-Hom"/>
+                <outlet property="uploadedNumLabel" destination="URu-70-8os" id="ENI-qc-nMU"/>
             </connections>
             <point key="canvasLocation" x="395" y="210"/>
         </view>
     </objects>
     <resources>
         <image name="IconPhotoFrame" width="84" height="76"/>
+        <image name="PhotoSmile" width="15" height="15"/>
     </resources>
 </document>

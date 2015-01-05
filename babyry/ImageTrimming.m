@@ -8,6 +8,8 @@
 
 #import "ImageTrimming.h"
 #import "ImageCache.h"
+#import "UIImage+ImageEffects.h"
+#import "ColorUtils.h"
 
 @implementation ImageTrimming
 
@@ -95,7 +97,8 @@
         UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
         UIImage *trimmedImage;
         trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/cellFrame.size.width)];
-        returnImage = trimmedImage;
+        UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+        returnImage = trimmedImageWithBlur;
     } else if (candidateCount == 2) {
         // 2枚の時は上下に分ける
         UIGraphicsBeginImageContext(CGSizeMake(cellFrame.size.width, cellFrame.size.height));
@@ -104,7 +107,8 @@
             UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
             UIImage *trimmedImage;
             trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/2/cellFrame.size.width)];
-            [trimmedImage drawInRect:CGRectMake(0, cellFrame.size.height/2*i, cellFrame.size.width, cellFrame.size.height/2)];
+            UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+            [trimmedImageWithBlur drawInRect:CGRectMake(0, cellFrame.size.height/2*i, cellFrame.size.width, cellFrame.size.height/2)];
         }
         returnImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
@@ -117,10 +121,12 @@
             UIImage *trimmedImage;
             if (i == 0) {
                 trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/2/cellFrame.size.width)];
-                [trimmedImage drawInRect:CGRectMake(0, 0, cellFrame.size.width, cellFrame.size.height/2)];
+                UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+                [trimmedImageWithBlur drawInRect:CGRectMake(0, 0, cellFrame.size.width, cellFrame.size.height/2)];
             } else {
                 trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/cellFrame.size.width)];
-                [trimmedImage drawInRect:CGRectMake(cellFrame.size.width/2*(i-1), cellFrame.size.height/2, cellFrame.size.width/2, cellFrame.size.height/2)];
+                UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+                [trimmedImageWithBlur drawInRect:CGRectMake(cellFrame.size.width/2*(i-1), cellFrame.size.height/2, cellFrame.size.width/2, cellFrame.size.height/2)];
             }
         }
         returnImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -131,9 +137,9 @@
         for (int i = 0; i < 4; i++) {
             NSData *imageCacheData = [ImageCache getCache:candidatePathArray[i] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", chidObjectId, ymd]];
             UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
-            UIImage *trimmedImage;
-            trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/cellFrame.size.width)];
-            [trimmedImage drawInRect:CGRectMake(cellFrame.size.width/2*(i%2), cellFrame.size.height/2*floor(i/2), cellFrame.size.width/2, cellFrame.size.height/2)];
+            UIImage *trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/cellFrame.size.width)];
+            UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+            [trimmedImageWithBlur drawInRect:CGRectMake(cellFrame.size.width/2*(i%2), cellFrame.size.height/2*floor(i/2), cellFrame.size.width/2, cellFrame.size.height/2)];
         }
         returnImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();

@@ -25,17 +25,37 @@
                     <fontDescription key="fontDescription" name="HiraKakuProN-W3" family="Hiragino Kaku Gothic ProN" pointSize="10"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="PhotoSmile" translatesAutoresizingMaskIntoConstraints="NO" id="oW9-Mf-4bM">
+                    <rect key="frame" x="153" y="122" width="15" height="15"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vZT-57-BgQ">
+                    <rect key="frame" x="144" y="118" width="14" height="21"/>
+                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="12"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="/15" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JC4-yl-PGW">
+                    <rect key="frame" x="159" y="120" width="19" height="21"/>
+                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="10"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="photoSmileIcon" destination="oW9-Mf-4bM" id="9Jn-aB-EKD"/>
+                <outlet property="placeHolderIcon" destination="o83-gX-rLS" id="nLg-o1-IL8"/>
                 <outlet property="placeHolderLabel" destination="PvK-iJ-AuD" id="xHB-Fv-WVo"/>
                 <outlet property="suggestLabel" destination="wlv-bn-zki" id="tCj-iE-VWJ"/>
+                <outlet property="uploadMaxNumLabel" destination="JC4-yl-PGW" id="RS5-E2-ADh"/>
+                <outlet property="uploadedNumLabel" destination="vZT-57-BgQ" id="DUC-qv-f7Y"/>
             </connections>
         </view>
     </objects>
     <resources>
         <image name="IconPhotoFrame" width="84" height="76"/>
+        <image name="PhotoSmile" width="15" height="15"/>
     </resources>
 </document>

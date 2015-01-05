@@ -20,12 +20,12 @@
 #import "CalendarCollectionViewCell.h"
 #import "DateUtils.h"
 #import "DragView.h"
-#import "CellBackgroundViewToEncourageUpload.h"
-#import "CellBackgroundViewToEncourageUploadLarge.h"
-#import "CellBackgroundViewToEncourageChoose.h"
-#import "CellBackgroundViewToEncourageChooseLarge.h"
-#import "CellBackgroundViewToWaitUpload.h"
-#import "CellBackgroundViewToWaitUploadLarge.h"
+//#import "CellBackgroundViewToEncourageUpload.h"
+//#import "CellBackgroundViewToEncourageUploadLarge.h"
+//#import "CellBackgroundViewToEncourageChoose.h"
+//#import "CellBackgroundViewToEncourageChooseLarge.h"
+//#import "CellBackgroundViewToWaitUpload.h"
+//#import "CellBackgroundViewToWaitUploadLarge.h"
 //#import "CellBackgroundViewNoImage.h"
 #import "CellImageFramePlaceHolder.h"
 #import "CellImageFramePlaceHolderLarge.h"
@@ -56,7 +56,6 @@
 #import "Partner.h"
 #import "UploadPastImagesIntroductionView.h"
 #import "AnnounceBoardView.h"
-#import "UIImage+ImageEffects.h"
 
 @interface PageContentViewController ()
 
@@ -367,14 +366,22 @@
         return;
     }
     
-    // チェックの人がアップ催促する時は何の処理もしない
+    // チョイスの人がアップ催促する
+    // タップでアラートでて、Give Me PhotoをおくるならOK押す
     if ([_selfRole isEqualToString:@"chooser"] && [[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Give Me Photo"
+                                                            message:@"アップロードをパートナーにおねがいしますか？"
+                                                           delegate:self
+                                                  cancelButtonTitle:@"キャンセル"
+                                                  otherButtonTitles:@"おねがいする", nil
+                                  ];
+            [alert show];
             return;
         }
     }
     
-    // チェック側、2日より前の時にも何もしない(No Image)
+    // チョイス側、2日より前の時にも何もしない(No Image)
     if ([_selfRole isEqualToString:@"chooser"] && ![[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             return;
@@ -857,143 +864,34 @@
     
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    // imageCacheDataが無い場合には条件によってPlaceHolderなどはめる
     if (!imageCacheData) {
         // 2日以内の場合には、candidateがあれば表示させる
+        NSArray *candidateCaches = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, ymd]]];
         if ([[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
-            NSArray *candidateCaches = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, ymd]]];
             if ([candidateCaches count] > 0) {
                 // candidateの中から選択してはめる
                 UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
-                cell.backgroundView = [[UIImageView alloc] initWithImage:[multiCandidateImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil]];
+                cell.backgroundView = [[UIImageView alloc] initWithImage:multiCandidateImage];
             } else {
-                // プロフィールの画像をはめる
+                // candidateが無いのでプロフィールの画像をはめる
                 
             }
         }
-        // Give Me Photoの場合黄色いアイコン
         
-        
-        // それ以外(Photo Uploaded!! or No Photo)は青いアイコン
+        // PlaceHolderアイコンなどをはめる
         if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
             CellImageFramePlaceHolderLarge *placeHolder = [CellImageFramePlaceHolderLarge view];
             CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
             placeHolder.frame = rect;
-            // 文字にshadow with blurを付けているがここちょっと不満 あとで変えたい
-            placeHolder.placeHolderLabel.text = @"No Photo";
-            placeHolder.placeHolderLabel.layer.shadowColor = [UIColor whiteColor].CGColor;
-            placeHolder.placeHolderLabel.layer.shadowOffset = CGSizeMake(0, 0);
-            placeHolder.placeHolderLabel.layer.shadowRadius = 4.0;
-            placeHolder.placeHolderLabel.layer.shadowOpacity = 1.0;
-            placeHolder.placeHolderLabel.layer.masksToBounds = NO;
-            placeHolder.suggestLabel.text = @"今すぐアップロード!!";
-            placeHolder.suggestLabel.layer.shadowColor = [UIColor whiteColor].CGColor;
-            placeHolder.suggestLabel.layer.shadowOffset = CGSizeMake(0, 0);
-            placeHolder.suggestLabel.layer.shadowRadius = 4.0;
-            placeHolder.suggestLabel.layer.shadowOpacity = 1.0;
-            placeHolder.suggestLabel.layer.masksToBounds = NO;
-            [cell addSubview:placeHolder];
+            [placeHolder setPlaceHolderForCell:cell indexPath:indexPath role:role candidateCount:[candidateCaches count]];
         } else {
             CellImageFramePlaceHolder *placeHolder = [CellImageFramePlaceHolder view];
-            placeHolder.placeHolderLabel.text = @"No Photo";
             CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
             placeHolder.frame = rect;
-            [cell addSubview:placeHolder];
+            [placeHolder setPlaceHolderForCell:cell indexPath:indexPath role:role candidateCount:[candidateCaches count]];
         }
-        
-        
-        
-    /*
-        if ([role isEqualToString:@"uploader"]) {
-            // アップの出し分け
-            // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
-            // それ以外 : アップアイコン
-            
-            if([[self logic:@"withinTwoDay"] withinTwoDay:indexPath] && [[self logic:@"isNoImage"] isNoImage:indexPath]) {
-                // チョイス催促をいれてもいいけど、いまは UP PHOTO アイコンをはめている
-                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
-                } else {
-                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
-                }
-            } else {
-                // アップアイコン
-                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
-                } else {
-                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
-                }
-            }
-        } else {
-            // チョイスの出し分け
-            // 今日 or 昨日
-            //// アップ済み : チョイス催促、　未アップ : アップ催促
-            // ２日以上たったらNoImage
-            if ([[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
-                // アップ催促
-                if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
-                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                        CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        backgroundView.iconView.frame = rect;
-                        [cell addSubview:backgroundView];
-                    } else {
-                        CellBackgroundViewToWaitUpload *backgroundView = [CellBackgroundViewToWaitUpload view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        backgroundView.iconView.frame = rect;
-                        [cell addSubview:backgroundView];
-                    }
-                    // ダブルタップでプッシュ通知
-                    UITapGestureRecognizer *giveMePhotoGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(giveMePhoto:)];
-                    giveMePhotoGesture.numberOfTapsRequired = 2;
-                    [cell addGestureRecognizer:giveMePhotoGesture];
-                } else {
-                    // チョイス促進アイコン貼る
-                    NSNumber *uploadedNum = [totalImageNum objectAtIndex:indexPath.row];
-                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                        CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 10, backgroundView.upCountLabel.frame.size.height);
-                        backgroundView.upCountLabel.frame = rect;
-                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
-                        [cell addSubview:backgroundView];
-                    } else {
-                        CellBackgroundViewToEncourageChoose *backgroundView = [CellBackgroundViewToEncourageChoose view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 5, backgroundView.upCountLabel.frame.size.height);
-                        backgroundView.upCountLabel.frame = rect;
-                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
-                        [cell addSubview:backgroundView];
-                    }
-                }
-            } else {
-                CellBackgroundViewNoImage *backgroundView = [CellBackgroundViewNoImage view];
-                CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                backgroundView.frame = rect;
-                backgroundView.iconView.frame = rect;
-                [cell addSubview:backgroundView];
-            }
-        }
-        */
         return;
     }
     
@@ -1025,19 +923,10 @@
 }
 
 
-- (void) giveMePhoto:(id)sender
+- (void) giveMePhoto
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-    
-    CalendarCollectionViewCell *cell = [sender view];
-    for (id elem in [cell subviews]) {
-        if ([elem isKindOfClass:[CellBackgroundViewToWaitUpload class]] || [elem isKindOfClass:[CellBackgroundViewToWaitUploadLarge class]]) {
-            for (UIImageView *imageView in [elem subviews]) {
-                [self vibrateImageView:imageView];
-            }
-        }
-    }
-    
+
     NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
     transitionInfoDic[@"event"] = @"requestPhoto";
     transitionInfoDic[@"childObjectId"] = _childObjectId;
@@ -1047,11 +936,8 @@
                         forKeys:@[@"badge", @"transitionInfo"]];
     [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
     
-    
-    PFObject *childImage = [[[_childImages objectAtIndex:0] objectForKey:@"images"] objectAtIndex:[sender view].tag];
-    NSString *ymd = [childImage[@"date"] stringValue];
     PFObject *partner = (PFObject *)[Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:[ymd integerValue]];
+    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:0];
 }
 
 
@@ -1103,29 +989,6 @@
         [cell addSubview:badge];
         c++;
     }
-    
-    // give me photoのラベルはる
-    // 基本的には1つしか無いはずなので、最初の一つをとる
-    // ただし、表示するのは、section = 0, row = 0,1だけ
-    // かつ uploaderだけ
-//    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
-//        if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
-//            if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
-//                // 左下にそっと出してみる
-//                float cellHeigt = cell.frame.size.height;
-//                float cellWidth = cell.frame.size.width;
-//                int widthRatio = 4;
-//                if (indexPath.row == 1) {
-//                    widthRatio = 3;
-//                }
-//                CGRect rect = CGRectMake(0, cellHeigt - cellHeigt/widthRatio, cellWidth/widthRatio, cellHeigt/widthRatio);
-//                UIImage *giveMePhotoIcon = [UIImage imageNamed:@"GiveMePhotoIcon"];
-//                UIImageView *giveMePhotoIconView = [[UIImageView alloc] initWithImage:giveMePhotoIcon];
-//                giveMePhotoIconView.frame = rect;
-//                [cell addSubview:giveMePhotoIconView];
-//            }
-//        }
-//    }
 }
 
 - (void)vibrateImageView:(UIImageView *)imageView
@@ -1543,6 +1406,18 @@
 - (void) downloadComplete
 {
 	[logic executeReload];
+}
+
+- (void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    switch (buttonIndex) {
+        case 0:
+            break;
+        case 1:
+        {
+            [self giveMePhoto];
+        }
+            break;
+    }
 }
 
 @end

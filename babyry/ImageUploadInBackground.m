@@ -59,6 +59,7 @@ int uploadErrorCount;
 
 + (void)multiUploadImagesInBackground
 {
+    NSLog(@"multiUploadImagesInBackground たまにクルクルが消えないのでログし込む by kenjiszk");
     // tmpDataの運用を厳密にする (クルクルが消えないとかそうゆうのを無くす)
     // 一つの画像をアップするのに時間がかかるけど、安全な方を選ぶ。時間がかかると言っても電波状況が通常であれば数秒
     // 1. ParseにtmpDataを作成する
@@ -73,6 +74,8 @@ int uploadErrorCount;
     dispatch_group_t g = dispatch_group_create();
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(concurrency);
     
+    NSLog(@"queue count %d", [multiUploadImageDataArray count]);
+    
     for (int i = 0; i < [multiUploadImageDataArray count]; i++) {
         dispatch_group_async(g,q,^{
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
@@ -80,6 +83,7 @@ int uploadErrorCount;
             NSString *imageType = [multiUploadImageDataTypeArray objectAtIndex:i];
             
             // 1. ParseにtmpDataを作成する(tmpData = TRUE)
+            NSLog(@"ParseにtmpDataを作成する(tmpData = TRUE) %d", i);
             PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
             childImage[@"date"] = [NSNumber numberWithInteger:[targetDate integerValue]];
             childImage[@"imageOf"] = childProperty[@"objectId"];
@@ -88,6 +92,7 @@ int uploadErrorCount;
             NSError *error = nil;
             [childImage save:&error];
             if (!error) {
+                NSLog(@"success to save in Parse");
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config config][@"AWSBucketName"];
                 putRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], childImage.objectId];
@@ -103,6 +108,7 @@ int uploadErrorCount;
                     [childImage deleteEventually];
                     uploadErrorCount++;
                 } else {
+                    NSLog(@"success to save in S3");
                     // 3. ParseのtmpDataをFalseにセットする
                     childImage[@"isTmpData"] = @"FALSE";
                     NSError *error = nil;
