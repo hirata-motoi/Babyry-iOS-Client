@@ -20,13 +20,6 @@
 #import "CalendarCollectionViewCell.h"
 #import "DateUtils.h"
 #import "DragView.h"
-//#import "CellBackgroundViewToEncourageUpload.h"
-//#import "CellBackgroundViewToEncourageUploadLarge.h"
-//#import "CellBackgroundViewToEncourageChoose.h"
-//#import "CellBackgroundViewToEncourageChooseLarge.h"
-//#import "CellBackgroundViewToWaitUpload.h"
-//#import "CellBackgroundViewToWaitUploadLarge.h"
-//#import "CellBackgroundViewNoImage.h"
 #import "CellImageFramePlaceHolder.h"
 #import "CellImageFramePlaceHolderLarge.h"
 #import "AddMonthToCalendarView.h"
@@ -991,28 +984,28 @@
     }
 }
 
-- (void)vibrateImageView:(UIImageView *)imageView
-{
-    CGRect rect = imageView.frame;
-    
-    CGRect rightRect = rect;
-    rightRect.origin.x += 5;
-    NSValue *rightRectObj = [NSValue valueWithCGRect:rightRect];
-    
-    CGRect leftRect = rect;
-    leftRect.origin.x -= 5;
-    NSValue *leftRectObj = [NSValue valueWithCGRect:leftRect];
-    
-    NSValue *originalRectObj = [NSValue valueWithCGRect:rect];
-    
-    
-    NSMutableArray *posList = [[NSMutableArray alloc]initWithObjects:rightRectObj, leftRectObj, rightRectObj, leftRectObj, originalRectObj , nil];
-    
-    NSMutableDictionary *info = [[NSMutableDictionary alloc]init];
-    info[@"imageView"] = imageView;
-    info[@"posList"] = posList;
-    NSTimer *tm = [NSTimer scheduledTimerWithTimeInterval:0.03f target:self selector:@selector(vibrate:) userInfo:info repeats:YES];
-}
+//- (void)vibrateImageView:(UIImageView *)imageView
+//{
+//    CGRect rect = imageView.frame;
+//    
+//    CGRect rightRect = rect;
+//    rightRect.origin.x += 5;
+//    NSValue *rightRectObj = [NSValue valueWithCGRect:rightRect];
+//    
+//    CGRect leftRect = rect;
+//    leftRect.origin.x -= 5;
+//    NSValue *leftRectObj = [NSValue valueWithCGRect:leftRect];
+//    
+//    NSValue *originalRectObj = [NSValue valueWithCGRect:rect];
+//    
+//    
+//    NSMutableArray *posList = [[NSMutableArray alloc]initWithObjects:rightRectObj, leftRectObj, rightRectObj, leftRectObj, originalRectObj , nil];
+//    
+//    NSMutableDictionary *info = [[NSMutableDictionary alloc]init];
+//    info[@"imageView"] = imageView;
+//    info[@"posList"] = posList;
+//    NSTimer *tm = [NSTimer scheduledTimerWithTimeInterval:0.03f target:self selector:@selector(vibrate:) userInfo:info repeats:YES];
+//}
 
 - (void)vibrate:(NSTimer *)timer
 {

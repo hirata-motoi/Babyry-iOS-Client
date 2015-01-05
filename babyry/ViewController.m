@@ -415,7 +415,7 @@
 - (void)setupGlobalSetting
 {
     UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"listReverse"] forState:UIControlStateNormal];
+    [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"IconMenu"] forState:UIControlStateNormal];
     [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
