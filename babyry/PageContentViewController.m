@@ -326,7 +326,7 @@
     
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] stringValue];
-    NSString *imageCachePath = ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row])
+    NSString *imageCachePath = ([DateUtils isTodayByIndexPath:indexPath])
         ? [NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId , ymd]
         : [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId , ymd];
 
@@ -368,7 +368,7 @@
     
     // チョイスの人がアップ催促する
     // タップでアラートでて、Give Me PhotoをおくるならOK押す
-    if ([_selfRole isEqualToString:@"chooser"] && [[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+    if ([_selfRole isEqualToString:@"chooser"] && [DateUtils isInTwodayByIndexPath:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Give Me Photo"
                                                             message:@"アップロードをパートナーにおねがいしますか？"
@@ -382,7 +382,7 @@
     }
     
     // チョイス側、2日より前の時にも何もしない(No Image)
-    if ([_selfRole isEqualToString:@"chooser"] && ![[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+    if ([_selfRole isEqualToString:@"chooser"] && ![DateUtils isInTwodayByIndexPath:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             return;
         }
@@ -514,7 +514,7 @@
 
     // カレンダーラベル組み立て
     CalenderLabel *calLabelView = [CalenderLabel view];
-    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+    if ([DateUtils isTodayByIndexPath:indexPath]) {
         calLabelView.frame = CGRectMake(2, 2, 54, 48);
         calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, 16);
         calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
@@ -552,7 +552,7 @@
     calDateLabel.textAlignment = NSTextAlignmentCenter;
     [calLabelView.calLabelBack addSubview:calDateLabel];
     
-    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+    if ([DateUtils isTodayByIndexPath:indexPath]) {
         calWeekLabel.font = [UIFont fontWithName:@"Helvetica Bold" size:12];
         calDateLabel.font = [UIFont fontWithName:@"Helvetica" size:24];
     } else {
@@ -869,7 +869,7 @@
     if (!imageCacheData) {
         // 2日以内の場合には、candidateがあれば表示させる
         NSArray *candidateCaches = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, ymd]]];
-        if ([[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+        if ([DateUtils isInTwodayByIndexPath:indexPath]) {
             if ([candidateCaches count] > 0) {
                 // candidateの中から選択してはめる
                 UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
@@ -881,7 +881,7 @@
         }
         
         // PlaceHolderアイコンなどをはめる
-        if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+        if ([DateUtils isTodayByIndexPath:indexPath]) {
             CellImageFramePlaceHolderLarge *placeHolder = [CellImageFramePlaceHolderLarge view];
             CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
             placeHolder.frame = rect;
@@ -896,7 +896,7 @@
     }
     
     // best shotが既に選択済の場合は普通に写真を表示
-    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+    if ([DateUtils isTodayByIndexPath:indexPath]) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];

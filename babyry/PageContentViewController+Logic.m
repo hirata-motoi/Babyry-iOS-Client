@@ -104,7 +104,7 @@
                                 queueForCache[@"objectId"] = childImageDate.objectId;
 								queueForCache[@"childObjectId"] = self.pageContentViewController.childObjectId;
                                 queueForCache[@"date"] = childImageDate[@"date"];
-                                if ([self isToday:index withRow:i]) {
+                                if ([DateUtils isTodayByIndexPath:ip]) {
                                     queueForCache[@"imageType"] = @"fullsize";
                                 }
                                 
@@ -112,11 +112,11 @@
                             }
                             bestshotExist = YES;
 							
-							if ([self withinTwoDay:ip]) {
+                            if ([DateUtils isInTwodayByIndexPath:ip]) {
 								self.pageContentViewController.bestImageIds[[date stringValue]] = childImageDate.objectId;
 							}
                         }
-						if ([self withinTwoDay:ip]) {
+						if ([DateUtils isInTwodayByIndexPath:ip]) {
 							NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", self.pageContentViewController.childObjectId, [date stringValue], childImageDate.objectId];
                             if ([childImageDate.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
                                 
@@ -130,7 +130,7 @@
                             }
 						}
                     }
-                    if ([self withinTwoDay:ip]) {
+                    if ([DateUtils isInTwodayByIndexPath:ip]) {
                         // 昨日、今日の場合は単に写真の枚数を突っ込む
                         [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[childImageDic[date] count]]];
                         // BestShotがない場合はcache削除(BestShotを削除した場合のため)
@@ -174,28 +174,6 @@
     }];
     // 不要なfullsizeのキャッシュを消す
     [self removeUnnecessaryFullsizeCache];
-}
-
-- (BOOL)isToday:(NSInteger)section withRow:(NSInteger)row
-{
-    return (section == 0 && row == 0) ? YES : NO;
-}
-
-- (BOOL)withinTwoDay: (NSIndexPath *)indexPath
-{
-    PFObject *chilImage = [[[self.pageContentViewController.childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
-    NSString *ymd = [chilImage[@"date"] stringValue];
-    NSDateComponents *compToday = [self dateComps];
-  
-    NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
-	[inputDateFormatter setDateFormat:@"yyyyMMdd"];
-	NSDate *dateToday = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:[NSString stringWithFormat:@"%ld%02ld%02ld", (long)compToday.year, (long)compToday.month, (long)compToday.day]]];
-	NSDate *dateTappedImage = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:ymd]];
- 
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *diff = [cal components:NSDayCalendarUnit fromDate:dateTappedImage toDate:dateToday options:0];
-    
-    return [diff day] < 2;
 }
 
 - (void)compensateDateOfChildImage:(NSArray *)objects
@@ -355,7 +333,7 @@
 - (BOOL)shouldShowMultiUploadView:(NSIndexPath *)indexPath
 {
     // 2日間はMultiUploadViewController
-    return [self withinTwoDay:indexPath];
+    return [DateUtils isInTwodayByIndexPath:indexPath];
 }
 
 - (BOOL)isNoImage:(NSIndexPath *)indexPath
@@ -446,7 +424,7 @@
             // 今日・昨日に関してはchoosedが一枚もない場合が普通にあるので判別不可能なので
             // PageContentViewController内で、写真が一枚もない場合はnotificationを見せない対応をする
             NSIndexPath *ip = [self indexPathFromYMD:ymd];
-            if (!ip || [self withinTwoDay:ip]) {
+            if (!ip || [DateUtils isInTwodayByIndexPath:ip]) {
                 continue;
             }
             
