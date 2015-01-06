@@ -69,6 +69,7 @@
 - (void)showLoadingIcon;
 - (void)hideLoadingIcon;
 - (void)showIntroductionForFillingEmptyCells;
+- (void)setupChildImagesIndexMap;
 
 @property AWSServiceConfiguration *configuration;
 

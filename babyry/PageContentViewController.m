@@ -775,7 +775,12 @@
 
 - (void)setupChildImagesIndexMap
 {
-    _childImagesIndexMap = [[NSMutableDictionary alloc] init];
+    if (!_childImagesIndexMap) {
+        _childImagesIndexMap = [[NSMutableDictionary alloc] init];
+    } else {
+        [_childImagesIndexMap removeAllObjects];
+    }
+    
     int n = 0;
     for (NSMutableDictionary *section in _childImages) {
         NSString *ym = [NSString stringWithFormat:@"%@%02ld", section[@"year"], (long)[section[@"month"] integerValue]];
