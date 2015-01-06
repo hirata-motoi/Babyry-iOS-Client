@@ -121,22 +121,18 @@
     _indexPath = [NSIndexPath indexPathForRow:[transitionInfo[@"row"] intValue] inSection:[transitionInfo[@"section"] intValue]];
     
     NSDate *date = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
-    
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *comps = [[NSDateComponents alloc]init];
-    comps.month = -_indexPath.section;
-    
-    NSDate *fromDate = [cal dateByAddingComponents:comps toDate:date options:0];
-    
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyyMM"];
+    
+    NSString *yyyymmdd = transitionInfo[@"date"];
+    NSString *fromDate = [yyyymmdd substringToIndex:6];
     
     dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
     dispatch_group_t g = dispatch_group_create();
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(2);
     
     dispatch_group_async(g,q,^{
-        [self getChildImagesFrom:[[df stringFromDate:fromDate] integerValue] to:[[df stringFromDate:date] integerValue]];
+        [self getChildImagesFrom:[fromDate integerValue] to:[[df stringFromDate:date] integerValue]];
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         dispatch_semaphore_signal(semaphore);
     });
@@ -238,6 +234,7 @@
 
 - (void)showInitialImage
 {
+    NSLog(@"showInitialImage");
     UploadViewController *uploadViewController  = [self viewControllerAtIndex:_currentIndex];
     NSArray *viewControllers = @[uploadViewController];
     [self setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
@@ -366,6 +363,7 @@
 
 - (void)getChildImagesFrom:(NSInteger)fromYM to:(NSInteger)toYM
 {
+    NSLog(@"getChildImagesFrom %d %d", fromYM, toYM);
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -423,6 +421,7 @@
 
 - (void)countTotalNumOfChildImages:(int)skip
 {
+    NSLog(@"countTotalNumOfChildImages");
     NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:_childObjectId];

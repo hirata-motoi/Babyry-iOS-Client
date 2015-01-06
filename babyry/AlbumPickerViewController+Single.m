@@ -100,10 +100,11 @@
                             [self showSingleUploadError];
                         } else {
                             NSLog(@"aaaaaaaaaaaaaaaa");
-                            AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
-                            NSString *preSingnedURL = [awsS3Utils getS3PreSignedURL:putRequest.bucket key:putRequest.key configuration:configuration];
-                            NSLog(@"bbbbbbbbbbbbbbbbb");
-                            [self afterSingleUploadComplete:resizedImage preSignedURL:preSingnedURL];
+                            //AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
+                            //NSString *preSingnedURL = [awsS3Utils getS3PreSignedURL:putRequest.bucket key:putRequest.key configuration:configuration];
+                            //NSLog(@"preSignedURL %@", preSingnedURL);
+                            //[self afterSingleUploadComplete:resizedImage preSignedURL:preSingnedURL];
+                            [self afterSingleUploadComplete:resizedImage dirName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]] imageObjectId:childImage.objectId];
                             NSLog(@"ccccccccccccccccc");
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
@@ -125,7 +126,7 @@
     });
 }
 
--(void) afterSingleUploadComplete:(UIImage *)resizedImage preSignedURL:(NSString *)preSignedURL
+-(void) afterSingleUploadComplete:(UIImage *)resizedImage dirName:(NSString *)dirName imageObjectId:(NSString *)imageObjectId
 {
     // Cache set use thumbnail (フォトライブラリにあるやつは正方形になってるし使わない)
     UIImage *thumbImage = [ImageCache makeThumbNail:resizedImage];
@@ -141,19 +142,10 @@
     transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", _albumPickerViewController.targetDateIndexPath.section];
     transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", _albumPickerViewController.targetDateIndexPath.row];
     transitionInfoDic[@"childObjectId"] = _albumPickerViewController.childObjectId;
-    if (preSignedURL) {
-        NSLog(@"%@", preSignedURL);
-        NSMutableArray *preSignedURLs = [[NSMutableArray alloc] init];
-        preSignedURLs[0] = [preSignedURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-//        preSignedURLs[0] = @"http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-//        preSignedURLs[1] = @"http://aaaaaaaaaaa";
-//        preSignedURLs[2] = @"http://aaaaaaaaaaa";
-//        preSignedURLs[3] = @"http://aaaaaaaaaaa";
-//        preSignedURLs[4] = @"http://aaaaaaaaaaa";
-//        preSignedURLs[5] = @"http://aaaaaaaaaaa";
-//        preSignedURLs[6] = @"http://aaaaaaaaaaa";
-        transitionInfoDic[@"preSignedURLs"] = preSignedURLs;
-    }
+    transitionInfoDic[@"dirName"] = dirName;
+    NSMutableArray *imageIds = [[NSMutableArray alloc] init];
+    imageIds[0] = imageObjectId;
+    transitionInfoDic[@"imageIds"] = imageIds;
     NSLog(@"transitionInfoDic before send %@", transitionInfoDic);
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]

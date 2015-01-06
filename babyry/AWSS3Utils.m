@@ -100,7 +100,7 @@
     getPreSignedURLRequest.bucket = bucket;
     getPreSignedURLRequest.key = key;
     getPreSignedURLRequest.HTTPMethod = AWSHTTPMethodGET;
-    getPreSignedURLRequest.expires = [NSDate dateWithTimeIntervalSinceNow:1800];
+    getPreSignedURLRequest.expires = [NSDate dateWithTimeIntervalSinceNow:10*60];
     BFTask *urlTask = [urlBuilder getPreSignedURL:getPreSignedURLRequest];
     if (urlTask.error) {
         return nil;

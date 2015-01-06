@@ -10,6 +10,6 @@
 
 @interface ImageDownloadInBackground : NSObject <NSURLSessionDownloadDelegate>
 
-- (void) downloadByPushInBackground:(NSNumber *)date childObjectId:(NSString *)childObjectId preSignedURLs:(NSArray *)preSignedURLs;
+- (void) downloadByPushInBackground:(NSDictionary *)userInfo;
 
 @end
