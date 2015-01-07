@@ -24,6 +24,7 @@
 - (void)setupChildSwitchViews;
 - (void)switchToInitialChild;
 - (void)resetChildSwitchControlView;
+- (void)removeChildSwitchControlView;
 
 @property (nonatomic,assign) id<ChildSwitchControlViewDelegate> delegate;
 

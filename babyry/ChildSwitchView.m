@@ -8,6 +8,8 @@
 
 #import "ChildSwitchView.h"
 #import "UIColor+Hex.h"
+#import "ImageCache.h"
+#import "ImageTrimming.h"
 
 @implementation ChildSwitchView;
 
@@ -20,19 +22,26 @@
 {
     NSString *className = NSStringFromClass([self class]);
     ChildSwitchView *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
-    view.iconView.layer.cornerRadius = view.iconView.frame.size.width/2;
-    view.iconView.layer.masksToBounds = YES;
-    [view.iconView.layer setBorderWidth:2.0f];
-    [view.iconView.layer setBorderColor:[[UIColor whiteColor] CGColor]];
-    
-    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:view action:@selector(tagGesture)];
-    gesture.numberOfTapsRequired = 1;
-    [view addGestureRecognizer:gesture];
-  
-    view.overlay.layer.cornerRadius = view.overlay.frame.size.width/2;
-    view.overlay.hidden = YES;
-    
+   
     return view;
+}
+
+- (void)setup
+{
+    [self reloadIcon];
+    self.iconView.layer.cornerRadius = self.iconView.frame.size.width/2;
+    self.iconView.layer.masksToBounds = YES;
+    [self.iconView.layer setBorderWidth:2.0f];
+    [self.iconView.layer setBorderColor:[[UIColor whiteColor] CGColor]];
+    
+    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tagGesture)];
+    gesture.numberOfTapsRequired = 1;
+    [self addGestureRecognizer:gesture];
+  
+    self.overlay.layer.cornerRadius = self.overlay.frame.size.width/2;
+    self.overlay.hidden = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadIcon) name:@"childSwitchViewIconChanged" object:nil];
 }
 
 - (void)setParams:(id)value forKey:(NSString *)key
@@ -62,6 +71,18 @@
     } else {
         [_delegate openChildSwitchViews];
     }
+}
+
+- (void)reloadIcon
+{
+    NSData *imageCacheData = [ImageCache getCache:@"icon" dir:_childObjectId];
+    if (imageCacheData) {
+        self.iconView.image = [ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]];
+    }
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

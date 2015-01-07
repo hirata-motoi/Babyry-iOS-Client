@@ -20,6 +20,8 @@
 + (instancetype)view;
 - (void)setParams:(id)value forKey:(NSString *)key;
 - (void)switch:(BOOL)active;
+- (void)reloadIcon;
+- (void)setup;
 
 @property (nonatomic,assign) id<ChildSwitchViewDelegate> delegate;
 

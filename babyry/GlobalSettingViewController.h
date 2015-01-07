@@ -11,6 +11,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MBProgressHUD.h"
 
+@protocol GlobalSettingViewControllerDelegate <NSObject>
+
+- (void)viewDidAppear:(BOOL)animated;
+- (void)removeChildSwitchControlView;
+
+@end
+
 @interface GlobalSettingViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *settingTableView;
 @property UISegmentedControl *roleControl;
@@ -21,5 +28,7 @@
 // for tutorial
 @property UITableViewCell *partSwitchCell;
 @property UITableViewCell *addChildCell;
+
+@property (nonatomic,assign) id<GlobalSettingViewControllerDelegate> delegate;
 
 @end

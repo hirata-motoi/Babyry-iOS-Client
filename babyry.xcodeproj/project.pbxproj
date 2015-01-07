@@ -217,6 +217,8 @@
 		F2CE8D321A4E96EE00F56FC2 /* ChildSwitchControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */; };
 		F2CE8D391A4E9A9A00F56FC2 /* ChildSwitchView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */; };
 		F2CE8D3C1A4E9B2400F56FC2 /* ChildSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D3B1A4E9B2400F56FC2 /* ChildSwitchView.m */; };
+		F2D266971A5B8229005C3603 /* ChildIconManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D266961A5B8229005C3603 /* ChildIconManager.m */; };
+		F2D2669A1A5C2D6E005C3603 /* ChildIconCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D266991A5C2D6E005C3603 /* ChildIconCollectionViewController.m */; };
 		F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934EC19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m */; };
 		F2D934F019C78D3B001F33D0 /* MultiUploadViewController+Logic.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934EF19C78D3B001F33D0 /* MultiUploadViewController+Logic.m */; };
 		F2D934F319C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D934F219C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m */; };
@@ -605,6 +607,10 @@
 		F2CE8D3A1A4E9B2400F56FC2 /* ChildSwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildSwitchView.h; sourceTree = "<group>"; };
 		F2CE8D3B1A4E9B2400F56FC2 /* ChildSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildSwitchView.m; sourceTree = "<group>"; };
 		F2CE8D3F1A53DB2000F56FC2 /* babyry-coredata-v4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "babyry-coredata-v4.xcdatamodel"; sourceTree = "<group>"; };
+		F2D266951A5B8229005C3603 /* ChildIconManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildIconManager.h; sourceTree = "<group>"; };
+		F2D266961A5B8229005C3603 /* ChildIconManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildIconManager.m; sourceTree = "<group>"; };
+		F2D266981A5C2D6E005C3603 /* ChildIconCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildIconCollectionViewController.h; sourceTree = "<group>"; };
+		F2D266991A5C2D6E005C3603 /* ChildIconCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildIconCollectionViewController.m; sourceTree = "<group>"; };
 		F2D934EB19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PageContentViewController+Logic+Tutorial.h"; sourceTree = "<group>"; };
 		F2D934EC19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PageContentViewController+Logic+Tutorial.m"; sourceTree = "<group>"; };
 		F2D934EE19C78D3B001F33D0 /* MultiUploadViewController+Logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MultiUploadViewController+Logic.h"; sourceTree = "<group>"; };
@@ -682,6 +688,8 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2D266951A5B8229005C3603 /* ChildIconManager.h */,
+				F2D266961A5B8229005C3603 /* ChildIconManager.m */,
 				F2CE8D371A4E9A7A00F56FC2 /* ChildSwitch */,
 				F2CE8D301A4E96EE00F56FC2 /* ChildSwitchControlView.h */,
 				F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */,
@@ -1074,6 +1082,8 @@
 		F215DDCD19761CA50092C712 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				F2D266981A5C2D6E005C3603 /* ChildIconCollectionViewController.h */,
+				F2D266991A5C2D6E005C3603 /* ChildIconCollectionViewController.m */,
 				F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */,
 				F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */,
 				88610B5A1A09FF8E0042854B /* ImagePicker */,
@@ -1738,12 +1748,14 @@
 				F21BBBF919CAEAA2002D4623 /* TutorialFamilyApplyIntroduceView.m in Sources */,
 				88610B661A0A5F210042854B /* ImageUploadInBackground.m in Sources */,
 				F271B31E1999E5E800C9952A /* Badge.m in Sources */,
+				F2D2669A1A5C2D6E005C3603 /* ChildIconCollectionViewController.m in Sources */,
 				F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */,
 				883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */,
 				886A90F61A03A4AB007849DB /* AWSCommon.m in Sources */,
 				88C072CB19C60E1600BF6F6F /* UserRegisterViewController.m in Sources */,
 				88610B691A0AC1E60042854B /* AlbumPickerViewController+Single.m in Sources */,
 				889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */,
+				F2D266971A5B8229005C3603 /* ChildIconManager.m in Sources */,
 				8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */,
 				F2B7E0EE19C742520052981B /* PageContentViewController+Logic.m in Sources */,
 				F21BBBE319CA7359002D4623 /* TutorialAddChildView.m in Sources */,

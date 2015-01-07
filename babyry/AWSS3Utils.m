@@ -11,6 +11,7 @@
 #import "Config.h"
 #import "ChildProperties.h"
 #import "Logger.h"
+#import "AWSCommon.h"
 
 @implementation AWSS3Utils
 
@@ -91,6 +92,40 @@
 			return nil;
 		}];
 	}
+}
+
++ (void)simpleDownloadWithKey:(NSString *)key WithBlock:(SimpleDownloadBlock)block
+{
+	AWSS3TransferManager *transferManager = [[AWSS3TransferManager alloc] initWithConfiguration:[AWSCommon getAWSServiceConfiguration:@"S3"] identifier:@"S3"];
+    AWSS3TransferManagerDownloadRequest *downloadRequest = [AWSS3TransferManagerDownloadRequest new];
+    downloadRequest.bucket = [Config config][@"AWSBucketName"];
+    downloadRequest.key = key;
+    downloadRequest.responseCacheControl = @"no-cache";
+    
+    [[transferManager download:downloadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
+        if (task.error){
+            if ([task.error.domain isEqualToString:AWSS3TransferManagerErrorDomain]) {
+                switch (task.error.code) {
+                    case AWSS3TransferManagerErrorCancelled:
+                        break;
+                    case AWSS3TransferManagerErrorPaused:
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to load image for simpleDownloadWithKey key:%@ error:%@", key, task.error]];
+            }
+        }
+        if (task.result) {
+            AWSS3TransferManagerDownloadOutput *downloadOutput = task.result;
+            NSData *downloadData = [NSData dataWithContentsOfURL:downloadOutput.body];
+            params[@"imageData"] = downloadData;
+        }
+        block(params);
+        return nil;
+    }];
 }
 
 @end

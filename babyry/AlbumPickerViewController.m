@@ -14,6 +14,9 @@
 #import "UploadPickerCollectionViewSectionHeader.h"
 #import "AlbumPickerViewController+Multi.h"
 #import "AlbumPickerViewController+Single.h"
+#import "ChildIconManager.h"
+#import "ImageCache.h"
+#import "Config.h"
 
 @interface AlbumPickerViewController ()
 
@@ -280,5 +283,16 @@
 
 - (IBAction)backButton:(id)sender {
     [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)setChildFirstIconWithImageData:(NSData *)imageData
+{
+    NSString *iconFileName = [Config config][@"ChildIconFileName"];
+    NSData *iconData = [ImageCache getCache:iconFileName dir:_childObjectId];
+    
+    // icon用cacheが存在しない かつ iconVersionが存在しない場合はアイコンが全く設定されていない状態とみなす
+    if (!iconData && ![ChildProperties getChildProperty:_childObjectId][@"iconVersion"]) {
+        [ChildIconManager updateChildIcon:imageData withChildObjectId:_childObjectId];
+    }
 }
 @end

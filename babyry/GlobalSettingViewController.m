@@ -27,6 +27,7 @@
 #import "PartnerApply.h"
 #import "UINavigationController+Block.h"
 #import "AnnounceBoardView.h"
+#import "ChildSwitchControlView.h"
 
 @interface GlobalSettingViewController ()
 
@@ -146,7 +147,8 @@
                     [PartnerApply removePartnerInviteFromCoreData];
                     [PartnerApply removePartnerInvitedFromCoreData];
 //                    [AnnounceBoardView removeAnnounceInfoByOuter];
-                    [_viewController viewDidAppear:YES];
+                    [_delegate viewDidAppear:YES];
+                    [_delegate removeChildSwitchControlView];
                 }];
             }];
         }

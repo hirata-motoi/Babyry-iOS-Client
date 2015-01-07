@@ -154,7 +154,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"resetImage" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial + icon change
         alreadyRegisteredObserver = YES;
     }
     

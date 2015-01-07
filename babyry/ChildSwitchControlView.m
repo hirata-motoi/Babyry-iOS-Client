@@ -63,6 +63,7 @@ static ChildSwitchControlView* sharedObject = nil;
         [childSwitchView setParams:childProperty[@"objectId"] forKey:@"childObjectId"];
         childSwitchView.childNameLabel.alpha = 0.0f;
         [childSwitchViewList addObject:childSwitchView];
+        [childSwitchView setup];
     }
   
     // サイズ・位置の調整
@@ -187,5 +188,18 @@ static ChildSwitchControlView* sharedObject = nil;
     [self switchToInitialChild];
 }
 
+- (void)removeChildSwitchControlView
+{
+    [childSwitchViewList removeAllObjects];
+    for (ChildSwitchView *view in [self subviews]) {
+        [view removeFromSuperview];
+    }
+    [self removeFromSuperview];
+    sharedObject = nil;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 @end

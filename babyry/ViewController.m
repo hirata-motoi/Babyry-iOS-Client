@@ -45,6 +45,7 @@
 #import <AFNetworking.h>
 #import "AnnounceBoardView.h"
 #import "ChildSwitchControlView.h"
+#import "ChildIconManager.h"
 
 @interface ViewController ()
 
@@ -101,7 +102,6 @@
     }
     
     // notification center
-//    [[NSNotificationCenter defaultCenter] addObserver:childSwitchControlView selector:@selector(setupChildSwitchViews) name:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
@@ -295,6 +295,9 @@
                 } else {
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
+            } else {
+                // child icon
+                [ChildIconManager syncChildIconsInBackground];
             }
             
             _only_first_load = 0;
@@ -331,7 +334,7 @@
 - (void)openGlobalSettingView
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
-    globalSettingViewController.viewController = self;
+    globalSettingViewController.delegate = self;
     [self.navigationController pushViewController:globalSettingViewController animated:YES];
 }
 
@@ -564,7 +567,6 @@
     [self setRectToHeaderView:_headerView];
     // addSubviewする
     [self.view addSubview:_headerView];
-//    [self shrinkPageView:_headerView.frame];
     [self adjustChildSwitchControlView];
     
     [self.view bringSubviewToFront:childSwitchControlView];
@@ -765,6 +767,7 @@
     } else {
         childSwitchControlView.hidden = NO;
     }
+    [self.view bringSubviewToFront:childSwitchControlView];
 }
 
 - (void)showAlertMessage
@@ -776,6 +779,11 @@
                                           otherButtonTitles:@"OK", nil
                           ];
     [alert show];
+}
+
+- (void)removeChildSwitchControlView
+{
+    [childSwitchControlView removeChildSwitchControlView];
 }
 
 @end

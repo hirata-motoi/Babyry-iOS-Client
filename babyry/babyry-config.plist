@@ -155,5 +155,7 @@ http://babyry.parseapp.com/email_verify?token=%token</string>
 	<integer>50</integer>
 	<key>ChildSwitchControlViewHeight</key>
 	<integer>50</integer>
+	<key>ChildIconFileName</key>
+	<string>icon</string>
 </dict>
 </plist>

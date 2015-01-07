@@ -25,5 +25,6 @@
 @property (nonatomic, retain) NSNumber * calendarStartDate;
 @property (nonatomic, retain) NSNumber * oldestChildImageDate;
 @property (nonatomic, retain) NSDate * lastDisplayedAt;
+@property (nonatomic, retain) NSNumber * iconVersion;
 
 @end
