@@ -196,6 +196,10 @@
             NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childIconChanged"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"childIconChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
         if (userInfo[@"transitionInfo"] &&
             (
                 [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]  ||

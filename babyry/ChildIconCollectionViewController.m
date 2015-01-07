@@ -9,6 +9,7 @@
 #import "ChildIconCollectionViewController.h"
 #import "ImageCache.h"
 #import "ChildIconManager.h"
+#import "PushNotification.h"
 
 @interface ChildIconCollectionViewController ()
 
@@ -93,6 +94,11 @@ static NSString * const reuseIdentifier = @"Cell";
     // test とりあえずアイコンを交換してみる
     NSData *imageData = [ImageCache getCache:bestShotList[indexPath.row] dir:cacheDir];
     [ChildIconManager updateChildIcon:imageData withChildObjectId:_childObjectId];
+   
+    // test silent pushを送る
+    [self sendPushNotification];
+    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -138,6 +144,17 @@ static NSString * const reuseIdentifier = @"Cell";
     cacheDir = [NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId];
     // localのBS一覧を取得
     bestShotList = [ImageCache getListOfMultiUploadCache:cacheDir];
+}
+
+- (void)sendPushNotification
+{
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"childIconChanged";
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    options[@"data"] = [[NSMutableDictionary alloc]
+                        initWithObjects:@[transitionInfoDic, [NSNumber numberWithInt:1]]
+                        forKeys:@[@"transitionInfo", @"content-available"]];
+    [PushNotification sendInBackground:@"childIconChanged" withOptions:options];
 }
 
 @end

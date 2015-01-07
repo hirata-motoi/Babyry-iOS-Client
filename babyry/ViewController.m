@@ -106,6 +106,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(multiUploadImageInBackground) name:@"multiUploadImageInBackground" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncChildIcons) name:@"childIconChanged" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -784,6 +785,11 @@
 - (void)removeChildSwitchControlView
 {
     [childSwitchControlView removeChildSwitchControlView];
+}
+
+- (void)syncChildIcons
+{
+    [ChildIconManager syncChildIconsInBackground];
 }
 
 @end
