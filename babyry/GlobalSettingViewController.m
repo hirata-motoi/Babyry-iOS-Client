@@ -58,6 +58,7 @@
     _settingTableView.delegate = self;
     _settingTableView.dataSource = self;
     _settingTableView.separatorInset = UIEdgeInsetsZero;
+    _settingTableView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
     // iOS8用
     if ([_settingTableView respondsToSelector:@selector(layoutMargins)]) {
         _settingTableView.layoutMargins = UIEdgeInsetsZero;
@@ -65,8 +66,6 @@
     
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
-    
-//    [self checkEmailVerified];
 }
 
 - (void)didReceiveMemoryWarning
@@ -90,27 +89,6 @@
     [tn removeNavigationView];
     tn = nil;
 }
-
-//- (void) checkEmailVerified
-//{
-//    // Facebookログイン: user[@"email"]なし => noNeed
-//    // 簡単ログイン : user[@"emailCommon"]がメアド形式でない => notYet
-//    // 本登録&認証済み : user[@"email"]あり、EmailVerifyのisVerifedがTRUE => done
-//    // 本登録&認証未済 : user[@"email"]あり、EmailVerifyのisVerifedがFALSE => doing
-//    PFUser *user = [PFUser currentUser];
-//    if (user[@"emailVerified"]) {
-//        if ([user[@"emailVerified"] boolValue]) {
-//            _emailVerified = @"done";
-//        } else {
-//            _emailVerified = @"notYet";
-//        }
-//    } else {
-//        _emailVerified = @"noNeed";
-//    }
-//}
-
-#pragma mark - Table view data source
-
 
 - (void)close
 {
@@ -193,29 +171,13 @@
                 case 3:
                     break;
                 case 4:
-                    break;
-                
-/*
-                case 0:
-                    cell.textLabel.text = @"プロフィール";
+                    cell.detailTextLabel.text = @"お知らせをもっと見る";
+                    cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
+                    cell.detailTextLabel.font = cell.textLabel.font;
+                    cell.detailTextLabel.textColor = [UIColor blackColor];
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    cell.backgroundColor = [ColorUtils getGlobalMenuLightGrayColor];
                     break;
-                case 1:
-                    cell.textLabel.text = @"あなたのパート";
-                    _roleControl = [self createRoleSwitchSegmentControl];
-                    [cell addSubview:_roleControl];
-                    break;
-//                case 2:
-//                    if (![TmpUser checkRegistered]) {
-//                        cell.textLabel.text = @"本登録を完了する";
-//                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//                    } else {
-//                        cell.textLabel.text = @"メールアドレス認証";
-//                        cell.detailTextLabel.text = @"未認証";
-//                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//                    }
-//                    break;
-*/
                 default:
                     break;
             }
@@ -223,22 +185,23 @@
         case 1:
             switch (indexPath.row) {
                 case 0:
+                {
                     cell.textLabel.text = @"パート設定";
                     _roleControl = [self createRoleSwitchSegmentControl];
                     [cell addSubview:_roleControl];
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     break;
+                }
                 case 1:
-                    cell.textLabel.text = @"子供設定";
+                {
+                    cell.textLabel.text = @"こども設定";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
+                }
                 case 2:
                     cell.textLabel.text = @"プロフィール設定";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
-//                case 0:
-//                    cell.textLabel.text = @"こどもを追加";
-//                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//                    break;
                 default:
                     break;
             }
@@ -265,16 +228,6 @@
                     break;
             }
             break;
-//        case 3:
-//            switch (indexPath.row) {
-//                case 0:
-//                    cell.textLabel.text = @"ログアウト";
-//                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//                    break;
-//                default:
-//                    break;
-//            }
-//            break;
         default:
             break;
     }
@@ -294,25 +247,18 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
-//            if (![TmpUser checkRegistered] || ![_emailVerified isEqualToString:@"noNeed"]) {
-//                rowCount = 3;
-//            } else {
                 rowCount = 5;
-//            }
             break;
         case 1:
             rowCount = 3;
             break;
         case 2:
-            rowCount = 4;
+            if ([TmpUser checkRegistered]) {
+                rowCount = 4;
+            } else {
+                rowCount = 3;
+            }
             break;
-//        case 3:
-//            if ([TmpUser checkRegistered]) {
-//                rowCount = 1;
-//            } else {
-//                rowCount = 0;
-//            }
-//            break;
         default:
             break;
     }
@@ -326,18 +272,6 @@
     switch (indexPath.section) {
         case 0:
             switch (indexPath.row) {
-                case 0:
-                    [self openProfileEdit];
-                    break;
-                case 1:
-                    break;
-//                case 2:
-//                    if (![TmpUser checkRegistered]) {
-//                        [self openRegisterView];
-//                    } else {
-//                        [self openEmailVerifiedView];
-//                    }
-//                    break;
                 default:
                     break;
             }
@@ -345,7 +279,12 @@
         case 1:
             switch (indexPath.row) {
                 case 0:
+                    break;
+                case 1:
                     [self openAddChildAddView];
+                    break;
+                case 2:
+                    [self openProfileEdit];
                     break;
                 default:
                     break;
@@ -362,13 +301,7 @@
                 case 2:
                     [self openInquiry];
                     break;
-                default:
-                    break;
-            }
-            break;
-        case 3:
-            switch (indexPath.row) {
-                case 0:
+                case 3:
                     [self logout];
                     break;
                 default:
@@ -384,40 +317,6 @@
 {
     return 3;
 }
-
-//- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-//    NSString *title;
-//    switch (section) {
-//        case 0:
-//            title = @"お知らせ";
-//            break;
-//        case 1:
-//            title = @"設定";
-//            break;
-//        case 2:
-//            title = @"その他";
-//            break;
-//        default:
-//            title = @"";
-//            break;
-//    }
-//    return title;
-//}
-
-//// titleForHeaderInSectionでアルファベットをsection headerに設定すると大文字になってしまう
-//// そこでheaderの表示直前に書き換える
-//- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section{
-//    if (section == 2) {
-//        UITableViewHeaderFooterView *tableViewHeaderFooterView = (UITableViewHeaderFooterView *) view;
-//        tableViewHeaderFooterView.textLabel.text = @"Babyryについて";
-//    }
-//}
-
-//- (void)openRegisterView
-//{
-//    UserRegisterViewController * userRegisterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
-//    [self.navigationController pushViewController:userRegisterViewController animated:YES];
-//}
 
 - (void)openAddChildAddView
 {

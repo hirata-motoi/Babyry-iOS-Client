@@ -21,5 +21,7 @@
 +(UIColor *)getPastelRedColor;
 +(UIColor *)getGlobalMenuSectionHeaderColor;
 +(UIColor *)getGlobalMenuPartSwitchColor;
++(UIColor *)getGlobalMenuLightGrayColor;
++(UIColor *)getGlobalMenuDarkGrayColor;
 
 @end
