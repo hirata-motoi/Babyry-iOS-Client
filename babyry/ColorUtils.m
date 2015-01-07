@@ -56,4 +56,14 @@
     return [UIColor_Hex colorWithHexString:@"ff77a1" alpha:1.0];
 }
 
++(UIColor *)getGlobalMenuSectionHeaderColor
+{
+    return [UIColor_Hex colorWithHexString:@"bfb488" alpha:1.0];
+}
+
++(UIColor *)getGlobalMenuPartSwitchColor
+{
+    return [UIColor_Hex colorWithHexString:@"525e64" alpha:1.0];
+}
+
 @end

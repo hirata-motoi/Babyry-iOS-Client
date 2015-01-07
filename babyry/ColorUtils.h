@@ -11,21 +11,15 @@
 @interface ColorUtils : NSObject
 
 +(UIColor *) getSunDayCalColor;
-
 +(UIColor *) getSatDayCalColor;
-
 +(UIColor *) getWeekDayCalColor;
-
 +(UIColor *) getBackgroundColor;
-
 +(UIColor *) getSectionHeaderColor;
-
 +(UIColor *) getCellBackgroundDefaultColor;
-
 +(UIColor *) getBabyryColor;
-
 +(UIColor *) getLoginViewBackColor;
-
 +(UIColor *)getPastelRedColor;
++(UIColor *)getGlobalMenuSectionHeaderColor;
++(UIColor *)getGlobalMenuPartSwitchColor;
 
 @end

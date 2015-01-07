@@ -27,6 +27,7 @@
 #import "PartnerApply.h"
 #import "UINavigationController+Block.h"
 #import "AnnounceBoardView.h"
+#import "ColorUtils.h"
 
 @interface GlobalSettingViewController ()
 
@@ -56,6 +57,11 @@
                                              action:nil];
     _settingTableView.delegate = self;
     _settingTableView.dataSource = self;
+    _settingTableView.separatorInset = UIEdgeInsetsZero;
+    // iOS8用
+    if ([_settingTableView respondsToSelector:@selector(layoutMargins)]) {
+        _settingTableView.layoutMargins = UIEdgeInsetsZero;
+    }
     
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
@@ -168,10 +174,28 @@
         }
     }
     cell.textLabel.numberOfLines = 0;
+    cell.textLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:14];
+    cell.separatorInset = UIEdgeInsetsZero;
+    // iOS8用
+    if ([cell respondsToSelector:@selector(layoutMargins)]) {
+        cell.layoutMargins = UIEdgeInsetsZero;
+    }
     
     switch (indexPath.section) {
         case 0:
             switch (indexPath.row) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                
+/*
                 case 0:
                     cell.textLabel.text = @"プロフィール";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -191,6 +215,7 @@
 //                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 //                    }
 //                    break;
+*/
                 default:
                     break;
             }
@@ -198,9 +223,22 @@
         case 1:
             switch (indexPath.row) {
                 case 0:
-                    cell.textLabel.text = @"こどもを追加";
+                    cell.textLabel.text = @"パート設定";
+                    _roleControl = [self createRoleSwitchSegmentControl];
+                    [cell addSubview:_roleControl];
+                    break;
+                case 1:
+                    cell.textLabel.text = @"子供設定";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
+                case 2:
+                    cell.textLabel.text = @"プロフィール設定";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    break;
+//                case 0:
+//                    cell.textLabel.text = @"こどもを追加";
+//                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//                    break;
                 default:
                     break;
             }
@@ -219,13 +257,7 @@
                     cell.textLabel.text = @"お問い合わせ";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
-                default:
-                    break;
-            }
-            break;
-        case 3:
-            switch (indexPath.row) {
-                case 0:
+                case 3:
                     cell.textLabel.text = @"ログアウト";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
@@ -233,6 +265,16 @@
                     break;
             }
             break;
+//        case 3:
+//            switch (indexPath.row) {
+//                case 0:
+//                    cell.textLabel.text = @"ログアウト";
+//                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//                    break;
+//                default:
+//                    break;
+//            }
+//            break;
         default:
             break;
     }
@@ -255,22 +297,22 @@
 //            if (![TmpUser checkRegistered] || ![_emailVerified isEqualToString:@"noNeed"]) {
 //                rowCount = 3;
 //            } else {
-                rowCount = 2;
+                rowCount = 5;
 //            }
             break;
         case 1:
-            rowCount = 1;
-            break;
-        case 2:
             rowCount = 3;
             break;
-        case 3:
-            if ([TmpUser checkRegistered]) {
-                rowCount = 1;
-            } else {
-                rowCount = 0;
-            }
+        case 2:
+            rowCount = 4;
             break;
+//        case 3:
+//            if ([TmpUser checkRegistered]) {
+//                rowCount = 1;
+//            } else {
+//                rowCount = 0;
+//            }
+//            break;
         default:
             break;
     }
@@ -340,36 +382,36 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 4;
+    return 3;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    NSString *title;
-    switch (section) {
-        case 0:
-            title = @"アカウント情報";
-            break;
-        case 1:
-            title = @"こども設定";
-            break;
-        case 2:
-            title = @"Babyryについて";
-            break;
-        default:
-            title = @"";
-            break;
-    }
-    return title;
-}
+//- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+//    NSString *title;
+//    switch (section) {
+//        case 0:
+//            title = @"お知らせ";
+//            break;
+//        case 1:
+//            title = @"設定";
+//            break;
+//        case 2:
+//            title = @"その他";
+//            break;
+//        default:
+//            title = @"";
+//            break;
+//    }
+//    return title;
+//}
 
-// titleForHeaderInSectionでアルファベットをsection headerに設定すると大文字になってしまう
-// そこでheaderの表示直前に書き換える
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section{
-    if (section == 2) {
-        UITableViewHeaderFooterView *tableViewHeaderFooterView = (UITableViewHeaderFooterView *) view;
-        tableViewHeaderFooterView.textLabel.text = @"Babyryについて";
-    }
-}
+//// titleForHeaderInSectionでアルファベットをsection headerに設定すると大文字になってしまう
+//// そこでheaderの表示直前に書き換える
+//- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section{
+//    if (section == 2) {
+//        UITableViewHeaderFooterView *tableViewHeaderFooterView = (UITableViewHeaderFooterView *) view;
+//        tableViewHeaderFooterView.textLabel.text = @"Babyryについて";
+//    }
+//}
 
 //- (void)openRegisterView
 //{
@@ -382,6 +424,43 @@
     [tn removeNavigationView];
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     [self.navigationController pushViewController:icnvc animated:YES];
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 24)];
+    headerView.backgroundColor = [ColorUtils getGlobalMenuSectionHeaderColor];
+    UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(6, 0, 320, 24)];
+    headerLabel.textColor = [UIColor whiteColor];
+    headerLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:12];
+    
+    switch (section) {
+        case 0:
+            headerLabel.text = @"お知らせ";
+            break;
+        case 1:
+            headerLabel.text = @"設定";
+            break;
+        case 2:
+            headerLabel.text = @"その他";
+            break;
+        default:
+            headerLabel.text = @"";
+            break;
+    }
+    [headerView addSubview:headerLabel];
+    
+    return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 24.0f;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooderInSection:(NSInteger)section
+{
+    return 12.0f;
 }
 
 - (NSString *)getSelectedRole
@@ -458,6 +537,8 @@
     rect.origin.y = 7;
     sc.frame = rect;
     [sc addTarget:self action:@selector(switchRole) forControlEvents:UIControlEventValueChanged];
+    sc.tintColor = [ColorUtils getGlobalMenuPartSwitchColor];
+    [sc setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIFont fontWithName:@"HiraKakuProN-W3" size:12] forKey:NSFontAttributeName] forState:UIControlStateNormal];
    
     // cacheから取得した値を初期値としておく
     NSString *familyRole = [FamilyRole selfRole:@"cacheOnly"];
