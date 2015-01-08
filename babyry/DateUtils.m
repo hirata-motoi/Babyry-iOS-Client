@@ -172,4 +172,38 @@
     return NO;
 }
 
++ (NSIndexPath *)getIndexPathFromDate:(NSNumber *)date
+{
+    // yyyymmddからindexPathを構築する
+    NSDateComponents *targetComps = [self compsFromNumber:date];
+    NSDateComponents *todayComps = [self dateCompsFromDate:nil];
+    
+    int section = 0;
+    int row = 0;
+    
+    int yearDiff = todayComps.year - targetComps.year;
+    section += 12 * yearDiff;
+    int monthDiff = todayComps.month - targetComps.month;
+    section += monthDiff;
+    
+    if (yearDiff == 0 && monthDiff == 0) {
+        row = todayComps.day - targetComps.day;
+    } else {
+        row = [self getLastDay:targetComps] - targetComps.day;
+    }
+    
+    return [NSIndexPath indexPathForRow:row inSection:section];
+}
+
++ (int) getLastDay:(NSDateComponents *)comps
+{
+    // ひと月足して、日付を1日にしてから、1日引くと最終日をgetできる
+    NSDateComponents *tmpComps = [self addDateComps:comps withUnit:@"month" withValue:1];
+    tmpComps.day = 1;
+    NSDateComponents *lastDayComps = [self addDateComps:tmpComps withUnit:@"day" withValue:-1];
+    
+    return lastDayComps.day;
+}
+
+
 @end

@@ -28,6 +28,11 @@
 #import "UINavigationController+Block.h"
 #import "AnnounceBoardView.h"
 #import "ColorUtils.h"
+#import "NotificationHistory.h"
+#import "DateUtils.h"
+#import "TransitionByPushNotification.h"
+#import "NotificationHistoryViewController.h"
+#import "ImageTrimming.h"
 
 @interface GlobalSettingViewController ()
 
@@ -35,6 +40,8 @@
 
 @implementation GlobalSettingViewController {
     TutorialNavigator *tn;
+    NSMutableArray *notificationHistoryArray;
+    MBProgressHUD *hud;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -66,6 +73,8 @@
     
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
+    
+    [self getNotificationHistory];
 }
 
 - (void)didReceiveMemoryWarning
@@ -150,10 +159,18 @@
                 [elem removeFromSuperview];
             }
         }
+        if ([view isKindOfClass:[UISegmentedControl class]]) {
+            [view removeFromSuperview];
+        }
     }
+    cell.imageView.image = nil;
+    cell.textLabel.text = nil;
+    cell.detailTextLabel.text = nil;
+    cell.accessoryType = UITableViewCellAccessoryNone;
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:14];
     cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = [UIColor whiteColor];
     // iOS8用
     if ([cell respondsToSelector:@selector(layoutMargins)]) {
         cell.layoutMargins = UIEdgeInsetsZero;
@@ -161,25 +178,32 @@
     
     switch (indexPath.section) {
         case 0:
-            switch (indexPath.row) {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
+            if (!notificationHistoryArray) {
+                if (hud) {
+                    [hud hide:YES];
+                    hud = nil;
+                }
+                hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
+                [cell addSubview:hud];
+            } else {
+                if (indexPath.row == 4) {
                     cell.detailTextLabel.text = @"お知らせをもっと見る";
                     cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
                     cell.detailTextLabel.font = cell.textLabel.font;
                     cell.detailTextLabel.textColor = [UIColor blackColor];
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     cell.backgroundColor = [ColorUtils getGlobalMenuLightGrayColor];
-                    break;
-                default:
-                    break;
+                } else {
+                    if (notificationHistoryArray[indexPath.row]) {
+                        PFObject *histObject = notificationHistoryArray[indexPath.row];
+                        cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
+                        cell.imageView.image = [ImageTrimming makeCellIconForMenu:[UIImage imageNamed:@"SelectedBestshot"] size:CGSizeMake(40, 40)];
+                        if (![histObject[@"status"] isEqualToString:@"displayed"]) {
+                            cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+                        }
+                    }
+                }
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
             }
             break;
         case 1:
@@ -247,7 +271,11 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
+            if (!notificationHistoryArray) {
+                rowCount = 1;
+            } else {
                 rowCount = 5;
+            }
             break;
         case 1:
             rowCount = 3;
@@ -271,9 +299,15 @@
     
     switch (indexPath.section) {
         case 0:
-            switch (indexPath.row) {
-                default:
-                    break;
+            if (notificationHistoryArray) {
+                if (indexPath.row == 4) {
+                    [self openNotificationHistoryViewController];
+                } else {
+                    if (notificationHistoryArray[indexPath.row]) {
+                        PFObject *histObject = notificationHistoryArray[indexPath.row];
+                        [TransitionByPushNotification createTransitionInfoAndReturnToTop:histObject viewController:self];
+                    }
+                }
             }
             break;
         case 1:
@@ -350,6 +384,18 @@
     [headerView addSubview:headerLabel];
     
     return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (!notificationHistoryArray && indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            return 5 * 44.0f;
+        } else {
+            return 0.0f;
+        }
+    }
+    return 44.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -547,6 +593,29 @@
 {
     NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
     [self.navigationController pushViewController:emailVerifiedViewController animated:YES];
+}
+
+- (void)getNotificationHistory
+{
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:nil withLimit:100 withBlock:^(NSArray *objects){
+        notificationHistoryArray = [[NSMutableArray alloc] initWithArray:objects];
+        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
+        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
+        for (PFObject *object in objects) {
+            if ([object[@"type"] isEqualToString:@"imageUploaded"] || [object[@"type"] isEqualToString:@"requestPhoto"] || [object[@"type"] isEqualToString:@"bestShotChanged"] || [object[@"type"] isEqualToString:@"commentPosted"]) {
+                [notificationHistoryArray addObject:object];
+            }
+        }
+        [_settingTableView reloadData];
+        [hud hide:YES];
+    }];
+}
+
+- (void)openNotificationHistoryViewController
+{
+    NotificationHistoryViewController *notificationHistoryViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotificationHistoryViewController"];
+    notificationHistoryViewController.notificationHistoryArray = notificationHistoryArray;
+    [self.navigationController pushViewController:notificationHistoryViewController animated:YES];
 }
 
 @end

@@ -13,5 +13,6 @@
 + (UIImage *) makeRectImage:(UIImage *)orgImage;
 + (UIImage *) makeRectTopImage:(UIImage *)orgImage ratio:(float)ratio;
 + (UIImage *) resizeImageForUpload:(UIImage *)orgImage;
++ (UIImage *) makeCellIconForMenu:(UIImage *)orgImage size:(CGSize)size;
 
 @end

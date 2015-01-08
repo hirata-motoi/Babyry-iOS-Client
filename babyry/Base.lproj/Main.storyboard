@@ -2050,6 +2050,33 @@
             </objects>
             <point key="canvasLocation" x="1622" y="-3272"/>
         </scene>
+        <!--Notification History View Controller-->
+        <scene sceneID="Bhx-r7-a0s">
+            <objects>
+                <viewController storyboardIdentifier="NotificationHistoryViewController" id="XaZ-us-XcU" customClass="NotificationHistoryViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Ein-J9-abm">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsMultipleSelection="YES" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="1Th-8o-4Vn">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <sections/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <connections>
+                        <outlet property="notificationTableView" destination="1Th-8o-4Vn" id="kyC-yM-eP8"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UVa-14-WCE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-456" y="-1948"/>
+        </scene>
     </scenes>
     <resources>
         <image name="introductionChoosePage" width="294" height="508"/>
