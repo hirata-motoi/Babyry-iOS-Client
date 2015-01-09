@@ -150,11 +150,11 @@ http://babyrydev.parseapp.com/email_verify?token=%token</string>
 	<key>CollectionViewSectionHeaderHeight</key>
 	<integer>44</integer>
 	<key>ChildSwitchControlViewMarginTop</key>
-	<integer>70</integer>
+	<integer>64</integer>
 	<key>ChildSwitchControlViewWidth</key>
-	<integer>50</integer>
+	<integer>55</integer>
 	<key>ChildSwitchControlViewHeight</key>
-	<integer>50</integer>
+	<integer>55</integer>
 	<key>ChildIconFileName</key>
 	<string>icon</string>
 </dict>

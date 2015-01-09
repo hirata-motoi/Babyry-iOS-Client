@@ -47,7 +47,7 @@
 - (void)setParams:(id)value forKey:(NSString *)key
 {
     if ([key isEqualToString:@"childName"]) {
-        _childNameLabel.text = (NSString *)value;
+        _childNameLabel.text = [NSString stringWithFormat:@"%@\nちゃん", value];
     } else if ([key isEqualToString:@"childObjectId"]) {
         _childObjectId = value;
     }

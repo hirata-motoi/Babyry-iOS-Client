@@ -149,8 +149,8 @@ static ChildSwitchControlView* sharedObject = nil;
 {
     // 自身のサイズを調整
     CGRect rect = self.frame;
-    rect.size.width = 50;
-    rect.origin.x = 320 - 50;
+    rect.size.width = [[Config config][@"ChildSwitchControlViewWidth"] floatValue];
+    rect.origin.x = 320 - rect.size.width;
     [UIView animateWithDuration:0.2f
                           delay:0.0f
                         options:UIViewAnimationOptionTransitionNone
