@@ -169,8 +169,8 @@ static NSString * const reuseIdentifier = @"Cell";
     transitionInfoDic[@"event"] = @"childIconChanged";
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]
-                        initWithObjects:@[transitionInfoDic, [NSNumber numberWithInt:1]]
-                        forKeys:@[@"transitionInfo", @"content-available"]];
+                        initWithObjects:@[transitionInfoDic, [NSNumber numberWithInt:1], @""]
+                        forKeys:@[@"transitionInfo", @"content-available", @"sound"]];
     [PushNotification sendInBackground:@"childIconChanged" withOptions:options];
 }
 

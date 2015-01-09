@@ -149,8 +149,6 @@
                 [[NSNotificationCenter defaultCenter] postNotification:n];
             }];
         }
-
-		completionHandler(UIBackgroundFetchResultNewData);
 		
 		// 各クラスに通知用
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
@@ -169,7 +167,7 @@
 //        completionHandler(UIBackgroundFetchResultNewData);
 //
 //    }
-	
+
 	if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
         
@@ -210,11 +208,10 @@
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
 		
-		completionHandler(UIBackgroundFetchResultNewData);
-		
 		// 各クラスに通知用
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
+    completionHandler(UIBackgroundFetchResultNewData);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

@@ -21,6 +21,7 @@
 #import "FamilyRole.h"
 #import "PushNotification.h"
 #import "AWSS3Utils.h"
+#import "ChildIconManager.h"
 
 @implementation PageContentViewController_Logic
 
@@ -406,7 +407,7 @@
             [self.pageContentViewController adjustChildImages];
             [self executeReload];
         } else if ([reloadType isEqualToString:@"reloadChildSwitchView"]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"childSwitchViewIconChanged" object:nil];
+            [ChildIconManager syncChildIconsInBackground];
         } else {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
         }

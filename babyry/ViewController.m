@@ -789,7 +789,10 @@
 
 - (void)syncChildIcons
 {
-    [ChildIconManager syncChildIconsInBackground];
+    NSLog(@"ViewController syncChildIcons");
+    [ChildProperties asyncChildPropertiesWithBlock:^(NSMutableArray *beforeSyncChildProperties) {
+        [ChildIconManager syncChildIconsInBackground];
+    }];
 }
 
 @end
