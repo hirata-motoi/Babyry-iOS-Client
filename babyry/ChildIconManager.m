@@ -14,6 +14,7 @@
 #import "ChildProperties.h"
 #import "AWSS3Utils.h"
 #import "Config.h"
+#import "ImageUtils.h"
 
 @implementation ChildIconManager
 
@@ -76,7 +77,7 @@
     putRequest.key = [NSString stringWithFormat:@"Icon/%@/%ld", childObjectId, (long)iconVersion];
     putRequest.body = imageData;
     putRequest.contentLength = [NSNumber numberWithLong:[imageData length]];
-    putRequest.contentType = [self contentTypeForImageData:imageData];
+    putRequest.contentType = [ImageUtils contentTypeForImageData:imageData];
     putRequest.cacheControl = @"no-cache";
     AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
     [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
@@ -89,25 +90,6 @@
     }];
 }
 
-// あんまりやりたくないが・・
-+ (NSString *)contentTypeForImageData:(NSData *)data {
-    uint8_t c;
-    [data getBytes:&c length:1];
-    
-    switch (c) {
-        case 0xFF:
-            return @"image/jpeg";
-        case 0x89:
-            return @"image/png";
-        case 0x47:
-            return @"image/gif";
-        case 0x49:
-        case 0x4D:
-            return @"image/tiff";
-    }
-    return nil;
-}
-        
 + (void)syncChildIconsInBackground
 {
     NSMutableArray *childProperties = [ChildProperties getChildProperties];

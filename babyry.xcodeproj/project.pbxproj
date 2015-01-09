@@ -215,6 +215,7 @@
 		F2B9697A19CD8F4C00C14201 /* TutorialNavigator+Introduction.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9697919CD8F4C00C14201 /* TutorialNavigator+Introduction.m */; };
 		F2B9697C19CD903900C14201 /* TutorialIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */; };
 		F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */; };
+		F2CA4FE01A5F8463003EA9E6 /* ImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */; };
 		F2CE8D321A4E96EE00F56FC2 /* ChildSwitchControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */; };
 		F2CE8D391A4E9A9A00F56FC2 /* ChildSwitchView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */; };
 		F2CE8D3C1A4E9B2400F56FC2 /* ChildSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D3B1A4E9B2400F56FC2 /* ChildSwitchView.m */; };
@@ -605,6 +606,8 @@
 		F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TutorialIntroductionView.xib; sourceTree = "<group>"; };
 		F2B9698019CD92D900C14201 /* TutorialIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialIntroductionView.h; sourceTree = "<group>"; };
 		F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialIntroductionView.m; sourceTree = "<group>"; };
+		F2CA4FDE1A5F8463003EA9E6 /* ImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtils.h; sourceTree = "<group>"; };
+		F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtils.m; sourceTree = "<group>"; };
 		F2CE8D301A4E96EE00F56FC2 /* ChildSwitchControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildSwitchControlView.h; sourceTree = "<group>"; };
 		F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildSwitchControlView.m; sourceTree = "<group>"; };
 		F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildSwitchView.xib; sourceTree = "<group>"; };
@@ -693,6 +696,8 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2CA4FDE1A5F8463003EA9E6 /* ImageUtils.h */,
+				F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */,
 				F202B83F1A5EFDFB009283A6 /* ImageSelectToolView.h */,
 				F202B8401A5EFDFB009283A6 /* ImageSelectToolView.m */,
 				F2DA213A1A5EA75C00C93A08 /* ImageSelectToolView.xib */,
@@ -1817,6 +1822,7 @@
 				88E2821F19B48B8900225DD3 /* FamilyApply.m in Sources */,
 				88CFF50D1999FA1F00B56481 /* ColorUtils.m in Sources */,
 				F2FB3B971A08E3F200B0A2DD /* HeaderViewManager.m in Sources */,
+				F2CA4FE01A5F8463003EA9E6 /* ImageUtils.m in Sources */,
 				F2FAA56A19E2DE6300546669 /* AddMonthToCalendarView.m in Sources */,
 				F215DDCC197409920092C712 /* CalendarCollectionViewCell.m in Sources */,
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
