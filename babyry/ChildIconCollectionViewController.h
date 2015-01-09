@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ImageSelectToolView.h"
 
-@interface ChildIconCollectionViewController : UICollectionViewController
+@interface ChildIconCollectionViewController : UICollectionViewController<ImageSelectToolViewDelegate>
 @property (strong, nonatomic) IBOutlet UICollectionView *childIconCollectionView;
 
 @property NSString *childObjectId;

@@ -11,6 +11,7 @@
 #import "ChildProfileEditViewController.h"
 #import "ChildProperties.h"
 #import "ChildIconCollectionViewController.h"
+#import "ColorUtils.h"
 
 @interface ChildProfileViewController ()
 
@@ -160,7 +161,8 @@
                 case 0: {
                     ChildIconCollectionViewController *childIconCollectionViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildIconCollectionViewController"];
                     childIconCollectionViewController.childObjectId = _childObjectId;
-                    [self.navigationController pushViewController:childIconCollectionViewController animated:YES];
+                    UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:childIconCollectionViewController];
+                    [self.navigationController presentViewController:navController animated:YES completion:nil];
                     break;
                 }
                 default:
@@ -210,6 +212,11 @@
 {
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     [_childProfileTableView reloadData];
+}
+
+- (void)close
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

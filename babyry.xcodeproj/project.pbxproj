@@ -105,6 +105,7 @@
 		88E2822219B4A8DE00225DD3 /* Child.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E2822119B4A8DE00225DD3 /* Child.m */; };
 		88E8597019629E34007FBFD9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88E8596F19629E34007FBFD9 /* AssetsLibrary.framework */; };
 		D79AFBEA8B9F4207B47E8CAD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB30DD347E5C4D729656DE8C /* libPods.a */; };
+		F202B8411A5EFDFB009283A6 /* ImageSelectToolView.m in Sources */ = {isa = PBXBuildFile; fileRef = F202B8401A5EFDFB009283A6 /* ImageSelectToolView.m */; };
 		F20F7643196BC43A00FD2529 /* FamilyRole.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F7642196BC43A00FD2529 /* FamilyRole.m */; };
 		F20F764C196BF86B00FD2529 /* GlobalSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F20F764B196BF86B00FD2529 /* GlobalSettingViewController.m */; };
 		F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2106705196E29B400187119 /* ImageOperationViewController.m */; };
@@ -226,6 +227,7 @@
 		F2D9350219C95DA8001F33D0 /* TutorialAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350119C95DA8001F33D0 /* TutorialAttributes.m */; };
 		F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350419C97982001F33D0 /* TutorialNavigator.m */; };
 		F2D9350C19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */; };
+		F2DA213B1A5EA75C00C93A08 /* ImageSelectToolView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2DA213A1A5EA75C00C93A08 /* ImageSelectToolView.xib */; };
 		F2F8E4491A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F2F8E4481A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m */; };
 		F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2FAA55619DC04C900546669 /* CloseButtonView.xib */; };
 		F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FAA55B19DC16EA00546669 /* CloseButtonView.m */; };
@@ -425,6 +427,8 @@
 		9493E136952F4E66C427D258 /* Pods.babyryprod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.babyryprod.xcconfig; path = "Pods/Target Support Files/Pods/Pods.babyryprod.xcconfig"; sourceTree = "<group>"; };
 		D2D6FEA5379CE2B5A24DBDCB /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		EB30DD347E5C4D729656DE8C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F202B83F1A5EFDFB009283A6 /* ImageSelectToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSelectToolView.h; sourceTree = "<group>"; };
+		F202B8401A5EFDFB009283A6 /* ImageSelectToolView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageSelectToolView.m; sourceTree = "<group>"; };
 		F20F7641196BC43A00FD2529 /* FamilyRole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FamilyRole.h; sourceTree = "<group>"; };
 		F20F7642196BC43A00FD2529 /* FamilyRole.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FamilyRole.m; sourceTree = "<group>"; };
 		F20F764A196BF86B00FD2529 /* GlobalSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalSettingViewController.h; sourceTree = "<group>"; };
@@ -625,6 +629,7 @@
 		F2D9350419C97982001F33D0 /* TutorialNavigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialNavigator.m; sourceTree = "<group>"; };
 		F2D9350A19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TutorialNavigator+ShowMultiUpload.h"; sourceTree = "<group>"; };
 		F2D9350B19C9848B001F33D0 /* TutorialNavigator+ShowMultiUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TutorialNavigator+ShowMultiUpload.m"; sourceTree = "<group>"; };
+		F2DA213A1A5EA75C00C93A08 /* ImageSelectToolView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageSelectToolView.xib; sourceTree = "<group>"; };
 		F2F8E4471A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDKTStickySectionHeadersCollectionViewLayout.h; sourceTree = "<group>"; };
 		F2F8E4481A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDKTStickySectionHeadersCollectionViewLayout.m; sourceTree = "<group>"; };
 		F2FAA55619DC04C900546669 /* CloseButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CloseButtonView.xib; sourceTree = "<group>"; };
@@ -688,6 +693,9 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F202B83F1A5EFDFB009283A6 /* ImageSelectToolView.h */,
+				F202B8401A5EFDFB009283A6 /* ImageSelectToolView.m */,
+				F2DA213A1A5EA75C00C93A08 /* ImageSelectToolView.xib */,
 				F2D266951A5B8229005C3603 /* ChildIconManager.h */,
 				F2D266961A5B8229005C3603 /* ChildIconManager.m */,
 				F2CE8D371A4E9A7A00F56FC2 /* ChildSwitch */,
@@ -1645,6 +1653,7 @@
 				F226592119D434C3003A62BD /* TutorialImage_0_2.jpg in Resources */,
 				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */,
+				F2DA213B1A5EA75C00C93A08 /* ImageSelectToolView.xib in Resources */,
 				F27AB6E319D52B3900285BEB /* TutorialSentApplyView.xib in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
 				F285516519D15F0A00347BB6 /* TutorialImage_0_0.jpg in Resources */,
@@ -1771,6 +1780,7 @@
 				F21BBBE619CAA147002D4623 /* TutorialNavigator+AddChildExec.m in Sources */,
 				88610B601A0A04560042854B /* AlbumPickerViewController.m in Sources */,
 				88AA2FF0196CE9C500F4B40C /* UIViewController+MJPopupViewController.m in Sources */,
+				F202B8411A5EFDFB009283A6 /* ImageSelectToolView.m in Sources */,
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
 				88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */,

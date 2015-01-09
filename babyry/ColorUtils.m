@@ -56,4 +56,14 @@
     return [UIColor_Hex colorWithHexString:@"ff77a1" alpha:1.0];
 }
 
++(UIColor *) getPositiveColor
+{
+    return [UIColor_Hex colorWithHexString:@"45A1CE" alpha:1.0];
+}
+
++(UIColor *)getNegativeColor
+{
+    return [UIColor colorWithRed:(float)126/256 green:(float)125/256 blue:(float)122/256 alpha:1.0];
+}
+
 @end
