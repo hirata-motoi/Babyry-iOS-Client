@@ -118,7 +118,7 @@ static ChildSwitchControlView* sharedObject = nil;
     rect.origin.x = 0;
     [UIView animateWithDuration:0.2f
                           delay:0.0f
-                        options:nil
+                        options:UIViewAnimationOptionTransitionNone
                      animations:^{
                          self.frame = rect;
                      }
@@ -136,7 +136,7 @@ static ChildSwitchControlView* sharedObject = nil;
         view.hidden = NO;
         [UIView animateWithDuration:0.2f
                               delay:0.0f
-                            options:nil
+                            options:UIViewAnimationOptionTransitionNone
                          animations:^{
                              view.frame = switchRect;
                              view.childNameLabel.alpha = 1.0f;
@@ -153,7 +153,7 @@ static ChildSwitchControlView* sharedObject = nil;
     rect.origin.x = 320 - 50;
     [UIView animateWithDuration:0.2f
                           delay:0.0f
-                        options:nil
+                        options:UIViewAnimationOptionTransitionNone
                      animations:^{
                          self.frame = rect;
                      }
@@ -169,7 +169,7 @@ static ChildSwitchControlView* sharedObject = nil;
         
         [UIView animateWithDuration:0.2f
                               delay:0.0f
-                            options:nil
+                            options:UIViewAnimationOptionTransitionNone
                          animations:^{
                              view.frame = rect;
                              view.childNameLabel.alpha = 0.0f;
