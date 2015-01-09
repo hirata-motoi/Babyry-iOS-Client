@@ -586,8 +586,8 @@
             return;
         }
         
-        _dateComp = [DateUtils addDateComps:_dateComp withUnit:@"month" withValue:-1];
-        [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
+        _dateComp = visibleDateComp;
+        [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:visibleDateComp.year withMonth:visibleDateComp.month withReload:YES];
     }
 }
 
