@@ -94,7 +94,7 @@
     }
 }
 
-+ (void)simpleDownloadWithKey:(NSString *)key WithBlock:(SimpleDownloadBlock)block
++ (void)singleDownloadWithKey:(NSString *)key withBlock:(SimpleDownloadBlock)block
 {
     AWSS3TransferManager *transferManager = [[AWSS3TransferManager alloc] initWithConfiguration:[AWSCommon getAWSServiceConfiguration:@"S3"] identifier:@"S3"];
     AWSS3TransferManagerDownloadRequest *downloadRequest = [AWSS3TransferManagerDownloadRequest new];

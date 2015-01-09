@@ -118,7 +118,7 @@
         }
         NSString *bucketKey = [NSString stringWithFormat:@"Icon/%@/%d", childProperty[@"objectId"], [childProperty[@"iconVersion"] intValue]];
         dic[@"count"] = [NSNumber numberWithInt:[dic[@"count"] intValue] + 1];
-        [AWSS3Utils simpleDownloadWithKey:bucketKey WithBlock:^(NSMutableDictionary *params) {
+        [AWSS3Utils singleDownloadWithKey:bucketKey withBlock:^(NSMutableDictionary *params) {
             NSData *imageData = params[@"imageData"];
             
             if (imageData) {

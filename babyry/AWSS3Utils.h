@@ -16,6 +16,5 @@ typedef void (^SimpleDownloadBlock)(NSMutableDictionary *params);
 @interface AWSS3Utils : NSObject
 
 - (void)makeCacheFromS3:(NSMutableArray *)downloadQueue configuration:(AWSServiceConfiguration *)configuration withBlock:(makeCacheFromS3Block)block;
-+ (void)simpleDownloadWithKey:(NSString *)key WithBlock:(SimpleDownloadBlock)block;
-
++ (void)singleDownloadWithKey:(NSString *)key withBlock:(SimpleDownloadBlock)block;
 @end

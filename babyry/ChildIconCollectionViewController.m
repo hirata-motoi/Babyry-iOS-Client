@@ -232,7 +232,7 @@ static NSString * const reuseIdentifier = @"Cell";
             PFObject *childImage = objects[0];
             NSString *objectId = childImage.objectId;
             NSString *bucketKey = [NSString stringWithFormat:@"ChildImage%ld/%@", [childProperty[@"childImageShardIndex"] integerValue], objectId];
-            [AWSS3Utils simpleDownloadWithKey:bucketKey WithBlock:^(NSMutableDictionary *params) {
+            [AWSS3Utils singleDownloadWithKey:bucketKey withBlock:^(NSMutableDictionary *params) {
                 NSData *imageData = params[@"imageData"];
                 imageView.image = [[UIImage alloc]initWithData:imageData];
             }];
