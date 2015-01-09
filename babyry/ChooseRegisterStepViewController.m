@@ -15,6 +15,7 @@
 #import "Logger.h"
 #import "CloseButtonView.h"
 #import "ChildProperties.h"
+#import "MBProgressHUD.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -182,6 +183,9 @@
 
 - (void)continueWithNoLogin
 {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"簡単会員ログイン中";
+    
     IdIssue *idIssue = [[IdIssue alloc] init];
     PFUser *user = [PFUser user];
     user.username = [idIssue randomStringWithLength:8];
@@ -192,6 +196,7 @@
     user[@"emailCommon"] = user.username;
     
     [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [hud hide:YES];
         if (!error) {
             [TmpUser setTmpUserToCoreData:user.username password:(NSString *)user.password];
             [self dismissViewControllerAnimated:YES completion:nil];
