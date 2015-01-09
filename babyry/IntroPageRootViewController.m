@@ -56,6 +56,24 @@
         [_loginButton addGestureRecognizer:openLoginView];
     }
     [self setupSkipAction];
+    
+    // ひとまずこんな感じで
+    UIColor *cornerColor = [UIColor_Hex colorWithHexString:@"858585" alpha:1.0];
+    _skipFromFirst.layer.cornerRadius = 6;
+    _skipFromFirst.layer.borderColor = cornerColor.CGColor;
+    _skipFromFirst.layer.borderWidth = 2;
+    _skipFromSecond.layer.cornerRadius = 6;
+    _skipFromSecond.layer.borderColor = cornerColor.CGColor;
+    _skipFromSecond.layer.borderWidth = 2;
+    _skipFromThird.layer.cornerRadius = 6;
+    _skipFromThird.layer.borderColor = cornerColor.CGColor;
+    _skipFromThird.layer.borderWidth = 2;
+    _skipFromFourth.layer.cornerRadius = 6;
+    _skipFromFourth.layer.borderColor = cornerColor.CGColor;
+    _skipFromFourth.layer.borderWidth = 2;
+    _skipFromFifth.layer.cornerRadius = 6;
+    _skipFromFifth.layer.borderColor = cornerColor.CGColor;
+    _skipFromFifth.layer.borderWidth = 2;
 }
 
 - (void)viewDidAppear:(BOOL)animated

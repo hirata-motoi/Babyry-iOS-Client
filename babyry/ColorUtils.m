@@ -56,4 +56,24 @@
     return [UIColor_Hex colorWithHexString:@"ff77a1" alpha:1.0];
 }
 
++(UIColor *)getPositiveButtonColor
+{
+    return [UIColor_Hex colorWithHexString:@"45a1ce" alpha:1.0];
+}
+
++(UIColor *)getNegativeButtonColor
+{
+    return [UIColor_Hex colorWithHexString:@"7e7d7a" alpha:1.0];
+}
+
++(UIColor *)getOtherButtonColor
+{
+    return [UIColor_Hex colorWithHexString:@"9d7300" alpha:1.0];
+}
+
++(UIColor *)getFacebookButtonColor
+{
+    return [UIColor_Hex colorWithHexString:@"3b5998" alpha:1.0];
+}
+
 @end

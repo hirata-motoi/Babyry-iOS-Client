@@ -60,7 +60,7 @@
     for (int i=0; i<[subviews count]; i++) {
         if ([[subviews objectAtIndex:i] isKindOfClass:[UIPageControl class]]) {
             thisControl = (UIPageControl *)[subviews objectAtIndex:i];
-            thisControl.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.6];
+            thisControl.backgroundColor = [UIColor_Hex colorWithHexString:@"666666" alpha:1.0];
             thisControl.pageIndicatorTintColor = [UIColor grayColor];
             thisControl.currentPageIndicatorTintColor = [UIColor whiteColor];
         }
