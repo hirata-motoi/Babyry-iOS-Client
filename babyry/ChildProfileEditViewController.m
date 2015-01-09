@@ -89,6 +89,8 @@
     childProperty = [ChildProperties getChildProperty:_childObjectId];
    
     [_delegate reloadChildProfile];
+    NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
     
     [self closeEditing];
 }
