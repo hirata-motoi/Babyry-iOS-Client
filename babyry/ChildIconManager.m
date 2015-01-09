@@ -43,7 +43,7 @@
         NSNumber *iconVersionNumber = child[@"iconVersion"];
         NSInteger newIconVersion = (iconVersionNumber) ? [iconVersionNumber integerValue] + 1 : 1;
         
-        [self saveToAWSWithFilePath:imageData
+        [self saveToAWSWithData:imageData
                   withChildObjectId:childObjectId
                     withIconVersion:newIconVersion
                           withBlock:^{
@@ -68,7 +68,7 @@
     }];
 }
 
-+ (void)saveToAWSWithFilePath:(NSData *)imageData withChildObjectId:(NSString *)childObjectId withIconVersion:(NSInteger)iconVersion withBlock:(SaveToAWSBlock)block
++ (void)saveToAWSWithData:(NSData *)imageData withChildObjectId:(NSString *)childObjectId withIconVersion:(NSInteger)iconVersion withBlock:(SaveToAWSBlock)block
 {
     AWSServiceConfiguration *configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
     AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
