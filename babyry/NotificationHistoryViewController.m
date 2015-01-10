@@ -87,7 +87,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES]; // 選択状態の解除
     
     PFObject *histObject = _notificationHistoryArray[indexPath.row];
-    [TransitionByPushNotification createTransitionInfoAndReturnToTop:histObject viewController:self];
+    [TransitionByPushNotification createTransitionInfoAntTransition:histObject viewController:self];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

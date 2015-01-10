@@ -305,7 +305,7 @@
                 } else {
                     if (notificationHistoryArray[indexPath.row]) {
                         PFObject *histObject = notificationHistoryArray[indexPath.row];
-                        [TransitionByPushNotification createTransitionInfoAndReturnToTop:histObject viewController:self];
+                        [TransitionByPushNotification createTransitionInfoAntTransition:histObject viewController:self];
                     }
                 }
             }

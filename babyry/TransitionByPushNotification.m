@@ -306,7 +306,7 @@ static BOOL appLaunchFlag = NO;
 }
 
 // globalSettingのお知らせから飛ぶ用で、Push後の遷移ではないが同じ遷移をするようにtransitionInfoを偽装
-+ (void)createTransitionInfoAndReturnToTop:(PFObject *)histObject viewController:(UIViewController *)vc
++ (void)createTransitionInfoAntTransition:(PFObject *)histObject viewController:(UIViewController *)vc
 {
     NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
     if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
@@ -324,7 +324,15 @@ static BOOL appLaunchFlag = NO;
     transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", targetIndexPath.row];
     transitionInfoDic[@"childObjectId"] = histObject[@"child"];
     [self setInfo:transitionInfoDic];
-    [self returnToTop:vc];
+    if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
+        [self moveToUploadViewControllerWithCommentForPushTransition:vc];
+    } else {
+        if ([DateUtils isInTwodayByIndexPath:targetIndexPath]) {
+            [self moveToMultiUploadViewControllerForPushTransition:vc];
+        } else {
+            [self moveToImagePageViewControllerForPushTransition:vc];
+        }
+    }
 }
 
 @end
