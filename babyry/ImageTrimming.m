@@ -147,4 +147,13 @@
     return returnImage;
 }
 
++ (UIImage *) makeCellIconForMenu:(UIImage *)orgImage size:(CGSize)size
+{
+    UIGraphicsBeginImageContext(size);
+    [orgImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *newThumbnail = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newThumbnail;
+}
+
 @end

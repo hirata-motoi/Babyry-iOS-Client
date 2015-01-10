@@ -30,17 +30,22 @@ NSString *const className = @"NotificationHistory";
     [nh saveInBackground];
 }
 
-+ (void)getNotificationHistoryInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withBlock:(NotificationHistoryBlock)block
++ (void)getNotificationHistoryInBackgroundGroupByDate:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryBlock)block
 {
     NSMutableDictionary *history = [[NSMutableDictionary alloc]init];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"toUserId" equalTo:userId];
-    [query whereKey:@"status" equalTo:@"ready"];
-    [query whereKey:@"child" equalTo:childObjectId];
-    query.limit = 1000; // max
+    if (status) {
+        [query whereKey:@"status" equalTo:status];
+    }
+    if (childObjectId != nil) {
+        [query whereKey:@"child" equalTo:childObjectId];
+    }
+    query.limit = limit;
     if (type != nil) {
         [query whereKey:@"type" equalTo:type];
     }
+    [query orderByDescending:@"createdAt"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             for (PFObject *object in objects) {
@@ -74,6 +79,30 @@ NSString *const className = @"NotificationHistory";
     }];
 }
 
++ (void)getNotificationHistoryInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryObjectsBlock)block
+{
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"toUserId" equalTo:userId];
+    if (status) {
+        [query whereKey:@"status" equalTo:status];
+    }
+    if (childObjectId != nil) {
+        [query whereKey:@"child" equalTo:childObjectId];
+    }
+    query.limit = limit;
+    if (type != nil) {
+        [query whereKey:@"type" equalTo:type];
+    }
+    [query orderByDescending:@"createdAt"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error) {
+            block(objects);
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
+        }
+    }];
+}
+
 + (void)getNotificationHistoryObjectsByDateInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId date:(NSNumber *)date withBlock:(NotificationHistoryObjectsBlock)block
 {
     PFQuery *query = [PFQuery queryWithClassName:className];
@@ -85,6 +114,7 @@ NSString *const className = @"NotificationHistory";
     if (type != nil) {
         [query whereKey:@"type" equalTo:type];
     }
+    [query orderByDescending:@"createdAt"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             block(objects);
@@ -106,6 +136,26 @@ NSString *const className = @"NotificationHistory";
     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         block();
     }];
+}
+
++ (NSString *)getNotificationString:(PFObject *)histObject
+{
+    NSString *returnStr;
+    NSString *dateStr = [histObject[@"date"] stringValue];
+    NSString *MMDD = [NSString stringWithFormat:@"%@/%@", [dateStr substringWithRange:NSMakeRange(4, 2)], [dateStr substringWithRange:NSMakeRange(6, 2)]];
+    if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
+        returnStr = [NSString stringWithFormat:@"%@にコメントがつきました", MMDD];
+    } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
+        returnStr = [NSString stringWithFormat:@"%@にGive Me Photoされました", MMDD];
+    } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
+        returnStr = [NSString stringWithFormat:@"%@のベストショット決定！", MMDD];
+    } else if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
+        returnStr = [NSString stringWithFormat:@"%@に写真がアップロードされました", MMDD];
+    } else {
+        return @"";
+        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error there is no notification type like %@", histObject[@"type"]]];
+    }
+    return returnStr;
 }
 
 @end

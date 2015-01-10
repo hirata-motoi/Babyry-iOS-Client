@@ -66,4 +66,24 @@
     return [UIColor_Hex colorWithHexString:@"e7e4d6" alpha:0.4];
 }
 
++(UIColor *)getGlobalMenuSectionHeaderColor
+{
+    return [UIColor_Hex colorWithHexString:@"bfb488" alpha:1.0];
+}
+
++(UIColor *)getGlobalMenuPartSwitchColor
+{
+    return [UIColor_Hex colorWithHexString:@"525e64" alpha:1.0];
+}
+
++(UIColor *)getGlobalMenuLightGrayColor
+{
+    return [UIColor_Hex colorWithHexString:@"f1f1f1" alpha:1.0];
+}
+
++(UIColor *)getGlobalMenuDarkGrayColor
+{
+    return [UIColor_Hex colorWithHexString:@"e6e6e6" alpha:1.0];
+}
+
 @end

@@ -279,7 +279,7 @@
 - (void)setupNotificationHistory
 {
     self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
-    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withBlock:^(NSMutableDictionary *history){
+    [NotificationHistory getNotificationHistoryInBackgroundGroupByDate:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withStatus:@"ready" withLimit:1000 withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
         // ただし、imageUpload or bestShotChoosen or commentPosted のpush通知をもらった場合はnotificationHistoryを更新しない
         // Pushで開く時はnotificationHistoryを渡さないで即開くので
@@ -294,7 +294,6 @@
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];
     }];
-    
 }
 
 - (NSDate *)getCollectionViewFirstDay

@@ -27,6 +27,12 @@
 #import "PartnerApply.h"
 #import "UINavigationController+Block.h"
 #import "AnnounceBoardView.h"
+#import "ColorUtils.h"
+#import "NotificationHistory.h"
+#import "DateUtils.h"
+#import "TransitionByPushNotification.h"
+#import "NotificationHistoryViewController.h"
+#import "ImageTrimming.h"
 
 @interface GlobalSettingViewController ()
 
@@ -34,6 +40,8 @@
 
 @implementation GlobalSettingViewController {
     TutorialNavigator *tn;
+    NSMutableArray *notificationHistoryArray;
+    MBProgressHUD *hud;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -56,11 +64,17 @@
                                              action:nil];
     _settingTableView.delegate = self;
     _settingTableView.dataSource = self;
+    _settingTableView.separatorInset = UIEdgeInsetsZero;
+    _settingTableView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+    // iOS8用
+    if ([_settingTableView respondsToSelector:@selector(layoutMargins)]) {
+        _settingTableView.layoutMargins = UIEdgeInsetsZero;
+    }
     
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
-//    [self checkEmailVerified];
+    [self getNotificationHistory];
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,27 +98,6 @@
     [tn removeNavigationView];
     tn = nil;
 }
-
-//- (void) checkEmailVerified
-//{
-//    // Facebookログイン: user[@"email"]なし => noNeed
-//    // 簡単ログイン : user[@"emailCommon"]がメアド形式でない => notYet
-//    // 本登録&認証済み : user[@"email"]あり、EmailVerifyのisVerifedがTRUE => done
-//    // 本登録&認証未済 : user[@"email"]あり、EmailVerifyのisVerifedがFALSE => doing
-//    PFUser *user = [PFUser currentUser];
-//    if (user[@"emailVerified"]) {
-//        if ([user[@"emailVerified"] boolValue]) {
-//            _emailVerified = @"done";
-//        } else {
-//            _emailVerified = @"notYet";
-//        }
-//    } else {
-//        _emailVerified = @"noNeed";
-//    }
-//}
-
-#pragma mark - Table view data source
-
 
 - (void)close
 {
@@ -166,39 +159,71 @@
                 [elem removeFromSuperview];
             }
         }
+        if ([view isKindOfClass:[UISegmentedControl class]]) {
+            [view removeFromSuperview];
+        }
     }
+    cell.imageView.image = nil;
+    cell.textLabel.text = nil;
+    cell.detailTextLabel.text = nil;
+    cell.accessoryType = UITableViewCellAccessoryNone;
     cell.textLabel.numberOfLines = 0;
+    cell.textLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:14];
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = [UIColor whiteColor];
+    // iOS8用
+    if ([cell respondsToSelector:@selector(layoutMargins)]) {
+        cell.layoutMargins = UIEdgeInsetsZero;
+    }
     
     switch (indexPath.section) {
         case 0:
-            switch (indexPath.row) {
-                case 0:
-                    cell.textLabel.text = @"プロフィール";
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    break;
-                case 1:
-                    cell.textLabel.text = @"あなたのパート";
-                    _roleControl = [self createRoleSwitchSegmentControl];
-                    [cell addSubview:_roleControl];
-                    break;
-//                case 2:
-//                    if (![TmpUser checkRegistered]) {
-//                        cell.textLabel.text = @"本登録を完了する";
-//                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//                    } else {
-//                        cell.textLabel.text = @"メールアドレス認証";
-//                        cell.detailTextLabel.text = @"未認証";
-//                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//                    }
-//                    break;
-                default:
-                    break;
+            if (!notificationHistoryArray) {
+                if (hud) {
+                    [hud hide:YES];
+                    hud = nil;
+                }
+                hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
+                [cell addSubview:hud];
+            } else {
+                if (indexPath.row == 4) {
+                    cell.detailTextLabel.text = @"お知らせをもっと見る";
+                    cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
+                    cell.detailTextLabel.font = cell.textLabel.font;
+                    cell.detailTextLabel.textColor = [UIColor blackColor];
+                    cell.backgroundColor = [ColorUtils getGlobalMenuLightGrayColor];
+                } else {
+                    if (notificationHistoryArray[indexPath.row]) {
+                        PFObject *histObject = notificationHistoryArray[indexPath.row];
+                        cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
+                        cell.imageView.image = [ImageTrimming makeCellIconForMenu:[UIImage imageNamed:@"SelectedBestshot"] size:CGSizeMake(40, 40)];
+                        if (![histObject[@"status"] isEqualToString:@"displayed"]) {
+                            cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+                        }
+                    }
+                }
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
             }
             break;
         case 1:
             switch (indexPath.row) {
                 case 0:
-                    cell.textLabel.text = @"こどもを追加";
+                {
+                    cell.textLabel.text = @"パート設定";
+                    _roleControl = [self createRoleSwitchSegmentControl];
+                    [cell addSubview:_roleControl];
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    break;
+                }
+                case 1:
+                {
+                    cell.textLabel.text = @"こども設定";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    break;
+                }
+                case 2:
+                    cell.textLabel.text = @"プロフィール設定";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
@@ -219,13 +244,7 @@
                     cell.textLabel.text = @"お問い合わせ";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
-                default:
-                    break;
-            }
-            break;
-        case 3:
-            switch (indexPath.row) {
-                case 0:
+                case 3:
                     cell.textLabel.text = @"ログアウト";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
@@ -252,23 +271,20 @@
     NSInteger rowCount;
     switch (section) {
         case 0:
-//            if (![TmpUser checkRegistered] || ![_emailVerified isEqualToString:@"noNeed"]) {
-//                rowCount = 3;
-//            } else {
-                rowCount = 2;
-//            }
-            break;
-        case 1:
-            rowCount = 1;
-            break;
-        case 2:
-            rowCount = 3;
-            break;
-        case 3:
-            if ([TmpUser checkRegistered]) {
+            if (!notificationHistoryArray) {
                 rowCount = 1;
             } else {
-                rowCount = 0;
+                rowCount = 5;
+            }
+            break;
+        case 1:
+            rowCount = 3;
+            break;
+        case 2:
+            if ([TmpUser checkRegistered]) {
+                rowCount = 4;
+            } else {
+                rowCount = 3;
             }
             break;
         default:
@@ -283,27 +299,26 @@
     
     switch (indexPath.section) {
         case 0:
-            switch (indexPath.row) {
-                case 0:
-                    [self openProfileEdit];
-                    break;
-                case 1:
-                    break;
-//                case 2:
-//                    if (![TmpUser checkRegistered]) {
-//                        [self openRegisterView];
-//                    } else {
-//                        [self openEmailVerifiedView];
-//                    }
-//                    break;
-                default:
-                    break;
+            if (notificationHistoryArray) {
+                if (indexPath.row == 4) {
+                    [self openNotificationHistoryViewController];
+                } else {
+                    if (notificationHistoryArray[indexPath.row]) {
+                        PFObject *histObject = notificationHistoryArray[indexPath.row];
+                        [TransitionByPushNotification createTransitionInfoAntTransition:histObject viewController:self];
+                    }
+                }
             }
             break;
         case 1:
             switch (indexPath.row) {
                 case 0:
+                    break;
+                case 1:
                     [self openAddChildAddView];
+                    break;
+                case 2:
+                    [self openProfileEdit];
                     break;
                 default:
                     break;
@@ -320,13 +335,7 @@
                 case 2:
                     [self openInquiry];
                     break;
-                default:
-                    break;
-            }
-            break;
-        case 3:
-            switch (indexPath.row) {
-                case 0:
+                case 3:
                     [self logout];
                     break;
                 default:
@@ -340,48 +349,63 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 4;
+    return 3;
 }
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    NSString *title;
-    switch (section) {
-        case 0:
-            title = @"アカウント情報";
-            break;
-        case 1:
-            title = @"こども設定";
-            break;
-        case 2:
-            title = @"Babyryについて";
-            break;
-        default:
-            title = @"";
-            break;
-    }
-    return title;
-}
-
-// titleForHeaderInSectionでアルファベットをsection headerに設定すると大文字になってしまう
-// そこでheaderの表示直前に書き換える
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section{
-    if (section == 2) {
-        UITableViewHeaderFooterView *tableViewHeaderFooterView = (UITableViewHeaderFooterView *) view;
-        tableViewHeaderFooterView.textLabel.text = @"Babyryについて";
-    }
-}
-
-//- (void)openRegisterView
-//{
-//    UserRegisterViewController * userRegisterViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"UserRegisterViewController"];
-//    [self.navigationController pushViewController:userRegisterViewController animated:YES];
-//}
 
 - (void)openAddChildAddView
 {
     [tn removeNavigationView];
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     [self.navigationController pushViewController:icnvc animated:YES];
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 24)];
+    headerView.backgroundColor = [ColorUtils getGlobalMenuSectionHeaderColor];
+    UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(6, 0, 320, 24)];
+    headerLabel.textColor = [UIColor whiteColor];
+    headerLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:12];
+    
+    switch (section) {
+        case 0:
+            headerLabel.text = @"お知らせ";
+            break;
+        case 1:
+            headerLabel.text = @"設定";
+            break;
+        case 2:
+            headerLabel.text = @"その他";
+            break;
+        default:
+            headerLabel.text = @"";
+            break;
+    }
+    [headerView addSubview:headerLabel];
+    
+    return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (!notificationHistoryArray && indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            return 5 * 44.0f;
+        } else {
+            return 0.0f;
+        }
+    }
+    return 44.0f;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 24.0f;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooderInSection:(NSInteger)section
+{
+    return 12.0f;
 }
 
 - (NSString *)getSelectedRole
@@ -458,6 +482,8 @@
     rect.origin.y = 7;
     sc.frame = rect;
     [sc addTarget:self action:@selector(switchRole) forControlEvents:UIControlEventValueChanged];
+    sc.tintColor = [ColorUtils getGlobalMenuPartSwitchColor];
+    [sc setTitleTextAttributes:[NSDictionary dictionaryWithObject:[UIFont fontWithName:@"HiraKakuProN-W3" size:12] forKey:NSFontAttributeName] forState:UIControlStateNormal];
    
     // cacheから取得した値を初期値としておく
     NSString *familyRole = [FamilyRole selfRole:@"cacheOnly"];
@@ -567,6 +593,29 @@
 {
     NotEmailVerifiedViewController *emailVerifiedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotEmailVerifiedViewController"];
     [self.navigationController pushViewController:emailVerifiedViewController animated:YES];
+}
+
+- (void)getNotificationHistory
+{
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:nil withLimit:100 withBlock:^(NSArray *objects){
+        notificationHistoryArray = [[NSMutableArray alloc] initWithArray:objects];
+        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
+        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
+        for (PFObject *object in objects) {
+            if ([object[@"type"] isEqualToString:@"imageUploaded"] || [object[@"type"] isEqualToString:@"requestPhoto"] || [object[@"type"] isEqualToString:@"bestShotChanged"] || [object[@"type"] isEqualToString:@"commentPosted"]) {
+                [notificationHistoryArray addObject:object];
+            }
+        }
+        [_settingTableView reloadData];
+        [hud hide:YES];
+    }];
+}
+
+- (void)openNotificationHistoryViewController
+{
+    NotificationHistoryViewController *notificationHistoryViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotificationHistoryViewController"];
+    notificationHistoryViewController.notificationHistoryArray = notificationHistoryArray;
+    [self.navigationController pushViewController:notificationHistoryViewController animated:YES];
 }
 
 @end

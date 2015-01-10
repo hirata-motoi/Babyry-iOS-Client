@@ -123,7 +123,7 @@
     NSDate *date = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyyMM"];
-    
+
     NSString *yyyymmdd = transitionInfo[@"date"];
     NSString *fromDate = [yyyymmdd substringToIndex:6];
     

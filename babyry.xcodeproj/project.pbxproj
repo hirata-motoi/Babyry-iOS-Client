@@ -41,6 +41,7 @@
 		88962B2A1A581CDE001EEBED /* CellImageFramePlaceHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 88962B291A581CDE001EEBED /* CellImageFramePlaceHolder.m */; };
 		88962B2C1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88962B2B1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib */; };
 		88962B2F1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = 88962B2E1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m */; };
+		88962B381A5EB2AD001EEBED /* NotificationHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88962B371A5EB2AD001EEBED /* NotificationHistoryViewController.m */; };
 		8897178B1A10A5A300EAF8D2 /* AnnounceBoardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8897178A1A10A5A300EAF8D2 /* AnnounceBoardView.xib */; };
 		8897178E1A10A6A200EAF8D2 /* AnnounceBoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8897178D1A10A6A200EAF8D2 /* AnnounceBoardView.m */; };
 		889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */; };
@@ -321,6 +322,8 @@
 		88962B2B1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellImageFramePlaceHolderLarge.xib; sourceTree = "<group>"; };
 		88962B2D1A581F45001EEBED /* CellImageFramePlaceHolderLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellImageFramePlaceHolderLarge.h; sourceTree = "<group>"; };
 		88962B2E1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellImageFramePlaceHolderLarge.m; sourceTree = "<group>"; };
+		88962B361A5EB2AD001EEBED /* NotificationHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationHistoryViewController.h; sourceTree = "<group>"; };
+		88962B371A5EB2AD001EEBED /* NotificationHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationHistoryViewController.m; sourceTree = "<group>"; };
 		8897178A1A10A5A300EAF8D2 /* AnnounceBoardView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AnnounceBoardView.xib; sourceTree = "<group>"; };
 		8897178C1A10A6A200EAF8D2 /* AnnounceBoardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnounceBoardView.h; sourceTree = "<group>"; };
 		8897178D1A10A6A200EAF8D2 /* AnnounceBoardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnounceBoardView.m; sourceTree = "<group>"; };
@@ -1149,6 +1152,8 @@
 				883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */,
 				886A90FB1A051E3D007849DB /* PasswordChangeViewController.h */,
 				886A90FC1A051E3D007849DB /* PasswordChangeViewController.m */,
+				88962B361A5EB2AD001EEBED /* NotificationHistoryViewController.h */,
+				88962B371A5EB2AD001EEBED /* NotificationHistoryViewController.m */,
 			);
 			name = GlobalSetting;
 			sourceTree = "<group>";
@@ -1753,6 +1758,7 @@
 				F21BBBB819C9EEA7002D4623 /* TutorialShowMultiUploadView.m in Sources */,
 				88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */,
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
+				88962B381A5EB2AD001EEBED /* NotificationHistoryViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
 				88C072CE19C61C2F00BF6F6F /* Account.m in Sources */,
 				F21BBBCD19CA0351002D4623 /* TutorialUpperArrowView.m in Sources */,
@@ -2153,7 +2159,7 @@
 				INFOPLIST_FILE = "babyry/babyrydev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "ed0e4f80-add5-414f-92fe-98b2180ed6bb";
+				PROVISIONING_PROFILE = "c3b8343f-b9e6-4828-90d9-7ffe47964c8f";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
