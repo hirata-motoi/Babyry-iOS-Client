@@ -7,6 +7,9 @@
 //
 
 #import "ImageTrimming.h"
+#import "ImageCache.h"
+#import "UIImage+ImageEffects.h"
+#import "ColorUtils.h"
 
 @implementation ImageTrimming
 
@@ -79,6 +82,69 @@
         
         return resizedImage;
     }
+}
+
++ (UIImage *) makeMultiCandidateImageWithBlur:(NSArray *)candidatePathArray childObjectId:(NSString *)chidObjectId ymd:(NSString *)ymd cellFrame:(CGRect)cellFrame
+{
+    UIImage *returnImage = nil;
+
+    long candidateCount = [candidatePathArray count];
+    if (candidateCount == 0) {
+        return nil;
+    } else if (candidateCount == 1) {
+        // 一枚の時は画像にブラーかけるだけ
+        NSData *imageCacheData = [ImageCache getCache:candidatePathArray[0] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", chidObjectId, ymd]];
+        UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
+        UIImage *trimmedImage;
+        trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/cellFrame.size.width)];
+        UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+        returnImage = trimmedImageWithBlur;
+    } else if (candidateCount == 2) {
+        // 2枚の時は上下に分ける
+        UIGraphicsBeginImageContext(CGSizeMake(cellFrame.size.width, cellFrame.size.height));
+        for (int i = 0; i < 2; i++) {
+            NSData *imageCacheData = [ImageCache getCache:candidatePathArray[i] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", chidObjectId, ymd]];
+            UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
+            UIImage *trimmedImage;
+            trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/2/cellFrame.size.width)];
+            UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+            [trimmedImageWithBlur drawInRect:CGRectMake(0, cellFrame.size.height/2*i, cellFrame.size.width, cellFrame.size.height/2)];
+        }
+        returnImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    } else if (candidateCount == 3) {
+        // 3枚の時は、一枚目を上、二三枚目を下に
+        UIGraphicsBeginImageContext(CGSizeMake(cellFrame.size.width, cellFrame.size.height));
+        for (int i = 0; i < 3; i++) {
+            NSData *imageCacheData = [ImageCache getCache:candidatePathArray[i] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", chidObjectId, ymd]];
+            UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
+            UIImage *trimmedImage;
+            if (i == 0) {
+                trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/2/cellFrame.size.width)];
+                UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+                [trimmedImageWithBlur drawInRect:CGRectMake(0, 0, cellFrame.size.width, cellFrame.size.height/2)];
+            } else {
+                trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/cellFrame.size.width)];
+                UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+                [trimmedImageWithBlur drawInRect:CGRectMake(cellFrame.size.width/2*(i-1), cellFrame.size.height/2, cellFrame.size.width/2, cellFrame.size.height/2)];
+            }
+        }
+        returnImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    } else {
+        // 4枚以上なら最初の4枚を使って画像を作る
+        UIGraphicsBeginImageContext(CGSizeMake(cellFrame.size.width, cellFrame.size.height));
+        for (int i = 0; i < 4; i++) {
+            NSData *imageCacheData = [ImageCache getCache:candidatePathArray[i] dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", chidObjectId, ymd]];
+            UIImage *cacheImage = [UIImage imageWithData:imageCacheData];
+            UIImage *trimmedImage = [ImageTrimming makeRectTopImage:cacheImage ratio:(cellFrame.size.height/cellFrame.size.width)];
+            UIImage *trimmedImageWithBlur = [trimmedImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+            [trimmedImageWithBlur drawInRect:CGRectMake(cellFrame.size.width/2*(i%2), cellFrame.size.height/2*floor(i/2), cellFrame.size.width/2, cellFrame.size.height/2)];
+        }
+        returnImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
+    return returnImage;
 }
 
 @end

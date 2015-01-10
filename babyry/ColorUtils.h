@@ -28,4 +28,8 @@
 
 +(UIColor *)getPastelRedColor;
 
++(UIColor *)getCalenderNumberColor;
+
++(UIColor *)getBlurTintColor;
+
 @end

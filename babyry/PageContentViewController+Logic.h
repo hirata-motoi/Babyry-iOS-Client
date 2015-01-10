@@ -12,8 +12,6 @@
 @interface PageContentViewController_Logic : NSObject
 
 - (void)setImages;
-- (BOOL)isToday:(NSInteger)section withRow:(NSInteger)row;
-- (BOOL)withinTwoDay: (NSIndexPath *)indexPath;
 - (NSDateComponents *)dateComps;
 - (NSDate *)getCollectionViewFirstDay;
 - (NSMutableArray *)screenSavedChildImages;

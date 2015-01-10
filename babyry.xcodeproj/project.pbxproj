@@ -18,6 +18,7 @@
 		882A6A26196B7D4A00E07D60 /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = 882A6A25196B7D4A00E07D60 /* Config.m */; };
 		882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */; };
 		883A92F319D2257C00F82A34 /* PartnerWaitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */; };
+		88449B9F1A51131B00839109 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 88449B9E1A51131B00839109 /* UIImage+ImageEffects.m */; };
 		885A223719750DD20039B263 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A223619750DD20039B263 /* DateUtils.m */; };
 		885A8C151A3191D00049E7A1 /* AWSS3Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 885A8C141A3191D00049E7A1 /* AWSS3Utils.m */; };
 		88610B561A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88610B551A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib */; };
@@ -36,6 +37,10 @@
 		8881CFA419A0DBC800B909C8 /* MySignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8881CFA319A0DBC800B909C8 /* MySignUpViewController.m */; };
 		889002FB198F5EC7005775B5 /* ChildProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FA198F5EC7005775B5 /* ChildProfileViewController.m */; };
 		889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */; };
+		88962B271A581B95001EEBED /* CellImageFramePlaceHolder.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88962B261A581B95001EEBED /* CellImageFramePlaceHolder.xib */; };
+		88962B2A1A581CDE001EEBED /* CellImageFramePlaceHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 88962B291A581CDE001EEBED /* CellImageFramePlaceHolder.m */; };
+		88962B2C1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88962B2B1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib */; };
+		88962B2F1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = 88962B2E1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m */; };
 		8897178B1A10A5A300EAF8D2 /* AnnounceBoardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8897178A1A10A5A300EAF8D2 /* AnnounceBoardView.xib */; };
 		8897178E1A10A6A200EAF8D2 /* AnnounceBoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8897178D1A10A6A200EAF8D2 /* AnnounceBoardView.m */; };
 		889F53E319DBFE4A009B3123 /* TransitionByPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 889F53E219DBFE4A009B3123 /* TransitionByPushNotification.m */; };
@@ -273,6 +278,8 @@
 		8833BC871964F7700040FD2A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		883A92F119D2257C00F82A34 /* PartnerWaitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartnerWaitViewController.h; sourceTree = "<group>"; };
 		883A92F219D2257C00F82A34 /* PartnerWaitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartnerWaitViewController.m; sourceTree = "<group>"; };
+		88449B9D1A51131B00839109 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
+		88449B9E1A51131B00839109 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		885A223519750DD20039B263 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
 		885A223619750DD20039B263 /* DateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtils.m; sourceTree = "<group>"; };
 		885A8C131A3191D00049E7A1 /* AWSS3Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWSS3Utils.h; sourceTree = "<group>"; };
@@ -308,6 +315,12 @@
 		889002FA198F5EC7005775B5 /* ChildProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileViewController.m; sourceTree = "<group>"; };
 		889002FC198F6B22005775B5 /* ChildProfileEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileEditViewController.h; sourceTree = "<group>"; };
 		889002FD198F6B22005775B5 /* ChildProfileEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileEditViewController.m; sourceTree = "<group>"; };
+		88962B261A581B95001EEBED /* CellImageFramePlaceHolder.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellImageFramePlaceHolder.xib; sourceTree = "<group>"; };
+		88962B281A581CDE001EEBED /* CellImageFramePlaceHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellImageFramePlaceHolder.h; sourceTree = "<group>"; };
+		88962B291A581CDE001EEBED /* CellImageFramePlaceHolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellImageFramePlaceHolder.m; sourceTree = "<group>"; };
+		88962B2B1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellImageFramePlaceHolderLarge.xib; sourceTree = "<group>"; };
+		88962B2D1A581F45001EEBED /* CellImageFramePlaceHolderLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellImageFramePlaceHolderLarge.h; sourceTree = "<group>"; };
+		88962B2E1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellImageFramePlaceHolderLarge.m; sourceTree = "<group>"; };
 		8897178A1A10A5A300EAF8D2 /* AnnounceBoardView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AnnounceBoardView.xib; sourceTree = "<group>"; };
 		8897178C1A10A6A200EAF8D2 /* AnnounceBoardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnounceBoardView.h; sourceTree = "<group>"; };
 		8897178D1A10A6A200EAF8D2 /* AnnounceBoardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnounceBoardView.m; sourceTree = "<group>"; };
@@ -775,6 +788,15 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		88449B9C1A5112EB00839109 /* iOS_UIImageEffects */ = {
+			isa = PBXGroup;
+			children = (
+				88449B9D1A51131B00839109 /* UIImage+ImageEffects.h */,
+				88449B9E1A51131B00839109 /* UIImage+ImageEffects.m */,
+			);
+			name = iOS_UIImageEffects;
+			sourceTree = "<group>";
+		};
 		88610B5A1A09FF8E0042854B /* ImagePicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -806,6 +828,7 @@
 		88AA2FEA196CE99800F4B40C /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				88449B9C1A5112EB00839109 /* iOS_UIImageEffects */,
 				F2F8E4461A0B6917007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout */,
 				88B58B7619F6E85000B6E86B /* UINavigationController+Block */,
 				88AA2FFC196FE04600F4B40C /* MBProgressHUD */,
@@ -1004,6 +1027,10 @@
 				F233421719A115D900928101 /* FamilyApplyListCell.m */,
 				F2FB3BAB1A0A68FE00B0A2DD /* ChildFilterListCell.h */,
 				F2FB3BAC1A0A68FE00B0A2DD /* ChildFilterListCell.m */,
+				88962B281A581CDE001EEBED /* CellImageFramePlaceHolder.h */,
+				88962B291A581CDE001EEBED /* CellImageFramePlaceHolder.m */,
+				88962B2D1A581F45001EEBED /* CellImageFramePlaceHolderLarge.h */,
+				88962B2E1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -1023,6 +1050,8 @@
 				F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */,
 				F233421419A114E900928101 /* FamilyApplyListCell.xib */,
 				F2FB3BA91A0A685900B0A2DD /* ChildFilterListCell.xib */,
+				88962B261A581B95001EEBED /* CellImageFramePlaceHolder.xib */,
+				88962B2B1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -1585,6 +1614,7 @@
 				F2FB3BAA1A0A685900B0A2DD /* ChildFilterListCell.xib in Resources */,
 				F28DFD5019D527BE0080E5C2 /* TutorialReceivedApplyView.xib in Resources */,
 				F21BBBE019CA72D7002D4623 /* TutorialAddChildView.xib in Resources */,
+				88962B271A581B95001EEBED /* CellImageFramePlaceHolder.xib in Resources */,
 				F2A8332C19AB0F5C00E2AB58 /* babyry-config.plist in Resources */,
 				F21BBBBA19C9F8B5002D4623 /* TutorialSelectBestShotView.xib in Resources */,
 				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
@@ -1619,6 +1649,7 @@
 				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
 				F226591719D22F88003A62BD /* TutorialImageUploadFinishedView.xib in Resources */,
 				F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */,
+				88962B2C1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib in Resources */,
 				F2B9697C19CD903900C14201 /* TutorialIntroductionView.xib in Resources */,
 				F21BBBB519C9ED45002D4623 /* TutorialShowMultiUploadView.xib in Resources */,
 				F285516619D15F0A00347BB6 /* TutorialImage_1.jpg in Resources */,
@@ -1730,6 +1761,7 @@
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
+				88962B2F1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m in Sources */,
 				F2CE8D321A4E96EE00F56FC2 /* ChildSwitchControlView.m in Sources */,
 				889F53ED19EAE4F5009B3123 /* PartnerInviteEntity.m in Sources */,
 				F2FAA55C19DC16EA00546669 /* CloseButtonView.m in Sources */,
@@ -1748,6 +1780,7 @@
 				F21BBBE319CA7359002D4623 /* TutorialAddChildView.m in Sources */,
 				886A90FD1A051E3D007849DB /* PasswordChangeViewController.m in Sources */,
 				F28DFD5319D5285F0080E5C2 /* TutorialReceivedApplyView.m in Sources */,
+				88449B9F1A51131B00839109 /* UIImage+ImageEffects.m in Sources */,
 				88610B5D1A09FFD30042854B /* AlbumTableViewController.m in Sources */,
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
@@ -1810,6 +1843,7 @@
 				88610B591A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m in Sources */,
 				F226591219D225AC003A62BD /* TutorialSelectBestShotFinishedView.m in Sources */,
 				F2B7E0D919C1666F0052981B /* TutorialStage.m in Sources */,
+				88962B2A1A581CDE001EEBED /* CellImageFramePlaceHolder.m in Sources */,
 				88C072E919C9E58D00BF6F6F /* TrackingLogEntity.m in Sources */,
 				8897178E1A10A6A200EAF8D2 /* AnnounceBoardView.m in Sources */,
 				88AA2FFF196FE06A00F4B40C /* MBProgressHUD.m in Sources */,
