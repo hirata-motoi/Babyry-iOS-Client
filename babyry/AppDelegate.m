@@ -159,8 +159,6 @@
 	if (application.applicationState == UIApplicationStateBackground) {
 		// backgourndでpushを受け取った時に発動、裏で画像データを読む
 
-		NSLog(@"%@", userInfo);
-        
         if (userInfo[@"transitionInfo"][@"imageIds"]) {
             ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
             [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"]];

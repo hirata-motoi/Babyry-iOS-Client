@@ -34,7 +34,6 @@ static ChildSwitchControlView* sharedObject = nil;
         childSwitchViewList = [[NSMutableArray alloc]init];
         NSMutableArray *childProperties = [ChildProperties getChildProperties];
         for (NSMutableDictionary *childProperty in childProperties) {
-            NSLog(@"childProperty :%@", childProperty[@"name"]);
             ChildSwitchView *childSwitchView = [ChildSwitchView view];
             childSwitchView.delegate = self;
             [childSwitchView setValue:childProperty[@"name"] forKey:@"childName"];

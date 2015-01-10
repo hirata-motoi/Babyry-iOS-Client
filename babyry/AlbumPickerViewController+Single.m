@@ -99,13 +99,7 @@
                             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
                             [self showSingleUploadError];
                         } else {
-                            NSLog(@"aaaaaaaaaaaaaaaa");
-                            //AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
-                            //NSString *preSingnedURL = [awsS3Utils getS3PreSignedURL:putRequest.bucket key:putRequest.key configuration:configuration];
-                            //NSLog(@"preSignedURL %@", preSingnedURL);
-                            //[self afterSingleUploadComplete:resizedImage preSignedURL:preSingnedURL];
                             [self afterSingleUploadComplete:resizedImage dirName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]] imageObjectId:childImage.objectId];
-                            NSLog(@"ccccccccccccccccc");
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
                                 //アルバム表示のViewも消す

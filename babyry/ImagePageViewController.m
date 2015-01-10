@@ -234,7 +234,6 @@
 
 - (void)showInitialImage
 {
-    NSLog(@"showInitialImage");
     UploadViewController *uploadViewController  = [self viewControllerAtIndex:_currentIndex];
     NSArray *viewControllers = @[uploadViewController];
     [self setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
@@ -363,7 +362,6 @@
 
 - (void)getChildImagesFrom:(NSInteger)fromYM to:(NSInteger)toYM
 {
-    NSLog(@"getChildImagesFrom %d %d", fromYM, toYM);
     PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
     [query whereKey:@"imageOf" equalTo:_childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
@@ -421,7 +419,6 @@
 
 - (void)countTotalNumOfChildImages:(int)skip
 {
-    NSLog(@"countTotalNumOfChildImages");
     NSString *className = [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]];
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:_childObjectId];

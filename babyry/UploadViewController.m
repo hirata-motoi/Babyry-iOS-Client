@@ -91,16 +91,11 @@
     } else {
         NSLog(@"imageInfoが無い");
         MBProgressHUD *hud;
-        //NSLog(@"_uploadedImage %@", _uploadedImage);
-        //if (!_uploadedImage) {
-            // _uploadedImageにキャッシュがセットされていないまま遷移してきた場合だけクルクル出す
-            hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            hud.labelText = @"画像ダウンロード中";
-        //}
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"画像ダウンロード中";
         PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
         [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-//        [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
         [originalImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
         [originalImageQuery orderByDescending:@"updatedAt"];
         NSLog(@"originalImageQuery");
