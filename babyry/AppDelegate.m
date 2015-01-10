@@ -156,19 +156,17 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
 
-// バックグラウンドで任意の通信処理が出来ない仕様なので一旦ペンディング
-// NSURLSessionを利用すれば出来る。HTTPのみ通信可能で、APIを用意しておけば良い。が、面倒。
-//	if (application.applicationState == UIApplicationStateBackground) {
-//		// backgourndでpushを受け取った時に発動、裏で画像データを読む
-//
-//		NSLog(@"%@", userInfo);
-//		
-//		ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
-//		[imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"][@"date"] childObjectId:userInfo[@"transitionInfo"][@"childObjectId"]];
-//
-//        completionHandler(UIBackgroundFetchResultNewData);
-//
-//    }
+	if (application.applicationState == UIApplicationStateBackground) {
+		// backgourndでpushを受け取った時に発動、裏で画像データを読む
+
+        if (userInfo[@"transitionInfo"][@"imageIds"]) {
+            ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+            [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"]];
+        }
+
+        completionHandler(UIBackgroundFetchResultNewData);
+
+    }
 	
 	if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
@@ -211,6 +209,12 @@
 		// 各クラスに通知用
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
+}
+
+- (void) application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+{
+    // このメソッドを書いておくと、バックグラウンドでNSURLSessionが呼ばれていた場合、そのdelegate method(ダウンロードが完了した場合のcallbackとか)が一斉に呼び出される
+    // 書いておかないと、アプリがforegroundになったときに一斉に呼ばれるので×
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

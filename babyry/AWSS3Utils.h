@@ -15,5 +15,6 @@ typedef void (^makeCacheFromS3Block)();
 @interface AWSS3Utils : NSObject
 
 - (void)makeCacheFromS3:(NSMutableArray *)downloadQueue configuration:(AWSServiceConfiguration *)configuration withBlock:(makeCacheFromS3Block)block;
+- (NSString *) getS3PreSignedURL:(NSString *)bucket key:(NSString *)key configuration:(AWSServiceConfiguration *)configuration;
 
 @end

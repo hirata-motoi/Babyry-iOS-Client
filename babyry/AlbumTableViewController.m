@@ -159,8 +159,8 @@
     albumPickerViewController.uploadType = _uploadType;
     if (_totalImageNum){
         albumPickerViewController.totalImageNum = _totalImageNum;
-        albumPickerViewController.indexPath = _indexPath;
     }
+    albumPickerViewController.targetDateIndexPath = _indexPath;
     if ([_uploadType isEqualToString:@"single"]) {
         albumPickerViewController.section = _section;
         albumPickerViewController.uploadViewController = _uploadViewController;

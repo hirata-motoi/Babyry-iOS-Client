@@ -69,6 +69,8 @@ int uploadErrorCount;
     
     isUploading = YES;
     
+    NSMutableArray *imageIds = [[NSMutableArray alloc] init];
+    
     int concurrency = 3;
     dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
     dispatch_group_t g = dispatch_group_create();
@@ -115,6 +117,7 @@ int uploadErrorCount;
                     [childImage save:&error];
                     if (!error) {
                         completeUploadCount++;
+                        [imageIds addObject:childImage.objectId];
                     } else {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in changing tmpData true to false : %@", error]];
                         uploadErrorCount++;
@@ -130,10 +133,10 @@ int uploadErrorCount;
         });
     }
     dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
-    [self afterUpload];
+    [self afterUpload:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]] imageIds:imageIds];
 }
 
-+ (void)afterUpload
++ (void)afterUpload:(NSString *)dirName imageIds:(NSArray *)imageIds
 {
     isUploading = NO;
     
@@ -162,6 +165,8 @@ int uploadErrorCount;
         transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%ld", (long)targetIndexPath.section];
         transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%ld", (long)targetIndexPath.row];
         transitionInfoDic[@"childObjectId"] = childProperty[@"objectId"];
+        transitionInfoDic[@"dirName"] = dirName;
+        transitionInfoDic[@"imageIds"] = imageIds;
         NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
         options[@"data"] = [[NSMutableDictionary alloc]
                             initWithObjects:@[@"Increment", transitionInfoDic]

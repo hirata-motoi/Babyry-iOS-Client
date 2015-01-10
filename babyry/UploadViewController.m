@@ -89,18 +89,16 @@
         }];
         [self setupOperationView];
     } else {
+        NSLog(@"imageInfoが無い");
         MBProgressHUD *hud;
-        if (!_uploadedImage) {
-            // _uploadedImageにキャッシュがセットされていないまま遷移してきた場合だけクルクル出す
-            hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            hud.labelText = @"画像ダウンロード中";
-        }
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"画像ダウンロード中";
         PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
         [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-//        [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
         [originalImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
         [originalImageQuery orderByDescending:@"updatedAt"];
+        NSLog(@"originalImageQuery");
         [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count] > 0) {
                 PFObject *object;
@@ -128,27 +126,31 @@
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
+                NSLog(@"aws query");
                 [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
+                        NSLog(@"aws success");
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                         UIImage *s3Image = [UIImage imageWithData:getResult.body];
                         _uploadedImageView.image = s3Image;
                         CGRect imageRect = [self getUploadedImageFrame:s3Image];
                         _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
-                        [hud hide:YES];
                     } else {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController(new image) : %@", task.error]];
                     }
+                    [hud hide:YES];
                     return nil;
                 }];
                 _imageInfo = object;
             }
             if (error) {
+                [hud hide:YES];
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in findObject in UploadViewController(new image) : %@", error]];
             }
         }];
     }
     [self disableNotificationHistories];
+    NSLog(@"end");
 }
 
 - (void)openOperationView:(id)sender

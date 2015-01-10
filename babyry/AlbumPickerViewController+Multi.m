@@ -22,7 +22,7 @@
 - (void) logicViewDidLoad
 {
     // Multiの場合、アップロード上限があるのでcurrentNum必須
-    int currentNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue];
+    int currentNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue];
     _albumPickerViewController.picNumLabel.text = [NSString stringWithFormat:@"%d枚アップロード済み、残り%d枚", currentNum, 15 - currentNum];
     _albumPickerViewController.multiUploadMax = 3;
     // Config.m の方に入れますTODO
@@ -52,9 +52,9 @@
         return;
     }
 
-    if ([_albumPickerViewController.checkedImageArray count] + [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue] > 15) {
+    if ([_albumPickerViewController.checkedImageArray count] + [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue] > 15) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限数を超えています"
-                                                        message:[NSString stringWithFormat:@"1日あたりアップロード可能なベストショット候補の写真は15枚です。既に%d枚アップロード済みです。アップロード済みの写真は拡大画面から削除も可能です", [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue]]
+                                                        message:[NSString stringWithFormat:@"1日あたりアップロード可能なベストショット候補の写真は15枚です。既に%d枚アップロード済みです。アップロード済みの写真は拡大画面から削除も可能です", [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue]]
                                                        delegate:nil
                                               cancelButtonTitle:nil
                                               otherButtonTitles:@"OK", nil
@@ -98,15 +98,15 @@
     
     [_albumPickerViewController.hud hide:YES];
     if (_albumPickerViewController.totalImageNum) {
-        int totalNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.indexPath.row] intValue] + [_albumPickerViewController.checkedImageArray count];
-        [_albumPickerViewController.totalImageNum replaceObjectAtIndex:_albumPickerViewController.indexPath.row withObject:[NSNumber numberWithInt:totalNum]];
+        int totalNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue] + [_albumPickerViewController.checkedImageArray count];
+        [_albumPickerViewController.totalImageNum replaceObjectAtIndex:_albumPickerViewController.targetDateIndexPath.row withObject:[NSNumber numberWithInt:totalNum]];
     }
     
     [ImageUploadInBackground setMultiUploadImageDataSet:_albumPickerViewController.childProperty
                               multiUploadImageDataArray:_albumPickerViewController.uploadImageDataArray
                           multiUploadImageDataTypeArray:_albumPickerViewController.uploadImageDataTypeArray
                                                    date:_albumPickerViewController.date
-                                              indexPath:_albumPickerViewController.indexPath];
+                                              indexPath:_albumPickerViewController.targetDateIndexPath];
     NSNotification *n = [NSNotification notificationWithName:@"multiUploadImageInBackground" object:nil];
     [[NSNotificationCenter defaultCenter] postNotification:n];
     

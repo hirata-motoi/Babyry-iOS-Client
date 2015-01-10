@@ -37,7 +37,7 @@
 @property NSString *childObjectId;
 @property NSString *date;
 @property NSMutableArray *totalImageNum;
-@property NSIndexPath *indexPath;
+@property NSIndexPath *targetDateIndexPath;
 
 @property MBProgressHUD *hud;
 
