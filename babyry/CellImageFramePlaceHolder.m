@@ -45,9 +45,13 @@
     } else {
         // それ以外(Photo Uploaded!! or No Photo)は青いアイコン
         self.placeHolderIcon.image = [UIImage imageNamed:@"IconPhotoFrame"];
-        if (candidateCount < 1) {
-            // 写真が無ければNo Photo
-            self.placeHolderLabel.text = @"No Photo";
+        if (candidateCount < 1 || ![DateUtils isInTwodayByIndexPath:indexPath]) {
+            // 候補写真が無い、もしくは二日以上前(BSが決められないまま二日経過してる)
+            if ([role isEqualToString:@"chooser"]) {
+                self.placeHolderLabel.text = @"No Photo";
+            } else {
+                self.placeHolderLabel.text = @"Up Photo!";
+            }
             self.uploadedNumLabel.hidden = YES;
             self.uploadMaxNumLabel.hidden = YES;
         } else {
