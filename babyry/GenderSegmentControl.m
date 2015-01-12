@@ -30,7 +30,7 @@
             self.selectedSegmentIndex = 1;
         }
         
-        self.frame = CGRectMake(0, 0, 100, 30);
+        self.frame = CGRectMake(0, 0, 100, 25);
     }
     return self;
 }

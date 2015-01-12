@@ -19,6 +19,8 @@
 #import "DateUtils.h"
 #import "ChildIconCollectionViewController.h"
 #import "IntroChildNameViewController.h"
+#import "ColorUtils.h"
+#import "Navigation.h"
 
 @interface ChildProfileManageViewController ()
 
@@ -42,6 +44,8 @@
     
     _openChildAddButton.layer.cornerRadius = 6.0f;
     _openChildAddButton.layer.masksToBounds = YES;
+    
+    [Navigation setTitle:self.navigationItem withTitle:@"こども設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileIconCell" bundle:nil] forCellReuseIdentifier:@"IconCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileGenderCell" bundle:nil] forCellReuseIdentifier:@"GenderCell"];
@@ -161,6 +165,30 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // 何もしない
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 20.0f;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *sectionView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, 20.0f)];
+    sectionView.backgroundColor = [ColorUtils getLightPositiveColor];
+   
+    CGRect labelRect = sectionView.frame;
+    labelRect.origin.x = 10.0f;
+    labelRect.size.width = labelRect.size.width - labelRect.origin.x * 2;
+    UILabel *label = [[UILabel alloc]initWithFrame:labelRect];
+    label.textAlignment = NSTextAlignmentLeft;
+    label.textColor = [UIColor whiteColor];
+    label.text = @"登録済のこども一覧";
+    label.font = [UIFont boldSystemFontOfSize:12.0f];
+    
+    [sectionView addSubview:label];
+    
+    return sectionView;
 }
 
 - (NSString *)cellType:(NSIndexPath *)indexPath

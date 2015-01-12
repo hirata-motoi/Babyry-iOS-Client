@@ -28,4 +28,10 @@
 
 +(UIColor *)getPastelRedColor;
 
++(UIColor *) getPositiveColor;
+
++(UIColor *)getLightPositiveColor;
+
++(UIColor *)getNegativeColor;
+
 @end
