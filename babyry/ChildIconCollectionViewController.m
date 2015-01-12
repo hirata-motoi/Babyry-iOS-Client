@@ -17,6 +17,7 @@
 #import "ImageSelectToolView.h"
 #import "UIColor+Hex.h"
 #import "Navigation.h"
+#import "ImageTrimming.h"
 
 @interface ChildIconCollectionViewController ()
 
@@ -99,7 +100,7 @@ static NSString * const reuseIdentifier = @"Cell";
     // 画像を取得してcellのimageViewへはりつける
     NSData *imageData = [ImageCache getCache:bestShotList[indexPath.row] dir:cacheDir];
     UIImage *image = [UIImage imageWithData:imageData];
-    cell.backgroundView = [[UIImageView alloc]initWithImage:image];
+    cell.backgroundView = [[UIImageView alloc]initWithImage:[ImageTrimming makeRectImage:image]];
     
     return cell;
 }
