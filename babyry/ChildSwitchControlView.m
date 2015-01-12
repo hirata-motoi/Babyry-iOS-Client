@@ -94,8 +94,15 @@ static ChildSwitchControlView* sharedObject = nil;
 {
     // 指定されたchildのviewを最前面に持ってくる
     // activeを入れ替えする
+    BOOL childSwitched = TRUE;
     for (ChildSwitchView *view in childSwitchViewList) {
         if ([view.childObjectId isEqualToString:childObjectId]) {
+            
+            // 元々activeなこどもへの切り替え時は画面reloadをしない
+            if (view.active) {
+                childSwitched = FALSE;
+            }
+            
             [self bringSubviewToFront:view];
             [view switch:YES];
         } else {
@@ -104,7 +111,11 @@ static ChildSwitchControlView* sharedObject = nil;
     }
     
     // delegateメソッドを叩いて表示切り替え
-    [_delegate reloadPageContentViewController:childObjectId];
+    if (childSwitched) {
+        [_delegate reloadPageContentViewController:childObjectId];
+    } else {
+        [_delegate hideOverlay];
+    }
     
     NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[DateUtils setSystemTimezone:[NSDate date]], @"lastDisplayedAt", nil];
     [ChildProperties updateChildPropertyWithObjectId:childObjectId withParams:params];

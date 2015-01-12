@@ -10,6 +10,7 @@
 
 - (void)reloadPageContentViewController:(NSString *)childObjectId;
 - (void)showOverlay;
+- (void)hideOverlay;
 
 @end
 
