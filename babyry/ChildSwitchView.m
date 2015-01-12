@@ -85,4 +85,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)removeGestures
+{
+    for (UITapGestureRecognizer *gesture in [self gestureRecognizers]) {
+        [self removeGestureRecognizer:gesture];
+    }
+}
+
 @end

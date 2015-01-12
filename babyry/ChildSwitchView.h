@@ -22,6 +22,7 @@
 - (void)switch:(BOOL)active;
 - (void)reloadIcon;
 - (void)setup;
+- (void)removeGestures;
 
 @property (nonatomic,assign) id<ChildSwitchViewDelegate> delegate;
 

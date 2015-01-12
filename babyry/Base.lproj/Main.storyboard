@@ -1614,6 +1614,31 @@
             </objects>
             <point key="canvasLocation" x="414" y="-3272"/>
         </scene>
+        <!--Child Profile Manage View Controller-->
+        <scene sceneID="pd6-o3-YGn">
+            <objects>
+                <viewController storyboardIdentifier="ChildProfileManageViewController" id="Pdk-Fq-iOX" customClass="ChildProfileManageViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="O5s-j6-Vw2">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="wgP-1A-obA">
+                                <rect key="frame" x="0.0" y="-30" width="320" height="471"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <connections>
+                        <outlet property="profileTable" destination="wgP-1A-obA" id="Vtu-Ht-Ef2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QTP-hK-tWE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="607" y="-1290"/>
+        </scene>
         <!--Acceptable Use Policy View Controller-->
         <scene sceneID="uNt-lD-FQR">
             <objects>
