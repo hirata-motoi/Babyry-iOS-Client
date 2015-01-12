@@ -406,17 +406,18 @@
             }
         }
     }
-    NSLog(@"targetCell : %@", targetCell);
     if (!targetCell) {
         return;
     }
-                               
-    if((targetCell.frame.origin.y + targetCell.frame.size.height) > (screenHeight - keyboardFrameEnd.size.height - 20)){
+    CGPoint offset = _profileTable.contentOffset;
+    if((targetCell.frame.origin.y + targetCell.frame.size.height - offset.y) > (screenHeight - keyboardFrameEnd.size.height - 20)){
         // テキストフィールドがキーボードで隠れるようなら
         // 選択中のテキストフィールドの直ぐ下にキーボードの上端が付くように、スクロールビューの位置を上げる
         [UIView animateWithDuration:0.3
                          animations:^{
-                             _profileTable.frame = CGRectMake(0, screenHeight - targetCell.frame.origin.y - targetCell.frame.size.height - keyboardFrameEnd.size.height - 20, _profileTable.frame.size.width,_profileTable.frame.size.height);
+                             CGFloat diff = targetCell.frame.origin.y + targetCell.frame.size.height - offset.y - (screenHeight - keyboardFrameEnd.size.height - 20);
+                             CGRect tableRect = _profileTable.frame;
+                             _profileTable.frame = CGRectMake(0, tableRect.origin.y - diff, _profileTable.frame.size.width,_profileTable.frame.size.height);
                          }];
     }
 }
