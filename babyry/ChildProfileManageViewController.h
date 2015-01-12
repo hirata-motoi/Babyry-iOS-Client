@@ -12,6 +12,7 @@
 
 @interface ChildProfileManageViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, ChildProfileBirthdayCellDelegate, ChildProfileIconCellDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *profileTable;
+@property (weak, nonatomic) IBOutlet UIButton *openChildAddButton;
 
 - (void)openDatePickerView:(NSString *)childObjectId;
 - (void)saveChildProperty:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;

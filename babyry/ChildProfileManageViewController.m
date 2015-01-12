@@ -18,6 +18,7 @@
 #import "DatePickerView.h"
 #import "DateUtils.h"
 #import "ChildIconCollectionViewController.h"
+#import "IntroChildNameViewController.h"
 
 @interface ChildProfileManageViewController ()
 
@@ -38,6 +39,9 @@
     _profileTable.delegate = self;
     _profileTable.dataSource = self;
     [self setupChildProperties];
+    
+    _openChildAddButton.layer.cornerRadius = 6.0f;
+    _openChildAddButton.layer.masksToBounds = YES;
     
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileIconCell" bundle:nil] forCellReuseIdentifier:@"IconCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileGenderCell" bundle:nil] forCellReuseIdentifier:@"GenderCell"];
@@ -412,6 +416,12 @@
     [self.navigationController presentViewController:navController animated:YES completion:nil];
     
 }
+
+- (IBAction)openChildAdd:(id)sender {
+    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
+    [self.navigationController pushViewController:icnvc animated:YES];
+}
+
 
 /*
 #pragma mark - Navigation
