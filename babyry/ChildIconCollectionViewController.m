@@ -61,7 +61,6 @@ static NSString * const reuseIdentifier = @"Cell";
                   barMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     self.navigationItem.rightBarButtonItem = item;
-    [Navigation setTitle:self.navigationItem withTitle:@"写真選択" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -71,6 +70,14 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    // TODO 名前の長さに応じてfont変更 + ... にすwる
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
+    [Navigation setTitle:self.navigationItem
+               withTitle:[NSString stringWithFormat:@"%@ちゃんのアイコン選択", childProperty[@"name"]]
+            withSubtitle:nil
+                withFont:nil
+            withFontSize:15.0f
+               withColor:nil];
     [self setupBestShotList];
 }
 
