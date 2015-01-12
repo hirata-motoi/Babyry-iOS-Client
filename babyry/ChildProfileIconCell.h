@@ -13,7 +13,7 @@
 - (void)saveChildProperty:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;
 - (void)showOverlay;
 - (void)setTargetChild:(NSString *)childObjectId;
-- (void)openIconEdit:(NSString *)childObjectId;
+- (void)showIconEditActionSheet:(NSString *)childObjectId;
 
 @end
 

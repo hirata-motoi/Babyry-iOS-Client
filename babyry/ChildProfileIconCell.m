@@ -70,7 +70,7 @@
 
 - (void)openIconEdit
 {
-    [_delegate openIconEdit:_childObjectId];
+    [_delegate showIconEditActionSheet:_childObjectId];
 }
 
 

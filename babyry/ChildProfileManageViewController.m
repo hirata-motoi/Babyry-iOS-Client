@@ -446,6 +446,19 @@
     
 }
 
+- (void)showIconEditActionSheet:(NSString *)childObjectId
+{
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [alertController addAction:[UIAlertAction actionWithTitle:@"ベストショットから選択" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self openIconEdit:childObjectId];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"キャンセル" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
 - (IBAction)openChildAdd:(id)sender {
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     [self.navigationController pushViewController:icnvc animated:YES];
