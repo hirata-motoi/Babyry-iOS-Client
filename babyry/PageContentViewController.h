@@ -17,10 +17,6 @@
 #import "TutorialFamilyApplyIntroduceView.h"
 #import "CollectionViewSectionHeader.h"
 
-//@protocol PageContentViewControllerDelegate <NSObject>
-//- (void) moveToTargetPage:(int)index;
-//@end
-
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate, CollectionViewSectionHeaderDelegate>
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
 
