@@ -70,7 +70,7 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    // TODO 名前の長さに応じてfont変更 + ... にすwる
+    // TODO 名前の長さに応じてfont変更 + ... にする
     NSMutableDictionary *childProperty = [ChildProperties getChildProperty:_childObjectId];
     [Navigation setTitle:self.navigationItem
                withTitle:[NSString stringWithFormat:@"%@ちゃんのアイコン選択", childProperty[@"name"]]
@@ -79,6 +79,20 @@ static NSString * const reuseIdentifier = @"Cell";
             withFontSize:15.0f
                withColor:nil];
     [self setupBestShotList];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    if (bestShotList.count < 1) {
+        CGRect navbarRect = self.navigationController.navigationBar.frame;
+        CGRect statusRect = [UIApplication sharedApplication].statusBarFrame;
+
+        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, navbarRect.size.height + statusRect.size.height + 20, self.view.frame.size.width, 44)];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.font = [UIFont boldSystemFontOfSize:13.0f];
+        label.text = @"ベストショットがまだアップロードされていません";
+        [self.view addSubview:label];
+    }
 }
 
 /*
