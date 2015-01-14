@@ -472,15 +472,10 @@
 {
     AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
     albumTableViewController.childObjectId = childObjectId;
-    albumTableViewController.date = @""; // TODO 今日の日付yyyymmdd(string)
-    albumTableViewController.month = @""; // TODO 今日の日付のmm(string)
-// これは使ってなさそう albumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
+   
+    NSDateComponents *comps = [DateUtils dateCompsFromDate:[NSDate date]];
+    albumTableViewController.date = [NSString stringWithFormat:@"%04ld%02ld%02ld", comps.year, comps.month, comps.day];
     
-    // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
-//    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
-//    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
-//    albumTableViewController.totalImageNum = totalImageNum;
-//    albumTableViewController.indexPath = indexPath;
     albumTableViewController.uploadType = @"icon";
     [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
