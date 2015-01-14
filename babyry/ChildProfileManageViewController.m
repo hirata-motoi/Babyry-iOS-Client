@@ -21,6 +21,7 @@
 #import "IntroChildNameViewController.h"
 #import "ColorUtils.h"
 #import "Navigation.h"
+#import "AlbumTableViewController.h"
 
 @interface ChildProfileManageViewController ()
 
@@ -453,6 +454,9 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"ベストショットから選択" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self openIconEdit:childObjectId];
     }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"アルバムから選択" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self openAlbumPicker:childObjectId];
+    }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"キャンセル" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
@@ -462,6 +466,23 @@
 - (IBAction)openChildAdd:(id)sender {
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     [self.navigationController pushViewController:icnvc animated:YES];
+}
+
+- (void)openAlbumPicker:(NSString *)childObjectId
+{
+    AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+    albumTableViewController.childObjectId = childObjectId;
+    albumTableViewController.date = @""; // TODO 今日の日付yyyymmdd(string)
+    albumTableViewController.month = @""; // TODO 今日の日付のmm(string)
+// これは使ってなさそう albumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
+    
+    // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
+//    NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
+//    NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+//    albumTableViewController.totalImageNum = totalImageNum;
+//    albumTableViewController.indexPath = indexPath;
+    albumTableViewController.uploadType = @"icon";
+    [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
 
 
