@@ -28,6 +28,7 @@
 #import "UINavigationController+Block.h"
 #import "AnnounceBoardView.h"
 #import "ChildSwitchControlView.h"
+#import "ChildProfileManageViewController.h"
 
 @interface GlobalSettingViewController ()
 
@@ -203,6 +204,10 @@
                     cell.textLabel.text = @"こどもを追加";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
+                case 1:
+                    cell.textLabel.text = @"こども設定";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    break;
                 default:
                     break;
             }
@@ -261,7 +266,8 @@
 //            }
             break;
         case 1:
-            rowCount = 1;
+//            rowCount = 1;
+            rowCount = 2;
             break;
         case 2:
             rowCount = 3;
@@ -307,6 +313,11 @@
                 case 0:
                     [self openAddChildAddView];
                     break;
+                case 1: {
+                    ChildProfileManageViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileManageViewController"];
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
                 default:
                     break;
             }

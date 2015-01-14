@@ -25,17 +25,23 @@
         return;
     }
     
+    // 古いアイコンは別名で保存  画像の保存に失敗したら古いアイコンに戻す
+    [self copyOldIcon:childObjectId];
+    // 新規アイコンを保存
+    [ImageCache setCache:[Config config][@"ChildIconFileName"] image:imageData dir:childObjectId];
+    
+    
     PFQuery *query = [PFQuery queryWithClassName:@"Child"];
     [query whereKey:@"objectId" equalTo:childObjectId];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
-            // TODO error handling
+            [self resetIcon:childObjectId];
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to find Child for ChildIcon childObjectId:%@ error:%@", childObjectId, error]];
             return;
         }
         
         if (objects.count < 1) {
-            // TODO error handling
+            [self resetIcon:childObjectId];
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Child NOT FOUND for ChildIcon childObjectId:%@", childObjectId]];
             return;
         }
@@ -52,16 +58,17 @@
                               child[@"iconVersion"] = [NSNumber numberWithInteger:newIconVersion];
                               [child saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                   if (error) {
+                                      [self resetIcon:childObjectId];
                                       [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save iconVersion childObjectId:%@ iconVersion:%ld error:%@", child[@"objectId"], (long)newIconVersion, error]];
                                       return;
                                   }
                                   // サムネイルのコピーを配置
                                   [ImageCache setCache:[Config config][@"ChildIconFileName"] image:imageData dir:childObjectId];
+                                  [self removeOldIcon:childObjectId];
                                  
                                   // こども情報を更新
                                   NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInteger:newIconVersion], @"iconVersion", nil];
                                   [ChildProperties updateChildPropertyWithObjectId:childObjectId withParams:params];
-                                  
                                   
                                   [[NSNotificationCenter defaultCenter] postNotificationName:@"childSwitchViewIconChanged" object:nil];
                               }];
@@ -114,6 +121,24 @@
             }
         }];
     }
+}
+
++ (void)copyOldIcon:(NSString *)childObjectId
+{
+    NSData *oldIconData = [ImageCache getCache:[Config config][@"ChildIconFileName"] dir:childObjectId];
+    [ImageCache setCache:@"icon.bak" image:oldIconData dir:childObjectId];
+}
+
++ (void)removeOldIcon:(NSString *)childObjectId
+{
+    [ImageCache removeCache:[NSString stringWithFormat:@"%@/icon.bak", childObjectId]];
+}
+
++ (void)resetIcon:(NSString *)childObjectId
+{
+    NSData *oldIconData = [ImageCache getCache:@"icon.bak" dir:childObjectId];
+    [ImageCache setCache:[Config config][@"ChildIconFileName"] image:oldIconData dir:childObjectId];
+    [self removeOldIcon:childObjectId];
 }
 
 @end

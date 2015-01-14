@@ -1614,6 +1614,45 @@
             </objects>
             <point key="canvasLocation" x="414" y="-3272"/>
         </scene>
+        <!--Child Profile Manage View Controller-->
+        <scene sceneID="pd6-o3-YGn">
+            <objects>
+                <viewController storyboardIdentifier="ChildProfileManageViewController" id="Pdk-Fq-iOX" customClass="ChildProfileManageViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="O5s-j6-Vw2">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="wgP-1A-obA">
+                                <rect key="frame" x="0.0" y="1" width="320" height="449"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="1lU-05-6N0">
+                                <rect key="frame" x="20" y="488" width="280" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.27058823529411763" green="0.63137254901960782" blue="0.80784313725490198" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <state key="normal" title="産まれた？">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="openChildAdd:" destination="Pdk-Fq-iOX" eventType="touchUpInside" id="WT0-hG-Q0q"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <connections>
+                        <outlet property="openChildAddButton" destination="1lU-05-6N0" id="ccj-BY-8Aj"/>
+                        <outlet property="profileTable" destination="wgP-1A-obA" id="Vtu-Ht-Ef2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QTP-hK-tWE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="607" y="-1290"/>
+        </scene>
         <!--Acceptable Use Policy View Controller-->
         <scene sceneID="uNt-lD-FQR">
             <objects>
