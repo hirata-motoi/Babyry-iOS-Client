@@ -232,6 +232,7 @@
 		F2CA50011A625474003EA9E6 /* GenderSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA50001A625474003EA9E6 /* GenderSegmentControl.m */; };
 		F2CA50031A626A09003EA9E6 /* DatePickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA50021A626A09003EA9E6 /* DatePickerView.xib */; };
 		F2CA50061A626ADC003EA9E6 /* DatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA50051A626ADC003EA9E6 /* DatePickerView.m */; };
+		F2CA58681A652D9500442434 /* AlbumPickerViewController+Icon.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA58671A652D9500442434 /* AlbumPickerViewController+Icon.m */; };
 		F2CE8D321A4E96EE00F56FC2 /* ChildSwitchControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */; };
 		F2CE8D391A4E9A9A00F56FC2 /* ChildSwitchView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */; };
 		F2CE8D3C1A4E9B2400F56FC2 /* ChildSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D3B1A4E9B2400F56FC2 /* ChildSwitchView.m */; };
@@ -650,6 +651,8 @@
 		F2CA50021A626A09003EA9E6 /* DatePickerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DatePickerView.xib; sourceTree = "<group>"; };
 		F2CA50041A626ADC003EA9E6 /* DatePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatePickerView.h; sourceTree = "<group>"; };
 		F2CA50051A626ADC003EA9E6 /* DatePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatePickerView.m; sourceTree = "<group>"; };
+		F2CA58661A652D9500442434 /* AlbumPickerViewController+Icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AlbumPickerViewController+Icon.h"; sourceTree = "<group>"; };
+		F2CA58671A652D9500442434 /* AlbumPickerViewController+Icon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AlbumPickerViewController+Icon.m"; sourceTree = "<group>"; };
 		F2CE8D301A4E96EE00F56FC2 /* ChildSwitchControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildSwitchControlView.h; sourceTree = "<group>"; };
 		F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildSwitchControlView.m; sourceTree = "<group>"; };
 		F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildSwitchView.xib; sourceTree = "<group>"; };
@@ -738,6 +741,8 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2CA58661A652D9500442434 /* AlbumPickerViewController+Icon.h */,
+				F2CA58671A652D9500442434 /* AlbumPickerViewController+Icon.m */,
 				F2CA4FFF1A625474003EA9E6 /* GenderSegmentControl.h */,
 				F2CA50001A625474003EA9E6 /* GenderSegmentControl.m */,
 				F2CA50021A626A09003EA9E6 /* DatePickerView.xib */,
@@ -1916,6 +1921,7 @@
 				88C072F119CAB50100BF6F6F /* ChildListCell.m in Sources */,
 				F2AC1A4B19937FF500DBFE91 /* NotificationHistory.m in Sources */,
 				F2A7EDB419A0BDC700C73D4F /* IntroPageRootViewController.m in Sources */,
+				F2CA58681A652D9500442434 /* AlbumPickerViewController+Icon.m in Sources */,
 				F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */,
 				F2D9350519C97982001F33D0 /* TutorialNavigator.m in Sources */,
 				F2B9697A19CD8F4C00C14201 /* TutorialNavigator+Introduction.m in Sources */,

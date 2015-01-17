@@ -14,6 +14,7 @@
 #import "UploadPickerCollectionViewSectionHeader.h"
 #import "AlbumPickerViewController+Multi.h"
 #import "AlbumPickerViewController+Single.h"
+#import "AlbumPickerViewController+Icon.h"
 #import "ChildIconManager.h"
 #import "ImageCache.h"
 #import "Config.h"
@@ -25,6 +26,7 @@
 @implementation AlbumPickerViewController {
     AlbumPickerViewController_Multi *logicMulti;
     AlbumPickerViewController_Single *logicSingle;
+    AlbumPickerViewController_Icon *logicIcon;
     CGSize cellSize;
 }
 
@@ -69,6 +71,9 @@
     } else if ([_uploadType isEqualToString:@"single"]) {
         logicSingle = [[AlbumPickerViewController_Single alloc] init];
         logicSingle.albumPickerViewController = self;
+    } else if ([_uploadType isEqualToString:@"icon"]) {
+        logicIcon = [[AlbumPickerViewController_Icon alloc]init];
+        logicIcon.albumPickerViewController = self;
     }
     
     [[self logic] logicViewDidLoad];
@@ -84,8 +89,9 @@
 - (id)logic
 {
     return
-    (logicMulti) ? logicMulti :
-    (logicSingle) ? logicSingle : nil;
+    (logicMulti)  ? logicMulti  :
+    (logicSingle) ? logicSingle :
+    (logicIcon)   ? logicIcon   : nil;
 }
 
 - (void) setPickerWithScrollToDate
@@ -178,7 +184,7 @@
         }
         
         // singleの場合はチェックアイコン自体が要らない
-        if ([_uploadType isEqualToString:@"single"]) {
+        if ([_uploadType isEqualToString:@"single"] || [_uploadType isEqualToString:@"icon"]) {
             checkIconView.hidden = YES;
         }
         
@@ -205,7 +211,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (collectionView.tag == 1) {
-        if ([_uploadType isEqualToString:@"single"]) {
+        if ([_uploadType isEqualToString:@"single"] || [_uploadType isEqualToString:@"icon"]) {
             [[self logic] logicSendImageButton:indexPath];
             return;
         }
