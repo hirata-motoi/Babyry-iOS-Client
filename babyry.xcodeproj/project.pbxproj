@@ -2195,7 +2195,7 @@
 				INFOPLIST_FILE = "babyry/babyry-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "3946fda5-3638-49ce-8491-20b3d9a9027c";
+				PROVISIONING_PROFILE = "53ac149c-daf8-487b-97d7-596942fac46d";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
