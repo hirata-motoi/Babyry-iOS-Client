@@ -9,7 +9,10 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import <ParseUI/ParseUI.h>
+#import "IntroPageRootViewController.h"
 
 @interface MyLogInViewController : PFLogInViewController
+
+@property UIViewController *introPageRootViewController;
 
 @end

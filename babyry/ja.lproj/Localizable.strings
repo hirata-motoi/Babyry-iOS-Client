@@ -57,9 +57,12 @@
 
 /* Log in */
 "Log in" = "ログイン";
+"Log In" = "ログイン";
 
 /* Login error title in PFLogInViewController */
 "Login Error" = "ログインエラー";
+
+"Log In with Facebook" = "Facebookでログイン";
 
 /* Master */
 "Master" = "Master";
@@ -75,6 +78,7 @@
 
 /* Password reset title in PFLogInViewController */
 "Password Reset" = "パスワードリセット";
+"Reset Password" = "パスワードをリセットします";
 
 /* Unregistered email title in PFLogInViewController */
 "Password Reset Failed" = "パスワードのリセットに失敗しました";
@@ -111,6 +115,7 @@
 
 /* Sign up */
 "Sign up" = "新規アカウント作成";
+"Sign Up" = "登録";
 
 /* Sign Up Error */
 "Sign Up Error" = "アカウント作成エラー";

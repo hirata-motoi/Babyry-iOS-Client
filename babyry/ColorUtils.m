@@ -76,4 +76,14 @@
     return [UIColor_Hex colorWithHexString:@"3b5998" alpha:1.0];
 }
 
++(UIColor *)getIntroDarkGrayStringColor
+{
+    return [UIColor_Hex colorWithHexString:@"1a1a1a" alpha:1.0];
+}
+
++(UIColor *)getLoginTextFieldPaceHolderColor
+{
+    return [UIColor_Hex colorWithHexString:@"acacac" alpha:1.0];
+}
+
 @end

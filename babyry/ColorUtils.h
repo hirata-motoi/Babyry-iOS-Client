@@ -28,4 +28,12 @@
 
 +(UIColor *)getPastelRedColor;
 
++(UIColor *)getPositiveButtonColor;
++(UIColor *)getNegativeButtonColor;
++(UIColor *)getOtherButtonColor;
++(UIColor *)getFacebookButtonColor;
+
++(UIColor *)getIntroDarkGrayStringColor;
++(UIColor *)getLoginTextFieldPaceHolderColor;
+
 @end

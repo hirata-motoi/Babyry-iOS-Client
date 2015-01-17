@@ -28,4 +28,7 @@
 
 @property (nonatomic,assign) id<IntroPageRootViewControllerDelegate> delegate;
 
+- (void)openLoginView;
+- (void)showRegisterStepCheckView;
+
 @end

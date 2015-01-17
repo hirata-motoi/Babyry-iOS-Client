@@ -73,7 +73,6 @@
 		88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B58B7819F6E86D00B6E86B /* UINavigationController+Block.m */; };
 		88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FB7193B2D52009474DC /* PageContentViewController.m */; };
 		88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B89FBD193EDC04009474DC /* UploadViewController.m */; };
-		88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */; };
 		88C072A419C17FEC00BF6F6F /* ChooseRegisterStepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */; };
 		88C072A719C211AB00BF6F6F /* CheckAppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072A619C211AB00BF6F6F /* CheckAppVersion.m */; };
 		88C072C419C4599900BF6F6F /* TmpUserData.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C072C319C4599900BF6F6F /* TmpUserData.m */; };
@@ -365,7 +364,6 @@
 		88B89FB7193B2D52009474DC /* PageContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageContentViewController.m; sourceTree = "<group>"; };
 		88B89FBC193EDC04009474DC /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
 		88B89FBD193EDC04009474DC /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
-		88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = BabyryNewVersionDraft.storyboard; sourceTree = "<group>"; };
 		88C072A219C17FEC00BF6F6F /* ChooseRegisterStepViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChooseRegisterStepViewController.h; sourceTree = "<group>"; };
 		88C072A319C17FEC00BF6F6F /* ChooseRegisterStepViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChooseRegisterStepViewController.m; sourceTree = "<group>"; };
 		88C072A519C211AB00BF6F6F /* CheckAppVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckAppVersion.h; sourceTree = "<group>"; };
@@ -900,7 +898,6 @@
 				88B18C86193814CE00ED630C /* AppDelegate.m */,
 				88B18C88193814CE00ED630C /* Main.storyboard */,
 				882A6A27196BCE8000E07D60 /* 3_5_inch.storyboard */,
-				88C072A019C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard */,
 				88B18C8E193814CF00ED630C /* Images.xcassets */,
 				F285514919D123E800347BB6 /* TutorialImages */,
 				88B18C7D193814CE00ED630C /* Supporting Files */,
@@ -1595,7 +1592,6 @@
 				F21BBBD219CA6AF1002D4623 /* TutorialPartChangeExecView.xib in Resources */,
 				F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */,
 				88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */,
-				88C072A119C01EB600BF6F6F /* BabyryNewVersionDraft.storyboard in Resources */,
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				F285517119D160A500347BB6 /* TutorialImage_3.jpg in Resources */,
 				F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */,
@@ -2119,7 +2115,7 @@
 				INFOPLIST_FILE = "babyry/babyrydev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "ed0e4f80-add5-414f-92fe-98b2180ed6bb";
+				PROVISIONING_PROFILE = "c3b8343f-b9e6-4828-90d9-7ffe47964c8f";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
