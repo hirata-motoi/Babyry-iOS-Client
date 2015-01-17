@@ -31,7 +31,7 @@
     
     self.signUpView.usernameField.backgroundColor = [ColorUtils getBackgroundColor];
     self.signUpView.usernameField.placeholder = @"メールアドレス";
-    self.signUpView.usernameField.keyboardType = UIKeyboardTypeASCIICapable;
+    self.signUpView.usernameField.keyboardType = UIKeyboardTypeEmailAddress;
     
     self.signUpView.passwordField.backgroundColor = [ColorUtils getBackgroundColor];
     self.signUpView.passwordField.placeholder = @"パスワード";

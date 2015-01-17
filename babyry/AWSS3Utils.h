@@ -17,4 +17,6 @@ typedef void (^SimpleDownloadBlock)(NSMutableDictionary *params);
 
 - (void)makeCacheFromS3:(NSMutableArray *)downloadQueue configuration:(AWSServiceConfiguration *)configuration withBlock:(makeCacheFromS3Block)block;
 + (void)singleDownloadWithKey:(NSString *)key withBlock:(SimpleDownloadBlock)block;
+- (NSString *) getS3PreSignedURL:(NSString *)bucket key:(NSString *)key configuration:(AWSServiceConfiguration *)configuration;
+
 @end

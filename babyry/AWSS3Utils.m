@@ -128,4 +128,20 @@
     }];
 }
 
+-(NSString *) getS3PreSignedURL:(NSString *)bucket key:(NSString *)key configuration:(AWSServiceConfiguration *)configuration
+{
+    AWSS3PreSignedURLBuilder *urlBuilder = [[AWSS3PreSignedURLBuilder alloc] initWithConfiguration:configuration];
+    AWSS3GetPreSignedURLRequest *getPreSignedURLRequest = [AWSS3GetPreSignedURLRequest new];
+    getPreSignedURLRequest.bucket = bucket;
+    getPreSignedURLRequest.key = key;
+    getPreSignedURLRequest.HTTPMethod = AWSHTTPMethodGET;
+    getPreSignedURLRequest.expires = [NSDate dateWithTimeIntervalSinceNow:10*60];
+    BFTask *urlTask = [urlBuilder getPreSignedURL:getPreSignedURLRequest];
+    if (urlTask.error) {
+        return nil;
+    } else {
+        return urlTask.result;
+    }
+}
+
 @end

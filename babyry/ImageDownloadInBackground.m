@@ -12,63 +12,72 @@
 #import "ImageCache.h"
 #import "AWSS3Utils.h"
 #import "AWSCommon.h"
+#import "Config.h"
 
 @implementation ImageDownloadInBackground
 
-- (void) downloadByPushInBackground:(NSNumber *)date childObjectId:(NSString *)childObjectId
+- (void) downloadByPushInBackground:(NSDictionary *)transitionInfo
 {
-    // pushを受けたらバックグラウンドで画像をダウンロードするメソッド
-    // ダウンロードに時間かかる&pushの度によばれるのでインスタンスメソッドにする
-    NSMutableDictionary *child = [ChildProperties getChildProperty:childObjectId];
-    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[child[@"childImageShardIndex"] integerValue]]];
-    query.limit = 1000;
-    [query whereKey:@"imageOf" equalTo:childObjectId];
-    [query whereKey:@"date" equalTo:date];
-    [query whereKey:@"bestFlag" notEqualTo:@"removed"];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error) {
-            NSMutableArray *cacheSetQueueArray = [[NSMutableArray alloc] init];
-            // candidate用
-            if ([date isEqual:[DateUtils getTodayYMD]] || [date isEqual:[DateUtils getYesterdayYMD]]) {
-                for (PFObject *object in objects) {
-                    NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", childObjectId, [date stringValue], object.objectId];
-                    if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-
-                        NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
-                        queueForCache[@"objectId"] = object.objectId;
-                        queueForCache[@"childObjectId"] = childObjectId;
-                        queueForCache[@"date"] = date;
-                        queueForCache[@"imageType"] = @"candidate";
-
-                        [cacheSetQueueArray addObject:queueForCache];
-                    }
-                }
-            }
-
-            // bestshot用
-            for (PFObject *object in objects) {
-                if ([object[@"bestFlag"] isEqualToString:@"choosed"]) {
-                    NSString *thumbPath = [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", childObjectId, [date stringValue]];
-                    if ([object.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
-
-                        NSMutableDictionary *queueForCache = [[NSMutableDictionary alloc]init];
-                        queueForCache[@"objectId"] = object.objectId;
-                        queueForCache[@"childObjectId"] = childObjectId;
-                        queueForCache[@"date"] = date;
-                        if ([date isEqual:[DateUtils getTodayYMD]] || [date isEqual:[DateUtils getYesterdayYMD]]) {
-                            queueForCache[@"imageType"] = @"fullsize";
-                        }
-
-                        [cacheSetQueueArray addObject:queueForCache];
-                    }
-                }
-            }
-            AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
-            [awsS3Utils makeCacheFromS3:cacheSetQueueArray configuration:[AWSCommon getAWSServiceConfiguration:@"S3"] withBlock:^(void){
-                // 特に何もしない
-            }];
+    // preSignedURLを取得
+    AWSServiceConfiguration *configuration = [AWSCommon getAWSServiceConfiguration:@"S3"];
+    AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
+    
+    NSMutableArray *preSignedURLs = [[NSMutableArray alloc] init];
+    for (NSString *imageId in transitionInfo[@"imageIds"]) {
+        NSString *key = [NSString stringWithFormat:@"%@/%@", transitionInfo[@"dirName"], imageId];
+        NSString *preSignedURL = [awsS3Utils getS3PreSignedURL:[Config config][@"AWSBucketName"] key:key configuration:configuration];
+        [preSignedURLs addObject:preSignedURL];
+    }
+    int i = 0;
+    for (NSString *url in preSignedURLs) {
+        // ダウンロード後にどのファイルか判別できるように情報を入れておく
+        // childObjectId, date, imageObjectId, section, row
+        // id系はいろんな文字が入るので、スペースで区切る
+        NSString *identifier = [NSString stringWithFormat:@"%@ %@ %@ %@ %@", transitionInfo[@"childObjectId"], transitionInfo[@"date"], transitionInfo[@"imageIds"][i], transitionInfo[@"section"], transitionInfo[@"row"]];
+        NSURLSessionConfiguration *configuration;
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >=8.0f) {
+            configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
+        } else {
+            configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:identifier];
         }
-    }];
+        configuration.allowsCellularAccess = YES;
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+        NSString *forceStringURL = [NSString stringWithFormat:@"%@", url];
+        NSURL *assetURL = [NSURL URLWithString:forceStringURL];
+        NSURLSessionDownloadTask *task = [session downloadTaskWithURL:assetURL];
+        [task resume];
+        i++;
+    }
+}
+
+- (void) URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+{
+    NSData *downloadedData = [NSData dataWithContentsOfURL:location];
+    if ([downloadedData length] == 0) {
+        return;
+    }
+    
+    UIImage *downloadedThumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:downloadedData]];
+    NSData *thumbData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(downloadedThumbImage, 0.7f)];
+    
+    NSString *identifier = session.configuration.identifier;
+    NSArray *params = [identifier componentsSeparatedByString:@" "];
+    // 0:childObjectId 1:date 2:imageId 3:section 4:row
+    if ([params[3] isEqualToString:@"0"] && ([params[4] isEqualToString:@"0"] || [params[4] isEqualToString:@"1"])) {
+        // candidateに追加
+        [ImageCache setCache:params[2] image:thumbData dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", params[0], params[1]]];
+    } else {
+        // bestshotに追加
+        [ImageCache setCache:params[1] image:thumbData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", params[0]]];
+    }
+}
+
+- (void) URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes
+{
+}
+
+- (void) URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+{
 }
 
 @end

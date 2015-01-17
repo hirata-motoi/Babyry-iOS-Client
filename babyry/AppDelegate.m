@@ -168,6 +168,18 @@
 //
 //    }
 
+	if (application.applicationState == UIApplicationStateBackground) {
+		// backgourndでpushを受け取った時に発動、裏で画像データを読む
+
+        if (userInfo[@"transitionInfo"][@"imageIds"]) {
+            ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+            [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"]];
+        }
+
+        completionHandler(UIBackgroundFetchResultNewData);
+
+    }
+	
 	if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
         
@@ -212,6 +224,12 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
     completionHandler(UIBackgroundFetchResultNewData);
+}
+
+- (void) application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+{
+    // このメソッドを書いておくと、バックグラウンドでNSURLSessionが呼ばれていた場合、そのdelegate method(ダウンロードが完了した場合のcallbackとか)が一斉に呼び出される
+    // 書いておかないと、アプリがforegroundになったときに一斉に呼ばれるので×
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

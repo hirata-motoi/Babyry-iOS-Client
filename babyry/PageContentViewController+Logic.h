@@ -12,8 +12,6 @@
 @interface PageContentViewController_Logic : NSObject
 
 - (void)setImages;
-- (BOOL)isToday:(NSInteger)section withRow:(NSInteger)row;
-- (BOOL)withinTwoDay: (NSIndexPath *)indexPath;
 - (NSDateComponents *)dateComps;
 - (NSDate *)getCollectionViewFirstDay;
 - (NSMutableArray *)screenSavedChildImages;
@@ -25,6 +23,7 @@
 - (BOOL)forbiddenSelectCell:(NSIndexPath *)indexPath;
 - (void)setupImagesCount;
 - (void)executeReload;
+- (void)updateChildProperties;
 
 // 循環参照(メモリリーク)が起きるので、弱参照にしないと駄目
 @property (weak) PageContentViewController *pageContentViewController;

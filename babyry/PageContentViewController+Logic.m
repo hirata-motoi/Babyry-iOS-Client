@@ -35,16 +35,36 @@
 
 - (void)showChildImages
 {
-    // 今月
-    NSDateComponents *comp = [self dateComps];
-    [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
-   
-    // 先月
-    NSDateComponents *lastComp = [self dateComps];
-    lastComp.month--;
-    [self getChildImagesWithYear:lastComp.year withMonth:lastComp.month withReload:YES];
-  
-    self.pageContentViewController.dateComp = lastComp;
+    // 今画面に表示されている月を取得
+    NSArray* visibleCellIndex = self.pageContentViewController.pageContentCollectionView.indexPathsForVisibleItems;
+    NSMutableDictionary *visibleDateDic = [[NSMutableDictionary alloc] init];
+    for (NSIndexPath *ip in visibleCellIndex) {
+        NSString *yyyymm = [NSString stringWithFormat:@"%@%@", self.pageContentViewController.childImages[ip.section][@"year"], self.pageContentViewController.childImages[ip.section][@"month"]];
+        if (!visibleDateDic[yyyymm]) {
+            NSDateComponents *currentDateComp = [self dateComps];
+            currentDateComp.year = [self.pageContentViewController.childImages[ip.section][@"year"] intValue];
+            currentDateComp.month = [self.pageContentViewController.childImages[ip.section][@"month"] intValue];
+            visibleDateDic[yyyymm] = currentDateComp;
+        }
+    }
+    
+    for (NSString *yyyymm in visibleDateDic) {
+        NSDateComponents *comp = visibleDateDic[yyyymm];
+        [self getChildImagesWithYear:comp.year withMonth:comp.month withReload:YES];
+        
+        // dateComp(スクロールで読み込み済みの日付)が空ならそのまま突っ込む
+        // 空じゃないなら、dateCompに比べて日付が古いときだけ突っ込む
+        if (!self.pageContentViewController.dateComp) {
+            self.pageContentViewController.dateComp = comp;
+        } else {
+            NSCalendar *cal = [NSCalendar currentCalendar];
+            NSDate *visibleDate = [cal dateFromComponents:comp];
+            NSDate *loadedDate = [cal dateFromComponents:self.pageContentViewController.dateComp];
+            if ([visibleDate compare:loadedDate] == NSOrderedAscending) {
+                self.pageContentViewController.dateComp = comp;
+            }
+        }
+    }
 }
 
 - (NSDateComponents *)dateComps
@@ -72,6 +92,11 @@
     [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02d", (long)year, (long)month, 31] integerValue]]];
 	[query whereKey:@"bestFlag" notEqualTo:@"removed"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        // 上まで引っ張った時に出てくるクルクルを消す
+        // クルクルしている時にendRefreshingを呼び出しても無害っぽいので基本的に読んでおく(isRunnning的なフラグを立てるほどでもない)
+        // getChildImagesWithYearの対象が2つあるときもあり得るが、そこはあんまり気にしてない(2つをほぼ同時に呼ぶのでそれほど時間差はないはず)
+        [self.pageContentViewController.rc endRefreshing];
+        
         if (!error) {
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
@@ -105,7 +130,7 @@
                                 queueForCache[@"objectId"] = childImageDate.objectId;
 								queueForCache[@"childObjectId"] = self.pageContentViewController.childObjectId;
                                 queueForCache[@"date"] = childImageDate[@"date"];
-                                if ([self isToday:index withRow:i]) {
+                                if ([DateUtils isTodayByIndexPath:ip]) {
                                     queueForCache[@"imageType"] = @"fullsize";
                                 }
                                 
@@ -113,11 +138,11 @@
                             }
                             bestshotExist = YES;
 							
-							if ([self withinTwoDay:ip]) {
+                            if ([DateUtils isInTwodayByIndexPath:ip]) {
 								self.pageContentViewController.bestImageIds[[date stringValue]] = childImageDate.objectId;
 							}
                         }
-						if ([self withinTwoDay:ip]) {
+						if ([DateUtils isInTwodayByIndexPath:ip]) {
 							NSString *thumbPath = [NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", self.pageContentViewController.childObjectId, [date stringValue], childImageDate.objectId];
                             if ([childImageDate.updatedAt timeIntervalSinceDate:[ImageCache returnTimestamp:thumbPath]] > 0) {
                                 
@@ -131,7 +156,7 @@
                             }
 						}
                     }
-                    if ([self withinTwoDay:ip]) {
+                    if ([DateUtils isInTwodayByIndexPath:ip]) {
                         // 昨日、今日の場合は単に写真の枚数を突っ込む
                         [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:[childImageDic[date] count]]];
                         // BestShotがない場合はcache削除(BestShotを削除した場合のため)
@@ -175,28 +200,6 @@
     }];
     // 不要なfullsizeのキャッシュを消す
     [self removeUnnecessaryFullsizeCache];
-}
-
-- (BOOL)isToday:(NSInteger)section withRow:(NSInteger)row
-{
-    return (section == 0 && row == 0) ? YES : NO;
-}
-
-- (BOOL)withinTwoDay: (NSIndexPath *)indexPath
-{
-    PFObject *chilImage = [[[self.pageContentViewController.childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
-    NSString *ymd = [chilImage[@"date"] stringValue];
-    NSDateComponents *compToday = [self dateComps];
-  
-    NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
-	[inputDateFormatter setDateFormat:@"yyyyMMdd"];
-	NSDate *dateToday = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:[NSString stringWithFormat:@"%ld%02ld%02ld", (long)compToday.year, (long)compToday.month, (long)compToday.day]]];
-	NSDate *dateTappedImage = [DateUtils setSystemTimezone: [inputDateFormatter dateFromString:ymd]];
- 
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *diff = [cal components:NSDayCalendarUnit fromDate:dateTappedImage toDate:dateToday options:0];
-    
-    return [diff day] < 2;
 }
 
 - (void)compensateDateOfChildImage:(NSArray *)objects
@@ -263,8 +266,8 @@
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"imageOf" equalTo:self.pageContentViewController.childObjectId];
     [query whereKey:@"bestFlag" equalTo:@"choosed"];
-    // imagesCountDicの用途的に15がmaxなので問題ないけど
-    // 用途が増えて100以上になったらlimitを設定する必要あり、1000以上を超える場合にはそれを考慮した書き方に変更しないとだめ
+    // bestshot1000枚 = 2.7年 とりあえず大丈夫か
+    query.limit = 1000;
     [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
         if (!error) {
             [self.pageContentViewController.imagesCountDic setObject:[NSNumber numberWithInt:number] forKey:@"imagesCountNumber"];
@@ -277,7 +280,7 @@
 - (void)setupNotificationHistory
 {
     self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
-    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withBlock:^(NSMutableDictionary *history){
+    [NotificationHistory getNotificationHistoryInBackgroundGroupByDate:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withStatus:@"ready" withLimit:1000 withBlock:^(NSMutableDictionary *history){
         // ポインタを渡しておいて、そこに情報をセットさせる
         // ただし、imageUpload or bestShotChoosen or commentPosted のpush通知をもらった場合はnotificationHistoryを更新しない
         // Pushで開く時はnotificationHistoryを渡さないで即開くので
@@ -292,7 +295,6 @@
         [self disableRedundantNotificationHistory];
         [self removeUnnecessaryGMPBadge];
     }];
-    
 }
 
 - (NSDate *)getCollectionViewFirstDay
@@ -356,7 +358,7 @@
 - (BOOL)shouldShowMultiUploadView:(NSIndexPath *)indexPath
 {
     // 2日間はMultiUploadViewController
-    return [self withinTwoDay:indexPath];
+    return [DateUtils isInTwodayByIndexPath:indexPath];
 }
 
 - (BOOL)isNoImage:(NSIndexPath *)indexPath
@@ -449,7 +451,7 @@
             // 今日・昨日に関してはchoosedが一枚もない場合が普通にあるので判別不可能なので
             // PageContentViewController内で、写真が一枚もない場合はnotificationを見せない対応をする
             NSIndexPath *ip = [self indexPathFromYMD:ymd];
-            if (!ip || [self withinTwoDay:ip]) {
+            if (!ip || [DateUtils isInTwodayByIndexPath:ip]) {
                 continue;
             }
             
