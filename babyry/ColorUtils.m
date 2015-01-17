@@ -96,4 +96,9 @@
     return [UIColor_Hex colorWithHexString:@"e6e6e6" alpha:1.0];
 }
 
++(UIColor *)getLightPositiveColor
+{
+    return [UIColor colorWithRed:(float)144/256 green:(float)203/256 blue:(float)230/256 alpha:1.0];
+}
+
 @end

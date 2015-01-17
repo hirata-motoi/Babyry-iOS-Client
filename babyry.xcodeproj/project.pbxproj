@@ -222,6 +222,16 @@
 		F2B9697C19CD903900C14201 /* TutorialIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */; };
 		F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */; };
 		F2CA4FE01A5F8463003EA9E6 /* ImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */; };
+		F2CA4FE91A603E00003EA9E6 /* ChildProfileManageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */; };
+		F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconCell.xib */; };
+		F2CA4FF41A60AFD2003EA9E6 /* ChildProfileIconCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconCell.m */; };
+		F2CA4FF61A60B163003EA9E6 /* ChildProfileGenderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FF51A60B163003EA9E6 /* ChildProfileGenderCell.xib */; };
+		F2CA4FF91A60B234003EA9E6 /* ChildProfileGenderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FF81A60B234003EA9E6 /* ChildProfileGenderCell.m */; };
+		F2CA4FFB1A62215D003EA9E6 /* ChildProfileBirthdayCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FFA1A62215C003EA9E6 /* ChildProfileBirthdayCell.xib */; };
+		F2CA4FFE1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FFD1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m */; };
+		F2CA50011A625474003EA9E6 /* GenderSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA50001A625474003EA9E6 /* GenderSegmentControl.m */; };
+		F2CA50031A626A09003EA9E6 /* DatePickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA50021A626A09003EA9E6 /* DatePickerView.xib */; };
+		F2CA50061A626ADC003EA9E6 /* DatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA50051A626ADC003EA9E6 /* DatePickerView.m */; };
 		F2CE8D321A4E96EE00F56FC2 /* ChildSwitchControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */; };
 		F2CE8D391A4E9A9A00F56FC2 /* ChildSwitchView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */; };
 		F2CE8D3C1A4E9B2400F56FC2 /* ChildSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CE8D3B1A4E9B2400F56FC2 /* ChildSwitchView.m */; };
@@ -624,6 +634,22 @@
 		F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialIntroductionView.m; sourceTree = "<group>"; };
 		F2CA4FDE1A5F8463003EA9E6 /* ImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtils.h; sourceTree = "<group>"; };
 		F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtils.m; sourceTree = "<group>"; };
+		F2CA4FE71A603E00003EA9E6 /* ChildProfileManageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileManageViewController.h; sourceTree = "<group>"; };
+		F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileManageViewController.m; sourceTree = "<group>"; };
+		F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileIconCell.xib; sourceTree = "<group>"; };
+		F2CA4FF21A60AFD2003EA9E6 /* ChildProfileIconCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileIconCell.h; sourceTree = "<group>"; };
+		F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileIconCell.m; sourceTree = "<group>"; };
+		F2CA4FF51A60B163003EA9E6 /* ChildProfileGenderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileGenderCell.xib; sourceTree = "<group>"; };
+		F2CA4FF71A60B234003EA9E6 /* ChildProfileGenderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileGenderCell.h; sourceTree = "<group>"; };
+		F2CA4FF81A60B234003EA9E6 /* ChildProfileGenderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileGenderCell.m; sourceTree = "<group>"; };
+		F2CA4FFA1A62215C003EA9E6 /* ChildProfileBirthdayCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileBirthdayCell.xib; sourceTree = "<group>"; };
+		F2CA4FFC1A6221B3003EA9E6 /* ChildProfileBirthdayCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileBirthdayCell.h; sourceTree = "<group>"; };
+		F2CA4FFD1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileBirthdayCell.m; sourceTree = "<group>"; };
+		F2CA4FFF1A625474003EA9E6 /* GenderSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenderSegmentControl.h; sourceTree = "<group>"; };
+		F2CA50001A625474003EA9E6 /* GenderSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenderSegmentControl.m; sourceTree = "<group>"; };
+		F2CA50021A626A09003EA9E6 /* DatePickerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DatePickerView.xib; sourceTree = "<group>"; };
+		F2CA50041A626ADC003EA9E6 /* DatePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatePickerView.h; sourceTree = "<group>"; };
+		F2CA50051A626ADC003EA9E6 /* DatePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatePickerView.m; sourceTree = "<group>"; };
 		F2CE8D301A4E96EE00F56FC2 /* ChildSwitchControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildSwitchControlView.h; sourceTree = "<group>"; };
 		F2CE8D311A4E96EE00F56FC2 /* ChildSwitchControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildSwitchControlView.m; sourceTree = "<group>"; };
 		F2CE8D381A4E9A9A00F56FC2 /* ChildSwitchView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildSwitchView.xib; sourceTree = "<group>"; };
@@ -712,6 +738,12 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2CA4FFF1A625474003EA9E6 /* GenderSegmentControl.h */,
+				F2CA50001A625474003EA9E6 /* GenderSegmentControl.m */,
+				F2CA50021A626A09003EA9E6 /* DatePickerView.xib */,
+				F2CA50041A626ADC003EA9E6 /* DatePickerView.h */,
+				F2CA50051A626ADC003EA9E6 /* DatePickerView.m */,
+				F2CA4FEF1A60AF62003EA9E6 /* ChildProfile */,
 				F2CA4FDE1A5F8463003EA9E6 /* ImageUtils.h */,
 				F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */,
 				F202B83F1A5EFDFB009283A6 /* ImageSelectToolView.h */,
@@ -1127,6 +1159,8 @@
 		F215DDCD19761CA50092C712 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				F2CA4FE71A603E00003EA9E6 /* ChildProfileManageViewController.h */,
+				F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */,
 				F2D266981A5C2D6E005C3603 /* ChildIconCollectionViewController.h */,
 				F2D266991A5C2D6E005C3603 /* ChildIconCollectionViewController.m */,
 				F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */,
@@ -1447,6 +1481,38 @@
 			name = CoreData;
 			sourceTree = "<group>";
 		};
+		F2CA4FEF1A60AF62003EA9E6 /* ChildProfile */ = {
+			isa = PBXGroup;
+			children = (
+				F2CA4FF11A60AF7E003EA9E6 /* Class */,
+				F2CA4FF01A60AF77003EA9E6 /* Xib */,
+			);
+			name = ChildProfile;
+			sourceTree = "<group>";
+		};
+		F2CA4FF01A60AF77003EA9E6 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				F2CA4FFA1A62215C003EA9E6 /* ChildProfileBirthdayCell.xib */,
+				F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconCell.xib */,
+				F2CA4FF51A60B163003EA9E6 /* ChildProfileGenderCell.xib */,
+			);
+			name = Xib;
+			sourceTree = "<group>";
+		};
+		F2CA4FF11A60AF7E003EA9E6 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				F2CA4FFC1A6221B3003EA9E6 /* ChildProfileBirthdayCell.h */,
+				F2CA4FFD1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m */,
+				F2CA4FF71A60B234003EA9E6 /* ChildProfileGenderCell.h */,
+				F2CA4FF81A60B234003EA9E6 /* ChildProfileGenderCell.m */,
+				F2CA4FF21A60AFD2003EA9E6 /* ChildProfileIconCell.h */,
+				F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconCell.m */,
+			);
+			name = Class;
+			sourceTree = "<group>";
+		};
 		F2CE8D371A4E9A7A00F56FC2 /* ChildSwitch */ = {
 			isa = PBXGroup;
 			children = (
@@ -1649,6 +1715,7 @@
 				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
 				F21BBBF619CAE690002D4623 /* TutorialFamilyApplyIntroduceView.xib in Resources */,
 				F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */,
+				F2CA4FF61A60B163003EA9E6 /* ChildProfileGenderCell.xib in Resources */,
 				F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */,
 				F21BBBEE19CAD5D1002D4623 /* TutorialUploadByUserView.xib in Resources */,
 				F21BBBD219CA6AF1002D4623 /* TutorialPartChangeExecView.xib in Resources */,
@@ -1684,6 +1751,7 @@
 				F285516619D15F0A00347BB6 /* TutorialImage_1.jpg in Resources */,
 				88C072F319CAB64500BF6F6F /* ChildListCell.xib in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
+				F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconCell.xib in Resources */,
 				F21BBBC519CA0037002D4623 /* TutorialPartChangeView.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 				F2CE8D391A4E9A9A00F56FC2 /* ChildSwitchView.xib in Resources */,
@@ -1696,6 +1764,8 @@
 				F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */,
 				F2DA213B1A5EA75C00C93A08 /* ImageSelectToolView.xib in Resources */,
 				F27AB6E319D52B3900285BEB /* TutorialSentApplyView.xib in Resources */,
+				F2CA4FFB1A62215D003EA9E6 /* ChildProfileBirthdayCell.xib in Resources */,
+				F2CA50031A626A09003EA9E6 /* DatePickerView.xib in Resources */,
 				88CFF5071999361D00B56481 /* ImageToolbarCommentIcon.xib in Resources */,
 				F285516519D15F0A00347BB6 /* TutorialImage_0_0.jpg in Resources */,
 				88CFF502199934C300B56481 /* ImageToolbarSaveIcon.xib in Resources */,
@@ -1765,6 +1835,7 @@
 				F261A881196418990072BBD2 /* FamilyApplyListViewController.m in Sources */,
 				882A6A23196B796E00E07D60 /* MaintenanceViewController.m in Sources */,
 				889002FE198F6B22005775B5 /* ChildProfileEditViewController.m in Sources */,
+				F2CA4FE91A603E00003EA9E6 /* ChildProfileManageViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
 				88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */,
 				F226591519D22971003A62BD /* TutorialNavigator+SelectBestShotFinished.m in Sources */,
@@ -1785,8 +1856,10 @@
 				88AA2FF7196E667400F4B40C /* IntroChildNameViewController.m in Sources */,
 				88962B381A5EB2AD001EEBED /* NotificationHistoryViewController.m in Sources */,
 				88B18C8D193814CF00ED630C /* ViewController.m in Sources */,
+				F2CA50061A626ADC003EA9E6 /* DatePickerView.m in Sources */,
 				88C072CE19C61C2F00BF6F6F /* Account.m in Sources */,
 				F21BBBCD19CA0351002D4623 /* TutorialUpperArrowView.m in Sources */,
+				F2CA4FF41A60AFD2003EA9E6 /* ChildProfileIconCell.m in Sources */,
 				F27AB6E619D52B7F00285BEB /* TutorialSentApplyView.m in Sources */,
 				F2CE8D3C1A4E9B2400F56FC2 /* ChildSwitchView.m in Sources */,
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
@@ -1872,6 +1945,7 @@
 				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				F226591D19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m in Sources */,
 				88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */,
+				F2CA50011A625474003EA9E6 /* GenderSegmentControl.m in Sources */,
 				F215DDDB1976BFB70092C712 /* ProfileEditViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
 				88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */,
@@ -1887,6 +1961,7 @@
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				F2FB3BA81A0A61D200B0A2DD /* ChildFilterViewController.m in Sources */,
 				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
+				F2CA4FFE1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m in Sources */,
 				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
@@ -1896,6 +1971,7 @@
 				88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */,
 				F2D934ED19C75C69001F33D0 /* PageContentViewController+Logic+Tutorial.m in Sources */,
 				885A8C151A3191D00049E7A1 /* AWSS3Utils.m in Sources */,
+				F2CA4FF91A60B234003EA9E6 /* ChildProfileGenderCell.m in Sources */,
 				88AA2FEF196CE9C500F4B40C /* MJPopupBackgroundView.m in Sources */,
 				882A6A26196B7D4A00E07D60 /* Config.m in Sources */,
 				F2F8E4491A0B696B007A95C8 /* PDKTStickySectionHeadersCollectionViewLayout.m in Sources */,
