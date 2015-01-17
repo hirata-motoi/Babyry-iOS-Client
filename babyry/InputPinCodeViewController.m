@@ -43,11 +43,13 @@
     UITapGestureRecognizer *inputPincodeGstr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(inputPincodeGstr)];
     inputPincodeGstr.numberOfTapsRequired = 1;
     [_startRegisterButton addGestureRecognizer:inputPincodeGstr];
+    _startRegisterButton.layer.cornerRadius = 3;
     
     UITapGestureRecognizer *stgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap)];
     stgr.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:stgr];
     
+    _pincodeField.layer.cornerRadius = 3;
     [_pincodeField becomeFirstResponder];
 }
 

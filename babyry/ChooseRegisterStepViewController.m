@@ -16,6 +16,7 @@
 #import "CloseButtonView.h"
 #import "ChildProperties.h"
 #import "MBProgressHUD.h"
+#import "ColorUtils.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -42,15 +43,35 @@
     UITapGestureRecognizer *openSignUpView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openSignUpView)];
     openSignUpView.numberOfTapsRequired = 1;
     [_registerButton addGestureRecognizer:openSignUpView];
+    _registerButton.layer.cornerRadius = 3;
     
     UITapGestureRecognizer *continueWithNoLogin = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(continueWithNoLogin)];
     continueWithNoLogin.numberOfTapsRequired = 1;
     [_noRegisterButton addGestureRecognizer:continueWithNoLogin];
+    _noRegisterButton.layer.cornerRadius = 3;
     
     UITapGestureRecognizer *facebookLogin = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(facebookLogin)];
     facebookLogin.numberOfTapsRequired = 1;
     [_facebookLoginButton addGestureRecognizer:facebookLogin];
+    _facebookLoginButton.layer.cornerRadius = 3;
     
+    UITapGestureRecognizer *openLoginView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openLoginView)];
+    openLoginView.numberOfTapsRequired = 1;
+    [_loginButton addGestureRecognizer:openLoginView];
+    _loginButton.layer.cornerRadius = 3;
+    
+    // アンダーラインを引く
+    NSString *text = @"以前登録した方はこちら";
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:text];
+    [str addAttribute:NSFontAttributeName
+                value:[UIFont fontWithName:@"HiraKakuProN-W3" size:14.0f]
+                range:NSMakeRange(0, text.length)];
+    [str addAttributes:@{NSStrokeColorAttributeName:[ColorUtils getIntroDarkGrayStringColor],
+                         NSUnderlineStyleAttributeName:[NSNumber numberWithInteger:NSUnderlineStyleSingle]}
+                 range:NSMakeRange(0, text.length)];
+
+    [_loginButton setAttributedText:str];
+
     _isSignUpCompleted = NO;
 }
 
@@ -316,6 +337,13 @@
             }];
             [self dismissViewControllerAnimated:YES completion:NULL];
         }
+    }];
+}
+
+- (void) openLoginView
+{
+    [self dismissViewControllerAnimated:YES completion:^(void){
+        [_introPageRootViewController openLoginView];
     }];
 }
 

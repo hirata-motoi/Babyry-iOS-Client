@@ -41,21 +41,42 @@
     self.view.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.6];
 
     if (_invitedButton) {
+        _invitedButton.layer.cornerRadius = 3;
         UITapGestureRecognizer *showInputPincodeView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(showInputPincodeView)];
         showInputPincodeView.numberOfTapsRequired = 1;
         [_invitedButton addGestureRecognizer:showInputPincodeView];
     }
     if (_registerButton) {
+        _registerButton.layer.cornerRadius = 3;
         UITapGestureRecognizer *showRegisterStepCheckView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(showRegisterStepCheckView)];
         showRegisterStepCheckView.numberOfTapsRequired = 1;
         [_registerButton addGestureRecognizer:showRegisterStepCheckView];
     }
     if (_loginButton) {
+        _loginButton.layer.cornerRadius = 3;
         UITapGestureRecognizer *openLoginView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openLoginView)];
         openLoginView.numberOfTapsRequired = 1;
         [_loginButton addGestureRecognizer:openLoginView];
     }
     [self setupSkipAction];
+    
+    // ひとまずこんな感じで
+    UIColor *cornerColor = [UIColor_Hex colorWithHexString:@"858585" alpha:1.0];
+    _skipFromFirst.layer.cornerRadius = 6;
+    _skipFromFirst.layer.borderColor = cornerColor.CGColor;
+    _skipFromFirst.layer.borderWidth = 2;
+    _skipFromSecond.layer.cornerRadius = 6;
+    _skipFromSecond.layer.borderColor = cornerColor.CGColor;
+    _skipFromSecond.layer.borderWidth = 2;
+    _skipFromThird.layer.cornerRadius = 6;
+    _skipFromThird.layer.borderColor = cornerColor.CGColor;
+    _skipFromThird.layer.borderWidth = 2;
+    _skipFromFourth.layer.cornerRadius = 6;
+    _skipFromFourth.layer.borderColor = cornerColor.CGColor;
+    _skipFromFourth.layer.borderWidth = 2;
+    _skipFromFifth.layer.cornerRadius = 6;
+    _skipFromFifth.layer.borderColor = cornerColor.CGColor;
+    _skipFromFifth.layer.borderWidth = 2;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -118,6 +139,8 @@
     PFLogInFieldsPasswordForgotten |
     PFLogInFieldsFacebook |
     PFLogInFieldsDismissButton;
+    
+    logInViewController.introPageRootViewController = self;
     
     // Present Log In View Controller
     [self presentViewController:logInViewController animated:YES completion:NULL];
@@ -254,6 +277,7 @@
 - (void)showRegisterStepCheckView
 {
     ChooseRegisterStepViewController *chooseRegisterStepViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChooseRegisterStepViewController"];
+    chooseRegisterStepViewController.introPageRootViewController = self;
     [self presentViewController:chooseRegisterStepViewController animated:YES completion:nil];
 }
 

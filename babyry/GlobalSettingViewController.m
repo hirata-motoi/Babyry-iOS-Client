@@ -196,7 +196,7 @@
                     cell.detailTextLabel.textColor = [UIColor blackColor];
                     cell.backgroundColor = [ColorUtils getGlobalMenuLightGrayColor];
                 } else {
-                    if (notificationHistoryArray[indexPath.row]) {
+                    if (notificationHistoryArray.count > 0 && notificationHistoryArray[indexPath.row]) {
                         PFObject *histObject = notificationHistoryArray[indexPath.row];
                         cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
                         cell.imageView.image = [ImageTrimming makeCellIconForMenu:[UIImage imageNamed:@"SelectedBestshot"] size:CGSizeMake(40, 40)];
@@ -227,10 +227,6 @@
                 }
                 case 2:
                     cell.textLabel.text = @"プロフィール設定";
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    break;
-                case 1:
-                    cell.textLabel.text = @"こども設定";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
                 default:
@@ -288,9 +284,9 @@
 //            rowCount = 1;
             rowCount = 2;
             break;
-        case 2:
-            rowCount = 3;
-            break;
+//        case 2:
+//            rowCount = 3;
+//            break;
         case 2:
             if ([TmpUser checkRegistered]) {
                 rowCount = 4;
@@ -325,17 +321,17 @@
             switch (indexPath.row) {
                 case 0:
                     break;
-                case 1:
-                    [self openAddChildAddView];
-                    break;
-                case 2:
-                    [self openProfileEdit];
-                    break;
                 case 1: {
                     ChildProfileManageViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileManageViewController"];
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
                 }
+//                case 1:
+//                    [self openAddChildAddView];
+//                    break;
+                case 2:
+                    [self openProfileEdit];
+                    break;
                 default:
                     break;
             }
