@@ -31,7 +31,7 @@
     UIView *overlay;
     NSIndexPath *displayedIndexPath;
 }
-const float screenRate = 0.9;
+static const float screenRate = 0.9;
 
 static NSString * const reuseIdentifier = @"Cell";
 

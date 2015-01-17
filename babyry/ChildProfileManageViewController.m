@@ -21,6 +21,7 @@
 #import "IntroChildNameViewController.h"
 #import "ColorUtils.h"
 #import "Navigation.h"
+#import "AlbumTableViewController.h"
 
 @interface ChildProfileManageViewController ()
 
@@ -453,6 +454,9 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"ベストショットから選択" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self openIconEdit:childObjectId];
     }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"アルバムから選択" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self openAlbumPicker:childObjectId];
+    }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"キャンセル" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
@@ -462,6 +466,18 @@
 - (IBAction)openChildAdd:(id)sender {
     IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
     [self.navigationController pushViewController:icnvc animated:YES];
+}
+
+- (void)openAlbumPicker:(NSString *)childObjectId
+{
+    AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+    albumTableViewController.childObjectId = childObjectId;
+   
+    NSDateComponents *comps = [DateUtils dateCompsFromDate:[NSDate date]];
+    albumTableViewController.date = [NSString stringWithFormat:@"%04ld%02ld%02ld", comps.year, comps.month, comps.day];
+    
+    albumTableViewController.uploadType = @"icon";
+    [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
 
 
