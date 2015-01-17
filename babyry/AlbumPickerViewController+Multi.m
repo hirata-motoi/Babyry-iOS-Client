@@ -113,6 +113,10 @@
     if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUser"]) {
         [Tutorial forwardStageWithNextStage:@"uploadByUserFinished"];
     }
+    
+    // child icon
+    [_albumPickerViewController setChildFirstIconWithImageData:_albumPickerViewController.uploadImageDataArray[0]]; // 決め
+    
     [_albumPickerViewController dismissViewControllerAnimated:YES completion:NULL];
     
     //アルバム表示のViewも消す

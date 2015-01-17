@@ -56,6 +56,16 @@
     return [UIColor_Hex colorWithHexString:@"ff77a1" alpha:1.0];
 }
 
++(UIColor *) getPositiveColor
+{
+    return [UIColor_Hex colorWithHexString:@"45A1CE" alpha:1.0];
+}
+
++(UIColor *)getNegativeColor
+{
+    return [UIColor colorWithRed:(float)126/256 green:(float)125/256 blue:(float)122/256 alpha:1.0];
+}
+
 +(UIColor *)getCalenderNumberColor
 {
     return [UIColor_Hex colorWithHexString:@"1a1a1a" alpha:1.0];
@@ -84,6 +94,11 @@
 +(UIColor *)getGlobalMenuDarkGrayColor
 {
     return [UIColor_Hex colorWithHexString:@"e6e6e6" alpha:1.0];
+}
+
++(UIColor *)getLightPositiveColor
+{
+    return [UIColor colorWithRed:(float)144/256 green:(float)203/256 blue:(float)230/256 alpha:1.0];
 }
 
 @end

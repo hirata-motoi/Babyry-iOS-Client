@@ -45,6 +45,7 @@
 #import <AFNetworking.h>
 #import "AnnounceBoardView.h"
 #import "ChildSwitchControlView.h"
+#import "ChildIconManager.h"
 
 @interface ViewController ()
 
@@ -53,8 +54,10 @@
 @implementation ViewController {
     NSString *receivedApply;
     NSString *sentApply;
-    CGRect pageContentViewRect;
+    CGRect pageContentViewRectOrg;
     TutorialNavigator *tn;
+    ChildSwitchControlView *childSwitchControlView;
+    UIView *overlay;
 }
 
 - (void)viewDidLoad
@@ -92,13 +95,18 @@
     
     // sharding conf初期化
     [Sharding setupShardConf];
+
+    if (!_headerViewManager) {
+        _headerViewManager = [[HeaderViewManager alloc]init];
+        _headerViewManager.delegate = self;
+    }
     
     // notification center
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentViewController) name:@"childPropertiesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveRemoteNotification) name:@"didReceiveRemoteNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideHeaderView) name:@"didAdmittedPartnerApply" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(multiUploadImageInBackground) name:@"multiUploadImageInBackground" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncChildIcons) name:@"childIconChanged" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -142,12 +150,19 @@
         
         [Logger writeOneShot:@"info" message:@"Not-Login User Accessed."];
         _only_first_load = 1;
-        [_pageViewController.view removeFromSuperview];
-        [_pageViewController removeFromParentViewController];
-        _pageViewController = nil;
         
         // header view初期化
         [self resetHeaderView];
+        
+        // PageContentViewControllerの初期化
+        if (_pageContentViewController) {
+            [_pageContentViewController.view removeFromSuperview];
+            [_pageContentViewController removeFromParentViewController];
+            _pageContentViewController = nil;
+        }
+        
+        // childSwitchControlViewを隠す
+        childSwitchControlView.hidden = YES;
         
         // ログインしてない場合は、イントロ+ログインViewを出す
         IntroFirstViewController *introFirstViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroFirstViewController"];
@@ -264,7 +279,7 @@
                 }
                 // こどもがいないのでbabyryちゃんのobjectIdをConfigから引く → _childArrayFromParseにセット
                 // ここは同期で処理する
-                PFQuery *query = [PFQuery queryWithClassName:@"Config"]; // TODO Configクラスに切り出し
+                PFQuery *query = [PFQuery queryWithClassName:@"Config"];
                 [query whereKey:@"key" equalTo:@"tutorialChild"];
                 NSArray *botUsers = [query findObjects];
                 if (botUsers.count > 0) {
@@ -281,6 +296,9 @@
                 } else {
                     [Logger writeOneShot:@"crit" message:@"No Bot User Setting in Config class"];
                 }
+            } else {
+                // child icon
+                [ChildIconManager syncChildIconsInBackground];
             }
             
             _only_first_load = 0;
@@ -302,8 +320,8 @@
         if (_headerViewManager) {
             [_headerViewManager validateTimer];
         }
-        [self showPageViewController];
-        [_pageViewController showFillingEmptyCellsDialog];
+        [self showPageContentViewController];
+//        [_pageViewController showFillingEmptyCellsDialog]; TODO pageViewControllerで表示していたダイアログをこっちで表示
     }
 }
 
@@ -317,99 +335,92 @@
 - (void)openGlobalSettingView
 {
     GlobalSettingViewController *globalSettingViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"GlobalSettingViewController"];
-    globalSettingViewController.viewController = self;
+    globalSettingViewController.delegate = self;
     [self.navigationController pushViewController:globalSettingViewController animated:YES];
 }
 
--(void) showPageViewController
+-(void) showPageContentViewController
 {
+    [self setupGlobalSetting];
     if (_pageContentViewController) {
-        [self setupHeaderView];
-        [self setupGlobalSetting];
-        [self setupChildSwitchView];
         return;
     }
-
+    
     PFUser *user = [PFUser currentUser];
     if (user[@"familyId"]) {
-        [self instantiatePageContentViewController];
+        [self setupChildSwitchView];
+        [self setupHeaderView];
         return;
     }
 
     user[@"familyId"] = [self createFamilyId];
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (error) {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving User.familyId userId:%@ familyId:%@ error:%@", user[@"userId"], user[@"familyId"], error]];
+            [self showAlertMessage];
+            return;
+        }
         PFQuery *query = [PFQuery queryWithClassName:@"TutorialMap"];
         [query whereKey:@"userId" equalTo:user[@"userId"]];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (error) {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getting TutorialMap userId:%@ error:%@", user[@"userId"], error]];
-                // TODO ネットワークエラーが発生しました を表示
+                [self showAlertMessage];
                 return;
             }
             
             if (objects.count > 0) {
-                [self instantiatePageContentViewController];
-                return;
+                [self setupChildSwitchView];
+                [self setupHeaderView];
+                return;                                   
             }
             
             PFObject *tutorialMap = [[PFObject alloc]initWithClassName:@"TutorialMap"];
             tutorialMap[@"userid"] = user[@"userId"];
             [tutorialMap saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (error) {
-                    // TODO ネットワークエラーが発生しました を表示
                     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in saving TutorialMap userId:%@ error:%@", user[@"userId"], error]];
+                    [self showAlertMessage];
                     return;
                 }
-                [self instantiatePageContentViewController];
+                [self setupChildSwitchView];
+                [self setupHeaderView];
             }];
         }];
     }];
 }
 
-//- (void)instantiatePageContentViewController
-- (void)instantiatePageContentViewController
+- (void)instantiatePageContentViewController:(NSString *)childObjectId
 {
     NSMutableArray *childProperties = [ChildProperties getChildProperties];
     if (childProperties.count < 1) {
+        [Logger writeOneShot:@"crit" message:@"Child NOT FOUND in instantiatePageContentViewController"];
         return;
     }
-    // TODO 最初に表示するこどもを切り替えできるようにする
-    // 暫定で最初のレコード
+    
     _pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
-    _pageContentViewController.childObjectId = childProperties[0][@"objectId"];
-    pageContentViewRect = _pageContentViewController.view.frame;
+    _pageContentViewController.childObjectId = childObjectId;
+    
+    pageContentViewRectOrg = _pageContentViewController.view.frame; // orgを保持
+    _pageContentViewController.view.frame = [self getPageContentViewRect];
+    
     [self addChildViewController:_pageContentViewController];
+    _pageContentViewController.view.alpha = 0.0f;
     [self.view addSubview:_pageContentViewController.view];
-    [self setupGlobalSetting];
-    [self setupChildSwitchView];
-    if (!_headerViewManager) {
-        _headerViewManager = [[HeaderViewManager alloc]init];
-        _headerViewManager.delegate = self;
-    }
-   
-    [self resetHeaderView];
-    [_headerViewManager setupHeaderView:NO];
+    [UIView animateWithDuration:0.4f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                         _pageContentViewController.view.alpha = 1.0f;
+                     }
+                     completion:nil];
+    
     if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
         [self showTutorialNavigator];
     }
-    
-//    _pageViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageViewController"];
-//    pageViewRect = _pageViewController.view.frame;
-//    
-//    [self addChildViewController:_pageViewController];
-//    [self.view addSubview:_pageViewController.view];
-//    [self setupGlobalSetting];
-//   
-//    if (!_headerViewManager) {
-//        _headerViewManager = [[HeaderViewManager alloc]init];
-//        _headerViewManager.delegate = self;
-//    }
-//   
-//    [self resetHeaderView];
-//    [_headerViewManager setupHeaderView:NO];
-//    if ([[Tutorial currentStage].currentStage isEqualToString:@"familyApply"]) {
-//        [self showTutorialNavigator];
-//    }
+   
+    [self.view bringSubviewToFront:_headerView];
+    [self.view bringSubviewToFront:childSwitchControlView];
 }
 
 - (void)setupGlobalSetting
@@ -445,13 +456,14 @@
     return [idIssue issue:@"family"];
 }
 
-- (void)reloadPageContentViewController
+- (void)reloadPageContentViewController:(NSString *)childObjectId
 {
     [_pageContentViewController.view removeFromSuperview];
     [_pageContentViewController removeFromParentViewController];
 
     _pageContentViewController = nil;
-    [self instantiatePageContentViewController];
+    [self instantiatePageContentViewController:childObjectId];
+    [self hideOverlay];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
@@ -556,8 +568,9 @@
     [self setRectToHeaderView:_headerView];
     // addSubviewする
     [self.view addSubview:_headerView];
-    // pageViewControllerの大きさをチェック。必要なら小さくする
-    [self shrinkPageView:_headerView.frame];
+    [self adjustChildSwitchControlView];
+    
+    [self.view bringSubviewToFront:childSwitchControlView];
 }
 
 - (NSString *)headerViewType
@@ -578,10 +591,8 @@
 
 - (void)hideHeaderView
 {
-    // header ViewをremoveFromSuperviewする
     [self resetHeaderView];
-    // pageViewControllerの大きさを戻す
-    [self fitToScreen];
+    [self adjustChildSwitchControlView];
 }
 
 - (void)resetHeaderView
@@ -592,23 +603,15 @@
     }
 }
 
-- (void)shrinkPageView:(CGRect)headerViewRect
-{
-    if (_pageContentViewController.view.frame.size.height != pageContentViewRect.size.height) {
-        return;
-    }
-    CGRect rect = _pageContentViewController.view.frame;
-    rect.size.height -= headerViewRect.size.height;
-    rect.origin.y += headerViewRect.size.height;
-    _pageContentViewController.view.frame = rect;
-    
-    // TODO ChildSwitchControlViewの位置を調整
-}                   
-
 - (void)fitToScreen
 {
-    _pageViewController.view.frame = pageContentViewRect;
-    // TODO ChildSwitchControlViewの位置を調整
+    CGRect rect = [self getPageContentViewRect];
+   
+    _pageContentViewController.view.frame = rect;
+    
+    CGRect switchRect = childSwitchControlView.frame;
+    switchRect.origin.y = rect.origin.y + [[Config config][@"ChildSwitchControlViewMarginTop"] floatValue];
+    childSwitchControlView.frame = switchRect;
 }
 
 - (void)setRectToHeaderView:(UIView *)headerView
@@ -645,6 +648,7 @@
 - (void)setupHeaderView
 {
     [_headerViewManager setupHeaderView:YES];
+    [self adjustChildSwitchControlView];
 }
 
 - (void)showTutorialNavigator
@@ -686,9 +690,109 @@
 
 - (void)setupChildSwitchView
 {
-    ChildSwitchControlView *childSwitchControlView = [ChildSwitchControlView sharedManager];
-    [childSwitchControlView switchChildSwitchView:_pageContentViewController.childObjectId];
+    childSwitchControlView = [ChildSwitchControlView sharedManager];
+    childSwitchControlView.delegate = self;
+    
+    // 位置を調整
+    [self adjustChildSwitchControlView];
+    
+    [childSwitchControlView switchToInitialChild];
     [self.view addSubview:childSwitchControlView];
+}
+
+- (void)showOverlay
+{
+    if (!overlay) {
+        overlay = [[UIView alloc]initWithFrame:self.view.frame];
+        overlay.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.7f];
+        overlay.hidden = YES;
+   
+        // TODO overlayクラスを作る
+        UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideOverlay)];
+        gesture.numberOfTapsRequired = 1;
+        [overlay addGestureRecognizer:gesture];
+    
+        [self.view addSubview:overlay];
+    }
+    
+    [self.view bringSubviewToFront:overlay];
+    [self.view bringSubviewToFront:childSwitchControlView];
+    overlay.alpha = 0.0f;
+    overlay.hidden = NO;
+    
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                         overlay.alpha = 0.7f;
+                     }
+                     completion:nil];
+}
+
+- (void)hideOverlay
+{
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:nil
+                     animations:^{
+                         overlay.alpha = 0.0f;
+                     }
+                     completion:^(BOOL finished) {
+                         overlay.hidden = YES;
+                         overlay.alpha = 0.7f;
+                     }];
+    // childSwitchViewを閉じる
+    [childSwitchControlView closeChildSwitchViews];
+}
+
+- (CGRect)getPageContentViewRect
+{
+    if (_headerView && _headerView.hidden == NO) {
+        CGRect rect = pageContentViewRectOrg;
+        rect.origin.y += _headerView.frame.size.height;
+        rect.size.height -= _headerView.frame.size.height;
+        return rect;
+    } else {
+        return pageContentViewRectOrg;
+    }
+}
+
+// 表示/非表示の切り替え
+// 表示位置
+- (void)adjustChildSwitchControlView
+{
+    [self fitToScreen];
+    TutorialStage *currentStage = [Tutorial currentStage];
+    if ([Tutorial underTutorial] && ![currentStage.currentStage isEqualToString:@"familyApplyExec"]) { // familyApply以前
+        childSwitchControlView.hidden = YES;
+    } else {
+        childSwitchControlView.hidden = NO;
+    }
+    [self.view bringSubviewToFront:childSwitchControlView];
+}
+
+- (void)showAlertMessage
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ネットワークエラー"
+                                                    message:@"ネットワークエラーが発生しました。\nネットワーク状況をご確認の上、アプリを起動し直してください。"
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil
+                          ];
+    [alert show];
+}
+
+- (void)removeChildSwitchControlView
+{
+    [childSwitchControlView removeChildSwitchControlView];
+}
+
+- (void)syncChildIcons
+{
+    NSLog(@"ViewController syncChildIcons");
+    [ChildProperties asyncChildPropertiesWithBlock:^(NSMutableArray *beforeSyncChildProperties) {
+        [ChildIconManager syncChildIconsInBackground];
+    }];
 }
 
 @end

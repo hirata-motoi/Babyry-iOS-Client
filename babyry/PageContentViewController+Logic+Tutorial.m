@@ -193,7 +193,7 @@
 - (void)forwardNextTutorial
 {
     [Tutorial forwardStageWithNextStage:@"familyApply"];
-    ViewController *vc = self.pageContentViewController.parentViewController.parentViewController;
+    ViewController *vc = (ViewController *)self.pageContentViewController.parentViewController;
     [vc setupHeaderView];
     [vc showTutorialNavigator];
     [self.pageContentViewController.pageContentCollectionView reloadData];

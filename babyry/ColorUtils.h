@@ -28,4 +28,10 @@
 
 +(UIColor *)getBlurTintColor;
 
++(UIColor *) getPositiveColor;
+
++(UIColor *)getLightPositiveColor;
+
++(UIColor *)getNegativeColor;
+
 @end

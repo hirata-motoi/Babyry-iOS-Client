@@ -149,12 +149,24 @@
                 [[NSNotificationCenter defaultCenter] postNotification:n];
             }];
         }
-
-		completionHandler(UIBackgroundFetchResultNewData);
 		
 		// 各クラスに通知用
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
+
+// バックグラウンドで任意の通信処理が出来ない仕様なので一旦ペンディング
+// NSURLSessionを利用すれば出来る。HTTPのみ通信可能で、APIを用意しておけば良い。が、面倒。
+//	if (application.applicationState == UIApplicationStateBackground) {
+//		// backgourndでpushを受け取った時に発動、裏で画像データを読む
+//
+//		NSLog(@"%@", userInfo);
+//		
+//		ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+//		[imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"][@"date"] childObjectId:userInfo[@"transitionInfo"][@"childObjectId"]];
+//
+//        completionHandler(UIBackgroundFetchResultNewData);
+//
+//    }
 
 	if (application.applicationState == UIApplicationStateBackground) {
 		// backgourndでpushを受け取った時に発動、裏で画像データを読む
@@ -194,6 +206,10 @@
             NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childIconChanged"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"childIconChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
         if (userInfo[@"transitionInfo"] &&
             (
                 [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]  ||
@@ -204,11 +220,10 @@
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
 		
-		completionHandler(UIBackgroundFetchResultNewData);
-		
 		// 各クラスに通知用
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
     }
+    completionHandler(UIBackgroundFetchResultNewData);
 }
 
 - (void) application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler

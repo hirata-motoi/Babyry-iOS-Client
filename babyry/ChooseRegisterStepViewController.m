@@ -161,6 +161,7 @@
     [Account sendVerifyEmail:user[@"emailCommon"]];
     
     // 子供のデータがCoreDataにあれば全て消す
+    NSLog(@"signUpViewController signUpController didSignUpUser");
     [ChildProperties removeChildPropertiesFromCoreData];
     
     _isSignUpCompleted = YES;
@@ -191,6 +192,8 @@
     user.username = [idIssue randomStringWithLength:8];
     user.password = [idIssue randomStringWithLength:8];
     user[@"userId"] = [idIssue issue:@"user"];
+    
+    [ChildProperties removeChildPropertiesFromCoreData];
     
     // emailCommonは検索で使わなくなるから、本来は入れなくていいのだけど旧バージョンでは必要なのでuserIdを入れておく(申請までにはこのフローはなくなる)
     user[@"emailCommon"] = user.username;

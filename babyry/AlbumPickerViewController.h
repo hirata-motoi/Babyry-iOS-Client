@@ -18,6 +18,7 @@
 
 - (IBAction)sendImageButton:(id)sender;
 - (IBAction)backButton:(id)sender;
+- (void)setChildFirstIconWithImageData:(NSData *)imageData;
 
 @property (strong, nonatomic) IBOutlet UIButton *backLabel;
 @property (strong, nonatomic) IBOutlet UIButton *sendImageLabel;

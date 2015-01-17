@@ -10,16 +10,16 @@
 #import <Parse/Parse.h>
 #import "PageContentViewController.h"
 #import "MBProgressHUD.h"
-#import "PageViewController.h" // TODO 消す
 #import "HeaderViewManager.h"
+#import "ChildSwitchControlView.h"
+#import "GlobalSettingViewController.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate>
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
 @property (strong, nonatomic) PFObject *currentInstallation;
-@property (strong, nonatomic) PageViewController *pageViewController; // TODO 消す
-@property (strong, nonatomic) PageContentViewController *pageContentViewController; // TODO 消す
+@property (strong, nonatomic) PageContentViewController *pageContentViewController;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;
 
@@ -33,5 +33,8 @@
 - (void)hideHeaderView;
 - (void)setupHeaderView;
 - (void)showTutorialNavigator;
+- (void)reloadPageContentViewController:(NSString *)childObjectId;
+- (void)removeChildSwitchControlView;
+- (void)viewDidAppear:(BOOL)animated;
 
 @end

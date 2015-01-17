@@ -148,6 +148,14 @@
     [PushNotification sendInBackground:@"imageUpload" withOptions:options];
     PFObject *partner = (PFUser *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"imageUploaded" withTo:partner[@"userId"] withChild:_albumPickerViewController.childObjectId withDate:[_albumPickerViewController.date integerValue]];
+    
+    // child icon
+    [_albumPickerViewController setChildFirstIconWithImageData:UIImageJPEGRepresentation(thumbImage, 0.7f)];
+
+    [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
+    //アルバム表示のViewも消す
+    UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;
+    [naviController popViewControllerAnimated:YES];
 }
 
 - (void) showSingleUploadError

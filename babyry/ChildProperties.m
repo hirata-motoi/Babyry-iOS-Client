@@ -144,6 +144,7 @@
         childProperty.familyId             = child[@"familyId"];
         childProperty.childImageShardIndex = child[@"childImageShardIndex"];
         childProperty.commentShardIndex    = child[@"commentShardIndex"];
+        childProperty.iconVersion = child[@"iconVersion"];
         [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     }
 }

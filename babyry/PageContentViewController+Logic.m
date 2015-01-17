@@ -21,6 +21,7 @@
 #import "FamilyRole.h"
 #import "PushNotification.h"
 #import "AWSS3Utils.h"
+#import "ChildIconManager.h"
 
 @implementation PageContentViewController_Logic
 
@@ -407,6 +408,8 @@
         } else if ([reloadType isEqualToString:@"reloadPageContentViewDate"]) {
             [self.pageContentViewController adjustChildImages];
             [self executeReload];
+        } else if ([reloadType isEqualToString:@"reloadChildSwitchView"]) {
+            [ChildIconManager syncChildIconsInBackground];
         } else {
             [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
         }
@@ -489,6 +492,8 @@
 //    2. こどものidが一致しない時
 // 以下のケースではPageContentViewControllerをreloadする
 //    1. 名前
+// 以下のケースではChildSwitchViewのアイコンリロードだけを行う
+//    1. iconVersion
 // Viewがいきなり変わるので、push通知で知らせた方が良いかもね(TODO)
 - (NSString *)getReloadTypeAfterChildPropertiesChanged:(NSArray *)beforeSyncChildProperties withChildProperties:(NSMutableArray *)childProperties
 {
@@ -513,7 +518,15 @@
         NSMutableDictionary *currentChild = currentChildDic[objectId];
         if ([self nameChanged:currentChild withBeforeChild:beforeChild]) {
             reloadType = @"reloadPageContentViewDate";
-        }                
+        }
+       
+        // iconVersionだけが変更になった場合。reloadPageContentViewDateの時にやる処理はアイコンのリロードを含むため
+        if (
+            [self iconVersionChanged:currentChild withBeforeChild:beforeChild] &&
+            [reloadType isEqualToString:@"noNeedToReload"]
+        ) {
+            reloadType = @"reloadChildSwitchView";
+        }
     }
     return reloadType;
 }
@@ -534,6 +547,14 @@
 - (BOOL)nameChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
 {
     if (![currentChild[@"name"] isEqualToString:beforeChild[@"name"]]) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)iconVersionChanged:(NSMutableDictionary *)currentChild withBeforeChild:(NSMutableDictionary *)beforeChild
+{
+    if (! [currentChild[@"iconVersion"] isEqualToNumber:beforeChild[@"iconVersion"]]) {
         return YES;
     }
     return NO;

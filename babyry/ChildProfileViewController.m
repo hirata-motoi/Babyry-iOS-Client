@@ -10,6 +10,8 @@
 #import "Navigation.h"
 #import "ChildProfileEditViewController.h"
 #import "ChildProperties.h"
+#import "ChildIconCollectionViewController.h"
+#import "ColorUtils.h"
 
 @interface ChildProfileViewController ()
 
@@ -66,6 +68,8 @@
         case 1:
             numberOfRows = 1;
             break;
+        case 2:
+            numberOfRows = 1; // test
         default:
             break;
     }
@@ -113,6 +117,15 @@
                     break;
             }
             break;
+        case 2: // test
+            switch (indexPath.row) {
+                case 0: {
+                    cell.textLabel.text = @"アイコン";
+                    break;
+                }
+                default:
+                    break;
+            }
         default:
             break;
     }
@@ -143,6 +156,18 @@
                     break;
             }
             break;
+        case 2: // test
+            switch (indexPath.row) {
+                case 0: {
+                    ChildIconCollectionViewController *childIconCollectionViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildIconCollectionViewController"];
+                    childIconCollectionViewController.childObjectId = _childObjectId;
+                    UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:childIconCollectionViewController];
+                    [self.navigationController presentViewController:navController animated:YES completion:nil];
+                    break;
+                }
+                default:
+                    break;
+            }
         default:
             break;
     }
@@ -150,7 +175,8 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+//    return 2;
+    return 3;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -186,6 +212,11 @@
 {
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     [_childProfileTableView reloadData];
+}
+
+- (void)close
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

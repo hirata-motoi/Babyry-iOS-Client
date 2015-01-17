@@ -11,10 +11,12 @@
 #import <AWSiOSSDKv2/S3.h>
 
 typedef void (^makeCacheFromS3Block)();
+typedef void (^SimpleDownloadBlock)(NSMutableDictionary *params);
 
 @interface AWSS3Utils : NSObject
 
 - (void)makeCacheFromS3:(NSMutableArray *)downloadQueue configuration:(AWSServiceConfiguration *)configuration withBlock:(makeCacheFromS3Block)block;
++ (void)singleDownloadWithKey:(NSString *)key withBlock:(SimpleDownloadBlock)block;
 - (NSString *) getS3PreSignedURL:(NSString *)bucket key:(NSString *)key configuration:(AWSServiceConfiguration *)configuration;
 
 @end

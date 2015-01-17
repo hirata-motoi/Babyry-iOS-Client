@@ -9,6 +9,7 @@
 @protocol ChildSwitchViewDelegate <NSObject>
 
 - (void)openChildSwitchViews;
+- (void)switchChildSwitchView: (NSString *)childObjectId;
 
 @end
 
@@ -17,12 +18,17 @@
 @interface ChildSwitchView : UIView
 
 + (instancetype)view;
-- (void)setValue:(id)value forKey:(NSString *)key;
+- (void)setParams:(id)value forKey:(NSString *)key;
 - (void)switch:(BOOL)active;
+- (void)reloadIcon;
+- (void)setup;
+- (void)removeGestures;
 
 @property (nonatomic,assign) id<ChildSwitchViewDelegate> delegate;
 
 @property (weak, nonatomic) IBOutlet UILabel *childNameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *iconView;
+@property (weak, nonatomic) IBOutlet UIView *overlay;
 @property BOOL active;
 @property NSString *childObjectId;
 @property BOOL switchAvailable;

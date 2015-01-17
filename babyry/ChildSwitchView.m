@@ -8,8 +8,10 @@
 
 #import "ChildSwitchView.h"
 #import "UIColor+Hex.h"
+#import "ImageCache.h"
+#import "ImageTrimming.h"
 
-@implementation ChildSwitchView
+@implementation ChildSwitchView;
 
 - (void)awakeFromNib
 {
@@ -20,20 +22,32 @@
 {
     NSString *className = NSStringFromClass([self class]);
     ChildSwitchView *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
-    view.layer.cornerRadius = view.frame.size.width/2;
-    view.layer.masksToBounds = YES;
-    
-    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:view action:@selector(tagGesture)];
-    gesture.numberOfTapsRequired = 1;
-    [view addGestureRecognizer:gesture];
-    
+   
     return view;
 }
 
-- (void)setValue:(id)value forKey:(NSString *)key
+- (void)setup
+{
+    [self reloadIcon];
+    self.iconView.layer.cornerRadius = self.iconView.frame.size.width/2;
+    self.iconView.layer.masksToBounds = YES;
+    [self.iconView.layer setBorderWidth:2.0f];
+    [self.iconView.layer setBorderColor:[[UIColor whiteColor] CGColor]];
+    
+    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tagGesture)];
+    gesture.numberOfTapsRequired = 1;
+    [self addGestureRecognizer:gesture];
+  
+    self.overlay.layer.cornerRadius = self.overlay.frame.size.width/2;
+    self.overlay.hidden = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadIcon) name:@"childSwitchViewIconChanged" object:nil];
+}
+
+- (void)setParams:(id)value forKey:(NSString *)key
 {
     if ([key isEqualToString:@"childName"]) {
-        _childNameLabel.text = (NSString *)value;
+        _childNameLabel.text = [NSString stringWithFormat:@"%@\nちゃん", value];
     } else if ([key isEqualToString:@"childObjectId"]) {
         _childObjectId = value;
     }
@@ -42,9 +56,9 @@
 - (void)switch:(BOOL)active
 {
     _active = active;
-    
-    NSString *colorString = (_active) ? @"FFFFFF" : @"000000";
-    self.backgroundColor = [UIColor_Hex colorWithHexString:colorString alpha:0.7];
+    _overlay.hidden = _active;
+    NSString *textColor = (_active) ? @"FFFFFF" : @"A9A9A9";
+    _childNameLabel.textColor = [UIColor_Hex colorWithHexString:textColor alpha:1.0f];
 }
 
 - (void)tagGesture
@@ -53,8 +67,28 @@
     // _switchAvailable:false -> こどもアイコンが閉じている状態
     if (_switchAvailable) {
         // こども切り替え
+        [_delegate switchChildSwitchView:_childObjectId];
     } else {
         [_delegate openChildSwitchViews];
+    }
+}
+
+- (void)reloadIcon
+{
+    NSData *imageCacheData = [ImageCache getCache:@"icon" dir:_childObjectId];
+    if (imageCacheData) {
+        self.iconView.image = [ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]];
+    }
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)removeGestures
+{
+    for (UITapGestureRecognizer *gesture in [self gestureRecognizers]) {
+        [self removeGestureRecognizer:gesture];
     }
 }
 

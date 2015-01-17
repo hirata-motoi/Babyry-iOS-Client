@@ -92,10 +92,7 @@
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
-    [self initializeChildImages];
-    [self initializeClosedCellCountBySection];
     [self createCollectionView];
-    //[self setupScrollBarView];
     
     windowWidth = self.view.frame.size.width;
     windowHeight = self.view.frame.size.height;
@@ -115,6 +112,7 @@
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
+    
 }
 
 - (void)applicationDidBecomeActive
@@ -139,13 +137,14 @@
     }
     childProperty = [ChildProperties getChildProperty:_childObjectId];
     
-    [self adjustChildImages];
     [self reloadView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    [self adjustChildImages];
+    [self initializeClosedCellCountBySection];
     
     // Notification登録
     if (!alreadyRegisteredObserver) {
@@ -153,7 +152,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"resetImage" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial + icon change
         alreadyRegisteredObserver = YES;
     }
     
@@ -617,6 +616,10 @@
 
 - (void)adjustChildImages
 {
+    if (!_childImages || !_childImages.count < 1) {
+        [self initializeChildImages];
+        return;
+    }
     PFObject *latestChildImage;
     PFObject *oldestChildImage;
     
@@ -704,9 +707,7 @@
       
         NSNumber *date = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
         if ([self isDuplicatedChildImage:dicForCheckDuplicate withYearMonth:ym withDate:date withTargetSection:targetSection]) {
-            endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
-            endDate = [cal dateFromComponents:endDateComps];
-            continue;
+            break; // childImagesが歯抜けになることはないので、duplicateになった時点で完成されていると判断する
         }
         
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];

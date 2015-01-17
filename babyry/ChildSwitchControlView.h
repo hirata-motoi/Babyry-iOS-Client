@@ -6,6 +6,14 @@
 //  Copyright (c) 2014年 jp.co.meaning. All rights reserved.
 //
 
+@protocol ChildSwitchControlViewDelegate <NSObject>
+
+- (void)reloadPageContentViewController:(NSString *)childObjectId;
+- (void)showOverlay;
+- (void)hideOverlay;
+
+@end
+
 #import <UIKit/UIKit.h>
 #import "ChildSwitchView.h"
 
@@ -13,5 +21,12 @@
 
 + (ChildSwitchControlView*)sharedManager;
 - (void)switchChildSwitchView: (NSString *)childObjectId;
+- (void)closeChildSwitchViews;
+- (void)setupChildSwitchViews;
+- (void)switchToInitialChild;
+- (void)resetChildSwitchControlView;
+- (void)removeChildSwitchControlView;
+
+@property (nonatomic,assign) id<ChildSwitchControlViewDelegate> delegate;
 
 @end

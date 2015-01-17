@@ -27,12 +27,14 @@
 #import "PartnerApply.h"
 #import "UINavigationController+Block.h"
 #import "AnnounceBoardView.h"
+#import "ChildSwitchControlView.h"
 #import "ColorUtils.h"
 #import "NotificationHistory.h"
 #import "DateUtils.h"
 #import "TransitionByPushNotification.h"
 #import "NotificationHistoryViewController.h"
 #import "ImageTrimming.h"
+#import "ChildProfileManageViewController.h"
 
 @interface GlobalSettingViewController ()
 
@@ -139,7 +141,8 @@
                     [PartnerApply removePartnerInviteFromCoreData];
                     [PartnerApply removePartnerInvitedFromCoreData];
 //                    [AnnounceBoardView removeAnnounceInfoByOuter];
-                    [_viewController viewDidAppear:YES];
+                    [_delegate viewDidAppear:YES];
+                    [_delegate removeChildSwitchControlView];
                 }];
             }];
         }
@@ -226,6 +229,10 @@
                     cell.textLabel.text = @"プロフィール設定";
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     break;
+                case 1:
+                    cell.textLabel.text = @"こども設定";
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    break;
                 default:
                     break;
             }
@@ -278,6 +285,10 @@
             }
             break;
         case 1:
+//            rowCount = 1;
+            rowCount = 2;
+            break;
+        case 2:
             rowCount = 3;
             break;
         case 2:
@@ -320,6 +331,11 @@
                 case 2:
                     [self openProfileEdit];
                     break;
+                case 1: {
+                    ChildProfileManageViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileManageViewController"];
+                    [self.navigationController pushViewController:vc animated:YES];
+                    break;
+                }
                 default:
                     break;
             }
