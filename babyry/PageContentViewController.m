@@ -49,6 +49,7 @@
 #import "Partner.h"
 #import "UploadPastImagesIntroductionView.h"
 #import "AnnounceBoardView.h"
+#import "UIImage+ImageEffects.h"
 
 @interface PageContentViewController ()
 
@@ -65,6 +66,7 @@
     BOOL alreadyRegisteredObserver;
     NSMutableDictionary *closedCellCountBySection;
     BOOL isTogglingCells;
+    UIImage *iconImageWithBlur;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -170,6 +172,10 @@
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
 //    [self showAnnounceBoard];
+
+    // cell描画毎にtrimingやblurをかけると高負荷なのでここで作って保持しておく
+    // ただし、Topだけはチュートリアルでcellの大きさが変わるのでそこだけはリアルタイムで書く
+    [self makeIconImageWithBlur];
 }
 
 - (void)reloadView
@@ -807,8 +813,19 @@
                 cell.backgroundView = [[UIImageView alloc] initWithImage:multiCandidateImage];
             } else {
                 // candidateが無いのでプロフィールの画像をはめる
-                
+                if ([DateUtils isTodayByIndexPath:indexPath]) {
+                    NSData *iconData = [ImageCache getCache:[Config config][@"ChildIconFileName"] dir:_childObjectId];
+                    if (iconData) {
+                        UIImage *trimmedIconImage = [ImageTrimming makeRectTopImage:[UIImage imageWithData:iconData] ratio:(cell.frame.size.height/cell.frame.size.width)];
+                        UIImage *trimmedImageWithBlur = [trimmedIconImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+                        cell.backgroundView = [[UIImageView alloc] initWithImage:trimmedImageWithBlur];
+                    }
+                } else {
+                    cell.backgroundView = [[UIImageView alloc] initWithImage:iconImageWithBlur];
+                }
             }
+        } else {
+            cell.backgroundView = [[UIImageView alloc] initWithImage:iconImageWithBlur];
         }
         
         // PlaceHolderアイコンなどをはめる
@@ -1348,6 +1365,15 @@
             [self giveMePhoto];
         }
             break;
+    }
+}
+
+- (void)makeIconImageWithBlur
+{
+    NSData *iconData = [ImageCache getCache:[Config config][@"ChildIconFileName"] dir:_childObjectId];
+    if (iconData) {
+        UIImage *trimmedIconImage = [ImageTrimming makeRectImage:[UIImage imageWithData:iconData]];
+        iconImageWithBlur = [trimmedIconImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
     }
 }
 
