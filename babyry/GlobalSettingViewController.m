@@ -281,12 +281,8 @@
             }
             break;
         case 1:
-//            rowCount = 1;
-            rowCount = 2;
+            rowCount = 3;
             break;
-//        case 2:
-//            rowCount = 3;
-//            break;
         case 2:
             if ([TmpUser checkRegistered]) {
                 rowCount = 4;
@@ -326,9 +322,6 @@
                     [self.navigationController pushViewController:vc animated:YES];
                     break;
                 }
-//                case 1:
-//                    [self openAddChildAddView];
-//                    break;
                 case 2:
                     [self openProfileEdit];
                     break;
