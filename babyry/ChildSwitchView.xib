@@ -11,16 +11,23 @@
             <rect key="frame" x="0.0" y="0.0" width="55" height="75"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view autoresizesSubviews="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2rY-wM-p4W">
+                    <rect key="frame" x="0.0" y="0.0" width="55" height="55"/>
+                    <color key="backgroundColor" red="0.51497595360000004" green="0.83069880969999998" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                </view>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vtT-d6-wTN">
+                    <rect key="frame" x="0.0" y="0.0" width="55" height="55"/>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Smile" translatesAutoresizingMaskIntoConstraints="NO" id="Xwx-Gm-Nh5">
+                    <rect key="frame" x="12" y="12" width="31" height="31"/>
+                </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2WK-Wi-BCl">
-                    <rect key="frame" x="4" y="53" width="45" height="31"/>
+                    <rect key="frame" x="5" y="55" width="45" height="31"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="11"/>
                     <color key="textColor" red="1" green="0.03614355616" blue="0.018734982840000001" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="MamaIcon" translatesAutoresizingMaskIntoConstraints="NO" id="Xwx-Gm-Nh5">
-                    <rect key="frame" x="0.0" y="0.0" width="55" height="55"/>
-                </imageView>
-                <view alpha="0.69999999999999996" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZSs-yx-K67">
+                <view alpha="0.45000000000000001" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZSs-yx-K67">
                     <rect key="frame" x="0.0" y="0.0" width="55" height="55"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
@@ -32,13 +39,15 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="childNameLabel" destination="2WK-Wi-BCl" id="AII-Cr-iF9"/>
-                <outlet property="iconView" destination="Xwx-Gm-Nh5" id="iBm-o6-POT"/>
+                <outlet property="defaultIconView" destination="Xwx-Gm-Nh5" id="PgJ-9N-lw4"/>
+                <outlet property="iconContainer" destination="2rY-wM-p4W" id="mQx-Kz-2XQ"/>
+                <outlet property="iconView" destination="vtT-d6-wTN" id="vKA-a1-zQb"/>
                 <outlet property="overlay" destination="ZSs-yx-K67" id="iqc-Mx-1Lp"/>
             </connections>
             <point key="canvasLocation" x="94.5" y="148.5"/>
         </view>
     </objects>
     <resources>
-        <image name="MamaIcon" width="200" height="200"/>
+        <image name="Smile" width="24" height="24"/>
     </resources>
 </document>
