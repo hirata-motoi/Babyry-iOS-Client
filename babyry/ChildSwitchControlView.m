@@ -8,6 +8,7 @@
 
 #import "ChildSwitchControlView.h"
 #import "ChildSwitchView.h"
+#import "ChildAddIconView.h"
 #import "ChildProperties.h"
 #import "DateUtils.h"
 #import "Tutorial.h"
@@ -56,6 +57,13 @@ static ChildSwitchControlView* sharedObject = nil;
         return;
     }
     
+    // こども追加用アイコン
+    if (childProperties.count < 5) {
+        ChildAddIconView *childAddView = [ChildAddIconView view];
+        childAddView.delegate = self;
+        [childSwitchViewList addObject:childAddView];
+    }
+    
     for (NSMutableDictionary *childProperty in childProperties) {
         ChildSwitchView *childSwitchView = [ChildSwitchView view];
         childSwitchView.delegate = self;
@@ -65,7 +73,7 @@ static ChildSwitchControlView* sharedObject = nil;
         [childSwitchViewList addObject:childSwitchView];
         [childSwitchView setup];
     }
-  
+    
     // サイズ・位置の調整
     float width = [[Config config][@"ChildSwitchControlViewWidth"] floatValue];
     float height = [[Config config][@"ChildSwitchControlViewHeight"] floatValue];
@@ -207,6 +215,13 @@ static ChildSwitchControlView* sharedObject = nil;
     }
     [self removeFromSuperview];
     sharedObject = nil;
+}
+
+- (void)openAddChild
+{
+    [self closeChildSwitchViews];
+    [_delegate openAddChild];
+    [_delegate hideOverlay];
 }
 
 - (void)dealloc {
