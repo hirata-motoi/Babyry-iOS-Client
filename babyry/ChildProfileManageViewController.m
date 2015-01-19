@@ -128,7 +128,8 @@
         rect.origin.x = self.view.frame.size.width - rect.size.width - 20;
         rect.origin.y = (cell.frame.size.height - rect.size.height ) / 2;
         segmentControl.frame = rect;
-       
+        segmentControl.tintColor = [ColorUtils getGlobalMenuPartSwitchColor];
+
         [cell.contentView addSubview:segmentControl];
         
         return cell;
