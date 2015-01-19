@@ -36,5 +36,6 @@
 - (void)reloadPageContentViewController:(NSString *)childObjectId;
 - (void)removeChildSwitchControlView;
 - (void)viewDidAppear:(BOOL)animated;
+- (void)openAddChild;
 
 @end

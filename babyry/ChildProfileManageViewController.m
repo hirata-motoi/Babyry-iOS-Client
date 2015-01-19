@@ -51,6 +51,8 @@
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileIconCell" bundle:nil] forCellReuseIdentifier:@"IconCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileGenderCell" bundle:nil] forCellReuseIdentifier:@"GenderCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileBirthdayCell" bundle:nil] forCellReuseIdentifier:@"BirthdayCell"];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadChildProfile) name:@"childPropertiesChanged" object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -481,6 +483,13 @@
     [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
 
+- (void)reloadChildProfile
+{
+    [childProperties removeAllObjects];
+    childProperties = nil;
+    childProperties = [ChildProperties getChildProperties];
+    [_profileTable reloadData];
+}
 
 /*
 #pragma mark - Navigation

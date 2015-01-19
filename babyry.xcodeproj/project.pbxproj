@@ -210,6 +210,8 @@
 		F2AE04D919B2DE4E00B39C6F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8814A9881944572A0010F516 /* CoreData.framework */; };
 		F2AE04DC19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F2AE04DA19B2DF5900B39C6F /* babyry-coredata.xcdatamodeld */; };
 		F2AE04EC19B2EC8500B39C6F /* AppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AE04EB19B2EC8500B39C6F /* AppSetting.m */; };
+		F2B5BC0D1A6CCDCA0082185E /* ChildAddIconView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B5BC0C1A6CCDCA0082185E /* ChildAddIconView.xib */; };
+		F2B5BC101A6CD14A0082185E /* ChildAddIconView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B5BC0F1A6CD14A0082185E /* ChildAddIconView.m */; };
 		F2B7E0D919C1666F0052981B /* TutorialStage.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0D819C1666F0052981B /* TutorialStage.m */; };
 		F2B7E0DC19C166D20052981B /* Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0DB19C166D20052981B /* Tutorial.m */; };
 		F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */; };
@@ -614,6 +616,9 @@
 		F2AE04DB19B2DF5900B39C6F /* babyry-coredata.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "babyry-coredata.xcdatamodel"; sourceTree = "<group>"; };
 		F2AE04EA19B2EC8500B39C6F /* AppSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetting.h; sourceTree = "<group>"; };
 		F2AE04EB19B2EC8500B39C6F /* AppSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSetting.m; sourceTree = "<group>"; };
+		F2B5BC0C1A6CCDCA0082185E /* ChildAddIconView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildAddIconView.xib; sourceTree = "<group>"; };
+		F2B5BC0E1A6CD14A0082185E /* ChildAddIconView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildAddIconView.h; sourceTree = "<group>"; };
+		F2B5BC0F1A6CD14A0082185E /* ChildAddIconView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildAddIconView.m; sourceTree = "<group>"; };
 		F2B7E0D719C1666F0052981B /* TutorialStage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialStage.h; sourceTree = "<group>"; };
 		F2B7E0D819C1666F0052981B /* TutorialStage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialStage.m; sourceTree = "<group>"; };
 		F2B7E0DA19C166D20052981B /* Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tutorial.h; sourceTree = "<group>"; };
@@ -741,6 +746,9 @@
 			children = (
 				F2CA58661A652D9500442434 /* AlbumPickerViewController+Icon.h */,
 				F2CA58671A652D9500442434 /* AlbumPickerViewController+Icon.m */,
+				F2B5BC0C1A6CCDCA0082185E /* ChildAddIconView.xib */,
+				F2B5BC0E1A6CD14A0082185E /* ChildAddIconView.h */,
+				F2B5BC0F1A6CD14A0082185E /* ChildAddIconView.m */,
 				F2CA4FFF1A625474003EA9E6 /* GenderSegmentControl.h */,
 				F2CA50001A625474003EA9E6 /* GenderSegmentControl.m */,
 				F2CA50021A626A09003EA9E6 /* DatePickerView.xib */,
@@ -1714,6 +1722,7 @@
 				88962B271A581B95001EEBED /* CellImageFramePlaceHolder.xib in Resources */,
 				F2A8332C19AB0F5C00E2AB58 /* babyry-config.plist in Resources */,
 				F21BBBBA19C9F8B5002D4623 /* TutorialSelectBestShotView.xib in Resources */,
+				F2B5BC0D1A6CCDCA0082185E /* ChildAddIconView.xib in Resources */,
 				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
 				F21BBBF619CAE690002D4623 /* TutorialFamilyApplyIntroduceView.xib in Resources */,
 				F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */,
@@ -1846,6 +1855,7 @@
 				F2D934F319C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m in Sources */,
 				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
+				F2B5BC101A6CD14A0082185E /* ChildAddIconView.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
 				F2FB3BA01A09EB0700B0A2DD /* UploadPastImagesIntroductionView.m in Sources */,
 				88C072D419C87A3200BF6F6F /* PartnerApply.m in Sources */,

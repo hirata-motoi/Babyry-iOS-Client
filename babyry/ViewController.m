@@ -795,4 +795,10 @@
     }];
 }
 
+- (void)openAddChild
+{
+    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
+    [self.navigationController pushViewController:icnvc animated:YES];
+}
+
 @end
