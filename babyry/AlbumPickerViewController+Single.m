@@ -140,7 +140,6 @@
     NSMutableArray *imageIds = [[NSMutableArray alloc] init];
     imageIds[0] = imageObjectId;
     transitionInfoDic[@"imageIds"] = imageIds;
-    NSLog(@"transitionInfoDic before send %@", transitionInfoDic);
     NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
     options[@"data"] = [[NSMutableDictionary alloc]
                         initWithObjects:@[@"Increment", transitionInfoDic]

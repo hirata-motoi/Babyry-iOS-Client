@@ -39,7 +39,6 @@
 @property AWSServiceConfiguration *configuration;
 
 @property BOOL directOpenLibrary;
-@property NSMutableDictionary *notificationHistoryByDay;
 
 @property BOOL fromMultiUpload;
 @property NSString *myRole;

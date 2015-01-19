@@ -17,12 +17,15 @@
 #import "TutorialFamilyApplyIntroduceView.h"
 #import "CollectionViewSectionHeader.h"
 
+@protocol PageContentViewControllerDelegate <NSObject>
+- (void) setGlobalMenuBadge:(int)badgeNumber;
+@end
+
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, CollectionViewSectionHeaderDelegate>
-//@protocol PageContentViewControllerDelegate <NSObject>
-//- (void) moveToTargetPage:(int)index;
-//@end
 
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
+
+@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
 
 @property NSUInteger pageIndex;
 @property NSString *childObjectId;
@@ -47,7 +50,6 @@
 @property UILabel *tutoSkipLabel;
 @property BOOL isLoading;
 @property NSDateComponents *dateComp;
-@property NSMutableDictionary *notificationHistory;
 @property BOOL isRotatingCells;
 @property BOOL skippedReloadData;
 

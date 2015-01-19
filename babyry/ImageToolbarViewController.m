@@ -15,6 +15,7 @@
 #import "Config.h"
 #import "Logger.h"
 #import "ChildProperties.h"
+#import "DateUtils.h"
 
 @interface ImageToolbarViewController ()
 
@@ -61,10 +62,10 @@
     imageCommentViewTap.numberOfTapsRequired = 1;
     [_imageCommentView.customView addGestureRecognizer:imageCommentViewTap];
     // commentアイコンにbadgeをつける
-    if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
-        NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
-        [self showCommentBadge:count];
-    }
+//    if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
+//        NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
+//        [self showCommentBadge:count];
+//    }
     
     // 画像削除と保存はimageInfoが無い場合には表示させない(遅延ロードでimageInfoが取得されてから表示)
     // コメントは日付にひもづくものなのでなくても良い
@@ -174,6 +175,7 @@
                          }];
     } else {
         // 開く
+        [self disableNotificationHistories];
         [TransitionByPushNotification setCommentViewOpenFlag:YES];
         [TransitionByPushNotification setCurrentDate:_date];
         currentFrame.origin.y = 20 + 44;
@@ -186,15 +188,14 @@
                          }
                          completion:^(BOOL finished){
                              // 未読commentのバッヂを消す
-                             if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
-                                 for (PFObject *notification in _notificationHistoryByDay[@"commentPosted"]) {
-                                     [NotificationHistory disableDisplayedNotificationsWithObject:notification];
-                                 }
-                                 //[_notificationHistoryByDay[@"commentPosted"] removeAllObjects];
-                                 PFObject *obj = [[PFObject alloc]initWithClassName:@"NotificationHistory"];
-                                 [_notificationHistoryByDay[@"commentPosted"] addObject:obj];
-                                 [_commentBadge removeFromSuperview];
-                             }
+//                             if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
+//                                 for (PFObject *notification in _notificationHistoryByDay[@"commentPosted"]) {
+//                                     [NotificationHistory disableDisplayedNotificationsWithObject:notification];
+//                                 }
+//                                 PFObject *obj = [[PFObject alloc]initWithClassName:@"NotificationHistory"];
+//                                 [_notificationHistoryByDay[@"commentPosted"] addObject:obj];
+//                                 [_commentBadge removeFromSuperview];
+//                             }
                          }];
     }
     
@@ -288,34 +289,27 @@
 
 - (void)removeNotificationHistory:(NSString *)childObjectId withDate:(NSString *)date
 {
-    PFQuery *query = [PFQuery queryWithClassName:@"NotificationHistory"];
-    [query whereKey:@"child" equalTo:childObjectId];
-    [query whereKey:@"date" equalTo:[NSNumber numberWithInteger:[date integerValue]]];
-    [query whereKey:@"status" equalTo:@"ready"];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to remove NotificationHistory childObjectId:%@ date:%@ error:%@", childObjectId, date, error]];
-            return;
+    // 今日 or　昨日であれば画像の数を確認
+    // 2日以上前の場合にはこの日のnotificationは全部消す
+    if ([[DateUtils getTodayYMD] isEqual:[NSNumber numberWithInt:[date intValue]]] || [[DateUtils getYesterdayYMD] isEqual:[NSNumber numberWithInt:[date intValue]]]) {
+        // アップされている枚数をキャッシュの数で確認する
+        NSArray *cacheArray = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, date]]];
+        if ([cacheArray count] == 0) {
+            [NotificationHistory removeNotificationsWithChild:childObjectId withDate:date withStatus:nil];
+        } else {
+            // 厳密には消した画像に対応するnotificationを消さないといけないけど
+            [NotificationHistory removeNotificationsWithChild:childObjectId withDate:date withStatus:@"ready"];
         }
-        if (objects.count < 1) {
-            return;
-        }
-        
-        for (PFObject *notificationHistory in objects) {
-            [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
-        }
-    }];
+    } else {
+        [NotificationHistory removeNotificationsWithChild:childObjectId withDate:date withStatus:nil];
+    }
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)disableNotificationHistories
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"commentPosted"];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
 }
-*/
+
 
 @end

@@ -322,7 +322,6 @@
     albumTableViewController.month = _month;
     albumTableViewController.totalImageNum = _totalImageNum;
     albumTableViewController.indexPath = _indexPath;
-    albumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
     albumTableViewController.uploadType = @"multi";
     [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
@@ -425,7 +424,6 @@
         NSMutableDictionary *imagesCountDic = [[NSMutableDictionary alloc] init];
         [imagesCountDic setObject:[NSNumber numberWithInt:[childImageArraySorted count]] forKey:@"imagesCountNumber"];
         pageViewController.imagesCountDic = imagesCountDic;
-        pageViewController.notificationHistory = (_notificationHistoryByDay) ? [[NSMutableDictionary alloc]initWithObjects:@[ _notificationHistoryByDay ] forKeys:@[ _date ]] : nil;
         [self.navigationController setNavigationBarHidden:YES];
         [self.navigationController pushViewController:pageViewController animated:YES];
     }

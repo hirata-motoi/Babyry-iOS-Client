@@ -7,6 +7,7 @@ pod 'Facebook-iOS-SDK', '3.21.1'
 pod 'CrittercismSDK', '4.3.7'
 pod 'MagicalRecord', '2.2'
 pod 'AFNetworking', '2.4.1'
+pod 'CustomBadge', '3.0.0'
 
 post_install do |installer|
   installer.project.targets.each do |target|

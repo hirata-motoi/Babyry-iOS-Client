@@ -22,6 +22,7 @@
 #import "PushNotification.h"
 #import "AWSS3Utils.h"
 #import "ChildIconManager.h"
+#import "Comment.h"
 
 @implementation PageContentViewController_Logic
 
@@ -30,7 +31,8 @@
     [self showChildImages];
     [self setupImagesCount];
     [self updateChildProperties];
-    [self setupNotificationHistory];
+    [Comment updateCommentNumEntity:self.pageContentViewController.childObjectId];
+    [self removeUnnecessaryGMPBadge];
 }
 
 - (void)showChildImages
@@ -277,23 +279,18 @@
     }];
 }
 
-- (void)setupNotificationHistory
+- (void) showGlobalMenuBadge
 {
-    self.pageContentViewController.notificationHistory = [[NSMutableDictionary alloc]init];
-    [NotificationHistory getNotificationHistoryInBackgroundGroupByDate:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withStatus:@"ready" withLimit:1000 withBlock:^(NSMutableDictionary *history){
-        // ポインタを渡しておいて、そこに情報をセットさせる
-        // ただし、imageUpload or bestShotChoosen or commentPosted のpush通知をもらった場合はnotificationHistoryを更新しない
-        // Pushで開く時はnotificationHistoryを渡さないで即開くので
-        NSDictionary *info = [TransitionByPushNotification getInfo];
-        if (![info[@"event"] isEqualToString:@"imageUpload"] && ![info[@"event"] isEqualToString:@"bestShotChoosen"] && ![info[@"event"] isEqualToString:@"commentPosted"]) {
-            for (NSString *ymd in history) {
-                [self.pageContentViewController.notificationHistory setObject: [NSDictionary dictionaryWithDictionary:[history objectForKey:ymd]] forKey:ymd];
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withStatus:@"ready" withLimit:1000 withBlock:^(NSArray *objects){
+        int badgeNumber = 0;
+        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
+        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
+        for (PFObject *object in objects) {
+            if ([object[@"type"] isEqualToString:@"imageUploaded"] || [object[@"type"] isEqualToString:@"requestPhoto"] || [object[@"type"] isEqualToString:@"bestShotChanged"] || [object[@"type"] isEqualToString:@"commentPosted"]) {
+                badgeNumber++;
             }
-            [self executeReload];
         }
-            [self executeReload];
-        [self disableRedundantNotificationHistory];
-        [self removeUnnecessaryGMPBadge];
+        [self.pageContentViewController.delegate setGlobalMenuBadge:badgeNumber];
     }];
 }
 
@@ -416,74 +413,18 @@
     }];
 }
 
-// notification historyの過去のバグで、notificationがつく → 画像を消す とすると
-// notificationがついたままになってしまうので、
-// notificationがあるけども画像がない -> notificationをdisableする
-- (void)disableRedundantNotificationHistory
-{
-    NSMutableArray *targetYMDs = [[NSMutableArray alloc]init];
-    for (NSString *ymd in [self.pageContentViewController.notificationHistory allKeys]) {
-        [targetYMDs addObject:[NSNumber numberWithInteger:[ymd integerValue]]];
-    }
-    
-    // choosedの写真がない日を探す
-    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:self.pageContentViewController.childObjectId];
-    PFQuery *query = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
-    [query whereKey:@"imageOf" equalTo:childProperty[@"objectId"]];
-    [query whereKey:@"bestFlag" equalTo:@"choosed"];
-    [query whereKey:@"date" containedIn:targetYMDs];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get choosed images for disableRedundantNotificationHistory Error:%@", error]];
-            return;
-        }
-        
-        NSMutableDictionary *choosedYMD = [[NSMutableDictionary alloc]init];
-        for (PFObject *childImage in objects) {
-            choosedYMD[ [childImage[@"date"] stringValue] ] = [NSNumber numberWithBool:YES];
-        }
-        
-        BOOL shouldReload = NO;
-        for (NSString *ymd in [self.pageContentViewController.notificationHistory allKeys]) {
-            if (choosedYMD[ymd]) {
-                continue;
-            }
-            // 今日・昨日に関してはchoosedが一枚もない場合が普通にあるので判別不可能なので
-            // PageContentViewController内で、写真が一枚もない場合はnotificationを見せない対応をする
-            NSIndexPath *ip = [self indexPathFromYMD:ymd];
-            if (!ip || [DateUtils isInTwodayByIndexPath:ip]) {
-                continue;
-            }
-            
-            // choosedの画像がないにも関わらずnotificationが残っている日のnotificationはdisable
-            [self disableNotificationHistory:ymd];
-            shouldReload = YES;
-        }
-        if (shouldReload) {
-            [self executeReload];
-        }
-    }];
-}
 
 // 1. uploaderの時に受け取っていたgive me photoはchooserに切り替わったら要らないので消す
 // 2. 2日以上前の場合はgive me photoのアイコンは要らないので消す
 - (void)removeUnnecessaryGMPBadge
 {
-    for (NSMutableDictionary *notification in [self.pageContentViewController.notificationHistory allValues]) {
-        for (NSString *type in [notification allKeys]) {
-            if ([type isEqualToString:@"requestPhoto"]) {
-                for (PFObject *object in notification[type]){
-                    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"chooser"]) {
-                        [NotificationHistory disableDisplayedNotificationsWithObject:object];
-                    } else {
-                        if (!([object[@"date"] isEqualToNumber:[DateUtils getTodayYMD]] || [object[@"date"] isEqualToNumber:[DateUtils getYesterdayYMD]])) {
-                            [NotificationHistory disableDisplayedNotificationsWithObject:object];
-                        }
-                    }
-                }
-            }
+    [NotificationHistory getNotificationHistoryLessThanTargetDateInBackground:[PFUser currentUser][@"userId"]
+    withType:@"requestPhoto" withChild:self.pageContentViewController.childObjectId withStatus:nil withLimit:1000 withLimitDate:[DateUtils getYesterdayYMD] withBlock:^(NSArray *objects){
+        for (PFObject *object in objects) {
+            object[@"status"] = @"removed";
+            [object saveEventually];
         }
-    }
+    }];
 }
 
 // childPropertiesのあらゆる要素が更新された場合にPageContentViewを書き直す必要はない(全部で書き直すと画像を上げたらTopに戻ってしまったり、パートナーが誕生日を更新したらTopに戻ってしまったり、が起きる)
@@ -578,16 +519,6 @@
     return nil;
 }
 
-- (void)disableNotificationHistory:(NSString *)ymd
-{
-    for (NSString *type in [self.pageContentViewController.notificationHistory[ymd] allKeys]) {
-        NSArray *notificationHistories = self.pageContentViewController.notificationHistory[ymd][type];
-        for (PFObject *notificationHistory in notificationHistories) {
-            [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
-        }
-        [self.pageContentViewController.notificationHistory[ymd][type] removeAllObjects];
-    }
-}
 
 - (void)removeDialogs
 {}

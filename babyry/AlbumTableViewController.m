@@ -155,7 +155,6 @@
     albumPickerViewController.month = _month;
     albumPickerViewController.childObjectId = _childObjectId;
     albumPickerViewController.date = _date;
-    albumPickerViewController.notificationHistoryByDay = _notificationHistoryByDay;
     albumPickerViewController.uploadType = _uploadType;
     if (_totalImageNum){
         albumPickerViewController.totalImageNum = _totalImageNum;
