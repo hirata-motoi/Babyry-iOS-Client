@@ -33,7 +33,6 @@
 {
     CIImage *filteredImage = [[CIImage alloc] initWithCGImage:originImage.CGImage];
     CIFilter *filter = [CIFilter filterWithName:filterName];
-//    CIFilter *filter = [CIFilter filterWithName:@"CIMinimumComponent"];
     [filter setValue:filteredImage forKey:@"inputImage"];
     filteredImage = filter.outputImage;
     

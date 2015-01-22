@@ -49,7 +49,6 @@
 #import "Partner.h"
 #import "UploadPastImagesIntroductionView.h"
 #import "AnnounceBoardView.h"
-#import "UIImage+ImageEffects.h"
 #import "Comment.h"
 #import "CommentNumLabel.h"
 #import "ImageUtils.h"
@@ -69,7 +68,7 @@
     BOOL alreadyRegisteredObserver;
     NSMutableDictionary *closedCellCountBySection;
     BOOL isTogglingCells;
-    UIImage *iconImageWithBlur;
+    UIImage *iconImage;
     NSMutableDictionary *commentNumForDate;
 }
 
@@ -98,6 +97,7 @@
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
+    [self adjustChildImages];
     [self createCollectionView];
     
     windowWidth = self.view.frame.size.width;
@@ -144,14 +144,12 @@
         }
     }
     childProperty = [ChildProperties getChildProperty:_childObjectId];
-    
     [self reloadView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self adjustChildImages];
     [self initializeClosedCellCountBySection];
     
     // Notification登録
@@ -694,7 +692,7 @@
     }
     
     // 始点と終点の日付(NSDateComponents)を与えるとchildPropertyに自動追加してくれるmethodを作る必要がある
-    [self addChildImages:_childImages withStartDateComps:calendarStartingDateComps withEndDateComps:todayComps];
+    [self addChildImagesWithStartDateComps:calendarStartingDateComps withEndDateComps:todayComps];
     
     [self setupChildImagesIndexMap];
     
@@ -702,7 +700,21 @@
     [self setupScrollPositionData];
 }
 
-- (void)addChildImages:(NSMutableArray *)childImages withStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
+- (void)addChildImagesWithStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
+{
+    NSDateComponents *twoMonthAgo = [DateUtils addDateComps:[logic dateComps] withUnit:@"month" withValue:-2];
+    NSDateComponents *twoMonthAndOneDayAgo = [DateUtils addDateComps:twoMonthAgo withUnit:@"day" withValue:-1];
+    [self addChildImagesFirstWithStartDateComps:twoMonthAgo withEndDateComps:endDateComps];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self addChildImagesFirstWithStartDateComps:startDateComps withEndDateComps:twoMonthAndOneDayAgo];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_pageContentCollectionView reloadData];
+    });
+});
+}
+
+- (void)addChildImagesFirstWithStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
 {
     NSCalendar *cal   = [NSCalendar currentCalendar];
     NSDate *startDate = [cal dateFromComponents:startDateComps];
@@ -712,15 +724,17 @@
     
     while ([endDate compare:startDate] == NSOrderedDescending || [endDate compare:startDate] == NSOrderedSame) {
         NSString *ym = [NSString stringWithFormat:@"%ld%02ld", (long)endDateComps.year, (long)endDateComps.month];
-                                                               
+        
+        // childImagesの中に格納されているsectionの中にいまwhileで回している対象のymと同じ物が合ったらtargetSectionに突っ込む
         NSMutableDictionary *targetSection;
-        for (NSMutableDictionary *section in childImages) {
+        for (NSMutableDictionary *section in _childImages) {
             NSString *yearMonthOfSection = [NSString stringWithFormat:@"%@%@", section[@"year"], section[@"month"]];
             if ([yearMonthOfSection isEqualToString:ym]) {
                 targetSection = section;
                 break;
             }
         }
+        // なかったら、targetSectionを作り直す
         if (!targetSection) {
             targetSection = [[NSMutableDictionary alloc]init];
             targetSection[@"images"]        = [[NSMutableArray alloc]init];
@@ -728,9 +742,9 @@
             targetSection[@"weekdays"]      = [[NSMutableArray alloc]init];
             targetSection[@"year"]          = [NSString stringWithFormat:@"%ld", (long)endDateComps.year];
             targetSection[@"month"]         = [NSString stringWithFormat:@"%02ld", (long)endDateComps.month];
-            [_childImages addObject:targetSection];                                
+            [_childImages addObject:targetSection];
         }
-      
+
         NSNumber *date = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
         if ([self isDuplicatedChildImage:dicForCheckDuplicate withYearMonth:ym withDate:date withTargetSection:targetSection]) {
             break; // childImagesが歯抜けになることはないので、duplicateになった時点で完成されていると判断する
@@ -832,22 +846,10 @@
                 UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
                 cell.backgroundView = [[UIImageView alloc] initWithImage:multiCandidateImage];
             } else {
-                // candidateが無いのでプロフィールの画像をはめる
-                if ([DateUtils isTodayByIndexPath:indexPath]) {
-                    NSData *iconData = [ImageCache getCache:[Config config][@"ChildIconFileName"] dir:_childObjectId];
-                    if (iconData) {
-                        UIImage *trimmedIconImage = [ImageTrimming makeRectTopImage:[UIImage imageWithData:iconData] ratio:(cell.frame.size.height/cell.frame.size.width)];
-                        UIImage *trimmedImageWithBlur = [ImageUtils filterImage:[trimmedIconImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil] withFilterName:@"CIMinimumComponent"];
-                        cell.backgroundView = [[UIImageView alloc] initWithImage:trimmedImageWithBlur];
-                    }
-                } else {
-                    [self makeIconImageWithBlur];
-                    cell.backgroundView = [[UIImageView alloc] initWithImage:iconImageWithBlur];
-                }
+                cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
             }
         } else {
-            [self makeIconImageWithBlur];
-            cell.backgroundView = [[UIImageView alloc] initWithImage:iconImageWithBlur];
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
         }
         
         // PlaceHolderアイコンなどをはめる
@@ -1322,16 +1324,14 @@
     }
 }
 
-- (void)makeIconImageWithBlur
+- (UIImage *)makeIconImageWithBlurWithCell:(CGRect)cellFrame
 {
-    if (iconImageWithBlur) {
-        return;
+    if (!iconImage) {
+        iconImage = [UIImage imageWithData:[ImageCache getCache:[NSString stringWithFormat:@"%@Gray",[Config config][@"ChildIconFileName"]] dir:_childObjectId]];
     }
-    NSData *iconData = [ImageCache getCache:[Config config][@"ChildIconFileName"] dir:_childObjectId];
-    if (iconData) {
-        UIImage *trimmedIconImage = [ImageUtils filterImage:[ImageTrimming makeRectImage:[UIImage imageWithData:iconData]] withFilterName:@"CIMinimumComponent"];
-        iconImageWithBlur = [trimmedIconImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
-    }
+    
+    UIImage *trimmedIconImage = [ImageTrimming makeRectTopImage:iconImage ratio:(cellFrame.size.height/cellFrame.size.width)];
+    return trimmedIconImage;
 }
 
 @end

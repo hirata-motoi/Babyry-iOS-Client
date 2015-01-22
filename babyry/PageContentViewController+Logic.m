@@ -98,7 +98,6 @@
         // クルクルしている時にendRefreshingを呼び出しても無害っぽいので基本的に読んでおく(isRunnning的なフラグを立てるほどでもない)
         // getChildImagesWithYearの対象が2つあるときもあり得るが、そこはあんまり気にしてない(2つをほぼ同時に呼ぶのでそれほど時間差はないはず)
         [self.pageContentViewController.rc endRefreshing];
-        
         if (!error) {
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
