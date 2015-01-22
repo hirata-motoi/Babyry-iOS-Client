@@ -8,7 +8,6 @@
 
 #import "PageViewController.h"
 #import "PageContentViewController.h"
-#import "ImageEdit.h"
 #import "ChildProperties.h"
 
 @interface PageViewController ()

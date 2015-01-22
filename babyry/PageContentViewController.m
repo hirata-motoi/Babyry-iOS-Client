@@ -52,6 +52,7 @@
 #import "UIImage+ImageEffects.h"
 #import "Comment.h"
 #import "CommentNumLabel.h"
+#import "ImageUtils.h"
 
 @interface PageContentViewController ()
 
@@ -117,10 +118,6 @@
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
-    
-    // cell描画毎にtrimingやblurをかけると高負荷なのでここで作って保持しておく
-    // ただし、Topだけはチュートリアルでcellの大きさが変わるのでそこだけはリアルタイムで書く
-    [self makeIconImageWithBlur];
     
     // コメント数を取得
     commentNumForDate = [Comment getAllCommentNum];
@@ -837,14 +834,16 @@
                     NSData *iconData = [ImageCache getCache:[Config config][@"ChildIconFileName"] dir:_childObjectId];
                     if (iconData) {
                         UIImage *trimmedIconImage = [ImageTrimming makeRectTopImage:[UIImage imageWithData:iconData] ratio:(cell.frame.size.height/cell.frame.size.width)];
-                        UIImage *trimmedImageWithBlur = [trimmedIconImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
+                        UIImage *trimmedImageWithBlur = [ImageUtils filterImage:[trimmedIconImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil] withFilterName:@"CIMinimumComponent"];
                         cell.backgroundView = [[UIImageView alloc] initWithImage:trimmedImageWithBlur];
                     }
                 } else {
+                    [self makeIconImageWithBlur];
                     cell.backgroundView = [[UIImageView alloc] initWithImage:iconImageWithBlur];
                 }
             }
         } else {
+            [self makeIconImageWithBlur];
             cell.backgroundView = [[UIImageView alloc] initWithImage:iconImageWithBlur];
         }
         
@@ -1322,9 +1321,12 @@
 
 - (void)makeIconImageWithBlur
 {
+    if (iconImageWithBlur) {
+        return;
+    }
     NSData *iconData = [ImageCache getCache:[Config config][@"ChildIconFileName"] dir:_childObjectId];
     if (iconData) {
-        UIImage *trimmedIconImage = [ImageTrimming makeRectImage:[UIImage imageWithData:iconData]];
+        UIImage *trimmedIconImage = [ImageUtils filterImage:[ImageTrimming makeRectImage:[UIImage imageWithData:iconData]] withFilterName:@"CIMinimumComponent"];
         iconImageWithBlur = [trimmedIconImage applyBlurWithRadius:4 tintColor:[ColorUtils getBlurTintColor] saturationDeltaFactor:1 maskImage:nil];
     }
 }

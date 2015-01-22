@@ -169,7 +169,6 @@
 		F2305221198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305220198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m */; };
 		F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */; };
 		F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */; };
-		F230522919906D05000F5E32 /* ImageEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = F230522819906D05000F5E32 /* ImageEdit.m */; };
 		F230522C19907927000F5E32 /* PageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F230522B19907927000F5E32 /* PageViewController.m */; };
 		F2310C22198F43DF00E01DA3 /* DragView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2310C21198F43DF00E01DA3 /* DragView.m */; };
 		F233421519A114E900928101 /* FamilyApplyListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F233421419A114E900928101 /* FamilyApplyListCell.xib */; };
@@ -557,8 +556,6 @@
 		F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToEncourageUploadLarge.xib; path = ../CellBackgroundViewToEncourageUploadLarge.xib; sourceTree = "<group>"; };
 		F2305224198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewToEncourageUploadLarge.h; sourceTree = "<group>"; };
 		F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewToEncourageUploadLarge.m; sourceTree = "<group>"; };
-		F230522719906D05000F5E32 /* ImageEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageEdit.h; sourceTree = "<group>"; };
-		F230522819906D05000F5E32 /* ImageEdit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageEdit.m; sourceTree = "<group>"; };
 		F230522A19907927000F5E32 /* PageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageViewController.h; sourceTree = "<group>"; };
 		F230522B19907927000F5E32 /* PageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageViewController.m; sourceTree = "<group>"; };
 		F2310C20198F43DF00E01DA3 /* DragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragView.h; sourceTree = "<group>"; };
@@ -793,8 +790,6 @@
 				88AB3A0A19AC31D100DA92D4 /* Logger.m */,
 				8814A9A8194F56620010F516 /* ImageTrimming.h */,
 				8814A9A9194F56620010F516 /* ImageTrimming.m */,
-				F230522719906D05000F5E32 /* ImageEdit.h */,
-				F230522819906D05000F5E32 /* ImageEdit.m */,
 				F261A882196513F60072BBD2 /* IdIssue.h */,
 				F261A883196513F60072BBD2 /* IdIssue.m */,
 				F261A886196523110072BBD2 /* NSObject+Retry.h */,
@@ -1908,7 +1903,6 @@
 				F28DFD5319D5285F0080E5C2 /* TutorialReceivedApplyView.m in Sources */,
 				88449B9F1A51131B00839109 /* UIImage+ImageEffects.m in Sources */,
 				88610B5D1A09FFD30042854B /* AlbumTableViewController.m in Sources */,
-				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
 				F21BBBE919CAA9B0002D4623 /* TutorialNavigator+UploadByUser.m in Sources */,
