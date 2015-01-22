@@ -579,7 +579,7 @@
     CommentNumLabel *commentLabel = [CommentNumLabel view];
     CGRect frame = commentLabel.frame;
     frame.origin.x = cellFrame.size.width - frame.size.width - 2;
-    frame.origin.y = 1;
+    frame.origin.y = cellFrame.size.height - frame.size.height - 1;
     commentLabel.frame = frame;
 
     NSString *key = [NSString stringWithFormat:@"%@%@", _childObjectId, ymd];
@@ -868,7 +868,7 @@
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
         UIImageView *backgroundGridView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ImageBackgroundGrid"]];
-        backgroundGridView.frame = CGRectMake(0, 0, cell.frame.size.width, 24);
+        backgroundGridView.frame = CGRectMake(0, cell.frame.size.height - backgroundGridView.frame.size.height, cell.frame.size.width, 24);
         [cell.backgroundView addSubview:backgroundGridView];
         
         // コメント数を付ける
