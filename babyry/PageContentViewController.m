@@ -180,6 +180,11 @@
 //    [self showAnnounceBoard];
 
     [logic showGlobalMenuBadge];
+    
+    // 子供がいたら子供の名前にnavigationのtitleを変更
+    if (childProperty[@"name"]) {
+        [_delegate updateNavitagionTitle:childProperty[@"name"]];
+    }
 }
 
 - (void)reloadView
@@ -445,8 +450,6 @@
         albumTableViewController.uploadType = @"single";
         [self.navigationController pushViewController:albumTableViewController animated:YES];
         return;
-
-    
     }
     
     [self moveToImagePageViewController:indexPath];
@@ -469,7 +472,7 @@
     CollectionViewSectionHeader *header = [CollectionViewSectionHeader view];
     header.delegate = self;
     header.sectionIndex = indexPath.section;
-    [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue] withName:childProperty[@"name"]];
+    [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue]];
     [header adjustStyle:[self isExpandedSection:indexPath.section]];
    
     [headerView addSubview:header];

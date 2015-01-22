@@ -425,7 +425,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
 
 - (void)createNotificationHistory
 {
-    PFObject *partner = [Partner partnerUser];
+    PFObject *partner = (PFObject *)[Partner partnerUser];
     [NotificationHistory createNotificationHistoryWithType:@"commentPosted" withTo:partner[@"userId"] withChild:_childObjectId withDate:[_date integerValue]];
 }
 

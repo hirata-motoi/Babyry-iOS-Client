@@ -178,7 +178,6 @@
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", year, month];
     uploadViewController.date = ymd;
     uploadViewController.tagAlbumPageIndex = index;
-    //uploadViewController.holdedBy = @"TagAlbumPageViewController";
     uploadViewController.fromMultiUpload = _fromMultiUpload;
     uploadViewController.indexPath = _indexPath;
     if (_fromMultiUpload) {

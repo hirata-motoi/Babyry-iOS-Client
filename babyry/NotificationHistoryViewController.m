@@ -98,7 +98,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 24)];
-    headerView.backgroundColor = [ColorUtils getGlobalMenuSectionHeaderColor];
+    headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(6, 0, 320, 24)];
     headerLabel.textColor = [UIColor whiteColor];
     headerLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:12];

@@ -19,6 +19,7 @@
 
 @protocol PageContentViewControllerDelegate <NSObject>
 - (void) setGlobalMenuBadge:(int)badgeNumber;
+- (void) updateNavitagionTitle:(NSString *)childName;
 @end
 
 @interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, CollectionViewSectionHeaderDelegate>

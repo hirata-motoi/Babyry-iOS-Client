@@ -815,4 +815,17 @@
     [openGlobalSettingButton addSubview:globalMenuBadge];
 }
 
+- (void)updateNavitagionTitle:(NSString *)childName
+{
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.frame = self.navigationItem.titleView.frame;
+    titleLabel.font = [UIFont fontWithName:@"HiraKakuProN-W6" size:16.0f];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.text = [NSString stringWithFormat:@"%@ちゃんの成長記録", childName];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    [self.navigationItem.titleView removeFromSuperview];
+    self.navigationItem.titleView = titleLabel;
+}
+
 @end

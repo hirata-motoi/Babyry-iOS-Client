@@ -18,11 +18,10 @@
 @property (nonatomic,assign) id<CollectionViewSectionHeaderDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UILabel *monthLabel;
 @property (weak, nonatomic) IBOutlet UILabel *yearLabel;
-@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UIView *borderBottom;
 @property NSInteger sectionIndex;
 
 + (instancetype)view;
-- (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month withName:(NSString *)name;
+- (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month;
 - (void)adjustStyle:(BOOL)isExpanded;
 @end

@@ -169,7 +169,6 @@
 		F2305221198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305220198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m */; };
 		F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */; };
 		F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */; };
-		F230522C19907927000F5E32 /* PageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F230522B19907927000F5E32 /* PageViewController.m */; };
 		F2310C22198F43DF00E01DA3 /* DragView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2310C21198F43DF00E01DA3 /* DragView.m */; };
 		F233421519A114E900928101 /* FamilyApplyListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F233421419A114E900928101 /* FamilyApplyListCell.xib */; };
 		F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F233421719A115D900928101 /* FamilyApplyListCell.m */; };
@@ -556,8 +555,6 @@
 		F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToEncourageUploadLarge.xib; path = ../CellBackgroundViewToEncourageUploadLarge.xib; sourceTree = "<group>"; };
 		F2305224198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewToEncourageUploadLarge.h; sourceTree = "<group>"; };
 		F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewToEncourageUploadLarge.m; sourceTree = "<group>"; };
-		F230522A19907927000F5E32 /* PageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageViewController.h; sourceTree = "<group>"; };
-		F230522B19907927000F5E32 /* PageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageViewController.m; sourceTree = "<group>"; };
 		F2310C20198F43DF00E01DA3 /* DragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragView.h; sourceTree = "<group>"; };
 		F2310C21198F43DF00E01DA3 /* DragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DragView.m; sourceTree = "<group>"; };
 		F233421419A114E900928101 /* FamilyApplyListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FamilyApplyListCell.xib; sourceTree = "<group>"; };
@@ -1194,8 +1191,6 @@
 				88B18C8C193814CF00ED630C /* ViewController.m */,
 				882A6A21196B796E00E07D60 /* MaintenanceViewController.h */,
 				882A6A22196B796E00E07D60 /* MaintenanceViewController.m */,
-				F230522A19907927000F5E32 /* PageViewController.h */,
-				F230522B19907927000F5E32 /* PageViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -2003,7 +1998,6 @@
 				88610B631A0A15690042854B /* AlbumPickerViewController+Multi.m in Sources */,
 				F21BBBC019C9F9D3002D4623 /* TutorialNavigator+SelectBestShot.m in Sources */,
 				F22F208619E46A600089A592 /* ChildPropertyEntity.m in Sources */,
-				F230522C19907927000F5E32 /* PageViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
