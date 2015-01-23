@@ -66,7 +66,18 @@
     if (_notificationHistoryArray[indexPath.row]) {
         PFObject *histObject = _notificationHistoryArray[indexPath.row];
         cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
-        cell.imageView.image = [ImageTrimming makeCellIconForMenu:[UIImage imageNamed:@"SelectedBestshot"] size:CGSizeMake(40, 40)];
+        if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuUploaded"];
+        } else if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuComment"];
+        } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuGMP"];
+        } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuLike"];
+        }
+        if (![histObject[@"status"] isEqualToString:@"displayed"]) {
+            cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+        }
         if (![histObject[@"status"] isEqualToString:@"displayed"]) {
             cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
         }

@@ -307,7 +307,7 @@
 
 - (void)disableNotificationHistories
 {
-    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"commentPosted"];
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"commentPosted", @"requestPhoto"];
     [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
 }
 

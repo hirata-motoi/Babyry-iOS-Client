@@ -106,6 +106,8 @@
     
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(partialDownloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
+    
+    [self disableNotificationHistories];
 }
 
 - (void)didReceiveMemoryWarning
@@ -593,6 +595,12 @@
 - (void)forwardNextTutorial
 {
     [[self logic] forwardNextTutorial];
+}
+
+- (void)disableNotificationHistories
+{
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"requestPhoto"];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
 }
 
 @end

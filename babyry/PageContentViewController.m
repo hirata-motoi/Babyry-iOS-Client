@@ -70,6 +70,7 @@
     BOOL isTogglingCells;
     UIImage *iconImage;
     NSMutableDictionary *commentNumForDate;
+    NSString *requestPhotoDay;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -387,6 +388,12 @@
     // タップでアラートでて、Give Me PhotoをおくるならOK押す
     if ([_selfRole isEqualToString:@"chooser"] && [DateUtils isInTwodayByIndexPath:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
+            // ださいんだが、alertに値を渡す方法がよくわからんのでこれに保持させる
+            if (indexPath.row == 0) {
+                requestPhotoDay = @"today";
+            } else {
+                requestPhotoDay = @"yesterday";
+            }
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Give Me Photo"
                                                             message:@"アップロードをパートナーにおねがいしますか？"
                                                            delegate:self
@@ -914,8 +921,15 @@
                         forKeys:@[@"badge", @"transitionInfo"]];
     [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
     
+    NSInteger date;
+    if ([requestPhotoDay isEqualToString:@"today"]) {
+        date = [[DateUtils getTodayYMD] integerValue];
+    } else {
+        date = [[DateUtils getYesterdayYMD] integerValue];
+    }
+    
     PFObject *partner = (PFObject *)[Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:0];
+    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:date];
 }
 
 - (void)vibrate:(NSTimer *)timer
