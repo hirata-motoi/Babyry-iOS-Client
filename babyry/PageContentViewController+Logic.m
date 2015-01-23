@@ -165,6 +165,22 @@
                             [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", self.pageContentViewController.childObjectId, [date stringValue]]];
                             [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/fullsize/%@", self.pageContentViewController.childObjectId, [date stringValue]]];
                         }
+                        // 昨日、今日の場合、Parse上では消されたがキャッシュには残っている画像があるのでそれを消す
+                        // パートナーが削除したパターン
+                        NSArray *allCaches = [ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", self.pageContentViewController.childObjectId, [date stringValue]]];
+                        for (NSString *cacheId in allCaches) {
+                            BOOL removeCache = YES;
+                            for (PFObject *childImageDate in childImageDic[date]) {
+                                if ([cacheId isEqualToString:childImageDate.objectId]) {
+                                    removeCache = NO;
+                                    break;
+                                }
+                            }
+                            if (removeCache) {
+                                [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", self.pageContentViewController.childObjectId, [date stringValue], cacheId]];
+                                [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/fullsize/%@", self.pageContentViewController.childObjectId, [date stringValue], cacheId]];
+                            }
+                        }
                     } else {
                         // 二日以上前で、ベストショットが無いのであれば、0を入れてキャッシュ消す
                         if(!bestshotExist) {
@@ -179,7 +195,13 @@
                     [totalImageNum replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
                     // 本画像がないのでローカルにキャッシュがあれば消す。
                     [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", self.pageContentViewController.childObjectId, [date stringValue]]];
-                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/fullsize/%@", self.pageContentViewController.childObjectId, [date stringValue]]]; // fullsize
+                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/bestShot/fullsize/%@", self.pageContentViewController.childObjectId, [date stringValue]]];
+                    // candidateも消す
+                    NSArray *allCaches = [ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", self.pageContentViewController.childObjectId, [date stringValue]]];
+                    for (NSString *cacheId in allCaches) {
+                        [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@", self.pageContentViewController.childObjectId, [date stringValue], cacheId]];
+                        [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/fullsize/%@", self.pageContentViewController.childObjectId, [date stringValue], cacheId]];
+                    }
                 }
             }
 			AWSS3Utils *awsS3Utils = [[AWSS3Utils alloc] init];
