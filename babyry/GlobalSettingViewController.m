@@ -75,8 +75,6 @@
     
     [self setupPartnerInfo];
     [Navigation setTitle:self.navigationItem withTitle:@"設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
-    
-    [self getNotificationHistory];
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,6 +91,8 @@
     tn = [[TutorialNavigator alloc]init];
     tn.targetViewController = self;
     [tn showNavigationView];
+    
+    [self getNotificationHistory];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -618,7 +618,7 @@
 - (void)getNotificationHistory
 {
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:nil withLimit:100 withBlock:^(NSArray *objects){
-        notificationHistoryArray = [[NSMutableArray alloc] initWithArray:objects];
+        notificationHistoryArray = [[NSMutableArray alloc] init];
         // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
         // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
         for (PFObject *object in objects) {

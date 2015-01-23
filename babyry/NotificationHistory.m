@@ -9,6 +9,7 @@
 #import "NotificationHistory.h"
 #import "DateUtils.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @implementation NotificationHistory
 
@@ -217,14 +218,15 @@ NSString *const className = @"NotificationHistory";
     NSString *returnStr;
     NSString *dateStr = [histObject[@"date"] stringValue];
     NSString *MMDD = [NSString stringWithFormat:@"%@/%@", [dateStr substringWithRange:NSMakeRange(4, 2)], [dateStr substringWithRange:NSMakeRange(6, 2)]];
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:histObject[@"child"]];
     if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
-        returnStr = [NSString stringWithFormat:@"%@にコメントがつきました", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんの写真にコメントがつきました", MMDD, childProperty[@"name"]];
     } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
-        returnStr = [NSString stringWithFormat:@"%@にGive Me Photoされました", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんの写真がリクエストされています", MMDD, childProperty[@"name"]];
     } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
-        returnStr = [NSString stringWithFormat:@"%@のベストショット決定！", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんのベストショット決定！", MMDD, childProperty[@"name"]];
     } else if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
-        returnStr = [NSString stringWithFormat:@"%@に写真がアップロードされました", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@に%@ちゃんの写真がアップロードされました", MMDD, childProperty[@"name"]];
     } else {
         return @"";
         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error there is no notification type like %@", histObject[@"type"]]];

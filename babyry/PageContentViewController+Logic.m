@@ -302,7 +302,7 @@
 
 - (void) showGlobalMenuBadge
 {
-    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:self.pageContentViewController.childObjectId withStatus:@"ready" withLimit:1000 withBlock:^(NSArray *objects){
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:@"ready" withLimit:1000 withBlock:^(NSArray *objects){
         int badgeNumber = 0;
         // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
         // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)

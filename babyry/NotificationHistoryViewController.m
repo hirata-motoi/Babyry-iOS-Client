@@ -39,6 +39,12 @@
     [Navigation setTitle:self.navigationItem withTitle:@"お知らせ履歴" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self getNotificationHistory];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -131,6 +137,21 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForFooderInSection:(NSInteger)section
 {
     return 12.0f;
+}
+
+- (void)getNotificationHistory
+{
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:nil withLimit:100 withBlock:^(NSArray *objects){
+        _notificationHistoryArray = [[NSMutableArray alloc] init];
+        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
+        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
+        for (PFObject *object in objects) {
+            if ([object[@"type"] isEqualToString:@"imageUploaded"] || [object[@"type"] isEqualToString:@"requestPhoto"] || [object[@"type"] isEqualToString:@"bestShotChanged"] || [object[@"type"] isEqualToString:@"commentPosted"]) {
+                [_notificationHistoryArray addObject:object];
+            }
+        }
+        [_notificationTableView reloadData];
+    }];
 }
 
 @end

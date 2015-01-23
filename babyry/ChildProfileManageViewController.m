@@ -117,7 +117,14 @@
         return cell;
     } else if ([cellType isEqualToString:@"Gender"]) {
         ChildProfileGenderCell *cell = [tableView dequeueReusableCellWithIdentifier:@"GenderCell" forIndexPath:indexPath];
-       
+        for (UIView *view in [cell subviews]) {
+            for (UIView *elem in [view subviews]) {
+                if ([elem isKindOfClass:[UISegmentedControl class]]) {
+                    [elem removeFromSuperview];
+                }
+            }
+        }
+        
         NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
         NSString *sex = childProperties[childIndex][@"sex"];
         if (sex) {
@@ -137,9 +144,11 @@
         
         return cell;
     } else if ([cellType isEqualToString:@"Birthday"]) {
+        NSLog(@"make birthday");
         ChildProfileBirthdayCell *cell = [tableView dequeueReusableCellWithIdentifier:@"BirthdayCell" forIndexPath:indexPath];
         cell.delegate = self;
         cell.childObjectId = childProperties[childIndex][@"objectId"];
+        cell.birthdayLabel.text = @"";
         
         if (childProperties[childIndex][@"birthday"]) {
             NSDateFormatter *df = [[NSDateFormatter alloc] init];
