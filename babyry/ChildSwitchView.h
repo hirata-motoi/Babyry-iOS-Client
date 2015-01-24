@@ -36,4 +36,6 @@
 @property NSString *childObjectId;
 @property BOOL switchAvailable;
 
+- (void)reloadIconWithImageData:(NSData *)imageData;
+
 @end

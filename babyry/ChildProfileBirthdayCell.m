@@ -27,9 +27,16 @@
 
 - (void)edit
 {
-    // delegateのメソッドを叩く
-    // datepickerviewを下からにゅっと表示
     [_delegate openDatePickerView:_childObjectId];
 }
+
+- (void)setBirthdayLabelText:(NSDate *)date
+{
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat = @"yyyy/MM/dd";
+   
+    _birthday = date;
+    _birthdayLabel.text = [df stringFromDate:date];
+}                         
 
 @end

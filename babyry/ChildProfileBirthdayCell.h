@@ -17,6 +17,9 @@
 @interface ChildProfileBirthdayCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *birthdayLabel;
 @property NSString *childObjectId;
+@property NSDate *birthday;
 @property (nonatomic,assign) id<ChildProfileBirthdayCellDelegate> delegate;
+
+- (void)setBirthdayLabelText:(NSDate *)date;
 
 @end

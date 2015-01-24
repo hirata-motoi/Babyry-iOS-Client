@@ -180,6 +180,8 @@
 		F2694AFC1982618C008239F6 /* Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694AFB1982618C008239F6 /* Navigation.m */; };
 		F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694AFE19827013008239F6 /* UIColor+Hex.m */; };
 		F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2694B021983A232008239F6 /* ImagePageViewController.m */; };
+		F27108FC1A73F65A006F9500 /* ChildCreatePopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F27108FA1A73F65A006F9500 /* ChildCreatePopupViewController.m */; };
+		F27108FD1A73F65A006F9500 /* ChildCreatePopupViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F27108FB1A73F65A006F9500 /* ChildCreatePopupViewController.xib */; };
 		F271B31B1998CC2200C9952A /* Sharding.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31A1998CC2200C9952A /* Sharding.m */; };
 		F271B31E1999E5E800C9952A /* Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = F271B31D1999E5E800C9952A /* Badge.m */; };
 		F27AB6E319D52B3900285BEB /* TutorialSentApplyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F27AB6E219D52B3900285BEB /* TutorialSentApplyView.xib */; };
@@ -212,6 +214,11 @@
 		F2AE04EC19B2EC8500B39C6F /* AppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AE04EB19B2EC8500B39C6F /* AppSetting.m */; };
 		F2B5BC0D1A6CCDCA0082185E /* ChildAddIconView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B5BC0C1A6CCDCA0082185E /* ChildAddIconView.xib */; };
 		F2B5BC101A6CD14A0082185E /* ChildAddIconView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B5BC0F1A6CD14A0082185E /* ChildAddIconView.m */; };
+		F2B5BC221A710A0A0082185E /* ChildProfileIconCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B5BC211A710A0A0082185E /* ChildProfileIconCell.xib */; };
+		F2B5BC281A710B390082185E /* ChildProfileIconCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B5BC271A710B390082185E /* ChildProfileIconCell.m */; };
+		F2B5BC2B1A7116C30082185E /* ChildPropertyUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B5BC2A1A7116C30082185E /* ChildPropertyUtils.m */; };
+		F2B5BC2D1A723A540082185E /* ChildProfileNameCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B5BC2C1A723A540082185E /* ChildProfileNameCell.xib */; };
+		F2B5BC301A723B750082185E /* ChildProfileNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B5BC2F1A723B750082185E /* ChildProfileNameCell.m */; };
 		F2B7E0D919C1666F0052981B /* TutorialStage.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0D819C1666F0052981B /* TutorialStage.m */; };
 		F2B7E0DC19C166D20052981B /* Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B7E0DB19C166D20052981B /* Tutorial.m */; };
 		F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B7E0DD19C1F0ED0052981B /* LogoutIntroduceView.xib */; };
@@ -224,8 +231,8 @@
 		F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */; };
 		F2CA4FE01A5F8463003EA9E6 /* ImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */; };
 		F2CA4FE91A603E00003EA9E6 /* ChildProfileManageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */; };
-		F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconCell.xib */; };
-		F2CA4FF41A60AFD2003EA9E6 /* ChildProfileIconCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconCell.m */; };
+		F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib */; };
+		F2CA4FF41A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.m */; };
 		F2CA4FF61A60B163003EA9E6 /* ChildProfileGenderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FF51A60B163003EA9E6 /* ChildProfileGenderCell.xib */; };
 		F2CA4FF91A60B234003EA9E6 /* ChildProfileGenderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FF81A60B234003EA9E6 /* ChildProfileGenderCell.m */; };
 		F2CA4FFB1A62215D003EA9E6 /* ChildProfileBirthdayCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FFA1A62215C003EA9E6 /* ChildProfileBirthdayCell.xib */; };
@@ -576,6 +583,9 @@
 		F2694AFE19827013008239F6 /* UIColor+Hex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Hex.m"; sourceTree = "<group>"; };
 		F2694B011983A232008239F6 /* ImagePageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePageViewController.h; sourceTree = "<group>"; };
 		F2694B021983A232008239F6 /* ImagePageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImagePageViewController.m; sourceTree = "<group>"; };
+		F27108F91A73F65A006F9500 /* ChildCreatePopupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildCreatePopupViewController.h; sourceTree = "<group>"; };
+		F27108FA1A73F65A006F9500 /* ChildCreatePopupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildCreatePopupViewController.m; sourceTree = "<group>"; };
+		F27108FB1A73F65A006F9500 /* ChildCreatePopupViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildCreatePopupViewController.xib; sourceTree = "<group>"; };
 		F271B3191998CC2200C9952A /* Sharding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sharding.h; sourceTree = "<group>"; };
 		F271B31A1998CC2200C9952A /* Sharding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sharding.m; sourceTree = "<group>"; };
 		F271B31C1999E5E800C9952A /* Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Badge.h; sourceTree = "<group>"; };
@@ -619,6 +629,14 @@
 		F2B5BC0C1A6CCDCA0082185E /* ChildAddIconView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildAddIconView.xib; sourceTree = "<group>"; };
 		F2B5BC0E1A6CD14A0082185E /* ChildAddIconView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildAddIconView.h; sourceTree = "<group>"; };
 		F2B5BC0F1A6CD14A0082185E /* ChildAddIconView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildAddIconView.m; sourceTree = "<group>"; };
+		F2B5BC211A710A0A0082185E /* ChildProfileIconCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileIconCell.xib; sourceTree = "<group>"; };
+		F2B5BC261A710B390082185E /* ChildProfileIconCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileIconCell.h; sourceTree = "<group>"; };
+		F2B5BC271A710B390082185E /* ChildProfileIconCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileIconCell.m; sourceTree = "<group>"; };
+		F2B5BC291A7116C30082185E /* ChildPropertyUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildPropertyUtils.h; sourceTree = "<group>"; };
+		F2B5BC2A1A7116C30082185E /* ChildPropertyUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildPropertyUtils.m; sourceTree = "<group>"; };
+		F2B5BC2C1A723A540082185E /* ChildProfileNameCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileNameCell.xib; sourceTree = "<group>"; };
+		F2B5BC2E1A723B750082185E /* ChildProfileNameCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileNameCell.h; sourceTree = "<group>"; };
+		F2B5BC2F1A723B750082185E /* ChildProfileNameCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileNameCell.m; sourceTree = "<group>"; };
 		F2B7E0D719C1666F0052981B /* TutorialStage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialStage.h; sourceTree = "<group>"; };
 		F2B7E0D819C1666F0052981B /* TutorialStage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialStage.m; sourceTree = "<group>"; };
 		F2B7E0DA19C166D20052981B /* Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tutorial.h; sourceTree = "<group>"; };
@@ -640,9 +658,9 @@
 		F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtils.m; sourceTree = "<group>"; };
 		F2CA4FE71A603E00003EA9E6 /* ChildProfileManageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileManageViewController.h; sourceTree = "<group>"; };
 		F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileManageViewController.m; sourceTree = "<group>"; };
-		F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileIconCell.xib; sourceTree = "<group>"; };
-		F2CA4FF21A60AFD2003EA9E6 /* ChildProfileIconCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileIconCell.h; sourceTree = "<group>"; };
-		F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileIconCell.m; sourceTree = "<group>"; };
+		F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileIconAndNameCell.xib; sourceTree = "<group>"; };
+		F2CA4FF21A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileIconAndNameCell.h; sourceTree = "<group>"; };
+		F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileIconAndNameCell.m; sourceTree = "<group>"; };
 		F2CA4FF51A60B163003EA9E6 /* ChildProfileGenderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildProfileGenderCell.xib; sourceTree = "<group>"; };
 		F2CA4FF71A60B234003EA9E6 /* ChildProfileGenderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileGenderCell.h; sourceTree = "<group>"; };
 		F2CA4FF81A60B234003EA9E6 /* ChildProfileGenderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProfileGenderCell.m; sourceTree = "<group>"; };
@@ -744,6 +762,8 @@
 		8814A997194546640010F516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2B5BC291A7116C30082185E /* ChildPropertyUtils.h */,
+				F2B5BC2A1A7116C30082185E /* ChildPropertyUtils.m */,
 				F2CA58661A652D9500442434 /* AlbumPickerViewController+Icon.h */,
 				F2CA58671A652D9500442434 /* AlbumPickerViewController+Icon.m */,
 				F2B5BC0C1A6CCDCA0082185E /* ChildAddIconView.xib */,
@@ -1169,10 +1189,7 @@
 		F215DDCD19761CA50092C712 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				F2CA4FE71A603E00003EA9E6 /* ChildProfileManageViewController.h */,
-				F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */,
-				F2D266981A5C2D6E005C3603 /* ChildIconCollectionViewController.h */,
-				F2D266991A5C2D6E005C3603 /* ChildIconCollectionViewController.m */,
+				F27108FE1A73F9F4006F9500 /* Child */,
 				F2FB3BA61A0A61D200B0A2DD /* ChildFilterViewController.h */,
 				F2FB3BA71A0A61D200B0A2DD /* ChildFilterViewController.m */,
 				88610B5A1A09FF8E0042854B /* ImagePicker */,
@@ -1386,6 +1403,20 @@
 			name = PageView;
 			sourceTree = "<group>";
 		};
+		F27108FE1A73F9F4006F9500 /* Child */ = {
+			isa = PBXGroup;
+			children = (
+				F27108F91A73F65A006F9500 /* ChildCreatePopupViewController.h */,
+				F27108FA1A73F65A006F9500 /* ChildCreatePopupViewController.m */,
+				F27108FB1A73F65A006F9500 /* ChildCreatePopupViewController.xib */,
+				F2CA4FE71A603E00003EA9E6 /* ChildProfileManageViewController.h */,
+				F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */,
+				F2D266981A5C2D6E005C3603 /* ChildIconCollectionViewController.h */,
+				F2D266991A5C2D6E005C3603 /* ChildIconCollectionViewController.m */,
+			);
+			name = Child;
+			sourceTree = "<group>";
+		};
 		F285514919D123E800347BB6 /* TutorialImages */ = {
 			isa = PBXGroup;
 			children = (
@@ -1504,8 +1535,10 @@
 			isa = PBXGroup;
 			children = (
 				F2CA4FFA1A62215C003EA9E6 /* ChildProfileBirthdayCell.xib */,
-				F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconCell.xib */,
+				F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib */,
 				F2CA4FF51A60B163003EA9E6 /* ChildProfileGenderCell.xib */,
+				F2B5BC211A710A0A0082185E /* ChildProfileIconCell.xib */,
+				F2B5BC2C1A723A540082185E /* ChildProfileNameCell.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -1513,12 +1546,16 @@
 		F2CA4FF11A60AF7E003EA9E6 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2B5BC2E1A723B750082185E /* ChildProfileNameCell.h */,
+				F2B5BC2F1A723B750082185E /* ChildProfileNameCell.m */,
+				F2B5BC261A710B390082185E /* ChildProfileIconCell.h */,
+				F2B5BC271A710B390082185E /* ChildProfileIconCell.m */,
 				F2CA4FFC1A6221B3003EA9E6 /* ChildProfileBirthdayCell.h */,
 				F2CA4FFD1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m */,
 				F2CA4FF71A60B234003EA9E6 /* ChildProfileGenderCell.h */,
 				F2CA4FF81A60B234003EA9E6 /* ChildProfileGenderCell.m */,
-				F2CA4FF21A60AFD2003EA9E6 /* ChildProfileIconCell.h */,
-				F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconCell.m */,
+				F2CA4FF21A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.h */,
+				F2CA4FF31A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.m */,
 			);
 			name = Class;
 			sourceTree = "<group>";
@@ -1718,11 +1755,13 @@
 				88CFF52D199B68E400B56481 /* Localizable.strings in Resources */,
 				F2FB3BAA1A0A685900B0A2DD /* ChildFilterListCell.xib in Resources */,
 				F28DFD5019D527BE0080E5C2 /* TutorialReceivedApplyView.xib in Resources */,
+				F2B5BC2D1A723A540082185E /* ChildProfileNameCell.xib in Resources */,
 				F21BBBE019CA72D7002D4623 /* TutorialAddChildView.xib in Resources */,
 				88962B271A581B95001EEBED /* CellImageFramePlaceHolder.xib in Resources */,
 				F2A8332C19AB0F5C00E2AB58 /* babyry-config.plist in Resources */,
 				F21BBBBA19C9F8B5002D4623 /* TutorialSelectBestShotView.xib in Resources */,
 				F2B5BC0D1A6CCDCA0082185E /* ChildAddIconView.xib in Resources */,
+				F2B5BC221A710A0A0082185E /* ChildProfileIconCell.xib in Resources */,
 				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
 				F21BBBF619CAE690002D4623 /* TutorialFamilyApplyIntroduceView.xib in Resources */,
 				F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */,
@@ -1743,6 +1782,7 @@
 				F2A8333019AC591B00E2AB58 /* babyry-secret-config.plist in Resources */,
 				F2B9697419CD75B000C14201 /* TutorialBestShotSelectedView.xib in Resources */,
 				F285517319D160AC00347BB6 /* TutorialImage_6.jpg in Resources */,
+				F27108FD1A73F65A006F9500 /* ChildCreatePopupViewController.xib in Resources */,
 				F2FAA56719E2DBF600546669 /* AddMonthToCalendarView.xib in Resources */,
 				F21BBBCA19CA0265002D4623 /* TutorialUpperArrowView.xib in Resources */,
 				F226590F19D22575003A62BD /* TutorialSelectBestShotFinishedView.xib in Resources */,
@@ -1761,7 +1801,7 @@
 				F285516619D15F0A00347BB6 /* TutorialImage_1.jpg in Resources */,
 				88C072F319CAB64500BF6F6F /* ChildListCell.xib in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
-				F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconCell.xib in Resources */,
+				F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib in Resources */,
 				F21BBBC519CA0037002D4623 /* TutorialPartChangeView.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
 				F2CE8D391A4E9A9A00F56FC2 /* ChildSwitchView.xib in Resources */,
@@ -1848,6 +1888,7 @@
 				F2CA4FE91A603E00003EA9E6 /* ChildProfileManageViewController.m in Sources */,
 				887CF8E21987822300B90C2E /* UIPlaceHolderTextView.m in Sources */,
 				88AB3A0B19AC31D100DA92D4 /* Logger.m in Sources */,
+				F2B5BC301A723B750082185E /* ChildProfileNameCell.m in Sources */,
 				F226591519D22971003A62BD /* TutorialNavigator+SelectBestShotFinished.m in Sources */,
 				F2D934FF19C9463E001F33D0 /* TutorialBestShot.m in Sources */,
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
@@ -1870,7 +1911,7 @@
 				F2CA50061A626ADC003EA9E6 /* DatePickerView.m in Sources */,
 				88C072CE19C61C2F00BF6F6F /* Account.m in Sources */,
 				F21BBBCD19CA0351002D4623 /* TutorialUpperArrowView.m in Sources */,
-				F2CA4FF41A60AFD2003EA9E6 /* ChildProfileIconCell.m in Sources */,
+				F2CA4FF41A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.m in Sources */,
 				F27AB6E619D52B7F00285BEB /* TutorialSentApplyView.m in Sources */,
 				F2CE8D3C1A4E9B2400F56FC2 /* ChildSwitchView.m in Sources */,
 				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
@@ -1902,6 +1943,7 @@
 				F230522919906D05000F5E32 /* ImageEdit.m in Sources */,
 				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
 				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
+				F2B5BC281A710B390082185E /* ChildProfileIconCell.m in Sources */,
 				F21BBBE919CAA9B0002D4623 /* TutorialNavigator+UploadByUser.m in Sources */,
 				F21BBBD019CA1245002D4623 /* TutorialNavigator+PartChangeExec.m in Sources */,
 				F2106709196E33EE00187119 /* CommentViewController.m in Sources */,
@@ -1959,6 +2001,7 @@
 				88B58B7919F6E86D00B6E86B /* UINavigationController+Block.m in Sources */,
 				F2CA50011A625474003EA9E6 /* GenderSegmentControl.m in Sources */,
 				F215DDDB1976BFB70092C712 /* ProfileEditViewController.m in Sources */,
+				F27108FC1A73F65A006F9500 /* ChildCreatePopupViewController.m in Sources */,
 				88008C8E19AF1169005FE04F /* NotEmailVerifiedViewController.m in Sources */,
 				88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */,
 				88610B591A09BDEA0042854B /* UploadPickerCollectionViewSectionHeader.m in Sources */,
@@ -1976,6 +2019,7 @@
 				F2CA4FFE1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m in Sources */,
 				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
+				F2B5BC2B1A7116C30082185E /* ChildPropertyUtils.m in Sources */,
 				84ABD707194DBE8500BC3CDA /* Sequence.m in Sources */,
 				88641DD91A3814BD00ED1A75 /* ImageDownloadInBackground.m in Sources */,
 				F21BBBD519CA6B6E002D4623 /* TutorialPartChangeExecView.m in Sources */,
@@ -2276,7 +2320,7 @@
 				INFOPLIST_FILE = "babyry/babyrydev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "ed0e4f80-add5-414f-92fe-98b2180ed6bb";
+				PROVISIONING_PROFILE = "3190433b-0514-432b-a205-00a4102f6409";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};

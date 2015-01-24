@@ -13,8 +13,9 @@
 #import "HeaderViewManager.h"
 #import "ChildSwitchControlView.h"
 #import "GlobalSettingViewController.h"
+#import "ChildCreatePopupViewController.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate>
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate, ChildCreatePopupViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;

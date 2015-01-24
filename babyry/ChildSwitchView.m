@@ -90,6 +90,14 @@
     }
 }
 
+- (void)reloadIconWithImageData:(NSData *)imageData
+{
+    if (imageData) {
+        self.defaultIconView.hidden = YES;
+        self.iconView.image = [ImageTrimming makeRectImage:[UIImage imageWithData:imageData]];
+    }
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }

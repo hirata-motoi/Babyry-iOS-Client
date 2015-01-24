@@ -109,12 +109,22 @@ static const float screenRate = 0.9;
     UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
     UIImage *thumbnailImage = [ImageCache makeThumbNail:resizedImage];
     NSData *imageData = ([fileExtension isEqualToString:@"PNG"]) ? UIImagePNGRepresentation(thumbnailImage) : UIImageJPEGRepresentation(thumbnailImage, 0.7f);
-    [ChildIconManager updateChildIcon:imageData withChildObjectId:_albumPickerViewController.childObjectId];
-    [self sendPushNotification];
+    
+    // こども追加の場合はnotification centerで通知
+    if (!_albumPickerViewController.childObjectId) {
+        NSDictionary *info = [[NSDictionary alloc]initWithObjectsAndKeys:imageData, @"imageData", nil];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"childIconSelectedForNewChild" object:self userInfo:info];
+    } else {
+        [ChildIconManager updateChildIcon:imageData withChildObjectId:_albumPickerViewController.childObjectId];
+        [self sendPushNotification];
+    }
     
     [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
     UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;
     [naviController popViewControllerAnimated:YES];
+    
+    // TODO navigationController内かどうかを判定して処理を分ける
+    [_albumPickerViewController.delegate closeAlbumTable];
 }
 
 - (void)sendPushNotification

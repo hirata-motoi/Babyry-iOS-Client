@@ -8,13 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "ChildProfileBirthdayCell.h"
-#import "ChildProfileIconCell.h"
-
-@interface ChildProfileManageViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, ChildProfileBirthdayCellDelegate, ChildProfileIconCellDelegate>
-@property (weak, nonatomic) IBOutlet UITableView *profileTable;
+#import "ChildProfileIconAndNameCell.h"
+#import "ChildCreatePopupViewController.h"
+#import "ChildIconCollectionViewController.h"
+#import "ChildProfileGenderCell.h"
+                         
+@interface ChildProfileManageViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, ChildProfileBirthdayCellDelegate, ChildProfileIconAndNameCellDelegate, ChildCreatePopupViewControllerDelegate, ChildIconCollectionViewControllerDelegate, ChildProfileGenderCellDelegate>
+@property (weak, nonatomic) IBOutlet UITableView *profileTable;                                                                                              
 @property (weak, nonatomic) IBOutlet UIButton *openChildAddButton;
 
 - (void)openDatePickerView:(NSString *)childObjectId;
-- (void)saveChildProperty:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;
+//- (void)saveChildProperty:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;
 
 @end

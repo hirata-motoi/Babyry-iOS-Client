@@ -12,6 +12,7 @@
 #import "DateUtils.h"
 #import "TutorialAttributes.h"
 #import "ImageCache.h"
+#import "ChildProperties.h"
 
 @implementation Tutorial
 
@@ -173,6 +174,18 @@
     TutorialStage *currentStage = [Tutorial currentStage];
     [currentStage MR_deleteEntity];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+}
+
++ (BOOL)existsTutorialChild
+{
+    NSString *babyryId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    for (NSMutableDictionary *childProperty in childProperties) {
+        if ([childProperty[@"objectId"] isEqualToString:babyryId]) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 @end

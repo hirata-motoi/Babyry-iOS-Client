@@ -7,9 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "GenderSegmentControl.h"
+
+@protocol ChildProfileGenderCellDelegate <NSObject>
+
+- (void)switchGender:(id)sender;
+
+@end
 
 @interface ChildProfileGenderCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *itemNameLabel;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
+@property (nonatomic, assign)id<ChildProfileGenderCellDelegate>delegate;
+@property GenderSegmentControl *segmentControl;
+
+- (void)setupSegmentControl:(NSMutableDictionary *)params;
 
 @end

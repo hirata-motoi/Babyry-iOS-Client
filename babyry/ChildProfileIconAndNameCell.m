@@ -1,15 +1,16 @@
 //
-//  ChildProfileIconCell.m
+//  ChildProfileIconAndNameCell.m
 //  babyry
 //
 //  Created by hirata.motoi on 2015/01/10.
 //  Copyright (c) 2015年 jp.co.meaning. All rights reserved.
 //
 
-#import "ChildProfileIconCell.h"
-
-@implementation ChildProfileIconCell
-
+#import "ChildProfileIconAndNameCell.h"
+#import "ChildPropertyUtils.h"
+                         
+@implementation ChildProfileIconAndNameCell
+                                
 - (void)awakeFromNib {
     // Initialization code
     
@@ -40,7 +41,7 @@
     _childNameEditField.hidden = NO;
     _saveButton.hidden = NO;
     [_childNameEditField becomeFirstResponder];
-    [_delegate showOverlay];
+//    [_delegate showOverlay];
 }
 
 - (void)closeEditField
@@ -56,7 +57,7 @@
     _childNameLabel.text = _childNameEditField.text;
     NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
     params[@"name"] =_childNameEditField.text;
-    [_delegate saveChildProperty:_childObjectId withParams:params];
+    [[[ChildPropertyUtils alloc]init] saveChildProperty:_childObjectId withParams:params];
     
     [self closeEditField];
 }
@@ -71,6 +72,10 @@
 - (void)openIconEdit
 {
     [_delegate showIconEditActionSheet:_childObjectId];
+}
+
+- (IBAction)removeChild:(id)sender {
+    [_delegate removeChild:_childObjectId];
 }
 
 

@@ -34,7 +34,7 @@ static ChildSwitchControlView* sharedObject = nil;
     self = [super init];
     if (self) {
         //Initialization
-        self.autoresizesSubviews = NO;
+            self.autoresizesSubviews = NO;
         [self setupChildSwitchViews];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetChildSwitchControlView) name:@"childPropertiesChanged" object:nil];
     }

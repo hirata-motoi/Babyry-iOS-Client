@@ -185,17 +185,6 @@ static NSString * const reuseIdentifier = @"Cell";
     bestShotList = [ImageCache getListOfMultiUploadCache:cacheDir];
 }
 
-- (void)sendPushNotification
-{
-    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
-    transitionInfoDic[@"event"] = @"childIconChanged";
-    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
-    options[@"data"] = [[NSMutableDictionary alloc]
-                        initWithObjects:@[transitionInfoDic, [NSNumber numberWithInt:1], @""]
-                        forKeys:@[@"transitionInfo", @"content-available", @"sound"]];
-    [PushNotification sendInBackground:@"childIconChanged" withOptions:options];
-}
-
 - (void)openModalView:(NSIndexPath *)indexPath
 {
     NSString *fileName = bestShotList[indexPath.row];
@@ -302,8 +291,7 @@ static NSString * const reuseIdentifier = @"Cell";
 - (void)submit
 {
     NSData *imageData = [ImageCache getCache:bestShotList[displayedIndexPath.row] dir:cacheDir];
-    [ChildIconManager updateChildIcon:imageData withChildObjectId:_childObjectId];
-    [self sendPushNotification];
+    [_delegate submit:imageData withChildObjectId:_childObjectId];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

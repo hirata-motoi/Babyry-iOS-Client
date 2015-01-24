@@ -260,7 +260,7 @@
     }
     
     
-    if (indexPath.section == 0 && indexPath.row == 1) {
+    if (indexPath.section == 1 && indexPath.row == 0) {
         _partSwitchCell = cell;
     } else if (indexPath.section == 1 && indexPath.row == 0) {
         _addChildCell = cell;

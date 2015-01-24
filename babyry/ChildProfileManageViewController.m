@@ -9,7 +9,7 @@
 #import "ChildProfileManageViewController.h"
 #import "ChildProperties.h"
 #import "ChildSwitchView.h"
-#import "ChildProfileIconCell.h"
+#import "ChildProfileIconAndNameCell.h"
 #import "ChildProfileGenderCell.h"
 #import "ChildProfileBirthdayCell.h"
 #import "Config.h"
@@ -22,6 +22,12 @@
 #import "ColorUtils.h"
 #import "Navigation.h"
 #import "AlbumTableViewController.h"
+#import "ChildPropertyUtils.h"
+#import "ChildCreatePopupViewController.h"
+#import "UIViewController+MJPopupViewController.h"
+#import "ChildIconCollectionViewController.h"
+#import "ChildIconManager.h"
+#import "PushNotification.h"
 
 @interface ChildProfileManageViewController ()
 
@@ -33,8 +39,11 @@
     DatePickerView *datePickerView;
     BOOL observing;
     NSString *targetChild;
-    ChildProfileIconCell *targetCell;
-}
+    NSString *removeTargetChild;
+    ChildProfileIconAndNameCell *targetCell;
+    ChildPropertyUtils *childPropertyUtils;
+    MBProgressHUD *hud;
+}                   
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -48,9 +57,16 @@
     
     [Navigation setTitle:self.navigationItem withTitle:@"こども設定" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
     
-    [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileIconCell" bundle:nil] forCellReuseIdentifier:@"IconCell"];
+    [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileIconAndNameCell" bundle:nil] forCellReuseIdentifier:@"IconCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileGenderCell" bundle:nil] forCellReuseIdentifier:@"GenderCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileBirthdayCell" bundle:nil] forCellReuseIdentifier:@"BirthdayCell"];
+    
+    UITapGestureRecognizer *closeEditingTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeEditing)];
+    closeEditingTapGesture.numberOfTapsRequired = 1;
+    [self.view addGestureRecognizer:closeEditingTapGesture];
+    
+    childPropertyUtils = [[ChildPropertyUtils alloc]init];
+    childPropertyUtils.delegate = self;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadChildProfile) name:@"childPropertiesChanged" object:nil];
 }
@@ -80,6 +96,347 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (NSString *)cellType:(NSIndexPath *)indexPath
+{
+    int r = indexPath.row % 3;
+    return (r == 0) ? @"IconAndName" :
+           (r == 1) ? @"Gender"      :
+           (r == 2) ? @"Birthday"    : nil;
+}
+
+- (void)switchGender:(id)sender
+{
+    GenderSegmentControl *segment = (GenderSegmentControl *)sender;
+    NSString *childObjectId = segment.childObjectId;
+    switch (segment.selectedSegmentIndex) {
+        case 0: {
+            // 性別を女に設定
+            NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"female", @"sex", nil];
+            [childPropertyUtils saveChildProperty:childObjectId withParams:params];
+            break;
+        }
+        case 1: {
+            // 性別を男に設定
+            NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"male", @"sex", nil];
+            [childPropertyUtils saveChildProperty:childObjectId withParams:params];
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+- (void)openDatePickerView:(NSString *)childObjectId
+{
+    [self closeEditing];
+    
+    if (datePickerView) {
+        return;
+    }
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:childObjectId];
+  
+    datePickerView = [DatePickerView view];
+    datePickerView.delegate = self;
+    datePickerView.childObjectId = childObjectId;
+    if (childProperty[@"birthday"]) {
+        datePickerView.datepicker.date = childProperty[@"birthday"];
+    }
+    datePickerView.childNameLabel.text = childProperty[@"name"];
+   
+    CGRect rect = datePickerView.frame;
+    rect.origin.y = self.view.frame.size.height;
+    datePickerView.frame = rect;
+    
+    [self.view addSubview:datePickerView];
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:UIViewAnimationOptionTransitionNone
+                     animations:^{
+                         CGRect rect = datePickerView.frame;
+                         rect.origin.y = self.view.frame.size.height - rect.size.height;
+                         datePickerView.frame = rect;
+                     }
+                     completion:nil];
+//    [self showOverlay];
+}
+
+- (void)saveBirthday:(NSString *)childObjectId
+{
+    if (! datePickerView) {
+        return;
+    }
+    
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
+    params[@"birthday"] = [DateUtils setSystemTimezoneAndZero:datePickerView.datepicker.date];
+    [childPropertyUtils saveChildProperty:childObjectId withParams:params];
+    [self setupChildProperties];
+    [_profileTable reloadData];
+    
+    [UIView animateWithDuration:0.2f
+                          delay:0.0f
+                        options:UIViewAnimationOptionTransitionNone
+                     animations:^{
+                         CGRect rect = datePickerView.frame;
+                         rect.origin.y = self.view.frame.size.height;
+                         datePickerView.frame = rect;
+                     }
+                     completion:^(BOOL finished) {
+                         [datePickerView removeFromSuperview];
+                         datePickerView = nil;
+                     }];
+}
+
+- (void)setupChildProperties
+{
+    if (childProperties) {
+        [childProperties removeAllObjects];
+        childProperties = nil;
+    }
+    childProperties = [ChildProperties getChildProperties];
+}
+
+- (void)showOverlay
+{
+    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    UIView *overlay = [[UIView alloc]initWithFrame:screenRect];
+    
+    UITapGestureRecognizer *overlayTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeEditing)];
+    overlayTapGesture.numberOfTapsRequired = 1;
+    [overlay addGestureRecognizer:overlayTapGesture];
+    
+    [self.view addSubview:overlay];
+}
+
+- (void)closeEditing
+{
+    NSArray *cells = [_profileTable visibleCells];
+    for (UITableViewCell *cell in cells) {
+        if ([cell isKindOfClass:[ChildProfileIconAndNameCell class]]) {
+            ChildProfileIconAndNameCell *c = (ChildProfileIconAndNameCell *)cell;
+            [c closeEditField];                               
+        }
+    }
+    if (datePickerView) {
+        [UIView animateWithDuration:0.2f
+                              delay:0.0f
+                            options:UIViewAnimationOptionTransitionNone
+                         animations:^{
+                             CGRect rect = datePickerView.frame;
+                             rect.origin.y = self.view.frame.size.height;
+                             datePickerView.frame = rect;
+                         }
+                         completion:^(BOOL finished) {
+                             [datePickerView removeFromSuperview];
+                             datePickerView = nil;
+                         }];
+    }
+}
+
+- (void)keyboardWillShow:(NSNotification*)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    
+    CGRect keyboardFrameEnd = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    float screenHeight = screenBounds.size.height;
+    
+    // 対象のcellを探す
+    for (UITableViewCell *c in [_profileTable visibleCells]) {
+        if ([c isKindOfClass:[ChildProfileIconAndNameCell class]]) {
+            ChildProfileIconAndNameCell *cell = (ChildProfileIconAndNameCell *)c;
+            if ([cell.childObjectId isEqualToString:targetChild]) {
+                targetCell = cell;
+                break;
+            }
+        }
+    }
+    if (!targetCell) {
+        return;
+    }
+    CGPoint offset = _profileTable.contentOffset;
+    if((targetCell.frame.origin.y + targetCell.frame.size.height - offset.y) > (screenHeight - keyboardFrameEnd.size.height - 20)){
+        // テキストフィールドがキーボードで隠れるようなら
+        // 選択中のテキストフィールドの直ぐ下にキーボードの上端が付くように、スクロールビューの位置を上げる
+        [UIView animateWithDuration:0.3
+                         animations:^{
+                             CGFloat diff = targetCell.frame.origin.y + targetCell.frame.size.height - offset.y - (screenHeight - keyboardFrameEnd.size.height - 20);
+                             CGRect tableRect = _profileTable.frame;
+                             _profileTable.frame = CGRectMake(0, tableRect.origin.y - diff, _profileTable.frame.size.width,_profileTable.frame.size.height);
+                         }];
+    }
+}
+
+- (void)keybaordWillHide:(NSNotification*)notification
+{
+    // viewのy座標を元に戻してキーボードをしまう
+    [UIView animateWithDuration:0.2
+                     animations:^{_profileTable.frame = CGRectMake(0, 0, _profileTable.frame.size.width, _profileTable.frame.size.height);
+                     }];
+    targetCell = nil;
+    return;
+}
+
+- (void)setTargetChild:(NSString *)childObjectId
+{
+    targetChild = childObjectId;
+}
+
+- (void)openIconEdit:(NSString *)childObjectId
+{
+    ChildIconCollectionViewController *childIconCollectionViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildIconCollectionViewController"];
+    childIconCollectionViewController.childObjectId = childObjectId;
+    childIconCollectionViewController.delegate = self;
+    UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:childIconCollectionViewController];
+    [self.navigationController presentViewController:navController animated:YES completion:nil];
+    
+}
+
+- (void)showIconEditActionSheet:(NSString *)childObjectId
+{
+    [self presentViewController:[childPropertyUtils iconEditActionSheet:childObjectId] animated:YES completion:nil];
+}
+
+- (void)openAlbumPicker:(NSString *)childObjectId
+{
+    AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
+    albumTableViewController.childObjectId = childObjectId;
+   
+    NSDateComponents *comps = [DateUtils dateCompsFromDate:[NSDate date]];
+    albumTableViewController.date = [NSString stringWithFormat:@"%04ld%02ld%02ld", comps.year, comps.month, comps.day];
+    
+    albumTableViewController.uploadType = @"icon";
+    [self.navigationController pushViewController:albumTableViewController animated:YES];
+}
+
+- (void)reloadChildProfile
+{
+    [childProperties removeAllObjects];
+    childProperties = nil;
+    childProperties = [ChildProperties getChildProperties];
+    [_profileTable reloadData];
+}
+
+- (void)resetFields
+{
+    [self setupChildProperties];
+    [_profileTable reloadData];
+}
+
+#pragma mark - Add Child
+- (IBAction)openChildAdd:(id)sender {
+    ChildCreatePopupViewController *childCreatePopupViewController = [[ChildCreatePopupViewController alloc]initWithNibName:@"ChildCreatePopupViewController" bundle:nil];
+    childCreatePopupViewController.delegate = self;
+    [self presentPopupViewController:childCreatePopupViewController animationType:MJPopupViewAnimationFade];
+}
+
+#pragma mark - Delegate for ChildCreatePopupViewController
+- (void)hidePopup
+{
+    [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
+}
+
+- (id)getParentViewController
+{
+    return self;
+}
+
+
+#pragma mark - Remove Child
+
+- (void)removeChild:(NSString *)childObjectId
+{
+    if (childProperties.count == 1) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"こどもが0人になります"
+                                                        message:@"こどもは最低一人は登録しておく必要があります。"
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:@"OK", nil
+                              ];
+        [alert show];
+        return;
+    }
+    
+    removeTargetChild = childObjectId;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"削除しますか？"
+                                                    message:@"一度削除したこどものデータは復旧できません。削除を実行しますか？"
+                                                   delegate:self
+                                          cancelButtonTitle:@"戻る"
+                                          otherButtonTitles:@"削除", nil
+                          ];
+    [alert show];
+}
+
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    switch (buttonIndex) {
+        case 0:
+        {
+            removeTargetChild = nil;
+        }
+            break;
+        case 1:
+        {
+            childProperties = [ChildProperties getChildProperties];
+            hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            hud.labelText = @"削除中";
+            PFQuery *childQuery = [PFQuery queryWithClassName:@"Child"];
+            [childQuery whereKey:@"objectId" equalTo:removeTargetChild];
+            [childQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if (error) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in find child in alertView %@", error]];
+                    return;
+                }
+                
+                if (objects.count < 1) {
+                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Child not found in alertView"]];
+                    return;
+                }
+
+                PFObject *object = objects[0];
+                [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (error) {
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in child delete in alertView %@", error]];
+                        return;
+                    }
+                    
+                    if (succeeded) {
+                        [ChildProperties deleteByObjectId:removeTargetChild];
+                        [hud hide:YES];
+                        removeTargetChild = nil;
+                        [self reloadChildProfile];
+                        
+                        // 念のため裏でsync
+                        [ChildProperties asyncChildProperties];
+                        
+                        NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                        [[NSNotificationCenter defaultCenter] postNotification:n];
+                    }
+                }];
+            }];
+        }
+            break;
+    }
+}
+
+#pragma mark - Delegate for ChildIconCollectionViewController
+- (void)submit:(NSData *)imageData withChildObjectId:(NSString *)childObjectId
+{
+    [ChildIconManager updateChildIcon:imageData withChildObjectId:childObjectId];
+    [self sendPushNotification];
+}
+
+- (void)sendPushNotification
+{
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    transitionInfoDic[@"event"] = @"childIconChanged";
+    NSMutableDictionary *options = [[NSMutableDictionary alloc]init];
+    options[@"data"] = [[NSMutableDictionary alloc]
+                        initWithObjects:@[transitionInfoDic, [NSNumber numberWithInt:1], @""]
+                        forKeys:@[@"transitionInfo", @"content-available", @"sound"]];
+    [PushNotification sendInBackground:@"childIconChanged" withOptions:options];
+}
+
+#pragma mark - TableView Delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // テーブルに表示するデータ件数を返す;
@@ -92,7 +449,7 @@
     NSString *cellType = [self cellType:indexPath];
     
     if ([cellType isEqualToString:@"IconAndName"]) {
-        ChildProfileIconCell *cell = [tableView dequeueReusableCellWithIdentifier:@"IconCell" forIndexPath:indexPath];
+        ChildProfileIconAndNameCell *cell = [tableView dequeueReusableCellWithIdentifier:@"IconCell" forIndexPath:indexPath];
         cell.delegate = self;
         ChildSwitchView *iconView = [ChildSwitchView view];
         [iconView setParams:childProperties[childIndex][@"objectId"] forKey:@"childObjectId"];
@@ -115,6 +472,7 @@
         return cell;
     } else if ([cellType isEqualToString:@"Gender"]) {
         ChildProfileGenderCell *cell = [tableView dequeueReusableCellWithIdentifier:@"GenderCell" forIndexPath:indexPath];
+        cell.delegate = self;
        
         NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
         NSString *sex = childProperties[childIndex][@"sex"];
@@ -122,18 +480,8 @@
             params[@"gender"] = sex;
         }
         params[@"childObjectId"] = childProperties[childIndex][@"objectId"];
-       
-        GenderSegmentControl *segmentControl = [[GenderSegmentControl alloc]initWithParams:params];
-        
-        [segmentControl addTarget:self action:@selector(switchGender:) forControlEvents:UIControlEventValueChanged];
-        CGRect rect =  segmentControl.frame;
-        rect.origin.x = self.view.frame.size.width - rect.size.width - 20;
-        rect.origin.y = (cell.frame.size.height - rect.size.height ) / 2;
-        segmentControl.frame = rect;
-        segmentControl.tintColor = [ColorUtils getGlobalMenuPartSwitchColor];
-
-        [cell.contentView addSubview:segmentControl];
-        
+        [cell setupSegmentControl:params];
+      
         return cell;
     } else if ([cellType isEqualToString:@"Birthday"]) {
         ChildProfileBirthdayCell *cell = [tableView dequeueReusableCellWithIdentifier:@"BirthdayCell" forIndexPath:indexPath];
@@ -195,310 +543,5 @@
     return sectionView;
 }
 
-- (NSString *)cellType:(NSIndexPath *)indexPath
-{
-    int r = indexPath.row % 3;
-    return (r == 0) ? @"IconAndName" :
-           (r == 1) ? @"Gender"      :
-           (r == 2) ? @"Birthday"    : nil;
-}
-
-- (void)switchGender:(id)sender
-{
-    GenderSegmentControl *segment = (GenderSegmentControl *)sender;
-    NSString *childObjectId = segment.childObjectId;
-    switch (segment.selectedSegmentIndex) {
-        case 0: {
-            // 性別を女に設定
-            NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"female", @"sex", nil];
-            [self saveChildProperty:childObjectId withParams:params];
-            break;
-        }
-        case 1: {
-            // 性別を男に設定
-            NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:@"male", @"sex", nil];
-            [self saveChildProperty:childObjectId withParams:params];
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-- (void)saveChildProperty:(NSString *)childObjectId withParams:(NSMutableDictionary *)params
-{
-    // リセット用に保持
-    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:childObjectId];
-    // coredataに保存
-    [ChildProperties updateChildPropertyWithObjectId:childObjectId withParams:params];
-    // parseを更新
-    PFQuery *query = [PFQuery queryWithClassName:@"Child"];
-    [query whereKey:@"objectId" equalTo:childObjectId];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (error) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to get Child for saveChildProperty childObjectId:%@ error:%@", childObjectId, error]];
-            // TODO coredataを戻す
-            [self resetChildProperty:(NSMutableDictionary *)childProperty withParams:(NSMutableDictionary *)params];
-            [self showAlert];
-            return;
-        }
-        if (objects.count < 1) {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Child NOT FOUND for saveChildProperty childObjectId:%@ error:%@", childObjectId, error]];
-            [self resetChildProperty:(NSMutableDictionary *)childProperty withParams:(NSMutableDictionary *)params];
-            [self showAlert];
-            return;
-        }
-
-        PFObject *child = objects[0];
-        for (NSString *key in [params allKeys]) {
-            child[key] = params[key];
-        }
-        [child saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (error) {
-                [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Failed to save Child childObjectId:%@ error:%@", childObjectId, error]];
-                [self resetChildProperty:(NSMutableDictionary *)childProperty withParams:(NSMutableDictionary *)params];
-                [self showAlert];
-                return;
-            }
-        }];
-    }];
-}
-
-- (void)resetChildProperty:(NSMutableDictionary *)childProperty withParams:(NSMutableDictionary *)params
-{
-    NSMutableDictionary *resetParams = [[NSMutableDictionary alloc]init];
-    for (NSString *key in params.allKeys) {
-        resetParams[key] = childProperty[key];
-    }
-    [ChildProperties updateChildPropertyWithObjectId:childProperty[@"objectId"] withParams:resetParams];
-  
-    [self setupChildProperties];
-    [_profileTable reloadData];
-}
-
-- (void)showAlert
-{
-    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"ネットワークエラー"
-                                                   message:@"ネットワークエラーが発生しました"
-                                                  delegate:self
-                                         cancelButtonTitle:@""
-                                         otherButtonTitles:@"OK", nil];
-    [alert show];
-}
-
-- (void)openDatePickerView:(NSString *)childObjectId
-{
-    if (datePickerView) {
-        return;
-    }
-    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:childObjectId];
-  
-    datePickerView = [DatePickerView view];
-    datePickerView.delegate = self;
-    datePickerView.childObjectId = childObjectId;
-    if (childProperty[@"birthday"]) {
-        datePickerView.datepicker.date = childProperty[@"birthday"];
-    }
-    datePickerView.childNameLabel.text = childProperty[@"name"];
-   
-    CGRect rect = datePickerView.frame;
-    rect.origin.y = self.view.frame.size.height;
-    datePickerView.frame = rect;
-    
-    [self.view addSubview:datePickerView];
-    [UIView animateWithDuration:0.2f
-                          delay:0.0f
-                        options:UIViewAnimationOptionTransitionNone
-                     animations:^{
-                         CGRect rect = datePickerView.frame;
-                         rect.origin.y = self.view.frame.size.height - rect.size.height;
-                         datePickerView.frame = rect;
-                     }
-                     completion:nil];
-    [self showOverlay];
-}
-
-- (void)saveBirthday:(NSString *)childObjectId
-{
-    if (! datePickerView) {
-        return;
-    }
-    
-    NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
-    params[@"birthday"] = [DateUtils setSystemTimezoneAndZero:datePickerView.datepicker.date];
-    [self saveChildProperty:childObjectId withParams:params];
-    [self setupChildProperties];
-    [_profileTable reloadData];
-    
-    [UIView animateWithDuration:0.2f
-                          delay:0.0f
-                        options:UIViewAnimationOptionTransitionNone
-                     animations:^{
-                         CGRect rect = datePickerView.frame;
-                         rect.origin.y = self.view.frame.size.height;
-                         datePickerView.frame = rect;
-                     }
-                     completion:^(BOOL finished) {
-                         [datePickerView removeFromSuperview];
-                         datePickerView = nil;
-                     }];
-}
-
-- (void)setupChildProperties
-{
-    if (childProperties) {
-        [childProperties removeAllObjects];
-        childProperties = nil;
-    }
-    childProperties = [ChildProperties getChildProperties];
-}
-
-- (void)showOverlay
-{
-    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
-    UIView *overlay = [[UIView alloc]initWithFrame:screenRect];
-    
-    UITapGestureRecognizer *overlayTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeEditing:)];
-    overlayTapGesture.numberOfTapsRequired = 1;
-    [overlay addGestureRecognizer:overlayTapGesture];
-    
-    [self.view addSubview:overlay];
-}
-
-- (void)closeEditing:(id)sender
-{
-    NSArray *cells = [_profileTable visibleCells];
-    for (UITableViewCell *cell in cells) {
-        if ([cell isKindOfClass:[ChildProfileIconCell class]]) {
-            ChildProfileIconCell *c = (ChildProfileIconCell *)cell;
-            [c closeEditField];
-        }
-    }
-    if (datePickerView) {
-        [UIView animateWithDuration:0.2f
-                              delay:0.0f
-                            options:UIViewAnimationOptionTransitionNone
-                         animations:^{
-                             CGRect rect = datePickerView.frame;
-                             rect.origin.y = self.view.frame.size.height;
-                             datePickerView.frame = rect;
-                         }
-                         completion:^(BOOL finished) {
-                             [datePickerView removeFromSuperview];
-                             datePickerView = nil;
-                         }];
-    }
-    UIView *overlay = [sender view];
-    [overlay removeFromSuperview];
-}
-
-- (void)keyboardWillShow:(NSNotification*)notification
-{
-    NSDictionary *userInfo = notification.userInfo;
-    
-    CGRect keyboardFrameEnd = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect screenBounds = [[UIScreen mainScreen] bounds];
-    float screenHeight = screenBounds.size.height;
-    
-    // 対象のcellを探す
-    for (UITableViewCell *c in [_profileTable visibleCells]) {
-        if ([c isKindOfClass:[ChildProfileIconCell class]]) {
-            ChildProfileIconCell *cell = (ChildProfileIconCell *)c;
-            if ([cell.childObjectId isEqualToString:targetChild]) {
-                targetCell = cell;
-                break;
-            }
-        }
-    }
-    if (!targetCell) {
-        return;
-    }
-    CGPoint offset = _profileTable.contentOffset;
-    if((targetCell.frame.origin.y + targetCell.frame.size.height - offset.y) > (screenHeight - keyboardFrameEnd.size.height - 20)){
-        // テキストフィールドがキーボードで隠れるようなら
-        // 選択中のテキストフィールドの直ぐ下にキーボードの上端が付くように、スクロールビューの位置を上げる
-        [UIView animateWithDuration:0.3
-                         animations:^{
-                             CGFloat diff = targetCell.frame.origin.y + targetCell.frame.size.height - offset.y - (screenHeight - keyboardFrameEnd.size.height - 20);
-                             CGRect tableRect = _profileTable.frame;
-                             _profileTable.frame = CGRectMake(0, tableRect.origin.y - diff, _profileTable.frame.size.width,_profileTable.frame.size.height);
-                         }];
-    }
-}
-
-- (void)keybaordWillHide:(NSNotification*)notification
-{
-    // viewのy座標を元に戻してキーボードをしまう
-    [UIView animateWithDuration:0.2
-                     animations:^{_profileTable.frame = CGRectMake(0, 0, _profileTable.frame.size.width, _profileTable.frame.size.height);
-                     }];
-    targetCell = nil;
-    return;
-}
-
-- (void)setTargetChild:(NSString *)childObjectId
-{
-    targetChild = childObjectId;
-}
-
-- (void)openIconEdit:(NSString *)childObjectId
-{
-    ChildIconCollectionViewController *childIconCollectionViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildIconCollectionViewController"];
-    childIconCollectionViewController.childObjectId = childObjectId;
-    UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:childIconCollectionViewController];
-    [self.navigationController presentViewController:navController animated:YES completion:nil];
-    
-}
-
-- (void)showIconEditActionSheet:(NSString *)childObjectId
-{
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    
-    [alertController addAction:[UIAlertAction actionWithTitle:@"ベストショットから選択" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [self openIconEdit:childObjectId];
-    }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"アルバムから選択" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [self openAlbumPicker:childObjectId];
-    }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"キャンセル" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-    }]];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (IBAction)openChildAdd:(id)sender {
-    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    [self.navigationController pushViewController:icnvc animated:YES];
-}
-
-- (void)openAlbumPicker:(NSString *)childObjectId
-{
-    AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
-    albumTableViewController.childObjectId = childObjectId;
-   
-    NSDateComponents *comps = [DateUtils dateCompsFromDate:[NSDate date]];
-    albumTableViewController.date = [NSString stringWithFormat:@"%04ld%02ld%02ld", comps.year, comps.month, comps.day];
-    
-    albumTableViewController.uploadType = @"icon";
-    [self.navigationController pushViewController:albumTableViewController animated:YES];
-}
-
-- (void)reloadChildProfile
-{
-    [childProperties removeAllObjects];
-    childProperties = nil;
-    childProperties = [ChildProperties getChildProperties];
-    [_profileTable reloadData];
-}
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

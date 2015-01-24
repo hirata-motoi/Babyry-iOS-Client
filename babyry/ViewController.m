@@ -46,6 +46,8 @@
 #import "AnnounceBoardView.h"
 #import "ChildSwitchControlView.h"
 #import "ChildIconManager.h"
+#import "UIViewController+MJPopupViewController.h"
+#import "ChildCreatePopupViewController.h"
 
 @interface ViewController ()
 
@@ -789,16 +791,28 @@
 
 - (void)syncChildIcons
 {
-    NSLog(@"ViewController syncChildIcons");
     [ChildProperties asyncChildPropertiesWithBlock:^(NSMutableArray *beforeSyncChildProperties) {
         [ChildIconManager syncChildIconsInBackground];
     }];
 }
 
+#pragma mark - Child Create
 - (void)openAddChild
 {
-    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    [self.navigationController pushViewController:icnvc animated:YES];
+    ChildCreatePopupViewController *childCreatePopupViewController = [[ChildCreatePopupViewController alloc]initWithNibName:@"ChildCreatePopupViewController" bundle:nil];
+    childCreatePopupViewController.delegate = self;
+    
+    [self presentPopupViewController:childCreatePopupViewController animationType:MJPopupViewAnimationFade];
+}
+
+- (void)hidePopup
+{
+    [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
+}
+
+- (id)getParentViewController
+{
+    return self;
 }
 
 @end

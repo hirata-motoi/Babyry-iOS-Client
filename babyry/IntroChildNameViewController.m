@@ -212,7 +212,6 @@
             [self resetBirthday];
             [self resetSex];
             
-            // _pageViewControllerを再読み込み
             NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
             
