@@ -152,32 +152,19 @@
 		
 		// 各クラスに通知用
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        completionHandler(UIBackgroundFetchResultNewData);
     }
-
-// バックグラウンドで任意の通信処理が出来ない仕様なので一旦ペンディング
-// NSURLSessionを利用すれば出来る。HTTPのみ通信可能で、APIを用意しておけば良い。が、面倒。
-//	if (application.applicationState == UIApplicationStateBackground) {
-//		// backgourndでpushを受け取った時に発動、裏で画像データを読む
-//
-//		NSLog(@"%@", userInfo);
-//		
-//		ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
-//		[imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"][@"date"] childObjectId:userInfo[@"transitionInfo"][@"childObjectId"]];
-//
-//        completionHandler(UIBackgroundFetchResultNewData);
-//
-//    }
 
 	if (application.applicationState == UIApplicationStateBackground) {
 		// backgourndでpushを受け取った時に発動、裏で画像データを読む
 
         if (userInfo[@"transitionInfo"][@"imageIds"]) {
+            // 多重でpushがくるのでインスタンス化
             ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+            [imageDownloadInBackground.completionHandlerArray addObject:completionHandler];
             [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"]];
         }
-
-        completionHandler(UIBackgroundFetchResultNewData);
-
     }
 	
 	if (application.applicationState == UIApplicationStateActive) {
@@ -222,8 +209,9 @@
 		
 		// 各クラスに通知用
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        completionHandler(UIBackgroundFetchResultNewData);
     }
-    completionHandler(UIBackgroundFetchResultNewData);
 }
 
 - (void) application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler

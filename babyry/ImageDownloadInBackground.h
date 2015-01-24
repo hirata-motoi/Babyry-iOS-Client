@@ -8,7 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (^CompletionHandlerType)();
+
 @interface ImageDownloadInBackground : NSObject <NSURLSessionDownloadDelegate>
+
+@property NSMutableArray *completionHandlerArray;
 
 - (void) downloadByPushInBackground:(NSDictionary *)userInfo;
 

@@ -15,6 +15,17 @@
 #import "Config.h"
 
 @implementation ImageDownloadInBackground
+{
+    int taskQueueCount;
+}
+
+- (id) init {
+	self = [super init];
+	if (self != nil) {
+        _completionHandlerArray = [[NSMutableArray alloc] init];
+	}
+	return self;
+}
 
 - (void) downloadByPushInBackground:(NSDictionary *)transitionInfo
 {
@@ -48,6 +59,7 @@
         [task resume];
         i++;
     }
+    taskQueueCount = preSignedURLs.count;
 }
 
 - (void) URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
@@ -69,6 +81,25 @@
     } else {
         // bestshotに追加
         [ImageCache setCache:params[1] image:thumbData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", params[0]]];
+    }
+    
+    taskQueueCount--;
+    if (taskQueueCount == 0) {
+        CompletionHandlerType handler = _completionHandlerArray[0];
+        handler(UIBackgroundFetchResultNewData);
+        [_completionHandlerArray removeAllObjects];
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+{
+    if (error) {
+        taskQueueCount--;
+        if (taskQueueCount == 0) {
+            CompletionHandlerType handler = _completionHandlerArray[0];
+            handler(UIBackgroundFetchResultNewData);
+            [_completionHandlerArray removeAllObjects];
+        }
     }
 }
 
