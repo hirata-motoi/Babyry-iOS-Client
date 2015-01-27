@@ -199,6 +199,8 @@
                     if (notificationHistoryArray.count > 0 && notificationHistoryArray[indexPath.row]) {
                         PFObject *histObject = notificationHistoryArray[indexPath.row];
                         cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
+                        cell.textLabel.numberOfLines = 2;
+                        cell.textLabel.adjustsFontSizeToFitWidth = YES;
                         if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
                             cell.imageView.image = [UIImage imageNamed:@"IconMenuUploaded"];
                         } else if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
