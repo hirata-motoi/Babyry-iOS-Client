@@ -717,6 +717,7 @@
         [self addChildImagesFirstWithStartDateComps:startDateComps withEndDateComps:twoMonthAndOneDayAgo];
         dispatch_async(dispatch_get_main_queue(), ^{
             [_pageContentCollectionView reloadData];
+            [self initializeClosedCellCountBySection];
     });
 });
 }
