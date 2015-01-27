@@ -94,6 +94,13 @@ NSString *const className = @"NotificationHistory";
     }
     if (childObjectId != nil) {
         [query whereKey:@"child" equalTo:childObjectId];
+    } else {
+        NSMutableArray *childProperties = [ChildProperties getChildProperties];
+        NSMutableArray *childObjectIds = [[NSMutableArray alloc] init];
+        for (NSDictionary *childProperty in childProperties) {
+            [childObjectIds addObject:childProperty[@"objectId"]];
+        }
+        [query whereKey:@"child" containedIn:childObjectIds];
     }
     query.limit = limit;
     if (type != nil) {
