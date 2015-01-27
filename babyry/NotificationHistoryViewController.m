@@ -12,6 +12,7 @@
 #import <Parse/Parse.h>
 #import "NotificationHistory.h"
 #import "ImageTrimming.h"
+#import "Config.h"
 
 @interface NotificationHistoryViewController ()
 
@@ -146,7 +147,7 @@
         // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
         // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
         for (PFObject *object in objects) {
-            if ([object[@"type"] isEqualToString:@"imageUploaded"] || [object[@"type"] isEqualToString:@"requestPhoto"] || [object[@"type"] isEqualToString:@"bestShotChanged"] || [object[@"type"] isEqualToString:@"commentPosted"]) {
+            if ([[Config config][@"GlobalNotificationTypes"] containsObject:object[@"type"]]) {
                 [_notificationHistoryArray addObject:object];
             }
         }

@@ -307,7 +307,7 @@
         // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
         // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
         for (PFObject *object in objects) {
-            if ([object[@"type"] isEqualToString:@"imageUploaded"] || [object[@"type"] isEqualToString:@"requestPhoto"] || [object[@"type"] isEqualToString:@"bestShotChanged"] || [object[@"type"] isEqualToString:@"commentPosted"]) {
+            if ([[Config config][@"GlobalNotificationTypes"] containsObject:object[@"type"]]) {
                 badgeNumber++;
             }
         }

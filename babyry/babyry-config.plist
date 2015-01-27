@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>GlobalNotificationTypes</key>
+	<array>
+		<string>commentPosted</string>
+		<string>bestShotChanged</string>
+		<string>requestPhoto</string>
+		<string>imageUploaded</string>
+	</array>
 	<key>CloudCodeURL</key>
 	<string>http://babyry.parseapp.com</string>
 	<key>EmailVerifyMessage</key>

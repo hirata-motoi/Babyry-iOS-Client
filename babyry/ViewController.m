@@ -130,7 +130,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [super viewWillAppear:YES];
     [self setupHeaderView];
 }
 
