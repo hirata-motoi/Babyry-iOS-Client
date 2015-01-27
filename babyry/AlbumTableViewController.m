@@ -165,7 +165,8 @@
         albumPickerViewController.section = _section;
         albumPickerViewController.uploadViewController = _uploadViewController;
     }
-    [self presentViewController:albumPickerViewController animated:YES completion:NULL];
+    UINavigationController *naviController = [[UINavigationController alloc] initWithRootViewController:albumPickerViewController];
+    [self.navigationController presentViewController:naviController animated:YES completion:NULL];
 }
 
 // このアプリの写真への認証状態を取得する

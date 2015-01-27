@@ -33,8 +33,8 @@
 - (void)setDate:(NSString *)dateText
 {
     _dateLabel.text = dateText;
-    _dateLabel.textColor = [UIColor blackColor];
-    _dateLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
+    _dateLabel.textColor = [UIColor whiteColor];
+    _dateLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16];
 }
 
 /*

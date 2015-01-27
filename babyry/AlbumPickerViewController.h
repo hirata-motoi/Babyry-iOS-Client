@@ -14,13 +14,12 @@
 @interface AlbumPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (strong, nonatomic) IBOutlet UICollectionView *albumImageCollectionView;
+@property (strong, nonatomic) IBOutlet UIView *selectedImageBaseView;
 @property (strong, nonatomic) IBOutlet UICollectionView *selectedImageCollectionView;
 
 - (IBAction)sendImageButton:(id)sender;
-- (IBAction)backButton:(id)sender;
 - (void)setChildFirstIconWithImageData:(NSData *)imageData;
 
-@property (strong, nonatomic) IBOutlet UIButton *backLabel;
 @property (strong, nonatomic) IBOutlet UIButton *sendImageLabel;
 @property (strong, nonatomic) IBOutlet UILabel *picNumLabel;
 
