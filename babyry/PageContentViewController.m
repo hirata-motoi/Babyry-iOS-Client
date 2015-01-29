@@ -354,8 +354,6 @@
     // カレンダーラベル付ける
     [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
     
-    //[self setBadgeToCell:cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd];
-    
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
     if (indexPath.section == 0 && indexPath.row == 1) {
         CGRect rect = cell.frame;
@@ -881,16 +879,16 @@
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
-        UIImageView *backgroundGridView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ImageBackgroundGrid"]];
-        backgroundGridView.frame = CGRectMake(0, cell.frame.size.height - backgroundGridView.frame.size.height, cell.frame.size.width, 24);
-        [cell.backgroundView addSubview:backgroundGridView];
-        
-        // コメント数を付ける
-        UIView *commentNumView = [self makeCommentNumLabel:ymd cellFrame:cell.frame];
-        if (commentNumView) {
-            [cell addSubview:commentNumView];
-        }
     }
+    // コメント数を付ける
+    UIImageView *backgroundGridView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ImageBackgroundGrid"]];
+    backgroundGridView.frame = CGRectMake(0, cell.frame.size.height - backgroundGridView.frame.size.height, cell.frame.size.width, 24);
+    [cell.backgroundView addSubview:backgroundGridView];
+    UIView *commentNumView = [self makeCommentNumLabel:ymd cellFrame:cell.frame];
+    if (commentNumView) {
+        [cell addSubview:commentNumView];
+    }
+    
     cell.isChoosed = YES;
 }
 
