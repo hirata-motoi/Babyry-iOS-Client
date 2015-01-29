@@ -205,7 +205,7 @@ static ChildSwitchControlView* sharedObject = nil;
 {
     [self setupChildSwitchViews];
     [self switchToInitialChild];
-[_delegate adjustChildSwitchControlView];
+    [_delegate adjustChildSwitchControlView];
 }
 
 - (void)removeChildSwitchControlView

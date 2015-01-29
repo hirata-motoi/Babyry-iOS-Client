@@ -234,6 +234,10 @@
             [child fetch];
             [ChildProperties syncChildProperties];
             
+            // 追加したこどもを表示させる
+            NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[DateUtils setSystemTimezone:[NSDate date]], @"lastDisplayedAt", nil];
+            [ChildProperties updateChildPropertyWithObjectId:child.objectId withParams:params];
+            
             // アイコンを保存
             if (childInfo[@"imageData"]) {
                 [ChildIconManager updateChildIcon:childInfo[@"imageData"] withChildObjectId:child.objectId];

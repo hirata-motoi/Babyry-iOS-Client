@@ -24,7 +24,7 @@
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2WK-Wi-BCl">
                     <rect key="frame" x="5" y="55" width="45" height="31"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="11"/>
-                    <color key="textColor" red="1" green="0.03614355616" blue="0.018734982840000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <view alpha="0.45000000000000001" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZSs-yx-K67">

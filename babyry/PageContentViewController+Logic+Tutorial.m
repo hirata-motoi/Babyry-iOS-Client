@@ -171,7 +171,9 @@
                                image:[[NSData alloc] initWithData:UIImageJPEGRepresentation([UIImage imageNamed:imageFileName], 1.0f)]
                                  dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", self.pageContentViewController.childObjectId, [date stringValue]]];
             } else {
-                [ImageCache setCache:[date stringValue] image:imageThumbnailData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
+                [ImageCache setCache:[date stringValue]
+                               image:imageThumbnailData
+                                 dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
             }
         }
         i++;
