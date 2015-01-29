@@ -260,6 +260,7 @@
 
 -(void)setImages
 {
+    commentNumForDate = [Comment getAllCommentNum];
     if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUserFinished"]) {
         _hud.hidden = YES;
         return;

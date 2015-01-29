@@ -15,7 +15,6 @@
         <attribute name="createdBy" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="familyId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="iconVersion" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
-        <attribute name="lastCommentLoadedAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="lastDisplayedAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="objectId" optional="YES" attributeType="String" syncable="YES"/>
@@ -60,7 +59,8 @@
     </entity>
     <elements>
         <element name="AppSetting" positionX="-45" positionY="0" width="128" height="105"/>
-        <element name="ChildPropertyEntity" positionX="-9" positionY="90" width="128" height="268"/>
+        <element name="ChildPropertyEntity" positionX="-9" positionY="90" width="128" height="255"/>
+        <element name="CommentNumEntity" positionX="-9" positionY="153" width="128" height="73"/>
         <element name="PartnerInvitedEntity" positionX="-9" positionY="90" width="128" height="73"/>
         <element name="PartnerInviteEntity" positionX="18" positionY="126" width="128" height="73"/>
         <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="133"/>
@@ -68,6 +68,5 @@
         <element name="TutorialAttributes" positionX="-18" positionY="99" width="128" height="75"/>
         <element name="TutorialBestShot" positionX="-9" positionY="171" width="128" height="58"/>
         <element name="TutorialStage" positionX="-18" positionY="90" width="128" height="58"/>
-        <element name="CommentNumEntity" positionX="-9" positionY="153" width="128" height="73"/>
     </elements>
 </model>

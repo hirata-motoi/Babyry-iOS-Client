@@ -31,7 +31,7 @@
     [self showChildImages];
     [self setupImagesCount];
     [self updateChildProperties];
-    [Comment updateCommentNumEntity:self.pageContentViewController.childObjectId];
+    [Comment updateCommentNumEntity];
     [self removeUnnecessaryGMPBadge];
 }
 

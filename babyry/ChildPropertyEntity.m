@@ -25,6 +25,5 @@
 @dynamic oldestChildImageDate;
 @dynamic lastDisplayedAt;
 @dynamic iconVersion;
-@dynamic lastCommentLoadedAt;
 
 @end

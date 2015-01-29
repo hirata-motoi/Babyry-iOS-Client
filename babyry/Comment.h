@@ -11,6 +11,6 @@
 @interface Comment : NSObject
 
 + (NSMutableDictionary *)getAllCommentNum;
-+ (void) updateCommentNumEntity:(NSString *)childObjectId;
++ (void) updateCommentNumEntity;
 
 @end

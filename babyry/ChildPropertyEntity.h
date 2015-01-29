@@ -26,6 +26,5 @@
 @property (nonatomic, retain) NSNumber * oldestChildImageDate;
 @property (nonatomic, retain) NSDate * lastDisplayedAt;
 @property (nonatomic, retain) NSNumber * iconVersion;
-@property (nonatomic, retain) NSDate * lastCommentLoadedAt;
 
 @end

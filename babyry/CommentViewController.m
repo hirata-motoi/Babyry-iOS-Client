@@ -15,6 +15,7 @@
 #import "UIColor+Hex.h"
 #import "Logger.h"
 #import "ChildProperties.h"
+#import "Comment.h"
 
 @interface CommentViewController ()
 
@@ -325,7 +326,6 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
         // Insert To Parse
         PFObject *dailyComment = [PFObject objectWithClassName:[NSString stringWithFormat:@"Comment%ld", (long)[childProperty[@"commentShardIndex"] integerValue]]];
         dailyComment[@"comment"] = _commentTextView.text;
-        // D(文字)つけないとwhere句のfieldに指定出来ないので付ける
         dailyComment[@"date"] = [NSNumber numberWithInteger:[_date integerValue]];
         dailyComment[@"childId"] = _childObjectId;
         dailyComment[@"commentBy"] = [PFUser currentUser][@"userId"];
@@ -343,6 +343,7 @@ static const NSInteger secondsForOneYear = secondsForOneMonth * 12;
                 [_commentArray removeObject:dailyComment];
                 [self reloadData];
             } else {
+                [Comment updateCommentNumEntity];
                 [self createNotificationHistory];
                 [self sendPushNotification:dailyComment];
             }
