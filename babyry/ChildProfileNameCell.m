@@ -20,7 +20,6 @@
     // Configure the view for the selected state
 }
 
-
 - (void)closeEditField
 {
     [_nameField resignFirstResponder];

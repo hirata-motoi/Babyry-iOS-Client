@@ -78,7 +78,7 @@
             navigator_ = navigator;
         }
     } else if ([stage.currentStage isEqualToString:@"addChild"]) {
-        if ([_targetViewController isKindOfClass:[GlobalSettingViewController class]]) {
+        if ([_targetViewController isKindOfClass:[ViewController class]]) {
             TutorialNavigator_AddChild *navigator = [[TutorialNavigator_AddChild alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
@@ -166,7 +166,7 @@
     [[NSNotificationCenter defaultCenter] postNotification:n];
    
     
-    if ([self.targetViewController.navigationController viewControllers]) {
+    if ([self.targetViewController.navigationController viewControllers].count > 1) {
         [self.targetViewController.navigationController popToRootViewControllerAnimated:YES];
     } else {
         [vc viewDidAppear:YES];

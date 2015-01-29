@@ -60,8 +60,19 @@
     [self.view addGestureRecognizer:closeEditingTapGesture];
     
     // サイズ調整
-//    self.view.frame = [[UIScreen mainScreen] applicationFrame];
     self.view.frame = [[UIScreen mainScreen] bounds];
+    
+    // ボタンデザイン
+    _submitButton.layer.cornerRadius  = 6.0f;
+    _submitButton.layer.masksToBounds = YES;
+    _cancelButton.layer.cornerRadius  = 6.0f;
+    _cancelButton.layer.masksToBounds = YES;
+   
+    // こどもが0人の場合はキャンセルボタンを隠す
+    NSMutableArray *childProperties = [ChildProperties getChildProperties];
+    if (childProperties.count < 1) {
+        _cancelButton.hidden = YES;
+    }
 }
 
 - (void)openDatePickerView:(NSString *)childObjectId
@@ -141,39 +152,6 @@
     [self closeEditing];
 }
 
-//- (void)openIconEdit:(NSString *)childObjectId
-//{
-//    [_delegate openIconEdit:childObjectId];
-//}
-//
-//- (void)openAlbumPicker:(NSString *)childObjectId
-//{
-//    [_delegate openAlbumPicker:childObjectId];
-//}
-
-//- (void)openIconEdit:(NSString *)childObjectId
-//{
-//    // TODO ChildCreateViewControllerのdelegateをたたく
-//    ChildIconCollectionViewController *childIconCollectionViewController = [[[_delegate parentViewController] storyboard] instantiateViewControllerWithIdentifier:@"ChildIconCollectionViewController"];
-//    childIconCollectionViewController.delegate = self;
-//    UINavigationController *navController = [[UINavigationController alloc]initWithRootViewController:childIconCollectionViewController];
-//    [self presentViewController:navController animated:YES completion:nil];
-//}
-//
-//- (void)openAlbumPicker:(NSString *)childObjectId
-//{
-//    // TODO ChildCreateViewControllerのdelegateをたたく
-//    AlbumTableViewController *albumTableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AlbumTableViewController"];
-//    albumTableViewController.childObjectId = childObjectId;
-//   
-//    NSDateComponents *comps = [DateUtils dateCompsFromDate:[NSDate date]];
-//    albumTableViewController.date = [NSString stringWithFormat:@"%04ld%02ld%02ld", comps.year, comps.month, comps.day];
-//    
-//    albumTableViewController.uploadType = @"icon";
-////    [self.navigationController pushViewController:albumTableViewController animated:YES];
-//    [self presentViewController:albumTableViewController animated:YES completion:nil];
-//}
-
 - (void)submit:imageData withChildObjectId:childObjectId
 {
     for (id c in [_editTable visibleCells]) {
@@ -182,16 +160,6 @@
         }
     }
 }
-
-//- (void)creatChild
-//{
-    // ぐるぐる出す
-    // parseにデータを保存
-    // 成功したら保持しているサムネイルでキャッシュを作る + AWSにアップ
-    // [ChildIconManager updateChildIcon:imageData withChildObjectId:_childObjectId];
-    // childPropertyChangedをcall
-    // ポップアップを消す
-//}
 
 - (IBAction)cancel:(id)sender {
     [_delegate hidePopup];
@@ -227,7 +195,6 @@
     // validate
     NSString *error = [self validateParams:childInfo];
     if (error) {
-        // TODO もしこのview controllerから無理やったらViewControllerのdelegateをたたく
         [self showAlertMessage:error];
         return;
     }
@@ -268,13 +235,11 @@
             [ChildProperties syncChildProperties];
             
             // アイコンを保存
-            // TODO これって非同期やっけ？失敗したらどうしようかな
             if (childInfo[@"imageData"]) {
                 [ChildIconManager updateChildIcon:childInfo[@"imageData"] withChildObjectId:child.objectId];
             }
 
-            // もしtutorial中だった場合はデフォルトのこどもの情報を消す
-            if ([Tutorial underTutorial] && [Tutorial existsTutorialChild]) {
+            if ([Tutorial underTutorial] && [[Tutorial currentStage].currentStage isEqualToString:@"addChild"]) {
                 [ImageCache removeAllCache];
                 [Tutorial forwardStageWithNextStage:@"uploadByUser"];
             }
@@ -401,7 +366,6 @@
     return 4;
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *cellType = [self cellType:indexPath];
@@ -421,11 +385,12 @@
         return cell;
     } else if ([cellType isEqualToString:@"Birthday"]) {
         ChildProfileBirthdayCell *cell = [tableView dequeueReusableCellWithIdentifier:@"BirthdayCell" forIndexPath:indexPath];
-        cell.birthdayLabel.text = @"未設定";
         CGRect rect = cell.birthdayLabel.frame;
-        rect.origin.x = (_editTable.frame.size.width - rect.size.width - 20);
+        rect.origin.x = (_editTable.frame.size.width - rect.size.width - 100);
         cell.birthdayLabel.frame = rect;
+        cell.birthdayLabel.text = @"未設定";
         cell.delegate = self;
+        
         return cell;
     } else {
         UITableViewCell *cell = [[UITableViewCell alloc]init];

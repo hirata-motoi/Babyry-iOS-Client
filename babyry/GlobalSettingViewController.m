@@ -462,7 +462,7 @@
         if ([[Tutorial currentStage].currentStage isEqualToString:@"partChange"]) {
             [Tutorial forwardStageWithNextStage:@"addChild"];
             [tn removeNavigationView];
-            [tn showNavigationView];
+            [self.navigationController popViewControllerAnimated:YES];
         }
         
         // push通知

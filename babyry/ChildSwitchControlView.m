@@ -34,7 +34,7 @@ static ChildSwitchControlView* sharedObject = nil;
     self = [super init];
     if (self) {
         //Initialization
-            self.autoresizesSubviews = NO;
+        self.autoresizesSubviews = NO;
         [self setupChildSwitchViews];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetChildSwitchControlView) name:@"childPropertiesChanged" object:nil];
     }
@@ -205,6 +205,7 @@ static ChildSwitchControlView* sharedObject = nil;
 {
     [self setupChildSwitchViews];
     [self switchToInitialChild];
+[_delegate adjustChildSwitchControlView];
 }
 
 - (void)removeChildSwitchControlView
@@ -222,6 +223,11 @@ static ChildSwitchControlView* sharedObject = nil;
     [self closeChildSwitchViews];
     [_delegate openAddChild];
     [_delegate hideOverlay];
+}
+
+- (ChildSwitchView *)getChildAddIcon
+{
+    return childSwitchViewList[0];
 }
 
 - (void)dealloc {

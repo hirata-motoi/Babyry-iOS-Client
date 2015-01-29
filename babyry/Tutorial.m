@@ -160,7 +160,6 @@
 + (void)removeDefaultChild:(NSMutableArray *)childProperties
 {
     [ImageCache removeAllCache];
-    // ViewControllerのchildPropertiesからデフォルトのこどもを削除
     NSString *tutorialChildObjectId = [Tutorial getTutorialAttributes:@"tutorialChildObjectId"];
     NSPredicate *p = [NSPredicate predicateWithFormat:@"objectId = %@", tutorialChildObjectId];
     NSArray *tutorialChildObjects = [childProperties filteredArrayUsingPredicate:p];
