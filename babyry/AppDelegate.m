@@ -162,7 +162,7 @@
         if (userInfo[@"transitionInfo"][@"imageIds"]) {
             // 多重でpushがくるのでインスタンス化
             ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
-            [imageDownloadInBackground.completionHandlerArray addObject:completionHandler];
+            imageDownloadInBackground.completionHandler = completionHandler;
             [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"]];
         }
     }

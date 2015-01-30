@@ -19,14 +19,6 @@
     int taskQueueCount;
 }
 
-- (id) init {
-	self = [super init];
-	if (self != nil) {
-        _completionHandlerArray = [[NSMutableArray alloc] init];
-	}
-	return self;
-}
-
 - (void) downloadByPushInBackground:(NSDictionary *)transitionInfo
 {
     // preSignedURLを取得
@@ -85,9 +77,7 @@
     
     taskQueueCount--;
     if (taskQueueCount == 0) {
-        CompletionHandlerType handler = _completionHandlerArray[0];
-        handler(UIBackgroundFetchResultNewData);
-        [_completionHandlerArray removeAllObjects];
+        _completionHandler(UIBackgroundFetchResultNewData);
     }
 }
 
@@ -96,9 +86,7 @@
     if (error) {
         taskQueueCount--;
         if (taskQueueCount == 0) {
-            CompletionHandlerType handler = _completionHandlerArray[0];
-            handler(UIBackgroundFetchResultNewData);
-            [_completionHandlerArray removeAllObjects];
+            _completionHandler(UIBackgroundFetchResultNewData);
         }
     }
 }
