@@ -11,8 +11,14 @@
 #import "MultiUploadViewController.h"
 #import "MBProgressHUD.h"
 
-@interface AlbumPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
+@protocol AlbumPickerViewControllerDelegate <NSObject>
 
+- (void)closeAlbumTable;
+
+@end
+
+@interface AlbumPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
+@property (nonatomic, assign)id<AlbumPickerViewControllerDelegate>delegate;
 @property (strong, nonatomic) IBOutlet UICollectionView *albumImageCollectionView;
 @property (strong, nonatomic) IBOutlet UIView *selectedImageBaseView;
 @property (strong, nonatomic) IBOutlet UICollectionView *selectedImageCollectionView;

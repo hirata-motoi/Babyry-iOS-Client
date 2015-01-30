@@ -45,6 +45,8 @@
 #import "AnnounceBoardView.h"
 #import "ChildSwitchControlView.h"
 #import "ChildIconManager.h"
+#import "UIViewController+MJPopupViewController.h"
+#import "ChildCreatePopupViewController.h"
 #import <CustomBadge.h>
 
 @interface ViewController ()
@@ -324,6 +326,9 @@
         }
         [self showPageContentViewController];
 //        [_pageViewController showFillingEmptyCellsDialog]; TODO pageViewControllerで表示していたダイアログをこっちで表示
+        if ([[Tutorial currentStage].currentStage isEqualToString:@"addChild"]) {
+            [self showTutorialNavigator];
+        }
     }
 }
 
@@ -449,8 +454,7 @@
 
 -(void)setChildNames
 {
-    IntroChildNameViewController *introChildNameViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    [self.navigationController pushViewController:introChildNameViewController animated:YES];
+    [self openAddChild];
 }
 
 - (NSString*) createFamilyId
@@ -766,7 +770,9 @@
 {
     [self fitToScreen];
     TutorialStage *currentStage = [Tutorial currentStage];
-    if ([Tutorial underTutorial] && ![currentStage.currentStage isEqualToString:@"familyApplyExec"]) { // familyApply以前
+    if ([Tutorial underTutorial] && [currentStage.currentStage isEqualToString:@"addChild"]) {
+        childSwitchControlView.hidden = NO;
+    } else if ([Tutorial underTutorial] && ![currentStage.currentStage isEqualToString:@"familyApplyExec"]) { // familyApply以前
         childSwitchControlView.hidden = YES;
     } else {
         childSwitchControlView.hidden = NO;
@@ -826,6 +832,31 @@
     titleLabel.adjustsFontSizeToFitWidth = YES;
     [self.navigationItem.titleView removeFromSuperview];
     self.navigationItem.titleView = titleLabel;
+}
+
+#pragma mark - Child Create
+- (void)openAddChild
+{
+    if ([[Tutorial currentStage].currentStage isEqualToString:@"addChild"]) {
+        if (tn) {
+            [tn removeNavigationView];
+            tn = nil;
+        }
+    }
+    ChildCreatePopupViewController *childCreatePopupViewController = [[ChildCreatePopupViewController alloc]initWithNibName:@"ChildCreatePopupViewController" bundle:nil];
+    childCreatePopupViewController.delegate = self;
+    
+    [self presentPopupViewController:childCreatePopupViewController animationType:MJPopupViewAnimationFade];
+}
+
+- (void)hidePopup
+{
+    [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
+}
+
+- (id)getParentViewController
+{
+    return self;
 }
 
 @end

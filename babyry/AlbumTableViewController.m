@@ -156,6 +156,9 @@
     albumPickerViewController.childObjectId = _childObjectId;
     albumPickerViewController.date = _date;
     albumPickerViewController.uploadType = _uploadType;
+    if ([_uploadType isEqualToString:@"icon"]) {
+        albumPickerViewController.delegate = self;
+    }
     if (_totalImageNum){
         albumPickerViewController.totalImageNum = _totalImageNum;
     }
@@ -215,6 +218,11 @@
             break;
     }
     return isAuthorization;
+}
+
+- (void)closeAlbumTable
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 /*

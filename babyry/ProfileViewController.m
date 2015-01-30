@@ -108,9 +108,6 @@
             }
             break;
         }
-        case 3:
-            numberOfRows = [childProperties count];
-            break;
         default:
             break;
     }
@@ -190,12 +187,6 @@
                     break;
             }
             break;
-        case 3: {
-            // indexPath.rowに従って子供の情報をセットする
-            cell.textLabel.text = childProperties[indexPath.row][@"name"];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            break;
-        }
         default:
             break;
     }
@@ -257,9 +248,6 @@
                     break;
             }
             break;
-        case 3:
-            _editedChildIndex = indexPath.row;
-            [self showChildInfo:indexPath.row];
         default:
             break;
     }
@@ -268,15 +256,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 4;
+    return 3;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSString *title;
     switch (section) {
-        case 3:
-            title = @"こども";
-            break;
         default:
             title = @"";
             break;
@@ -313,14 +298,6 @@
     _emailCell.textLabel.text = email;
     emailVerified = NO;
     [_profileTableView reloadData];
-}
-
-- (void)showChildInfo:(NSInteger)index
-{
-    ChildProfileViewController *childProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChildProfileViewController"];
-    NSMutableDictionary *child = childProperties[index];
-    childProfileViewController.childObjectId = child[@"objectId"];
-    [self.navigationController pushViewController:childProfileViewController animated:YES];
 }
 
 - (void)openPartnerApplyView

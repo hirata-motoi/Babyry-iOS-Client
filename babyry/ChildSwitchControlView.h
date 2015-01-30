@@ -11,6 +11,8 @@
 - (void)reloadPageContentViewController:(NSString *)childObjectId;
 - (void)showOverlay;
 - (void)hideOverlay;
+- (void)openAddChild;
+- (void)adjustChildSwitchControlView;
 
 @end
 
@@ -21,11 +23,13 @@
 
 + (ChildSwitchControlView*)sharedManager;
 - (void)switchChildSwitchView: (NSString *)childObjectId;
+- (void)openChildSwitchViews;
 - (void)closeChildSwitchViews;
 - (void)setupChildSwitchViews;
 - (void)switchToInitialChild;
 - (void)resetChildSwitchControlView;
 - (void)removeChildSwitchControlView;
+- (ChildSwitchView *)getChildAddIcon;
 
 @property (nonatomic,assign) id<ChildSwitchControlViewDelegate> delegate;
 

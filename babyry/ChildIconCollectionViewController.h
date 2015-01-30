@@ -9,8 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "ImageSelectToolView.h"
 
+@protocol ChildIconCollectionViewControllerDelegate <NSObject>
+
+- (void)submit:(NSData *)imageData withChildObjectId:(NSString *)childObjectId;
+
+@end
+
 @interface ChildIconCollectionViewController : UICollectionViewController<ImageSelectToolViewDelegate>
 @property (strong, nonatomic) IBOutlet UICollectionView *childIconCollectionView;
+@property (nonatomic, assign)id<ChildIconCollectionViewControllerDelegate>delegate;
 
 @property NSString *childObjectId;
 

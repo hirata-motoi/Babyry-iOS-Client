@@ -21,24 +21,32 @@
 + (instancetype)view
 {
     NSString *className = NSStringFromClass([self class]);
-    ChildSwitchView *view = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
-   
-    return view;
+    return [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
 }
 
 - (void)setup
 {
     [self reloadIcon];
+    
     self.iconView.layer.cornerRadius = self.iconView.frame.size.width/2;
     self.iconView.layer.masksToBounds = YES;
     [self.iconView.layer setBorderWidth:2.0f];
     [self.iconView.layer setBorderColor:[[UIColor whiteColor] CGColor]];
     
-    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tagGesture)];
+    self.iconContainer.layer.cornerRadius = self.iconContainer.frame.size.width/2;
+    self.iconContainer.layer.masksToBounds = YES;
+    [self.iconContainer.layer setBorderWidth:2.0f];
+    [self.iconContainer.layer setBorderColor:[[UIColor whiteColor] CGColor]];
+    
+    self.defaultIconView.layer.cornerRadius = self.defaultIconView.frame.size.width/2;
+    self.defaultIconView.layer.masksToBounds = YES;
+    
+    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGesture)];
     gesture.numberOfTapsRequired = 1;
     [self addGestureRecognizer:gesture];
   
     self.overlay.layer.cornerRadius = self.overlay.frame.size.width/2;
+    self.overlay.layer.masksToBounds = YES;
     self.overlay.hidden = YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadIcon) name:@"childSwitchViewIconChanged" object:nil];
@@ -61,7 +69,7 @@
     _childNameLabel.textColor = [UIColor_Hex colorWithHexString:textColor alpha:1.0f];
 }
 
-- (void)tagGesture
+- (void)tapGesture
 {
     // _switchAvailable:true -> こどもアイコンがopenになっている状態
     // _switchAvailable:false -> こどもアイコンが閉じている状態
@@ -77,7 +85,16 @@
 {
     NSData *imageCacheData = [ImageCache getCache:@"icon" dir:_childObjectId];
     if (imageCacheData) {
+        self.defaultIconView.hidden = YES;
         self.iconView.image = [ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]];
+    }
+}
+
+- (void)reloadIconWithImageData:(NSData *)imageData
+{
+    if (imageData) {
+        self.defaultIconView.hidden = YES;
+        self.iconView.image = [ImageTrimming makeRectImage:[UIImage imageWithData:imageData]];
     }
 }
 

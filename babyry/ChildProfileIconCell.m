@@ -2,28 +2,30 @@
 //  ChildProfileIconCell.m
 //  babyry
 //
-//  Created by hirata.motoi on 2015/01/10.
+//  Created by hirata.motoi on 2015/01/22.
 //  Copyright (c) 2015年 jp.co.meaning. All rights reserved.
 //
 
 #import "ChildProfileIconCell.h"
+#import "ChildSwitchView.h"
 
 @implementation ChildProfileIconCell
 
 - (void)awakeFromNib {
-    // Initialization code
-    
-    _childNameEditField.hidden = YES;
-    _saveButton.hidden = YES;
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openEditField)];
-    tapGesture.numberOfTapsRequired = 1;
-    _childNameLabel.userInteractionEnabled = YES;
-    [_childNameLabel addGestureRecognizer:tapGesture];
     
     UITapGestureRecognizer *iconEditGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openIconEdit)];
     iconEditGesture.numberOfTapsRequired = 1;
     [_iconContainer addGestureRecognizer:iconEditGesture];
+    
+    ChildSwitchView *iconView = [ChildSwitchView view];
+    [iconView setParams:@"" forKey:@"childName"];
+    [iconView setup];
+    [iconView removeGestures];
+    iconView.childNameLabel.hidden = YES;
+    
+    [_iconContainer addSubview:iconView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setIcon:) name:@"childIconSelectedForNewChild" object:nil];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -32,45 +34,25 @@
     // Configure the view for the selected state
 }
 
-- (void)openEditField
+- (void)dealloc
 {
-    [_delegate closeEditing];
-    [_delegate setTargetChild:_childObjectId];
-    _childNameLabel.hidden = YES;
-    _childNameEditField.text = _childNameLabel.text;
-    _childNameEditField.hidden = NO;
-    _saveButton.hidden = NO;
-    [_childNameEditField becomeFirstResponder];
-}
-
-- (void)closeEditField
-{
-    _childNameEditField.hidden = YES;
-    _saveButton.hidden = YES;
-    _childNameLabel.hidden = NO;
-    [_childNameEditField resignFirstResponder];
-    
-}
-
-- (IBAction)save:(id)sender {
-    _childNameLabel.text = _childNameEditField.text;
-    NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
-    params[@"name"] =_childNameEditField.text;
-    [_delegate saveChildProperty:_childObjectId withParams:params];
-    
-    [self closeEditField];
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)sender
-{
-    [self closeEditField];
-    
-    return TRUE;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)openIconEdit
 {
-    [_delegate showIconEditActionSheet:_childObjectId];
+    [_delegate showIconEditActionSheet:nil];
+}
+
+- (void)setIcon:(NSNotification *)notification
+{
+    _imageData = [notification userInfo][@"imageData"];
+    
+    for (id iconView in [_iconContainer subviews]) {
+        if ([iconView isKindOfClass:[ChildSwitchView class]]) {
+            [iconView reloadIconWithImageData:_imageData];
+        }
+    }
 }
 
 

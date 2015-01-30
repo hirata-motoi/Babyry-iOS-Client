@@ -13,8 +13,9 @@
 #import "HeaderViewManager.h"
 #import "ChildSwitchControlView.h"
 #import "GlobalSettingViewController.h"
+#import "ChildCreatePopupViewController.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate, PageContentViewControllerDelegate>
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate, ChildCreatePopupViewControllerDelegate, PageContentViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
@@ -36,6 +37,7 @@
 - (void)reloadPageContentViewController:(NSString *)childObjectId;
 - (void)removeChildSwitchControlView;
 - (void)viewDidAppear:(BOOL)animated;
+- (void)openAddChild;
 - (void)setGlobalMenuBadge:(int)badgeNumber;
 
 @end

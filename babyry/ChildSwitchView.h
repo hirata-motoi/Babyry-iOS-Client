@@ -10,6 +10,7 @@
 
 - (void)openChildSwitchViews;
 - (void)switchChildSwitchView: (NSString *)childObjectId;
+- (void)openAddChild;
 
 @end
 
@@ -27,10 +28,14 @@
 @property (nonatomic,assign) id<ChildSwitchViewDelegate> delegate;
 
 @property (weak, nonatomic) IBOutlet UILabel *childNameLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *iconView;
 @property (weak, nonatomic) IBOutlet UIView *overlay;
+@property (weak, nonatomic) IBOutlet UIView *iconContainer;
+@property (weak, nonatomic) IBOutlet UIImageView *iconView;
+@property (weak, nonatomic) IBOutlet UIImageView *defaultIconView;
 @property BOOL active;
 @property NSString *childObjectId;
 @property BOOL switchAvailable;
+
+- (void)reloadIconWithImageData:(NSData *)imageData;
 
 @end
