@@ -31,7 +31,7 @@
         
         self.window.rootViewController = rootViewController;
     }
-   
+    
     // global変数
     [self setGlobalVariables];
     
@@ -44,10 +44,10 @@
     
     // Parse Authentification
     [Parse setApplicationId:[Config secretConfig][@"ParseApplicationId"] clientKey:[Config secretConfig][@"ParseClientKey"]];
-
+    
     // Facebood Auth
     [PFFacebookUtils initializeFacebook];
-
+    
     // Customize the Page Indicator
     UIPageControl *pageControl = [UIPageControl appearance];
     pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
@@ -75,7 +75,7 @@
     }
     
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-
+    
     // Crittercism
     [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
     
@@ -123,11 +123,11 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
-	if (![PFUser currentUser]) {
+    if (![PFUser currentUser]) {
         return;
     }
-
-	if (application.applicationState == UIApplicationStateInactive) {
+    
+    if (application.applicationState == UIApplicationStateInactive) {
         // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
         [PFPush handlePush:userInfo];
         if (userInfo[@"transitionInfo"]) {
@@ -137,7 +137,7 @@
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
-            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+                [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
             }
         }
         
@@ -149,38 +149,25 @@
                 [[NSNotificationCenter defaultCenter] postNotification:n];
             }];
         }
-		
-		// 各クラスに通知用
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        // 各クラスに通知用
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        completionHandler(UIBackgroundFetchResultNewData);
     }
-
-// バックグラウンドで任意の通信処理が出来ない仕様なので一旦ペンディング
-// NSURLSessionを利用すれば出来る。HTTPのみ通信可能で、APIを用意しておけば良い。が、面倒。
-//	if (application.applicationState == UIApplicationStateBackground) {
-//		// backgourndでpushを受け取った時に発動、裏で画像データを読む
-//
-//		NSLog(@"%@", userInfo);
-//		
-//		ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
-//		[imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"][@"date"] childObjectId:userInfo[@"transitionInfo"][@"childObjectId"]];
-//
-//        completionHandler(UIBackgroundFetchResultNewData);
-//
-//    }
-
-	if (application.applicationState == UIApplicationStateBackground) {
-		// backgourndでpushを受け取った時に発動、裏で画像データを読む
-
+    
+    if (application.applicationState == UIApplicationStateBackground) {
+        // backgourndでpushを受け取った時に発動、裏で画像データを読む
+        
         if (userInfo[@"transitionInfo"][@"imageIds"]) {
+            // 多重でpushがくるのでインスタンス化
             ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+            imageDownloadInBackground.completionHandler = completionHandler;
             [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"]];
         }
-
-        completionHandler(UIBackgroundFetchResultNewData);
-
     }
-	
-	if (application.applicationState == UIApplicationStateActive) {
+    
+    if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
         
         // パート変更の場合にはフォラグラウンドでもお知らせ
@@ -199,8 +186,8 @@
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"])) {
-            [PFPush handlePush:userInfo];
-        }
+                [PFPush handlePush:userInfo];
+            }
         
         if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"calendarAdded"]) {
             NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
@@ -212,18 +199,19 @@
         }
         if (userInfo[@"transitionInfo"] &&
             (
-                [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]  ||
-                [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
+             [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]  ||
+             [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
              )
-        ) {
+            ) {
             NSNotification *n = [NSNotification notificationWithName:@"receivedApplyEvent" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
-		
-		// 各クラスに通知用
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        // 各クラスに通知用
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        completionHandler(UIBackgroundFetchResultNewData);
     }
-    completionHandler(UIBackgroundFetchResultNewData);
 }
 
 - (void) application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
@@ -243,7 +231,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     [self insertLastLog];
 }
@@ -261,7 +249,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-
+    
     // Facebook
     [FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
 }
@@ -281,11 +269,11 @@
 - (void)setGlobalVariables
 {
     // env
-    #ifdef DEBUG
-        _env = @"dev";
-    #else
-        _env = @"prod";
-    #endif
+#ifdef DEBUG
+    _env = @"dev";
+#else
+    _env = @"prod";
+#endif
 }
 
 - (void)setupFirstLaunchUUID
