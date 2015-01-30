@@ -33,7 +33,7 @@
 
 +(UIColor *) getSectionHeaderColor
 {
-    return [UIColor_Hex colorWithHexString:@"5C4300" alpha:0.9];
+    return [UIColor_Hex colorWithHexString:@"b5a874" alpha:0.9];
 }
 
 +(UIColor *) getCellBackgroundDefaultColor
@@ -74,11 +74,6 @@
 +(UIColor *)getBlurTintColor
 {
     return [UIColor_Hex colorWithHexString:@"e7e4d6" alpha:0.4];
-}
-
-+(UIColor *)getGlobalMenuSectionHeaderColor
-{
-    return [UIColor_Hex colorWithHexString:@"bfb488" alpha:1.0];
 }
 
 +(UIColor *)getGlobalMenuPartSwitchColor

@@ -178,7 +178,6 @@
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", year, month];
     uploadViewController.date = ymd;
     uploadViewController.tagAlbumPageIndex = index;
-    //uploadViewController.holdedBy = @"TagAlbumPageViewController";
     uploadViewController.fromMultiUpload = _fromMultiUpload;
     uploadViewController.indexPath = _indexPath;
     if (_fromMultiUpload) {
@@ -186,10 +185,6 @@
         uploadViewController.pageIndex = index;
         uploadViewController.myRole = _myRole;
         uploadViewController.childCachedImageArray = _childCachedImageArray;
-    }
-    
-    if (_notificationHistory[ymd]) {
-        uploadViewController.notificationHistoryByDay = _notificationHistory[ymd];
     }
     
     // Cacheからはりつけ
@@ -434,17 +429,5 @@
         _imagesCountDic[@"imagesCountNumber"] = totalCount;
     }
 }
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

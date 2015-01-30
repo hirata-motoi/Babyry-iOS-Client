@@ -162,7 +162,6 @@
     ImageToolbarViewController *imageToolbarViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImageToolbarViewController"];
     imageToolbarViewController.commentView = _commentView;
     imageToolbarViewController.uploadViewController = _uploadViewController;
-    imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
     imageToolbarViewController.openCommentView = _openCommentView;
     imageToolbarViewController.childObjectId = _childObjectId;
     imageToolbarViewController.date = _date;

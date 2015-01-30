@@ -31,7 +31,6 @@
 {
     [self showChildImages];
     [self setupImagesCount];
-    [self setupNotificationHistory];
 }
 
 - (void)showChildImages
@@ -208,9 +207,5 @@
     [self.pageContentViewController.pageContentCollectionView reloadData];
     [self.pageContentViewController viewDidAppear:YES];
 }
-
-// Tutorial中はnotification出さない
-- (void)setupNotificationHistory
-{}
 
 @end

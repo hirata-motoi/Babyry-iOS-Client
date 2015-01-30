@@ -137,6 +137,7 @@
   
     datePickerView = [DatePickerView view];
     datePickerView.delegate = self;
+    datePickerView.datepicker.maximumDate = [NSDate date];
     datePickerView.childObjectId = childObjectId;
     if (childProperty[@"birthday"]) {
         datePickerView.datepicker.date = childProperty[@"birthday"];
@@ -157,7 +158,6 @@
                          datePickerView.frame = rect;
                      }
                      completion:nil];
-//    [self showOverlay];
 }
 
 - (void)saveBirthday:(NSString *)childObjectId
@@ -193,18 +193,6 @@
         childProperties = nil;
     }
     childProperties = [ChildProperties getChildProperties];
-}
-
-- (void)showOverlay
-{
-    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
-    UIView *overlay = [[UIView alloc]initWithFrame:screenRect];
-    
-    UITapGestureRecognizer *overlayTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeEditing)];
-    overlayTapGesture.numberOfTapsRequired = 1;
-    [overlay addGestureRecognizer:overlayTapGesture];
-    
-    [self.view addSubview:overlay];
 }
 
 - (void)closeEditing

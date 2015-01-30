@@ -18,7 +18,6 @@
 #import "IntroChildNameViewController.h"
 #import "PushNotification.h"
 #import "UIColor+Hex.h"
-#import "ImageEdit.h"
 #import "ArrayUtils.h"
 #import "Navigation.h"
 #import "Partner.h"
@@ -48,6 +47,7 @@
 #import "ChildIconManager.h"
 #import "UIViewController+MJPopupViewController.h"
 #import "ChildCreatePopupViewController.h"
+#import <CustomBadge.h>
 
 @interface ViewController ()
 
@@ -60,6 +60,8 @@
     TutorialNavigator *tn;
     ChildSwitchControlView *childSwitchControlView;
     UIView *overlay;
+    UIButton *openGlobalSettingButton;
+    CustomBadge *globalMenuBadge;
 }
 
 - (void)viewDidLoad
@@ -129,7 +131,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:YES];
+    [super viewWillAppear:animated];
     [self setupHeaderView];
 }
 
@@ -404,6 +406,7 @@
     }
     
     _pageContentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PageContentViewController"];
+    _pageContentViewController.delegate = self;
     _pageContentViewController.childObjectId = childObjectId;
     
     pageContentViewRectOrg = _pageContentViewController.view.frame; // orgを保持
@@ -430,7 +433,7 @@
 
 - (void)setupGlobalSetting
 {
-    UIButton *openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    openGlobalSettingButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
     [openGlobalSettingButton setBackgroundImage:[UIImage imageNamed:@"IconMenu"] forState:UIControlStateNormal];
     [openGlobalSettingButton addTarget:self action:@selector(openGlobalSettingView) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:openGlobalSettingButton];
@@ -798,6 +801,37 @@
     [ChildProperties asyncChildPropertiesWithBlock:^(NSMutableArray *beforeSyncChildProperties) {
         [ChildIconManager syncChildIconsInBackground];
     }];
+}
+
+- (void)setGlobalMenuBadge:(int)badgeNumber
+{
+    if (badgeNumber < 1) {
+        [globalMenuBadge removeFromSuperview];
+        return;
+    } else if (badgeNumber > 99) {
+        badgeNumber = 99;
+    }
+    globalMenuBadge = [CustomBadge customBadgeWithString:[NSString stringWithFormat:@"%d", badgeNumber] withScale:0.8];
+    CGRect badgeFrame = globalMenuBadge.frame;
+    badgeFrame.size.width = 20;
+    badgeFrame.size.height = 20;
+    badgeFrame.origin.x = openGlobalSettingButton.frame.size.width - 10;
+    badgeFrame.origin.y = -5;
+    globalMenuBadge.frame = badgeFrame;
+    [openGlobalSettingButton addSubview:globalMenuBadge];
+}
+
+- (void)updateNavitagionTitle:(NSString *)childName
+{
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.frame = self.navigationItem.titleView.frame;
+    titleLabel.font = [UIFont fontWithName:@"HiraKakuProN-W6" size:16.0f];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.text = [NSString stringWithFormat:@"%@ちゃんの成長記録", childName];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    [self.navigationItem.titleView removeFromSuperview];
+    self.navigationItem.titleView = titleLabel;
 }
 
 #pragma mark - Child Create

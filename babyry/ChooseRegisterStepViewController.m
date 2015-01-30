@@ -182,7 +182,6 @@
     [Account sendVerifyEmail:user[@"emailCommon"]];
     
     // 子供のデータがCoreDataにあれば全て消す
-    NSLog(@"signUpViewController signUpController didSignUpUser");
     [ChildProperties removeChildPropertiesFromCoreData];
     
     _isSignUpCompleted = YES;

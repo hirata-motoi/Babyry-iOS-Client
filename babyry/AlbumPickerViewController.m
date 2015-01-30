@@ -18,6 +18,8 @@
 #import "ChildIconManager.h"
 #import "ImageCache.h"
 #import "Config.h"
+#import "Navigation.h"
+#import "ColorUtils.h"
 
 @interface AlbumPickerViewController ()
 
@@ -28,6 +30,7 @@
     AlbumPickerViewController_Single *logicSingle;
     AlbumPickerViewController_Icon *logicIcon;
     CGSize cellSize;
+    CGSize selectedCellSize;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -46,24 +49,23 @@
     
     _childProperty = [ChildProperties getChildProperty:_childObjectId];
     cellSize = CGSizeMake(self.view.frame.size.width/4 -3, self.view.frame.size.width/4 -3);
+    selectedCellSize = CGSizeMake(_selectedImageCollectionView.frame.size.height, _selectedImageCollectionView.frame.size.height);
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [_hud hide:YES];
     
     _albumImageCollectionView.delegate = self;
     _albumImageCollectionView.dataSource = self;
     [_albumImageCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumTableViewControllerCell"];
+    // 余白設定
+    _albumImageCollectionView.contentInset = UIEdgeInsetsMake(-44.0f, 0.0f, _selectedImageBaseView.frame.size.height, 0.0f);
     
     _selectedImageCollectionView.delegate = self;
     _selectedImageCollectionView.dataSource = self;
     [_selectedImageCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"AlbumTableViewControllerSelectedCell"];
     
-    _backLabel.layer.cornerRadius = 10;
-    _backLabel.layer.borderColor = [UIColor blackColor].CGColor;
-    _backLabel.layer.borderWidth = 2;
+    _selectedImageBaseView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.8f];
     
-    _sendImageLabel.layer.cornerRadius = 10;
-    _sendImageLabel.layer.borderColor = [UIColor blackColor].CGColor;
-    _sendImageLabel.layer.borderWidth = 2;
+    _sendImageLabel.layer.cornerRadius = 3;
     
     if ([_uploadType isEqualToString:@"multi"]) {
         logicMulti = [[AlbumPickerViewController_Multi alloc] init];
@@ -78,6 +80,23 @@
     
     [[self logic] logicViewDidLoad];
     [self setPickerWithScrollToDate];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBar.barTintColor = [ColorUtils getBabyryColor];
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"closeIcon"]
+                                                             style:UIBarButtonItemStylePlain
+                                                            target:self
+                                                            action:@selector(close)];
+    [item setBackgroundImage:[UIImage imageNamed:@"transparent"]
+                    forState:UIControlStateNormal
+                  barMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationItem.rightBarButtonItem = item;
+    [Navigation setTitle:self.navigationItem withTitle:@"写真選択" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -149,7 +168,11 @@
 
 // セルの大きさを指定するメソッド
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return cellSize;
+    if (collectionView.tag == 1) {
+        return cellSize;
+    } else {
+        return selectedCellSize;
+    }
 }
 
 // 指定された場所のセルを作るメソッド
@@ -172,9 +195,7 @@
         // check icon
         UIImage *checkIcon = [UIImage imageNamed:@"ImageCheckIcon"];
         UIImageView *checkIconView = [[UIImageView alloc] initWithImage:checkIcon];
-        CGRect frame = cell.frame;
-        frame.origin.x = 0;
-        frame.origin.y = 0;
+        CGRect frame = CGRectMake(cell.frame.size.width - checkIcon.size.width - 1, 1, checkIcon.size.width, checkIcon.size.height);
         checkIconView.frame = frame;
         [cell addSubview:checkIconView];
         if ([_checkedImageFragDic[_sectionDateByIndex[indexPath.section]][indexPath.row] isEqualToString:@"NO"]) {
@@ -287,7 +308,8 @@
     [[self logic] logicSendImageButton];
 }
 
-- (IBAction)backButton:(id)sender {
+- (void)close
+{
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 

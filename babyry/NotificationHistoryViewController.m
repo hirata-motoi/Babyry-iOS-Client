@@ -12,6 +12,7 @@
 #import <Parse/Parse.h>
 #import "NotificationHistory.h"
 #import "ImageTrimming.h"
+#import "Config.h"
 
 @interface NotificationHistoryViewController ()
 
@@ -37,6 +38,12 @@
     }
     
     [Navigation setTitle:self.navigationItem withTitle:@"お知らせ履歴" withSubtitle:nil withFont:nil withFontSize:0 withColor:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self getNotificationHistory];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -66,7 +73,20 @@
     if (_notificationHistoryArray[indexPath.row]) {
         PFObject *histObject = _notificationHistoryArray[indexPath.row];
         cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
-        cell.imageView.image = [ImageTrimming makeCellIconForMenu:[UIImage imageNamed:@"SelectedBestshot"] size:CGSizeMake(40, 40)];
+        cell.textLabel.numberOfLines = 2;
+        cell.textLabel.adjustsFontSizeToFitWidth = YES;
+        if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuUploaded"];
+        } else if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuComment"];
+        } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuGMP"];
+        } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
+            cell.imageView.image = [UIImage imageNamed:@"IconMenuLike"];
+        }
+        if (![histObject[@"status"] isEqualToString:@"displayed"]) {
+            cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+        }
         if (![histObject[@"status"] isEqualToString:@"displayed"]) {
             cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
         }
@@ -98,7 +118,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 24)];
-    headerView.backgroundColor = [ColorUtils getGlobalMenuSectionHeaderColor];
+    headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(6, 0, 320, 24)];
     headerLabel.textColor = [UIColor whiteColor];
     headerLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:12];
@@ -120,6 +140,21 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForFooderInSection:(NSInteger)section
 {
     return 12.0f;
+}
+
+- (void)getNotificationHistory
+{
+    [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:nil withLimit:100 withBlock:^(NSArray *objects){
+        _notificationHistoryArray = [[NSMutableArray alloc] init];
+        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
+        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
+        for (PFObject *object in objects) {
+            if ([[Config config][@"GlobalNotificationTypes"] containsObject:object[@"type"]]) {
+                [_notificationHistoryArray addObject:object];
+            }
+        }
+        [_notificationTableView reloadData];
+    }];
 }
 
 @end

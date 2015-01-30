@@ -19,7 +19,6 @@
 @property NSString *date;
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
-@property NSMutableDictionary *notificationHistoryByDay;
 
 @property NSMutableDictionary *section;
 @property UploadViewController *uploadViewController;

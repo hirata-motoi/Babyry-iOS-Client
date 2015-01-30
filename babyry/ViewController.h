@@ -15,7 +15,7 @@
 #import "GlobalSettingViewController.h"
 #import "ChildCreatePopupViewController.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate, ChildCreatePopupViewControllerDelegate>
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate, ChildCreatePopupViewControllerDelegate, PageContentViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
@@ -38,5 +38,6 @@
 - (void)removeChildSwitchControlView;
 - (void)viewDidAppear:(BOOL)animated;
 - (void)openAddChild;
+- (void)setGlobalMenuBadge:(int)badgeNumber;
 
 @end

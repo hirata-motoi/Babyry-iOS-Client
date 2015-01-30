@@ -11,5 +11,6 @@
 @interface ImageUtils : NSObject
 
 + (NSString *)contentTypeForImageData:(NSData *)data;
++ (UIImage *)filterImage:(UIImage *)originImage withFilterName:(NSString *)filterName;
 
 @end

@@ -44,15 +44,6 @@
     [_delegate showIconEditActionSheet:nil];
 }
 
-//- (void)setIconImageWithData:(NSData *)imageData
-//{
-//    for (id iconView in [_iconContainer subviews]) {
-//        if ([iconView isKindOfClass:[ChildSwitchView class]]) {
-//            [iconView reloadIconWithImageData:imageData];
-//        }
-//    }
-//}
-
 - (void)setIcon:(NSNotification *)notification
 {
     _imageData = [notification userInfo][@"imageData"];

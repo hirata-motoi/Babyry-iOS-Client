@@ -89,7 +89,6 @@
         }];
         [self setupOperationView];
     } else {
-        NSLog(@"imageInfoが無い");
         MBProgressHUD *hud;
         hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         hud.labelText = @"画像ダウンロード中";
@@ -98,7 +97,6 @@
         [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
         [originalImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
         [originalImageQuery orderByDescending:@"updatedAt"];
-        NSLog(@"originalImageQuery");
         [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count] > 0) {
                 PFObject *object;
@@ -126,10 +124,8 @@
                 getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
                 getRequest.responseCacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
-                NSLog(@"aws query");
                 [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
                     if (!task.error && task.result) {
-                        NSLog(@"aws success");
                         AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
                         UIImage *s3Image = [UIImage imageWithData:getResult.body];
                         _uploadedImageView.image = s3Image;
@@ -150,7 +146,6 @@
         }];
     }
     [self disableNotificationHistories];
-    NSLog(@"end");
 }
 
 - (void)openOperationView:(id)sender
@@ -217,7 +212,6 @@
     _operationViewController.uploadViewController  = self;
     _operationViewController.holdedBy = _holdedBy;
     _operationViewController.imageInfo = _imageInfo;
-    _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
     _operationViewController.fromMultiUpload = _fromMultiUpload;
     _operationViewController.imageFrame = _uploadedImageView.frame;
     _operationViewController.bestImageIndexArray = _bestImageIndexArray;
@@ -237,17 +231,6 @@
     [self.view addSubview:_operationViewController.view];
     _operationView = _operationViewController.view;
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 -(CGRect) getUploadedImageFrame:(UIImage *) image
 {
@@ -288,16 +271,8 @@
 
 - (void)disableNotificationHistories
 {
-    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged"];
-    
-    for (NSString *type in notificationTypes) {
-        if (_notificationHistoryByDay[type] && [_notificationHistoryByDay[type] count] > 0) {
-            for (PFObject *notification in _notificationHistoryByDay[type]) {
-                [NotificationHistory disableDisplayedNotificationsWithObject:notification];
-            }
-            [_notificationHistoryByDay[type] removeAllObjects];
-        }
-    }
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"requestPhoto"];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
 }
 
 @end

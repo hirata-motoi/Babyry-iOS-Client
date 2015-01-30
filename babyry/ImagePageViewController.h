@@ -25,7 +25,6 @@
 @property NSString *myRole;
 @property NSNumber *bestImageIndexNumber;
 @property NSMutableArray *bestImageIndexArray;
-@property NSMutableDictionary *notificationHistory;
 @property NSMutableArray *childCachedImageArray;
 @property NSIndexPath *indexPath;
 
