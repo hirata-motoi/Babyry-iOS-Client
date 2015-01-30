@@ -51,6 +51,10 @@
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileIconCell" bundle:nil] forCellReuseIdentifier:@"IconCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileGenderCell" bundle:nil] forCellReuseIdentifier:@"GenderCell"];
     [_profileTable registerNib:[UINib nibWithNibName:@"ChildProfileBirthdayCell" bundle:nil] forCellReuseIdentifier:@"BirthdayCell"];
+    
+    UITapGestureRecognizer *closeEditingTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeEditing)];
+    closeEditingTapGesture.numberOfTapsRequired = 1;
+    [self.view addGestureRecognizer:closeEditingTapGesture];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -113,7 +117,14 @@
         return cell;
     } else if ([cellType isEqualToString:@"Gender"]) {
         ChildProfileGenderCell *cell = [tableView dequeueReusableCellWithIdentifier:@"GenderCell" forIndexPath:indexPath];
-       
+        for (UIView *view in [cell subviews]) {
+            for (UIView *elem in [view subviews]) {
+                if ([elem isKindOfClass:[UISegmentedControl class]]) {
+                    [elem removeFromSuperview];
+                }
+            }
+        }
+        
         NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
         NSString *sex = childProperties[childIndex][@"sex"];
         if (sex) {
@@ -133,9 +144,11 @@
         
         return cell;
     } else if ([cellType isEqualToString:@"Birthday"]) {
+        NSLog(@"make birthday");
         ChildProfileBirthdayCell *cell = [tableView dequeueReusableCellWithIdentifier:@"BirthdayCell" forIndexPath:indexPath];
         cell.delegate = self;
         cell.childObjectId = childProperties[childIndex][@"objectId"];
+        cell.birthdayLabel.text = @"";
         
         if (childProperties[childIndex][@"birthday"]) {
             NSDateFormatter *df = [[NSDateFormatter alloc] init];
@@ -285,6 +298,8 @@
 
 - (void)openDatePickerView:(NSString *)childObjectId
 {
+    [self closeEditing];
+    
     if (datePickerView) {
         return;
     }
@@ -292,6 +307,7 @@
   
     datePickerView = [DatePickerView view];
     datePickerView.delegate = self;
+    datePickerView.datepicker.maximumDate = [NSDate date];
     datePickerView.childObjectId = childObjectId;
     if (childProperty[@"birthday"]) {
         datePickerView.datepicker.date = childProperty[@"birthday"];
@@ -312,7 +328,6 @@
                          datePickerView.frame = rect;
                      }
                      completion:nil];
-    [self showOverlay];
 }
 
 - (void)saveBirthday:(NSString *)childObjectId
@@ -350,19 +365,7 @@
     childProperties = [ChildProperties getChildProperties];
 }
 
-- (void)showOverlay
-{
-    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
-    UIView *overlay = [[UIView alloc]initWithFrame:screenRect];
-    
-    UITapGestureRecognizer *overlayTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeEditing:)];
-    overlayTapGesture.numberOfTapsRequired = 1;
-    [overlay addGestureRecognizer:overlayTapGesture];
-    
-    [self.view addSubview:overlay];
-}
-
-- (void)closeEditing:(id)sender
+- (void)closeEditing
 {
     NSArray *cells = [_profileTable visibleCells];
     for (UITableViewCell *cell in cells) {
@@ -385,8 +388,6 @@
                              datePickerView = nil;
                          }];
     }
-    UIView *overlay = [sender view];
-    [overlay removeFromSuperview];
 }
 
 - (void)keyboardWillShow:(NSNotification*)notification
@@ -479,16 +480,5 @@
     albumTableViewController.uploadType = @"icon";
     [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

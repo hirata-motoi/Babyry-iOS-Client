@@ -24,6 +24,7 @@
 - (void)setupImagesCount;
 - (void)executeReload;
 - (void)updateChildProperties;
+- (void)showGlobalMenuBadge;
 
 // 循環参照(メモリリーク)が起きるので、弱参照にしないと駄目
 @property (weak) PageContentViewController *pageContentViewController;

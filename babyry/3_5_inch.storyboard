@@ -843,14 +843,6 @@
             </objects>
             <point key="canvasLocation" x="-415" y="-2601"/>
         </scene>
-        <!--Page View Controller-->
-        <scene sceneID="IfU-xV-xbl">
-            <objects>
-                <pageViewController storyboardIdentifier="PageViewController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="ZVs-5c-xu1" customClass="PageViewController" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="QKs-LW-3Gm" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-832" y="-1280"/>
-        </scene>
         <!--Image Page View Controller-->
         <scene sceneID="ORF-pt-wWO">
             <objects>

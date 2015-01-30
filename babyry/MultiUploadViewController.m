@@ -106,6 +106,8 @@
     
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(partialDownloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
+    
+    [self disableNotificationHistories];
 }
 
 - (void)didReceiveMemoryWarning
@@ -322,7 +324,6 @@
     albumTableViewController.month = _month;
     albumTableViewController.totalImageNum = _totalImageNum;
     albumTableViewController.indexPath = _indexPath;
-    albumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
     albumTableViewController.uploadType = @"multi";
     [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
@@ -425,7 +426,6 @@
         NSMutableDictionary *imagesCountDic = [[NSMutableDictionary alloc] init];
         [imagesCountDic setObject:[NSNumber numberWithInt:[childImageArraySorted count]] forKey:@"imagesCountNumber"];
         pageViewController.imagesCountDic = imagesCountDic;
-        pageViewController.notificationHistory = (_notificationHistoryByDay) ? [[NSMutableDictionary alloc]initWithObjects:@[ _notificationHistoryByDay ] forKeys:@[ _date ]] : nil;
         [self.navigationController setNavigationBarHidden:YES];
         [self.navigationController pushViewController:pageViewController animated:YES];
     }
@@ -595,6 +595,12 @@
 - (void)forwardNextTutorial
 {
     [[self logic] forwardNextTutorial];
+}
+
+- (void)disableNotificationHistories
+{
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"requestPhoto"];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
 }
 
 @end

@@ -149,7 +149,6 @@
 - (void) openRegisterView
 {
     [self dismissViewControllerAnimated:YES completion:^(void){
-        NSLog(@"open!");
         [(IntroPageRootViewController *)_introPageRootViewController showRegisterStepCheckView];
     }];
 }

@@ -37,21 +37,17 @@
     return headerView;
 }
 
-- (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month withName:(NSString *)name
+- (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month
 {
     _yearLabel.text = [NSString stringWithFormat:@"%ld", (long)year];
     _monthLabel.text = [NSString stringWithFormat:@"%ld月", (long)month];
-    _nameLabel.text = [NSString stringWithFormat:@"%@ちゃん", name];
     
     _yearLabel.textColor = [UIColor whiteColor];
     _yearLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
     
     _monthLabel.textColor = [UIColor whiteColor];
     _monthLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
-                                                            
-    _nameLabel.textColor = [UIColor whiteColor];
-    _nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
-                                                           
+                                                                                                                       
     self.backgroundColor = [ColorUtils getSectionHeaderColor];
 }
 

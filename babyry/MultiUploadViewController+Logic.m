@@ -243,20 +243,8 @@
 // imageUploaded, bestShotChanged, bestShotReplyはページを開いた時点で無効にする
 - (void)disableNotificationHistory
 {
-    NSArray *targetTypes = [NSArray arrayWithObjects:@"imageUploaded", @"bestShotChanged", @"bestShotReply", nil];
-    
-    for (NSString *type in targetTypes) {
-        if (_multiUploadViewController.notificationHistoryByDay && _multiUploadViewController.notificationHistoryByDay[type]) {
-            for (PFObject *notificationHistory in _multiUploadViewController.notificationHistoryByDay[type]) {
-                [NotificationHistory disableDisplayedNotificationsWithObject:notificationHistory];
-            }
-            [_multiUploadViewController.notificationHistoryByDay[type] removeAllObjects];
-        }
-    }
-    // push経由だとpCVCが無いのでチェック。push経由の場合notificationHisotryの反映が後れるだけだからまあ問題ない。
-    if (self.multiUploadViewController.pCVC) {
-        [self.multiUploadViewController.pCVC.pageContentCollectionView reloadData];
-    }
+    NSArray *targetTypes = [NSArray arrayWithObjects:@"imageUploaded", @"bestShotChanged", nil];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:self.multiUploadViewController.childObjectId withDate:self.multiUploadViewController.date withType:targetTypes];
 }
 
 - (void)compensateDateOfChildImage:(NSArray *)childImages {}

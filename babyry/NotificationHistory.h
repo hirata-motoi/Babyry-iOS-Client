@@ -16,11 +16,14 @@ typedef void (^DeleteNotificationHistoryBlock)(void);
 @interface NotificationHistory : NSObject
 
 + (void)createNotificationHistoryWithType:(NSString *)type withTo:(NSString *)userId withChild:(NSString *)childObjectId withDate:(NSInteger)date;
-+ (void)getNotificationHistoryInBackgroundGroupByDate:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryBlock)block;
+//+ (void)getNotificationHistoryInBackgroundGroupByDate:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryBlock)block;
 + (void)getNotificationHistoryInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryObjectsBlock)block;
++ (void)getNotificationHistoryLessThanTargetDateInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withLimitDate:(NSNumber *)date withBlock:(NotificationHistoryObjectsBlock)block;
 + (void)getNotificationHistoryObjectsByDateInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId date:(NSNumber *)date withBlock:(NotificationHistoryObjectsBlock)block;
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object;
 + (void)disableDisplayedNotificationsWithObject:(PFObject *)object withBlock:(DeleteNotificationHistoryBlock)block;
++ (void)disableDisplayedNotificationsWithUser:(NSString *)userId withChild:(NSString *)childObjectId withDate:(NSString *)date withType:(NSArray *)types;
++ (void)removeNotificationsWithChild:(NSString *)childObjectId withDate:(NSString *)date withStatus:(NSString *)status;
 + (NSString *)getNotificationString:(PFObject *)histObject;
 
 @end

@@ -34,13 +34,13 @@
 
 - (void)openEditField
 {
+    [_delegate closeEditing];
     [_delegate setTargetChild:_childObjectId];
     _childNameLabel.hidden = YES;
     _childNameEditField.text = _childNameLabel.text;
     _childNameEditField.hidden = NO;
     _saveButton.hidden = NO;
     [_childNameEditField becomeFirstResponder];
-    [_delegate showOverlay];
 }
 
 - (void)closeEditField

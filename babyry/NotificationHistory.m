@@ -9,6 +9,7 @@
 #import "NotificationHistory.h"
 #import "DateUtils.h"
 #import "Logger.h"
+#import "ChildProperties.h"
 
 @implementation NotificationHistory
 
@@ -30,54 +31,57 @@ NSString *const className = @"NotificationHistory";
     [nh saveInBackground];
 }
 
-+ (void)getNotificationHistoryInBackgroundGroupByDate:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryBlock)block
-{
-    NSMutableDictionary *history = [[NSMutableDictionary alloc]init];
-    PFQuery *query = [PFQuery queryWithClassName:className];
-    [query whereKey:@"toUserId" equalTo:userId];
-    if (status) {
-        [query whereKey:@"status" equalTo:status];
-    }
-    if (childObjectId != nil) {
-        [query whereKey:@"child" equalTo:childObjectId];
-    }
-    query.limit = limit;
-    if (type != nil) {
-        [query whereKey:@"type" equalTo:type];
-    }
-    [query orderByDescending:@"createdAt"];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if (!error) {
-            for (PFObject *object in objects) {
-                //NSString *ymd = [object[@"dateString"] substringWithRange:NSMakeRange(1, 8)];
-                NSNumber *dateNumber = object[@"date"];
-                NSString *dateString = [dateNumber stringValue];
-                NSString *year  = [dateString substringWithRange:NSMakeRange(0, 4)];
-                NSString *month = [dateString substringWithRange:NSMakeRange(4, 2)];
-                NSString *day   = [dateString substringWithRange:NSMakeRange(6, 2)];
-                
-                NSString *ymd = [NSString stringWithFormat:@"%@%@%@", year, month, day];
-               
-                NSMutableDictionary *historiesByYMD = [history objectForKey:ymd];
-                if (!historiesByYMD) {                
-                    historiesByYMD = [[NSMutableDictionary alloc]init];
-                    [history setObject:historiesByYMD forKey:ymd];
-                }
-                
-                NSMutableArray *objectsByType = historiesByYMD[object[@"type"]];
-                if (!objectsByType) {
-                    objectsByType = [[NSMutableArray alloc]init];
-                    [historiesByYMD setObject:objectsByType forKey:object[@"type"]];
-                }                             
-                
-                [objectsByType addObject:object];
-            }
-            block(history);
-        } else {
-            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
-        }
-    }];
-}
+// いつか使うかもしれんのでコメントだけ
+//+ (void)getNotificationHistoryInBackgroundGroupByDate:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryBlock)block
+//{
+//    NSMutableDictionary *history = [[NSMutableDictionary alloc]init];
+//    PFQuery *query = [PFQuery queryWithClassName:className];
+//    [query whereKey:@"toUserId" equalTo:userId];
+//    if (status) {
+//        [query whereKey:@"status" equalTo:status];
+//    } else {
+//        [query whereKey:@"status" notEqualTo:@"removed"];
+//    }
+//    if (childObjectId != nil) {
+//        [query whereKey:@"child" equalTo:childObjectId];
+//    }
+//    query.limit = limit;
+//    if (type != nil) {
+//        [query whereKey:@"type" equalTo:type];
+//    }
+//    [query orderByDescending:@"createdAt"];
+//    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+//        if (!error) {
+//            for (PFObject *object in objects) {
+//                //NSString *ymd = [object[@"dateString"] substringWithRange:NSMakeRange(1, 8)];
+//                NSNumber *dateNumber = object[@"date"];
+//                NSString *dateString = [dateNumber stringValue];
+//                NSString *year  = [dateString substringWithRange:NSMakeRange(0, 4)];
+//                NSString *month = [dateString substringWithRange:NSMakeRange(4, 2)];
+//                NSString *day   = [dateString substringWithRange:NSMakeRange(6, 2)];
+//                
+//                NSString *ymd = [NSString stringWithFormat:@"%@%@%@", year, month, day];
+//               
+//                NSMutableDictionary *historiesByYMD = [history objectForKey:ymd];
+//                if (!historiesByYMD) {                
+//                    historiesByYMD = [[NSMutableDictionary alloc]init];
+//                    [history setObject:historiesByYMD forKey:ymd];
+//                }
+//                
+//                NSMutableArray *objectsByType = historiesByYMD[object[@"type"]];
+//                if (!objectsByType) {
+//                    objectsByType = [[NSMutableArray alloc]init];
+//                    [historiesByYMD setObject:objectsByType forKey:object[@"type"]];
+//                }                             
+//                
+//                [objectsByType addObject:object];
+//            }
+//            block(history);
+//        } else {
+//            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
+//        }
+//    }];
+//}
 
 + (void)getNotificationHistoryInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withBlock:(NotificationHistoryObjectsBlock)block
 {
@@ -85,9 +89,18 @@ NSString *const className = @"NotificationHistory";
     [query whereKey:@"toUserId" equalTo:userId];
     if (status) {
         [query whereKey:@"status" equalTo:status];
+    } else {
+        [query whereKey:@"status" notEqualTo:@"removed"];
     }
     if (childObjectId != nil) {
         [query whereKey:@"child" equalTo:childObjectId];
+    } else {
+        NSMutableArray *childProperties = [ChildProperties getChildProperties];
+        NSMutableArray *childObjectIds = [[NSMutableArray alloc] init];
+        for (NSDictionary *childProperty in childProperties) {
+            [childObjectIds addObject:childProperty[@"objectId"]];
+        }
+        [query whereKey:@"child" containedIn:childObjectIds];
     }
     query.limit = limit;
     if (type != nil) {
@@ -99,6 +112,33 @@ NSString *const className = @"NotificationHistory";
             block(objects);
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
+        }
+    }];
+}
+
++ (void)getNotificationHistoryLessThanTargetDateInBackground:userId withType:(NSString *)type withChild:(NSString *)childObjectId withStatus:(NSString *)status withLimit:(int)limit withLimitDate:(NSNumber *)date withBlock:(NotificationHistoryObjectsBlock)block
+{
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"toUserId" equalTo:userId];
+    if (status) {
+        [query whereKey:@"status" equalTo:status];
+    } else {
+        [query whereKey:@"status" notEqualTo:@"removed"];
+    }
+    if (childObjectId != nil) {
+        [query whereKey:@"child" equalTo:childObjectId];
+    }
+    [query whereKey:@"date" lessThan:date];
+    query.limit = limit;
+    if (type != nil) {
+        [query whereKey:@"type" equalTo:type];
+    }
+    [query orderByDescending:@"createdAt"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error) {
+            block(objects);
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryLessThanTargetDateInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
         }
     }];
 }
@@ -138,19 +178,62 @@ NSString *const className = @"NotificationHistory";
     }];
 }
 
++ (void)disableDisplayedNotificationsWithUser:(NSString *)userId withChild:(NSString *)childObjectId withDate:(NSString *)date withType:(NSArray *)types
+{
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"toUserId" equalTo:userId];
+    [query whereKey:@"status" equalTo:@"ready"];
+    [query whereKey:@"child" equalTo:childObjectId];
+    [query whereKey:@"date" equalTo:[NSNumber numberWithInt:[date intValue]]];
+    [query whereKey:@"type" containedIn:types];
+    query.limit = 1000; // max
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error) {
+            for (PFObject *object in objects) {
+                object[@"status"] = @"displayed";
+                [object saveInBackground];
+            }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in disableDisplayedNotificationsWithUser : %@", error]];
+        }
+    }];
+}
+
++ (void)removeNotificationsWithChild:(NSString *)childObjectId withDate:(NSString *)date withStatus:(NSString *)status
+{
+    PFQuery *query = [PFQuery queryWithClassName:className];
+    [query whereKey:@"child" equalTo:childObjectId];
+    [query whereKey:@"date" equalTo:[NSNumber numberWithInt:[date intValue]]];
+    if (status) {
+        [query whereKey:@"status" equalTo:status];
+    }
+    query.limit = 1000; // max
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (!error) {
+            for (PFObject *object in objects) {
+                object[@"status"] = @"removed";
+                [object saveInBackground];
+            }
+        } else {
+            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in removeNotificationsWithUser : %@", error]];
+        }
+    }];
+}
+
 + (NSString *)getNotificationString:(PFObject *)histObject
 {
     NSString *returnStr;
     NSString *dateStr = [histObject[@"date"] stringValue];
     NSString *MMDD = [NSString stringWithFormat:@"%@/%@", [dateStr substringWithRange:NSMakeRange(4, 2)], [dateStr substringWithRange:NSMakeRange(6, 2)]];
+    NSMutableDictionary *childProperty = [ChildProperties getChildProperty:histObject[@"child"]];
     if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
-        returnStr = [NSString stringWithFormat:@"%@にコメントがつきました", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんの写真にコメントがつきました", MMDD, childProperty[@"name"]];
     } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
-        returnStr = [NSString stringWithFormat:@"%@にGive Me Photoされました", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんの写真がリクエストされています", MMDD, childProperty[@"name"]];
     } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
-        returnStr = [NSString stringWithFormat:@"%@のベストショット決定！", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんのベストショット決定！", MMDD, childProperty[@"name"]];
     } else if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
-        returnStr = [NSString stringWithFormat:@"%@に写真がアップロードされました", MMDD];
+        returnStr = [NSString stringWithFormat:@"%@に%@ちゃんの写真がアップロードされました", MMDD, childProperty[@"name"]];
     } else {
         return @"";
         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error there is no notification type like %@", histObject[@"type"]]];

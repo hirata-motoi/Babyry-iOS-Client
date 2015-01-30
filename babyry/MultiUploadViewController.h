@@ -54,7 +54,6 @@
 @property int uploadUppeLimit;
 
 @property AWSServiceConfiguration *configuration;
-@property NSMutableDictionary *notificationHistoryByDay;
 
 @property BOOL imageLoadComplete;
 

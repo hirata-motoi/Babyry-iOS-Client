@@ -43,8 +43,6 @@
 
 @property int multiUploadMax;
 
-@property NSMutableDictionary *notificationHistoryByDay;
-
 @property NSString *uploadType;
 @property NSMutableDictionary *section;
 @property UploadViewController *uploadViewController;

@@ -1152,14 +1152,6 @@
             </objects>
             <point key="canvasLocation" x="-415" y="-2601"/>
         </scene>
-        <!--Page View Controller-->
-        <scene sceneID="SPM-i3-U0O">
-            <objects>
-                <pageViewController storyboardIdentifier="PageViewController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="x5d-Qi-aS1" customClass="PageViewController" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0YW-3a-lpG" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-832" y="-1280"/>
-        </scene>
         <!--Image Page View Controller-->
         <scene sceneID="93f-6e-rNG">
             <objects>

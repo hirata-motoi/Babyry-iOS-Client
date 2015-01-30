@@ -19,26 +19,18 @@
 +(UIColor *) getBabyryColor;
 +(UIColor *) getLoginViewBackColor;
 +(UIColor *)getPastelRedColor;
-+(UIColor *)getGlobalMenuSectionHeaderColor;
 +(UIColor *)getGlobalMenuPartSwitchColor;
 +(UIColor *)getGlobalMenuLightGrayColor;
 +(UIColor *)getGlobalMenuDarkGrayColor;
-
 +(UIColor *)getCalenderNumberColor;
-
 +(UIColor *)getBlurTintColor;
-
 +(UIColor *) getPositiveColor;
-
 +(UIColor *)getLightPositiveColor;
-
 +(UIColor *)getNegativeColor;
-
 +(UIColor *)getPositiveButtonColor;
 +(UIColor *)getNegativeButtonColor;
 +(UIColor *)getOtherButtonColor;
 +(UIColor *)getFacebookButtonColor;
-
 +(UIColor *)getIntroDarkGrayStringColor;
 +(UIColor *)getLoginTextFieldPaceHolderColor;
 

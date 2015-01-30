@@ -7,6 +7,10 @@
 //
 
 #import "ImageCache.h"
+#import "ImageUtils.h"
+#import "Config.h"
+#import "UIImage+ImageEffects.h"
+#import "ColorUtils.h"
 
 @implementation ImageCache
 
@@ -67,7 +71,21 @@ ImageCache以下の構造
     if (!success) {
         NSLog(@"failed to save image. reason is %@ - %@", error, error.userInfo);
     }
-    //NSLog(@"saved at %@", savedPath);
+
+    // プロフィールアイコンの場合にはグレーのキャッシュも作る(グレーにするパフォーマンスが悪いからここで一緒に作っちゃう、ついでにブラーも)
+    if ([name isEqualToString:[Config config][@"ChildIconFileName"]]) {
+        NSData *imageGray = UIImageJPEGRepresentation([ImageUtils filterImage:[[UIImage imageWithData:image] applyBlurWithRadius:4
+                                                                                                                       tintColor:[ColorUtils getBlurTintColor]
+                                                                                                                       saturationDeltaFactor:1
+                                                                                                                       maskImage:nil]
+                                                               withFilterName:@"CIMinimumComponent"], 0.7f);
+        NSString *savedPathGray = [imageCacheDirPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Gray", name]];
+        NSError *errorGray = nil;
+        BOOL successGray = [fileManager createFileAtPath:savedPathGray contents:imageGray attributes:nil];
+        if (!successGray) {
+            NSLog(@"failed to save image in gray scale. reason is %@ - %@", errorGray, errorGray.userInfo);
+        }
+    }
 }
 
 + (NSData *) getCache:(NSString *)name dir:(NSString *)dir

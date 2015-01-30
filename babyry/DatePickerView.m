@@ -37,7 +37,6 @@
 
 - (void)saveBirthday
 {
-    NSLog(@"saveBirthday tapped");
     [_delegate saveBirthday:_childObjectId];
 }
 

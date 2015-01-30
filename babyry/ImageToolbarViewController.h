@@ -21,7 +21,6 @@
 @property UploadViewController *uploadViewController;
 @property UIView *commentView;
 @property MBProgressHUD *hud;
-@property NSMutableDictionary *notificationHistoryByDay;
 @property UIImageView *commentBadge;
 @property BOOL openCommentView;
 @property NSString *childObjectId;

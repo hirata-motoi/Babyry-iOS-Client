@@ -49,6 +49,9 @@
 #import "Partner.h"
 #import "UploadPastImagesIntroductionView.h"
 #import "AnnounceBoardView.h"
+#import "Comment.h"
+#import "CommentNumLabel.h"
+#import "ImageUtils.h"
 
 @interface PageContentViewController ()
 
@@ -65,6 +68,9 @@
     BOOL alreadyRegisteredObserver;
     NSMutableDictionary *closedCellCountBySection;
     BOOL isTogglingCells;
+    UIImage *iconImage;
+    NSMutableDictionary *commentNumForDate;
+    NSString *requestPhotoDay;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -92,6 +98,7 @@
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
+    [self adjustChildImages];
     [self createCollectionView];
     
     windowWidth = self.view.frame.size.width;
@@ -113,6 +120,8 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
     
+    // コメント数を取得
+    commentNumForDate = [Comment getAllCommentNum];
 }
 
 - (void)applicationDidBecomeActive
@@ -136,14 +145,12 @@
         }
     }
     childProperty = [ChildProperties getChildProperty:_childObjectId];
-    
     [self reloadView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self adjustChildImages];
     [self initializeClosedCellCountBySection];
     
     // Notification登録
@@ -170,6 +177,13 @@
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
 //    [self showAnnounceBoard];
+
+    [logic showGlobalMenuBadge];
+    
+    // 子供がいたら子供の名前にnavigationのtitleを変更
+    if (childProperty[@"name"]) {
+        [_delegate updateNavitagionTitle:childProperty[@"name"]];
+    }
 }
 
 - (void)reloadView
@@ -246,6 +260,7 @@
 
 -(void)setImages
 {
+    commentNumForDate = [Comment getAllCommentNum];
     if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUserFinished"]) {
         _hud.hidden = YES;
         return;
@@ -339,8 +354,6 @@
     // カレンダーラベル付ける
     [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
     
-    [self setBadgeToCell:cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd];
-    
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
     if (indexPath.section == 0 && indexPath.row == 1) {
         CGRect rect = cell.frame;
@@ -374,6 +387,12 @@
     // タップでアラートでて、Give Me PhotoをおくるならOK押す
     if ([_selfRole isEqualToString:@"chooser"] && [DateUtils isInTwodayByIndexPath:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
+            // ださいんだが、alertに値を渡す方法がよくわからんのでこれに保持させる
+            if (indexPath.row == 0) {
+                requestPhotoDay = @"today";
+            } else {
+                requestPhotoDay = @"yesterday";
+            }
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Give Me Photo"
                                                             message:@"アップロードをパートナーにおねがいしますか？"
                                                            delegate:self
@@ -404,7 +423,6 @@
             albumTableViewController.childObjectId = _childObjectId;
             albumTableViewController.date = [tappedChildImage[@"date"] stringValue];
             albumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
-            albumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -436,8 +454,6 @@
         albumTableViewController.uploadType = @"single";
         [self.navigationController pushViewController:albumTableViewController animated:YES];
         return;
-
-    
     }
     
     [self moveToImagePageViewController:indexPath];
@@ -460,7 +476,7 @@
     CollectionViewSectionHeader *header = [CollectionViewSectionHeader view];
     header.delegate = self;
     header.sectionIndex = indexPath.section;
-    [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue] withName:childProperty[@"name"]];
+    [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue]];
     [header adjustStyle:[self isExpandedSection:indexPath.section]];
    
     [headerView addSubview:header];
@@ -475,7 +491,6 @@
     multiUploadViewController.date = date;
     multiUploadViewController.month = [date substringWithRange:NSMakeRange(0, 6)];
     multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    multiUploadViewController.notificationHistoryByDay = _notificationHistory[[date substringWithRange:NSMakeRange(0, 8)]];
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     multiUploadViewController.totalImageNum = totalImageNum;
@@ -499,7 +514,6 @@
     pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
-    pageViewController.notificationHistory = _notificationHistory;
     pageViewController.indexPath = indexPath;
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
@@ -565,6 +579,22 @@
     }
     
     return calLabelView;
+}
+
+- (UIView *)makeCommentNumLabel:(NSString *)ymd cellFrame:(CGRect)cellFrame
+{
+    CommentNumLabel *commentLabel = [CommentNumLabel view];
+    CGRect frame = commentLabel.frame;
+    frame.origin.x = cellFrame.size.width - frame.size.width - 2;
+    frame.origin.y = cellFrame.size.height - frame.size.height - 1;
+    commentLabel.frame = frame;
+
+    NSString *key = [NSString stringWithFormat:@"%@%@", _childObjectId, ymd];
+    if (commentNumForDate[key]) {
+        [commentLabel setCommentNumber:[commentNumForDate[key] intValue]];
+        return commentLabel;
+    }
+    return nil;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -668,7 +698,7 @@
     }
     
     // 始点と終点の日付(NSDateComponents)を与えるとchildPropertyに自動追加してくれるmethodを作る必要がある
-    [self addChildImages:_childImages withStartDateComps:calendarStartingDateComps withEndDateComps:todayComps];
+    [self addChildImagesWithStartDateComps:calendarStartingDateComps withEndDateComps:todayComps];
     
     [self setupChildImagesIndexMap];
     
@@ -676,7 +706,22 @@
     [self setupScrollPositionData];
 }
 
-- (void)addChildImages:(NSMutableArray *)childImages withStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
+- (void)addChildImagesWithStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
+{
+    NSDateComponents *twoMonthAgo = [DateUtils addDateComps:[logic dateComps] withUnit:@"month" withValue:-2];
+    NSDateComponents *twoMonthAndOneDayAgo = [DateUtils addDateComps:twoMonthAgo withUnit:@"day" withValue:-1];
+    [self addChildImagesFirstWithStartDateComps:twoMonthAgo withEndDateComps:endDateComps];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self addChildImagesFirstWithStartDateComps:startDateComps withEndDateComps:twoMonthAndOneDayAgo];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_pageContentCollectionView reloadData];
+            [self initializeClosedCellCountBySection];
+    });
+});
+}
+
+- (void)addChildImagesFirstWithStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
 {
     NSCalendar *cal   = [NSCalendar currentCalendar];
     NSDate *startDate = [cal dateFromComponents:startDateComps];
@@ -686,15 +731,17 @@
     
     while ([endDate compare:startDate] == NSOrderedDescending || [endDate compare:startDate] == NSOrderedSame) {
         NSString *ym = [NSString stringWithFormat:@"%ld%02ld", (long)endDateComps.year, (long)endDateComps.month];
-                                                               
+        
+        // childImagesの中に格納されているsectionの中にいまwhileで回している対象のymと同じ物が合ったらtargetSectionに突っ込む
         NSMutableDictionary *targetSection;
-        for (NSMutableDictionary *section in childImages) {
+        for (NSMutableDictionary *section in _childImages) {
             NSString *yearMonthOfSection = [NSString stringWithFormat:@"%@%@", section[@"year"], section[@"month"]];
             if ([yearMonthOfSection isEqualToString:ym]) {
                 targetSection = section;
                 break;
             }
         }
+        // なかったら、targetSectionを作り直す
         if (!targetSection) {
             targetSection = [[NSMutableDictionary alloc]init];
             targetSection[@"images"]        = [[NSMutableArray alloc]init];
@@ -702,9 +749,9 @@
             targetSection[@"weekdays"]      = [[NSMutableArray alloc]init];
             targetSection[@"year"]          = [NSString stringWithFormat:@"%ld", (long)endDateComps.year];
             targetSection[@"month"]         = [NSString stringWithFormat:@"%02ld", (long)endDateComps.month];
-            [_childImages addObject:targetSection];                                
+            [_childImages addObject:targetSection];
         }
-      
+
         NSNumber *date = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
         if ([self isDuplicatedChildImage:dicForCheckDuplicate withYearMonth:ym withDate:date withTargetSection:targetSection]) {
             break; // childImagesが歯抜けになることはないので、duplicateになった時点で完成されていると判断する
@@ -806,9 +853,10 @@
                 UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
                 cell.backgroundView = [[UIImageView alloc] initWithImage:multiCandidateImage];
             } else {
-                // candidateが無いのでプロフィールの画像をはめる
-                
+                cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
             }
+        } else {
+            cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
         }
         
         // PlaceHolderアイコンなどをはめる
@@ -831,10 +879,16 @@
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
-        UIImageView *backgroundGridView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ImageBackgroundGrid"]];
-        backgroundGridView.frame = CGRectMake(0, 0, cell.frame.size.width, 24);
-        [cell.backgroundView addSubview:backgroundGridView];
     }
+    // コメント数を付ける
+    UIImageView *backgroundGridView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ImageBackgroundGrid"]];
+    backgroundGridView.frame = CGRectMake(0, cell.frame.size.height - backgroundGridView.frame.size.height, cell.frame.size.width, 24);
+    [cell.backgroundView addSubview:backgroundGridView];
+    UIView *commentNumView = [self makeCommentNumLabel:ymd cellFrame:cell.frame];
+    if (commentNumView) {
+        [cell addSubview:commentNumView];
+    }
+    
     cell.isChoosed = YES;
 }
 
@@ -867,83 +921,16 @@
                         forKeys:@[@"badge", @"transitionInfo"]];
     [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
     
+    NSInteger date;
+    if ([requestPhotoDay isEqualToString:@"today"]) {
+        date = [[DateUtils getTodayYMD] integerValue];
+    } else {
+        date = [[DateUtils getYesterdayYMD] integerValue];
+    }
+    
     PFObject *partner = (PFObject *)[Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:0];
+    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:date];
 }
-
-
-// コメントはコメントアイコン、それ以外はいわゆるbadgeを表示する
-- (void)setBadgeToCell:(CalendarCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
-{
-    NSMutableDictionary *histories = _notificationHistory[ymd];
-    if (!histories) {
-        return;
-    }
-    
-    NSMutableArray *badges = [[NSMutableArray alloc]init];
-    
-    // コメント
-    NSMutableArray *commentNotifications = histories[@"commentPosted"];
-    if (commentNotifications && commentNotifications.count > 0) {
-        // コメントアイコン内に数字をいれる
-        UIImageView *commentBadge = [Badge badgeViewWithType:@"commentPosted" withCount:commentNotifications.count];
-        [badges addObject:commentBadge];
-    }
-   
-    // bestShotChanged・bestShotReply・imageUPloadedを取得
-    NSMutableArray *bestShotChangeNotifications = histories[@"bestShotChanged"];
-    if (!bestShotChangeNotifications) {
-        bestShotChangeNotifications = [[NSMutableArray alloc]init];
-    }
-    NSMutableArray *bestShotReplyNotifications = histories[@"bestShotReply"];
-    if (!bestShotReplyNotifications) {
-        bestShotReplyNotifications = [[NSMutableArray alloc]init];
-    }
-    NSMutableArray *imageUploadedNotifications = histories[@"imageUploaded"];
-    if (!imageUploadedNotifications) {
-        imageUploadedNotifications = [[NSMutableArray alloc]init];
-    }
-    if (bestShotChangeNotifications.count > 0 || bestShotReplyNotifications.count > 0 || imageUploadedNotifications.count > 0) {
-        // badgeをつける
-        NSInteger count = bestShotChangeNotifications.count + bestShotReplyNotifications.count + imageUploadedNotifications.count;
-        UIView *badge = [Badge badgeViewWithType:nil withCount:count];
-        [badges addObject:badge];
-    }
-   
-    // badgeをcell右下に配置
-    NSInteger c = 0;
-    for (UIView *badge in badges) {
-        CGRect rect = badge.frame;
-        rect.origin.y = cell.frame.size.height - rect.size.height - 5; // 5:余白
-        rect.origin.x = cell.frame.size.width - (rect.size.width + 5) * (c + 1);
-        badge.frame = rect;
-        [cell addSubview:badge];
-        c++;
-    }
-}
-
-//- (void)vibrateImageView:(UIImageView *)imageView
-//{
-//    CGRect rect = imageView.frame;
-//    
-//    CGRect rightRect = rect;
-//    rightRect.origin.x += 5;
-//    NSValue *rightRectObj = [NSValue valueWithCGRect:rightRect];
-//    
-//    CGRect leftRect = rect;
-//    leftRect.origin.x -= 5;
-//    NSValue *leftRectObj = [NSValue valueWithCGRect:leftRect];
-//    
-//    NSValue *originalRectObj = [NSValue valueWithCGRect:rect];
-//    
-//    
-//    NSMutableArray *posList = [[NSMutableArray alloc]initWithObjects:rightRectObj, leftRectObj, rightRectObj, leftRectObj, originalRectObj , nil];
-//    
-//    NSMutableDictionary *info = [[NSMutableDictionary alloc]init];
-//    info[@"imageView"] = imageView;
-//    info[@"posList"] = posList;
-//    NSTimer *tm = [NSTimer scheduledTimerWithTimeInterval:0.03f target:self selector:@selector(vibrate:) userInfo:info repeats:YES];
-//}
 
 - (void)vibrate:(NSTimer *)timer
 {
@@ -1349,6 +1336,16 @@
         }
             break;
     }
+}
+
+- (UIImage *)makeIconImageWithBlurWithCell:(CGRect)cellFrame
+{
+    if (!iconImage) {
+        iconImage = [UIImage imageWithData:[ImageCache getCache:[NSString stringWithFormat:@"%@Gray",[Config config][@"ChildIconFileName"]] dir:_childObjectId]];
+    }
+    
+    UIImage *trimmedIconImage = [ImageTrimming makeRectTopImage:iconImage ratio:(cellFrame.size.height/cellFrame.size.width)];
+    return trimmedIconImage;
 }
 
 @end

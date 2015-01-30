@@ -29,4 +29,19 @@
     return nil;
 }
 
++ (UIImage *)filterImage:(UIImage *)originImage withFilterName:(NSString *)filterName
+{
+    CIImage *filteredImage = [[CIImage alloc] initWithCGImage:originImage.CGImage];
+    CIFilter *filter = [CIFilter filterWithName:filterName];
+    [filter setValue:filteredImage forKey:@"inputImage"];
+    filteredImage = filter.outputImage;
+    
+    CIContext *ciContext = [CIContext contextWithOptions:nil];
+    CGImageRef imageRef = [ciContext createCGImage:filteredImage
+                                          fromRect:[filteredImage extent]];
+    UIImage *outputImage  = [UIImage imageWithCGImage:imageRef scale:1.0f orientation:UIImageOrientationUp];
+    CGImageRelease(imageRef);
+    return outputImage;
+}
+
 @end
