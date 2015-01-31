@@ -34,11 +34,11 @@
     TutorialNavigator *navigator_;
 }
 
-- (void)showNavigationView
+- (BOOL)showNavigationView
 {
     TutorialStage *stage = [TutorialStage MR_findFirst];
     if (!stage) {
-        return;
+        return NO;
     }
    
     if ([stage.currentStage isEqualToString:@"introduction"]) {
@@ -47,6 +47,7 @@
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         }
     } else if ([stage.currentStage isEqualToString:@"chooseByUser"]) {
         if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
@@ -54,11 +55,13 @@
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         } else if ([_targetViewController isKindOfClass:[MultiUploadViewController class]]) {
             TutorialNavigator_SelectBestShot *navigator = [[TutorialNavigator_SelectBestShot alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         }
     } else if ([stage.currentStage isEqualToString:@"partChange"]) {
         if ([_targetViewController isKindOfClass:[MultiUploadViewController class]]) {
@@ -66,16 +69,19 @@
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         } else if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
             TutorialNavigator_PartChange *navigator = [[TutorialNavigator_PartChange alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         } else if ([_targetViewController isKindOfClass:[GlobalSettingViewController class]]) {
             TutorialNavigator_PartChangeExec *navigator = [[TutorialNavigator_PartChangeExec alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         }
     } else if ([stage.currentStage isEqualToString:@"addChild"]) {
         if ([_targetViewController isKindOfClass:[ViewController class]]) {
@@ -83,11 +89,13 @@
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         } else if ([_targetViewController isKindOfClass:[IntroChildNameViewController class]]) {
             TutorialNavigator_AddChildExec *navigator = [[TutorialNavigator_AddChildExec alloc]init];
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         }
     } else if ([stage.currentStage isEqualToString:@"uploadByUser"]) {
         if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
@@ -95,6 +103,7 @@
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         }
     } else if ([stage.currentStage isEqualToString:@"uploadByUserFinished"]) {
         if ([_targetViewController isKindOfClass:[PageContentViewController class]]) {
@@ -102,6 +111,7 @@
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         }
     } else if ([stage.currentStage isEqualToString:@"familyApply"]) {
         if ([_targetViewController isKindOfClass:[ViewController class]]) {
@@ -109,8 +119,10 @@
             navigator.targetViewController = _targetViewController;
             [navigator show];
             navigator_ = navigator;
+            return YES;
         }
     }
+    return NO;
 }
 
 - (void)removeNavigationView
