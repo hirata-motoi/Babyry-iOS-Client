@@ -33,6 +33,7 @@ int uploadErrorCount;
 
 + (void)setMultiUploadImageDataSet:(NSMutableDictionary *)property multiUploadImageDataArray:(NSMutableArray *)imageDataArray multiUploadImageDataTypeArray:(NSMutableArray *)imageDataTypeArray date:(NSString *)date indexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"setMultiUploadImageDataSet check mem %@", self);
     childProperty = [[NSMutableDictionary alloc] initWithDictionary:property];
     multiUploadImageDataArray = [[NSMutableArray alloc] initWithArray:imageDataArray];
     multiUploadImageDataTypeArray = [[NSMutableArray alloc] initWithArray:imageDataTypeArray];
@@ -49,16 +50,19 @@ int uploadErrorCount;
 
 + (int)getUploadingQueueCount
 {
+    NSLog(@"getUploadingQueueCount check mem %@", self);
     return uploadingQueueCount;
 }
 
 + (int)getIsUploading
 {
+    NSLog(@"getIsUploading check mem %@", self);
     return isUploading;
 }
 
 + (void)multiUploadImagesInBackground
 {
+    NSLog(@"multiUploadImagesInBackground check mem %@", self);
     NSLog(@"multiUploadImagesInBackground たまにクルクルが消えないのでログし込む by kenjiszk");
     // tmpDataの運用を厳密にする (クルクルが消えないとかそうゆうのを無くす)
     // 一つの画像をアップするのに時間がかかるけど、安全な方を選ぶ。時間がかかると言っても電波状況が通常であれば数秒
@@ -71,29 +75,19 @@ int uploadErrorCount;
     
     NSMutableArray *imageIds = [[NSMutableArray alloc] init];
     
-    int concurrency = 3;
-    dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
-    dispatch_group_t g = dispatch_group_create();
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(concurrency);
-    
-    NSLog(@"queue count %d", [multiUploadImageDataArray count]);
-    
     for (int i = 0; i < [multiUploadImageDataArray count]; i++) {
-        dispatch_group_async(g,q,^{
-            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-            NSData *imageData = [multiUploadImageDataArray objectAtIndex:i];
-            NSString *imageType = [multiUploadImageDataTypeArray objectAtIndex:i];
-            
-            // 1. ParseにtmpDataを作成する(tmpData = TRUE)
-            NSLog(@"ParseにtmpDataを作成する(tmpData = TRUE) %d", i);
-            PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
-            childImage[@"date"] = [NSNumber numberWithInteger:[targetDate integerValue]];
-            childImage[@"imageOf"] = childProperty[@"objectId"];
-            childImage[@"bestFlag"] = @"unchoosed";
-            childImage[@"isTmpData"] = @"TRUE";
-            NSError *error = nil;
-            [childImage save:&error];
-            if (!error) {
+        NSData *imageData = [multiUploadImageDataArray objectAtIndex:i];
+        NSString *imageType = [multiUploadImageDataTypeArray objectAtIndex:i];
+        
+        // 1. ParseにtmpDataを作成する(tmpData = TRUE)
+        NSLog(@"ParseにtmpDataを作成する(tmpData = TRUE) %d", i);
+        PFObject *childImage = [PFObject objectWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
+        childImage[@"date"] = [NSNumber numberWithInteger:[targetDate integerValue]];
+        childImage[@"imageOf"] = childProperty[@"objectId"];
+        childImage[@"bestFlag"] = @"unchoosed";
+        childImage[@"isTmpData"] = @"TRUE";
+        [childImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (succeeded) {
                 NSLog(@"success to save in Parse");
                 AWSS3PutObjectRequest *putRequest = [AWSS3PutObjectRequest new];
                 putRequest.bucket = [Config config][@"AWSBucketName"];
@@ -103,41 +97,51 @@ int uploadErrorCount;
                 putRequest.contentType = imageType;
                 putRequest.cacheControl = @"no-cache";
                 AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:configuration];
-                BFTask *task = [awsS3 putObject:putRequest];
-                if (task.error) {
-                    // S3にアップが失敗したらEventuallyでchildImageを削除する
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image(%@) to S3 : %@", childImage.objectId, task.error]];
-                    [childImage deleteEventually];
-                    uploadErrorCount++;
-                } else {
-                    NSLog(@"success to save in S3");
-                    // 3. ParseのtmpDataをFalseにセットする
-                    childImage[@"isTmpData"] = @"FALSE";
-                    NSError *error = nil;
-                    [childImage save:&error];
-                    if (!error) {
-                        completeUploadCount++;
-                        [imageIds addObject:childImage.objectId];
-                    } else {
-                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in changing tmpData true to false : %@", error]];
+                [[awsS3 putObject:putRequest] continueWithBlock:^id(BFTask *task) {
+                    
+                    if (task.error) {
+                        NSLog(@"error");
+                        // S3にアップが失敗したらEventuallyでchildImageを削除する
+                        [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in uploading new image(%@) to S3 : %@", childImage.objectId, task.error]];
+                        [childImage deleteEventually];
                         uploadErrorCount++;
                     }
-                }
+                    if (task.result) {
+                        NSLog(@"success");
+                        NSLog(@"success to save in S3 %@ %@ %@", task, putRequest.contentLength, putRequest.key);
+                        // 3. ParseのtmpDataをFalseにセットする
+                        childImage[@"isTmpData"] = @"FALSE";
+                        NSError *error = nil;
+                        [childImage save:&error];
+                        if (!error) {
+                            completeUploadCount++;
+                            [imageIds addObject:childImage.objectId];
+                        } else {
+                            [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in changing tmpData true to false : %@", error]];
+                            uploadErrorCount++;
+                        }
+                    }
+                    uploadingQueueCount--;
+                    if (uploadingQueueCount < 1) {
+                        [self afterUpload:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]] imageIds:imageIds];
+                    }
+                    return nil;
+                }];
             } else {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in making new object for new image : %@", error]];
                 uploadErrorCount++;
+                uploadingQueueCount--;
+                if (uploadingQueueCount < 1) {
+                    [self afterUpload:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]] imageIds:imageIds];
+                }
             }
-            // キューカウントを減らす
-            uploadingQueueCount--;
-            dispatch_semaphore_signal(semaphore);
-        });
+        }];
     }
-    dispatch_group_wait(g, DISPATCH_TIME_FOREVER);
-    [self afterUpload:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]] imageIds:imageIds];
 }
 
 + (void)afterUpload:(NSString *)dirName imageIds:(NSArray *)imageIds
 {
+    NSLog(@"afterUpload check mem %@", self);
     isUploading = NO;
     
     if (uploadErrorCount > 0) {

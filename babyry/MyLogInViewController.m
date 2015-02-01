@@ -50,7 +50,7 @@
     [self.logInView addSubview:buttonView];
     UITapGestureRecognizer *dismisGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismisViewController)];
     dismisGesture.numberOfTapsRequired = 1;
-    [self.logInView addGestureRecognizer:dismisGesture];
+    [buttonView addGestureRecognizer:dismisGesture];
     
     // ログインボタン設定
     [self.logInView.logInButton setBackgroundColor:[ColorUtils getPositiveButtonColor]];

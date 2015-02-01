@@ -95,8 +95,8 @@
                             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in get image from s3 : %@", task.error]];
                             [self showSingleUploadError];
                         } else {
-                            [self afterSingleUploadComplete:resizedImage dirName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]] imageObjectId:childImage.objectId];
                             dispatch_async(dispatch_get_main_queue(), ^{
+                                [self afterSingleUploadComplete:resizedImage dirName:[NSString stringWithFormat:@"ChildImage%ld", (long)[_albumPickerViewController.childProperty[@"childImageShardIndex"] integerValue]] imageObjectId:childImage.objectId];
                                 [_albumPickerViewController dismissViewControllerAnimated:YES completion:nil];
                                 //アルバム表示のViewも消す
                                 UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;
