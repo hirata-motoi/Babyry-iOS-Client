@@ -96,7 +96,7 @@
     NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
     NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
     [Navigation setTitle:self.navigationItem withTitle:childProperty[@"name"] withSubtitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
-                                                                     
+    
     // set cell size
     _cellHeight = 100.0f;
     _cellWidth = 100.0f;

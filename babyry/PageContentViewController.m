@@ -336,6 +336,7 @@
             [cell removeGestureRecognizer:gesture];
         }
     }
+    cell.backgroundColor = nil;
    
     // indexPathの設定
     cell.currentSection = indexPath.section;
@@ -853,10 +854,20 @@
                 UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
                 cell.backgroundView = [[UIImageView alloc] initWithImage:multiCandidateImage];
             } else {
-                cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
+                UIImage *trimmedImage = [self makeIconImageWithBlurWithCell:cell.frame];
+                if (trimmedImage) {
+                    cell.backgroundView = [[UIImageView alloc] initWithImage:trimmedImage];
+                } else {
+                    cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+                }
             }
         } else {
-            cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
+            UIImage *trimmedImage = [self makeIconImageWithBlurWithCell:cell.frame];
+            if (trimmedImage) {
+                cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
+            } else {
+                cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+            }
         }
         
         // PlaceHolderアイコンなどをはめる
@@ -1342,6 +1353,10 @@
 {
     if (!iconImage) {
         iconImage = [UIImage imageWithData:[ImageCache getCache:[NSString stringWithFormat:@"%@Gray",[Config config][@"ChildIconFileName"]] dir:_childObjectId]];
+    }
+    
+    if (!iconImage) {
+        return nil;
     }
     
     UIImage *trimmedIconImage = [ImageTrimming makeRectTopImage:iconImage ratio:(cellFrame.size.height/cellFrame.size.width)];
