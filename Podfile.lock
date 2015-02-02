@@ -161,7 +161,6 @@ PODS:
     - UICKeyChainStore (~> 1.0.5)
     - XMLDictionary (~> 1.4.0)
   - Bolts (1.1.3)
-  - CrittercismSDK (4.3.7)
   - CustomBadge (3.0.0)
   - Facebook-iOS-SDK (3.21.1):
     - Bolts (~> 1.0)
@@ -195,7 +194,6 @@ PODS:
 DEPENDENCIES:
   - AFNetworking (= 2.4.1)
   - AWSiOSSDKv2 (= 2.0.13)
-  - CrittercismSDK (= 4.3.7)
   - CustomBadge (= 3.0.0)
   - Facebook-iOS-SDK (= 3.21.1)
   - MagicalRecord (= 2.2)
@@ -208,7 +206,6 @@ SPEC CHECKSUMS:
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   AWSiOSSDKv2: 4cb6ddd3b1ec7a8d913669248b401b5bbd1c09c1
   Bolts: 3db0a875235e0c9042b013af13af0f00f79b102c
-  CrittercismSDK: 4da8d0e407fb1ef29eef98678c1f90be4943b85e
   CustomBadge: c60738d213e7ef019b0bf1caa7948333f280ea9b
   Facebook-iOS-SDK: 18c26e86ab25c17854a2ee2a8f60562099c6600f
   FMDB: 0b2fa25e5264ef177973c0cb8c02c711107979aa
