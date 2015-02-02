@@ -102,6 +102,7 @@
             NSNumber *indexNumber = [self.pageContentViewController.childImagesIndexMap objectForKey:[NSString stringWithFormat:@"%ld%02ld", (long)year, (long)month]];
             if (!indexNumber) {
                 [self.pageContentViewController.hud hide:YES];
+                self.pageContentViewController.isLoading = NO;
                 return;
             }
             NSInteger index = [indexNumber integerValue];
@@ -219,6 +220,7 @@
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getChildImagesWithYear : %@", error]];
             [self.pageContentViewController.hud hide:YES];
             [self.pageContentViewController showAlertMessage];
+            self.pageContentViewController.isLoading = NO;
         }
     }];
     // 不要なfullsizeのキャッシュを消す

@@ -715,6 +715,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self addChildImagesFirstWithStartDateComps:startDateComps withEndDateComps:twoMonthAndOneDayAgo];
         dispatch_async(dispatch_get_main_queue(), ^{
+            [self setupChildImagesIndexMap];
             [_pageContentCollectionView reloadData];
             [self initializeClosedCellCountBySection];
     });
