@@ -384,14 +384,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>See http://www.crittercism.com/terms-services/</string>
-			<key>Title</key>
-			<string>CrittercismSDK</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
 			<string> The MIT License (MIT)
  
  Copyright (c) 2014 Sascha Paulus

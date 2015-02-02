@@ -132,12 +132,6 @@
 #define COCOAPODS_VERSION_MINOR_Bolts 1
 #define COCOAPODS_VERSION_PATCH_Bolts 3
 
-// CrittercismSDK
-#define COCOAPODS_POD_AVAILABLE_CrittercismSDK
-#define COCOAPODS_VERSION_MAJOR_CrittercismSDK 4
-#define COCOAPODS_VERSION_MINOR_CrittercismSDK 3
-#define COCOAPODS_VERSION_PATCH_CrittercismSDK 7
-
 // CustomBadge
 #define COCOAPODS_POD_AVAILABLE_CustomBadge
 #define COCOAPODS_VERSION_MAJOR_CustomBadge 3

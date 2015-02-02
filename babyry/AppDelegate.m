@@ -11,7 +11,6 @@
 #import <ParseFacebookUtils/PFFacebookUtils.h>
 #import <ParseCrashReporting/ParseCrashReporting.h>
 #import "PageContentViewController.h"
-#import "Crittercism.h"
 #import "Config.h"
 #import "AppSetting.h"
 #import "DateUtils.h"
@@ -77,7 +76,7 @@
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     // Crittercism
-    [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
+//    [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
     
     [self setTrackingLogName:@""];
     
