@@ -169,6 +169,14 @@
     if (index.section == 0 && (index.row == 0 || index.row == 1)) {
         return YES;
     }
+
+    // 今日が1日の場合、昨日がsection=1, row=0の時がある
+    if (index.section == 1 && index.row == 0) {
+        NSIndexPath *yesterdayIndex = [self getIndexPathFromDate:[self getYesterdayYMD]];
+        if (index.section == yesterdayIndex.section && index.row == yesterdayIndex.row) {
+            return YES;
+        }
+    }
     return NO;
 }
 
