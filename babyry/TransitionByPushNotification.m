@@ -305,7 +305,7 @@ static BOOL appLaunchFlag = NO;
 }
 
 // globalSettingのお知らせから飛ぶ用で、Push後の遷移ではないが同じ遷移をするようにtransitionInfoを偽装
-+ (void)createTransitionInfoAntTransition:(PFObject *)histObject viewController:(UIViewController *)vc
++ (void)createTransitionInfoAndTransition:(PFObject *)histObject viewController:(UIViewController *)vc
 {
     NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
     if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {

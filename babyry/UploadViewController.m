@@ -98,6 +98,16 @@
         [originalImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
         [originalImageQuery orderByDescending:@"updatedAt"];
         [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if ([objects count] == 0) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"画像がありません"
+                                                                message:[NSString stringWithFormat:@"%@の画像が存在しません、パートナーにより削除されている可能性があります。トップに戻ってご確認ください。", _date]
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"OK", nil
+                                      ];
+                [alert show];
+                return;
+            }
             if ([objects count] > 0) {
                 PFObject *object;
                 for (PFObject *tmpObject in objects) {
@@ -115,7 +125,21 @@
                 if (!object) {
                     // 正常系の動作であれば要らない判定、過去の写真が削除されたりした場合にここに入る事があるかも
                     if([_date isEqualToString:[[DateUtils getTodayYMD] stringValue]] || [_date isEqualToString:[[DateUtils getYesterdayYMD] stringValue]]) {
+                        // 1. Pushで飛んでくるとここに来る時がある。
+                        //    複数アップロードされて、かつ、コメントが付けられた場合にBSが決まっていなくても何かの画像を出さないと行けないので配列の一番最初の画像を入れてあげる。
                         object = [objects objectAtIndex:0];
+                    } else {
+                        // 2. そうでない場合には、画像が削除されているので、アラートを出してあげる。
+                        //    お知らせから飛んでくる場合にここがあり得るので、notificationHistoryも消してあげる。
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"画像がありません"
+                                                                        message:[NSString stringWithFormat:@"%@の画像が存在しません、パートナーにより削除されている可能性があります。トップに戻ってご確認ください。", _date]
+                                                                       delegate:nil
+                                                              cancelButtonTitle:nil
+                                                              otherButtonTitles:@"OK", nil
+                                              ];
+                        [alert show];
+                        [NotificationHistory removeNotificationsWithChild:_childObjectId withDate:_date withStatus:nil];
+                        return;
                     }
                 }
                 
@@ -138,6 +162,7 @@
                     return nil;
                 }];
                 _imageInfo = object;
+                return;
             }
             if (error) {
                 [hud hide:YES];

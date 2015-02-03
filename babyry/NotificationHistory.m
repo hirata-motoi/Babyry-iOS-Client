@@ -10,6 +10,7 @@
 #import "DateUtils.h"
 #import "Logger.h"
 #import "ChildProperties.h"
+#import "Config.h"
 
 @implementation NotificationHistory
 
@@ -109,7 +110,98 @@ NSString *const className = @"NotificationHistory";
     [query orderByDescending:@"createdAt"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
-            block(objects);
+            NSMutableDictionary *notificationHistoryDic = [[NSMutableDictionary alloc] init];
+            // imageUploaded => 2日以内のみ表示 => 同じ日付・同じ子供はまとめて表示
+            // requestPhoto => 2日以内のみ表示 => 同じ日付・同じ子供はまとめて表示
+            // bestShotChanged => ずっと表示 => 同じ日付・同じ子供はまとめて表示
+            // commentPosted => ずっと表示 => 同じ日付・同じ子供はまとめて表示
+        
+            // 以下のデータ構造でハッシュを作成
+            // childObjectId -> notificationType -> date -> {num, createdAt, status}
+            // 同じお知らせの中でcreatedAtが一番新しいものを、代表のcreatedAtとして保持
+            for (PFObject *object in objects) {
+                NSString *childId = object[@"child"];
+                NSString *type = object[@"type"];
+                NSString *date = object[@"date"];
+                
+                // 2日以上前のimageUploaded, requestPhotは除外
+                if ([type isEqualToString:@"imageUploaded"] || [type isEqualToString:@"requestPhot"]) {
+                    NSNumber *yesterdayYMD = [DateUtils getYesterdayYMD];
+                    if ([yesterdayYMD intValue] > [date intValue]) {
+                        continue;
+                    }
+                }
+                
+                // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
+                // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
+                if (![[Config config][@"GlobalNotificationTypes"] containsObject:type]) {
+                    continue;
+                }
+                
+                if (notificationHistoryDic[childId][type][date]) {
+                    int num = [notificationHistoryDic[childId][type][date][@"num"] intValue] + 1;
+                    notificationHistoryDic[childId][type][date][@"num"] = [NSNumber numberWithInt:num];
+                    if ([object.createdAt compare:notificationHistoryDic[childId][type][date][@"lastCreatedAt"]] == NSOrderedDescending) {
+                        notificationHistoryDic[childId][type][date][@"lastCreatedAt"] = object.createdAt;
+                    }
+                    if ([object[@"status"] isEqualToString:@"ready"]) {
+                        notificationHistoryDic[childId][type][date][@"status"] = @"ready";
+                    }
+                } else if (notificationHistoryDic[childId][type]) {
+                    notificationHistoryDic[childId][type][date] = [[NSMutableDictionary alloc] init];
+                    notificationHistoryDic[childId][type][date][@"num"] = [NSNumber numberWithInt:1];
+                    notificationHistoryDic[childId][type][date][@"lastCreatedAt"] = object.createdAt;
+                    notificationHistoryDic[childId][type][date][@"status"] = object[@"status"];
+                } else if (notificationHistoryDic[childId]) {
+                    NSMutableDictionary *dateDic = [[NSMutableDictionary alloc] init];
+                    dateDic[@"num"] = [NSNumber numberWithInt:1];
+                    dateDic[@"lastCreatedAt"] = object.createdAt;
+                    dateDic[@"status"] = object[@"status"];
+                    NSMutableDictionary *typeDic = [[NSMutableDictionary alloc] init];
+                    typeDic[date] = dateDic;
+                    notificationHistoryDic[childId][type] = typeDic;
+                } else {
+                    NSMutableDictionary *dateDic = [[NSMutableDictionary alloc] init];
+                    dateDic[@"num"] = [NSNumber numberWithInt:1];
+                    dateDic[@"lastCreatedAt"] = object.createdAt;
+                    dateDic[@"status"] = object[@"status"];
+                    NSMutableDictionary *typeDic = [[NSMutableDictionary alloc] init];
+                    typeDic[date] = dateDic;
+                    NSMutableDictionary *childDic = [[NSMutableDictionary alloc] init];
+                    childDic[type] = typeDic;
+                    notificationHistoryDic[childId] = childDic;
+                }
+            }
+            
+            // 時系列で並べる為、lastCreatedAtをkeyにしたハッシュに作り替える
+            NSMutableDictionary *notificationHistoryDicByDate = [[NSMutableDictionary alloc] init];
+            for (NSString *childId in [notificationHistoryDic allKeys]) {
+                for (NSString *type in [notificationHistoryDic[childId] allKeys]) {
+                    for (NSDictionary *date in [notificationHistoryDic[childId][type] allKeys]) {
+                        NSDate *lastCreatedAt = notificationHistoryDic[childId][type][date][@"lastCreatedAt"];
+                        NSMutableDictionary *infoDic = [[NSMutableDictionary alloc] init];
+                        infoDic[@"child"] = childId;
+                        infoDic[@"type"] = type;
+                        infoDic[@"date"] = date;
+                        infoDic[@"status"] = notificationHistoryDic[childId][type][date][@"status"];
+                        infoDic[@"num"] = notificationHistoryDic[childId][type][date][@"num"];
+                        notificationHistoryDicByDate[lastCreatedAt] = infoDic;
+                    }
+                }
+            }
+            
+            // createdAtで並び替えた配列にする
+            NSArray *keys = [notificationHistoryDicByDate allKeys];
+            keys = [keys sortedArrayUsingComparator:^(id o1, id o2) {
+                return [o2 compare:o1];
+            }];
+            
+            NSMutableArray *notificationHistoryArray = [[NSMutableArray alloc] init];
+            for (id key in keys) {
+                [notificationHistoryArray addObject:notificationHistoryDicByDate[key]];
+            }
+            
+            block(notificationHistoryArray);
         } else {
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getNotificationHistoryInBackground(findObjectsInBackgroundWithBlock) : %@", error]];
         }
@@ -227,7 +319,7 @@ NSString *const className = @"NotificationHistory";
     NSString *MMDD = [NSString stringWithFormat:@"%@/%@", [dateStr substringWithRange:NSMakeRange(4, 2)], [dateStr substringWithRange:NSMakeRange(6, 2)]];
     NSMutableDictionary *childProperty = [ChildProperties getChildProperty:histObject[@"child"]];
     if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
-        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんの写真にコメントがつきました", MMDD, childProperty[@"name"]];
+        returnStr = [NSString stringWithFormat:@"%@の%@ちゃんの写真にコメントが%@件つきました", MMDD, childProperty[@"name"], histObject[@"num"]];
     } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
         returnStr = [NSString stringWithFormat:@"%@の%@ちゃんの写真がリクエストされています", MMDD, childProperty[@"name"]];
     } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {

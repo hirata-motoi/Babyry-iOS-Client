@@ -107,7 +107,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES]; // 選択状態の解除
     
     PFObject *histObject = _notificationHistoryArray[indexPath.row];
-    [TransitionByPushNotification createTransitionInfoAntTransition:histObject viewController:self];
+    [TransitionByPushNotification createTransitionInfoAndTransition:histObject viewController:self];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -145,14 +145,7 @@
 - (void)getNotificationHistory
 {
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:nil withLimit:100 withBlock:^(NSArray *objects){
-        _notificationHistoryArray = [[NSMutableArray alloc] init];
-        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
-        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
-        for (PFObject *object in objects) {
-            if ([[Config config][@"GlobalNotificationTypes"] containsObject:object[@"type"]]) {
-                [_notificationHistoryArray addObject:object];
-            }
-        }
+        _notificationHistoryArray = [[NSMutableArray alloc] initWithArray:objects];
         [_notificationTableView reloadData];
     }];
 }
