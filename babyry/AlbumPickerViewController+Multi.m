@@ -51,7 +51,7 @@
         [alert show];
         return;
     }
-
+    
     if ([_albumPickerViewController.checkedImageArray count] + [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue] > 15) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"上限数を超えています"
                                                         message:[NSString stringWithFormat:@"1日あたりアップロード可能なベストショット候補の写真は15枚です。既に%d枚アップロード済みです。アップロード済みの写真は拡大画面から削除も可能です", [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue]]
@@ -67,61 +67,67 @@
         return;
     }
     
-    _albumPickerViewController.hud.labelText = @"データ準備中";
-    [_albumPickerViewController.hud hide:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:_albumPickerViewController.self.view animated:YES];
+    hud.labelText = @"アップロード中";
     
-    // imageFileをフォアグランドで_uploadImageDataArrayに用意しておく
-    // backgroundでセットしようとするとセット前の画像が解放されてしまうので
-    _albumPickerViewController.uploadImageDataArray = [[NSMutableArray alloc] init];
-    _albumPickerViewController.uploadImageDataTypeArray = [[NSMutableArray alloc] init];
-    for (NSIndexPath *indexPath in _albumPickerViewController.checkedImageArray) {
-        ALAsset *asset = _albumPickerViewController.sectionImageDic[_albumPickerViewController.sectionDateByIndex[indexPath.section]][indexPath.row];
-        ALAssetRepresentation *representation = [asset defaultRepresentation];
-        NSURL *assetURL = [[asset valueForProperty:ALAssetPropertyURLs] objectForKey:[[asset defaultRepresentation] UTI]];
-        NSString *fileExtension = [[assetURL path] pathExtension];
+    // クルクルを即出す為にUI以外の処理をbackgroundにする
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
         
-        UIImage *originalImage = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:[representation scale] orientation:(UIImageOrientation)[representation orientation]];
-        UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
-        
-        NSData *imageData = [[NSData alloc] init];
-        NSString *imageType = [[NSString alloc] init];
-        if ([fileExtension isEqualToString:@"PNG"]) {
-            imageData = UIImagePNGRepresentation(resizedImage);
-            imageType = @"image/png";
-        } else {
-            imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
-            imageType = @"image/jpeg";
+        // imageFileをフォアグランドで_uploadImageDataArrayに用意しておく
+        // backgroundでセットしようとするとセット前の画像が解放されてしまうので
+        _albumPickerViewController.uploadImageDataArray = [[NSMutableArray alloc] init];
+        _albumPickerViewController.uploadImageDataTypeArray = [[NSMutableArray alloc] init];
+        for (NSIndexPath *indexPath in _albumPickerViewController.checkedImageArray) {
+            ALAsset *asset = _albumPickerViewController.sectionImageDic[_albumPickerViewController.sectionDateByIndex[indexPath.section]][indexPath.row];
+            ALAssetRepresentation *representation = [asset defaultRepresentation];
+            NSURL *assetURL = [[asset valueForProperty:ALAssetPropertyURLs] objectForKey:[[asset defaultRepresentation] UTI]];
+            NSString *fileExtension = [[assetURL path] pathExtension];
+            
+            UIImage *originalImage = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:[representation scale] orientation:(UIImageOrientation)[representation orientation]];
+            UIImage *resizedImage = [ImageTrimming resizeImageForUpload:originalImage];
+            
+            NSData *imageData = [[NSData alloc] init];
+            NSString *imageType = [[NSString alloc] init];
+            if ([fileExtension isEqualToString:@"PNG"]) {
+                imageData = UIImagePNGRepresentation(resizedImage);
+                imageType = @"image/png";
+            } else {
+                imageData = UIImageJPEGRepresentation(resizedImage, 0.7f);
+                imageType = @"image/jpeg";
+            }
+            [_albumPickerViewController.uploadImageDataArray addObject:imageData];
+            [_albumPickerViewController.uploadImageDataTypeArray addObject:imageType];
         }
-        [_albumPickerViewController.uploadImageDataArray addObject:imageData];
-        [_albumPickerViewController.uploadImageDataTypeArray addObject:imageType];
-    }
-    
-    [_albumPickerViewController.hud hide:YES];
-    if (_albumPickerViewController.totalImageNum) {
-        int totalNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue] + [_albumPickerViewController.checkedImageArray count];
-        [_albumPickerViewController.totalImageNum replaceObjectAtIndex:_albumPickerViewController.targetDateIndexPath.row withObject:[NSNumber numberWithInt:totalNum]];
-    }
-    
-    [ImageUploadInBackground setMultiUploadImageDataSet:_albumPickerViewController.childProperty
-                              multiUploadImageDataArray:_albumPickerViewController.uploadImageDataArray
-                          multiUploadImageDataTypeArray:_albumPickerViewController.uploadImageDataTypeArray
-                                                   date:_albumPickerViewController.date
-                                              indexPath:_albumPickerViewController.targetDateIndexPath];
-    NSNotification *n = [NSNotification notificationWithName:@"multiUploadImageInBackground" object:nil];
-    [[NSNotificationCenter defaultCenter] postNotification:n];
-    
-    if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUser"]) {
-        [Tutorial forwardStageWithNextStage:@"uploadByUserFinished"];
-    }
-    
-    // child icon
-    [_albumPickerViewController setChildFirstIconWithImageData:_albumPickerViewController.uploadImageDataArray[0]]; // 決め
-    
-    [_albumPickerViewController dismissViewControllerAnimated:YES completion:NULL];
-    
-    //アルバム表示のViewも消す
-    UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;
-    [naviController popViewControllerAnimated:YES];
+        
+        [hud hide:YES];
+        if (_albumPickerViewController.totalImageNum) {
+            int totalNum = [[_albumPickerViewController.totalImageNum objectAtIndex:_albumPickerViewController.targetDateIndexPath.row] intValue] + [_albumPickerViewController.checkedImageArray count];
+            [_albumPickerViewController.totalImageNum replaceObjectAtIndex:_albumPickerViewController.targetDateIndexPath.row withObject:[NSNumber numberWithInt:totalNum]];
+        }
+        
+        [ImageUploadInBackground setMultiUploadImageDataSet:_albumPickerViewController.childProperty
+                                  multiUploadImageDataArray:_albumPickerViewController.uploadImageDataArray
+                              multiUploadImageDataTypeArray:_albumPickerViewController.uploadImageDataTypeArray
+                                                       date:_albumPickerViewController.date
+                                                  indexPath:_albumPickerViewController.targetDateIndexPath];
+        NSNotification *n = [NSNotification notificationWithName:@"multiUploadImageInBackground" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotification:n];
+        
+        if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUser"]) {
+            [Tutorial forwardStageWithNextStage:@"uploadByUserFinished"];
+        }
+        
+        // child icon
+        [_albumPickerViewController setChildFirstIconWithImageData:_albumPickerViewController.uploadImageDataArray[0]]; // 決め
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_albumPickerViewController dismissViewControllerAnimated:YES completion:NULL];
+        
+            //アルバム表示のViewも消す
+            UINavigationController *naviController = (UINavigationController *)_albumPickerViewController.presentingViewController;
+            [naviController popViewControllerAnimated:YES];
+        });
+    });
 }
 
 @end

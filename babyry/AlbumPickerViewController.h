@@ -45,8 +45,6 @@
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *targetDateIndexPath;
 
-@property MBProgressHUD *hud;
-
 @property int multiUploadMax;
 
 @property NSString *uploadType;

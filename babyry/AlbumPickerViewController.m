@@ -50,8 +50,6 @@
     _childProperty = [ChildProperties getChildProperty:_childObjectId];
     cellSize = CGSizeMake(self.view.frame.size.width/4 -3, self.view.frame.size.width/4 -3);
     selectedCellSize = CGSizeMake(_selectedImageCollectionView.frame.size.height, _selectedImageCollectionView.frame.size.height);
-    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [_hud hide:YES];
     
     _albumImageCollectionView.delegate = self;
     _albumImageCollectionView.dataSource = self;

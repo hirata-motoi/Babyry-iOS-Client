@@ -36,7 +36,7 @@
     [self.view addSubview:buttonView];
     UITapGestureRecognizer *dismisGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismisViewController)];
     dismisGesture.numberOfTapsRequired = 1;
-    [self.signUpView addGestureRecognizer:dismisGesture];
+    [buttonView addGestureRecognizer:dismisGesture];
     
     // タイトル
     signUpViewTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 50, 320, 44)];
