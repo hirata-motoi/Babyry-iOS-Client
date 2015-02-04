@@ -26,13 +26,9 @@ static const float screenRate = 0.9;
 - (void) logicViewDidLoad
 {
     _albumPickerViewController.selectedImageCollectionView.hidden = YES;
+    _albumPickerViewController.selectedImageBaseView.hidden = YES;
     _albumPickerViewController.sendImageLabel.hidden = YES;
     _albumPickerViewController.picNumLabel.hidden = YES;
-    
-    CGRect albumFrame = _albumPickerViewController.albumImageCollectionView.frame;
-    float windowHeight = _albumPickerViewController.view.frame.size.height;
-    CGRect albumFrameForSingle = CGRectMake(albumFrame.origin.x, albumFrame.origin.y, albumFrame.size.width, windowHeight - albumFrame.origin.y);
-    _albumPickerViewController.albumImageCollectionView.frame = albumFrameForSingle;
 }
 
 // method名とは異なりsendしない。modalを表示するだけ

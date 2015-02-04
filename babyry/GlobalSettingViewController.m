@@ -44,6 +44,7 @@
     TutorialNavigator *tn;
     NSMutableArray *notificationHistoryArray;
     MBProgressHUD *hud;
+    BOOL underTutorial;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -90,9 +91,11 @@
     
     tn = [[TutorialNavigator alloc]init];
     tn.targetViewController = self;
-    [tn showNavigationView];
-    
-    [self getNotificationHistory];
+    underTutorial = [tn showNavigationView];
+   
+    if (!underTutorial) {
+        [self getNotificationHistory];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -186,8 +189,11 @@
                     [hud hide:YES];
                     hud = nil;
                 }
-                hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
-                [cell addSubview:hud];
+                
+                if (!underTutorial) {
+                    hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
+                    [cell addSubview:hud];
+                }
             } else {
                 if (indexPath.row == 4) {
                     cell.detailTextLabel.text = @"お知らせをもっと見る";
@@ -365,13 +371,6 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 3;
-}
-
-- (void)openAddChildAddView
-{
-    [tn removeNavigationView];
-    IntroChildNameViewController *icnvc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroChildNameViewController"];
-    [self.navigationController pushViewController:icnvc animated:YES];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
