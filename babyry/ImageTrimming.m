@@ -34,7 +34,9 @@
     CGImageRef srcImageRef = [orgImage CGImage];
     CGImageRef trimmedImageRef = CGImageCreateWithImageInRect(srcImageRef, trimArea);
     UIImage *trimmedImage = [UIImage imageWithCGImage:trimmedImageRef];
-  
+
+    // UIImageで保持している方だけreleaseする必要がある
+    // You have to call CGImageRelease only when you use CGImageCreate, Copy or Retain.
     CGImageRelease(trimmedImageRef);
 
     return trimmedImage;
@@ -58,6 +60,10 @@
     CGImageRef srcImageRef = [orgImage CGImage];
     CGImageRef trimmedImageRef = CGImageCreateWithImageInRect(srcImageRef, trimArea);
     UIImage *trimmedImage = [UIImage imageWithCGImage:trimmedImageRef];
+
+    // UIImageで保持している方だけreleaseする必要がある
+    // You have to call CGImageRelease only when you use CGImageCreate, Copy or Retain.
+    CGImageRelease(trimmedImageRef);
     
     return trimmedImage;
 }
