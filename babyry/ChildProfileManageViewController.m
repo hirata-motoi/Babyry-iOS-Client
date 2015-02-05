@@ -28,6 +28,8 @@
 #import "ChildIconCollectionViewController.h"
 #import "ChildIconManager.h"
 #import "PushNotification.h"
+#import "ChildActionListView.h"
+#import "UIColor+Hex.h"
 
 @interface ChildProfileManageViewController ()
 
@@ -43,7 +45,8 @@
     ChildProfileIconAndNameCell *targetCell;
     ChildPropertyUtils *childPropertyUtils;
     MBProgressHUD *hud;
-}                   
+    CMPopTipView *tipView;
+}   
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -331,6 +334,26 @@
 
 #pragma mark - Remove Child
 
+- (void)openActionList:(NSString *)childObjectId withTargetView:(UIView *)view
+{
+    ChildActionListView *actionListView = [ChildActionListView view];
+    actionListView.delegate = self;
+    actionListView.childObjectId = childObjectId;
+    tipView = [[CMPopTipView alloc] initWithCustomView:actionListView];
+    tipView.delegate = self;
+    tipView.dismissTapAnywhere = YES;
+    tipView.disableTapToDismiss = YES;
+    tipView.hasGradientBackground = NO;
+    tipView.has3DStyle = NO;
+    tipView.borderColor = [UIColor clearColor];
+    tipView.backgroundColor = [UIColor_Hex colorWithHexString:@"000000" alpha:0.7];;
+    [tipView presentPointingAtView:view inView:self.view animated:YES];
+}
+- (void)popTipViewWasDismissedByUser:(CMPopTipView *)popTipView
+{
+    // nothing to do
+}
+
 - (void)removeChild:(NSString *)childObjectId
 {
     if (childProperties.count == 1) {
@@ -401,6 +424,7 @@
                     }
                 }];
             }];
+            [tipView dismissAnimated:YES];
         }
             break;
     }

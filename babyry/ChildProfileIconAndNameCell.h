@@ -15,6 +15,7 @@
 - (void)setTargetChild:(NSString *)childObjectId;
 - (void)showIconEditActionSheet:(NSString *)childObjectId;
 - (void)removeChild:(NSString *)childObjectId;
+- (void)openActionList:(NSString *)childObjectId withTargetView:(UIView *)view;
 
 @end
 
@@ -24,7 +25,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *childNameEditField;
 @property (weak, nonatomic) IBOutlet UILabel *editLabel;
 @property (weak, nonatomic) IBOutlet UIView *iconContainer;
-@property (weak, nonatomic) IBOutlet UIButton *removeButton;
+@property (weak, nonatomic) IBOutlet UIImageView *actionListIcon;
 @property NSString *childObjectId;
 @property (nonatomic,assign) id<ChildProfileIconAndNameCellDelegate> delegate;
 

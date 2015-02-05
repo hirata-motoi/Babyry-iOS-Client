@@ -25,6 +25,11 @@
     UITapGestureRecognizer *iconEditGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openIconEdit)];
     iconEditGesture.numberOfTapsRequired = 1;
     [_iconContainer addGestureRecognizer:iconEditGesture];
+    
+    UITapGestureRecognizer *actionListGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openActionList:)];
+    actionListGesture.numberOfTapsRequired = 1;
+    _actionListIcon.userInteractionEnabled = YES;
+    [_actionListIcon addGestureRecognizer:actionListGesture];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -74,8 +79,8 @@
     [_delegate showIconEditActionSheet:_childObjectId];
 }
 
-- (IBAction)removeChild:(id)sender {
-    [_delegate removeChild:_childObjectId];
+- (void)openActionList:(id)sender {
+    [_delegate openActionList:(NSString *)_childObjectId withTargetView:[sender view]];
 }
 
 
