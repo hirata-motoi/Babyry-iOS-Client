@@ -305,15 +305,7 @@
 - (void) showGlobalMenuBadge
 {
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:@"ready" withLimit:1000 withBlock:^(NSArray *objects){
-        int badgeNumber = 0;
-        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
-        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
-        for (PFObject *object in objects) {
-            if ([[Config config][@"GlobalNotificationTypes"] containsObject:object[@"type"]]) {
-                badgeNumber++;
-            }
-        }
-        [self.pageContentViewController.delegate setGlobalMenuBadge:badgeNumber];
+        [self.pageContentViewController.delegate setGlobalMenuBadge:[objects count]];
     }];
 }
 

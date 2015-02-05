@@ -173,6 +173,7 @@
     cell.textLabel.text = nil;
     cell.detailTextLabel.text = nil;
     cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:14];
     cell.separatorInset = UIEdgeInsetsZero;
@@ -195,14 +196,20 @@
                     [cell addSubview:hud];
                 }
             } else {
+                if (notificationHistoryArray.count == 0) {
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    break;
+                }
                 if (indexPath.row == 4) {
                     cell.detailTextLabel.text = @"お知らせをもっと見る";
                     cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
                     cell.detailTextLabel.font = cell.textLabel.font;
                     cell.detailTextLabel.textColor = [UIColor blackColor];
                     cell.backgroundColor = [ColorUtils getGlobalMenuLightGrayColor];
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
                 } else {
-                    if (notificationHistoryArray.count > 0 && notificationHistoryArray[indexPath.row]) {
+                    if (notificationHistoryArray.count > indexPath.row) {
                         PFObject *histObject = notificationHistoryArray[indexPath.row];
                         cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
                         cell.textLabel.numberOfLines = 2;
@@ -219,10 +226,12 @@
                         if (![histObject[@"status"] isEqualToString:@"displayed"]) {
                             cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
                         }
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+                    } else {
+                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     }
                 }
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
             }
             break;
         case 1:
@@ -318,13 +327,16 @@
     
     switch (indexPath.section) {
         case 0:
+            if (notificationHistoryArray.count == 0) {
+                break;
+            }
             if (notificationHistoryArray) {
                 if (indexPath.row == 4) {
                     [self openNotificationHistoryViewController];
-                } else {
+                } else if (notificationHistoryArray.count > indexPath.row) {
                     if (notificationHistoryArray[indexPath.row]) {
                         PFObject *histObject = notificationHistoryArray[indexPath.row];
-                        [TransitionByPushNotification createTransitionInfoAntTransition:histObject viewController:self];
+                        [TransitionByPushNotification createTransitionInfoAndTransition:histObject viewController:self];
                     }
                 }
             }
@@ -612,14 +624,7 @@
 - (void)getNotificationHistory
 {
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:nil withLimit:100 withBlock:^(NSArray *objects){
-        notificationHistoryArray = [[NSMutableArray alloc] init];
-        // imageUploaded, requestPhoto, bestShotChanged, commentPostedだけ拾う
-        // その他のやつはhistoryにある意味が無いので(partchangeはかってにスイッチされてるとか)
-        for (PFObject *object in objects) {
-            if ([[Config config][@"GlobalNotificationTypes"] containsObject:object[@"type"]]) {
-                [notificationHistoryArray addObject:object];
-            }
-        }
+        notificationHistoryArray = [[NSMutableArray alloc] initWithArray:objects];
         [_settingTableView reloadData];
         [hud hide:YES];
     }];

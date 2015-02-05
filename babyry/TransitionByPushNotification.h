@@ -27,6 +27,6 @@
 + (void) setAppLaunchedFlag;
 + (void) removeAppLaunchFlag;
 + (BOOL) checkAppLaunchedFlag;
-+ (void)createTransitionInfoAntTransition:(PFObject *)histObject viewController:(UIViewController *)vc;
++ (void)createTransitionInfoAndTransition:(PFObject *)histObject viewController:(UIViewController *)vc;
 
 @end
