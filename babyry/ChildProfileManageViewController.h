@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CMPopTipView/CMPopTipView.h>
 #import "ChildProfileBirthdayCell.h"
 #import "ChildProfileIconAndNameCell.h"
 #import "ChildCreatePopupViewController.h"
 #import "ChildIconCollectionViewController.h"
 #import "ChildProfileGenderCell.h"
-                         
-@interface ChildProfileManageViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, ChildProfileBirthdayCellDelegate, ChildProfileIconAndNameCellDelegate, ChildCreatePopupViewControllerDelegate, ChildIconCollectionViewControllerDelegate, ChildProfileGenderCellDelegate>
+#import "ChildActionListView.h"
+
+@interface ChildProfileManageViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, ChildProfileBirthdayCellDelegate, ChildProfileIconAndNameCellDelegate, ChildCreatePopupViewControllerDelegate, ChildIconCollectionViewControllerDelegate, ChildProfileGenderCellDelegate, CMPopTipViewDelegate, ChildActionListViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *profileTable;                                                                                              
 @property (weak, nonatomic) IBOutlet UIButton *openChildAddButton;
 

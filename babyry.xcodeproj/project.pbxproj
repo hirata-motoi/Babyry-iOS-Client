@@ -231,6 +231,8 @@
 		F2B9697A19CD8F4C00C14201 /* TutorialNavigator+Introduction.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9697919CD8F4C00C14201 /* TutorialNavigator+Introduction.m */; };
 		F2B9697C19CD903900C14201 /* TutorialIntroductionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */; };
 		F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */; };
+		F2BCFEA41A83B85C00A732EE /* ChildActionListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2BCFEA31A83B85C00A732EE /* ChildActionListView.xib */; };
+		F2BCFEA71A83B98400A732EE /* ChildActionListView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2BCFEA61A83B98400A732EE /* ChildActionListView.m */; };
 		F2CA4FE01A5F8463003EA9E6 /* ImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */; };
 		F2CA4FE91A603E00003EA9E6 /* ChildProfileManageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CA4FE81A603E00003EA9E6 /* ChildProfileManageViewController.m */; };
 		F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib */; };
@@ -659,6 +661,9 @@
 		F2B9697B19CD903900C14201 /* TutorialIntroductionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TutorialIntroductionView.xib; sourceTree = "<group>"; };
 		F2B9698019CD92D900C14201 /* TutorialIntroductionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialIntroductionView.h; sourceTree = "<group>"; };
 		F2B9698119CD92D900C14201 /* TutorialIntroductionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialIntroductionView.m; sourceTree = "<group>"; };
+		F2BCFEA31A83B85C00A732EE /* ChildActionListView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChildActionListView.xib; sourceTree = "<group>"; };
+		F2BCFEA51A83B98400A732EE /* ChildActionListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildActionListView.h; sourceTree = "<group>"; };
+		F2BCFEA61A83B98400A732EE /* ChildActionListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildActionListView.m; sourceTree = "<group>"; };
 		F2CA4FDE1A5F8463003EA9E6 /* ImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtils.h; sourceTree = "<group>"; };
 		F2CA4FDF1A5F8463003EA9E6 /* ImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtils.m; sourceTree = "<group>"; };
 		F2CA4FE71A603E00003EA9E6 /* ChildProfileManageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProfileManageViewController.h; sourceTree = "<group>"; };
@@ -1542,6 +1547,7 @@
 		F2CA4FF01A60AF77003EA9E6 /* Xib */ = {
 			isa = PBXGroup;
 			children = (
+				F2BCFEA31A83B85C00A732EE /* ChildActionListView.xib */,
 				F2CA4FFA1A62215C003EA9E6 /* ChildProfileBirthdayCell.xib */,
 				F2CA4FEA1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib */,
 				F2CA4FF51A60B163003EA9E6 /* ChildProfileGenderCell.xib */,
@@ -1554,6 +1560,8 @@
 		F2CA4FF11A60AF7E003EA9E6 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				F2BCFEA51A83B98400A732EE /* ChildActionListView.h */,
+				F2BCFEA61A83B98400A732EE /* ChildActionListView.m */,
 				F2B5BC2E1A723B750082185E /* ChildProfileNameCell.h */,
 				F2B5BC2F1A723B750082185E /* ChildProfileNameCell.m */,
 				F2B5BC261A710B390082185E /* ChildProfileIconCell.h */,
@@ -1808,9 +1816,10 @@
 				F21BBBB519C9ED45002D4623 /* TutorialShowMultiUploadView.xib in Resources */,
 				F285516619D15F0A00347BB6 /* TutorialImage_1.jpg in Resources */,
 				88C072F319CAB64500BF6F6F /* ChildListCell.xib in Resources */,
+				F2BCFEA41A83B85C00A732EE /* ChildActionListView.xib in Resources */,
 				F25D29DE199B3DEA00CD50D7 /* CollectionViewSectionHeader.xib in Resources */,
 				F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib in Resources */,
-				F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconCell.xib in Resources */,
+				F2CA4FEB1A60A64F003EA9E6 /* ChildProfileIconAndNameCell.xib in Resources */,
 				88962B411A6CC2B3001EEBED /* CommentNumLabel.xib in Resources */,
 				F21BBBC519CA0037002D4623 /* TutorialPartChangeView.xib in Resources */,
 				F2ABB120197D2633009E35CB /* CommentTableViewCell.xib in Resources */,
@@ -1991,6 +2000,7 @@
 				F21BBBDE19CA721A002D4623 /* TutorialNavigator+AddChild.m in Sources */,
 				88B89FBE193EDC04009474DC /* UploadViewController.m in Sources */,
 				F21BBBF419CAE5E0002D4623 /* TutorialNavigator+TutorialFinished.m in Sources */,
+				F2BCFEA71A83B98400A732EE /* ChildActionListView.m in Sources */,
 				8881CFA119A0C67800B909C8 /* MyLogInViewController.m in Sources */,
 				F2AE04EC19B2EC8500B39C6F /* AppSetting.m in Sources */,
 				F226591A19D23003003A62BD /* TutorialImageUploadFinishedView.m in Sources */,

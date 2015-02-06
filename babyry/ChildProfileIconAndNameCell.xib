@@ -44,26 +44,23 @@
                             <action selector="save:" destination="36Q-kX-1Sc" eventType="touchUpInside" id="0tM-uP-a6N"/>
                         </connections>
                     </button>
-                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hc9-7x-S2j">
-                        <rect key="frame" x="266" y="55" width="46" height="30"/>
-                        <state key="normal" title="削除">
-                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                        </state>
-                        <connections>
-                            <action selector="removeChild:" destination="36Q-kX-1Sc" eventType="touchUpInside" id="TSN-qP-PGU"/>
-                        </connections>
-                    </button>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="AngleLower" translatesAutoresizingMaskIntoConstraints="NO" id="Afk-0D-iRT">
+                        <rect key="frame" x="277" y="54" width="25" height="32"/>
+                    </imageView>
                 </subviews>
             </tableViewCellContentView>
             <connections>
+                <outlet property="actionListIcon" destination="Afk-0D-iRT" id="fm3-hZ-b9D"/>
                 <outlet property="childNameEditField" destination="bFw-1s-ENA" id="3jY-BG-OcQ"/>
                 <outlet property="childNameLabel" destination="cVn-rY-4D1" id="yEW-S1-Sih"/>
                 <outlet property="editLabel" destination="G2V-Uj-RFd" id="wc5-zf-4Vs"/>
                 <outlet property="iconContainer" destination="cmb-Hv-6OR" id="mu8-L9-VUW"/>
-                <outlet property="removeButton" destination="hc9-7x-S2j" id="M0n-1m-Zvn"/>
                 <outlet property="saveButton" destination="emf-lb-qTr" id="V0t-eg-a0B"/>
             </connections>
-            <point key="canvasLocation" x="279" y="240"/>
+            <point key="canvasLocation" x="279" y="236"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="AngleLower" width="346" height="512"/>
+    </resources>
 </document>
