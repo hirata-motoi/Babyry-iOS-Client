@@ -132,8 +132,9 @@
                                 queueForCache[@"objectId"] = childImageDate.objectId;
 								queueForCache[@"childObjectId"] = self.pageContentViewController.childObjectId;
                                 queueForCache[@"date"] = childImageDate[@"date"];
+                                queueForCache[@"isBS"] = [NSNumber numberWithBool:YES];
                                 if ([DateUtils isTodayByIndexPath:ip]) {
-                                    queueForCache[@"imageType"] = @"fullsize";
+                                    queueForCache[@"isFullSize"] = [NSNumber numberWithBool:YES];
                                 }
                                 
                                 [cacheSetQueueArray addObject:queueForCache];
@@ -152,7 +153,7 @@
                                 queueForCache[@"objectId"] = childImageDate.objectId;
 								queueForCache[@"childObjectId"] = self.pageContentViewController.childObjectId;
                                 queueForCache[@"date"] = childImageDate[@"date"];
-								queueForCache[@"imageType"] = @"candidate";
+								queueForCache[@"isCandidate"] = [NSNumber numberWithBool:YES];
                                 
                                 [cacheSetQueueArray addObject:queueForCache];
                             }

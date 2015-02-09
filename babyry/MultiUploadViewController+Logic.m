@@ -60,7 +60,7 @@
                     queue[@"objectId"] = object.objectId;
                     queue[@"childObjectId"] = _multiUploadViewController.childObjectId;
                     queue[@"date"] = object[@"date"];
-                    queue[@"imageType"] = @"candidate";
+                    queue[@"isCandidate"] = [NSNumber numberWithBool:YES];
                     [downloadQueue addObject:queue];
                 }
             }
