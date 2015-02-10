@@ -364,6 +364,7 @@
     [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", fromYM, 1] integerValue]]];
     [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", toYM, 31] integerValue]]];
     [query orderByDescending:@"date"];
+    query.limit = 1000;
     NSArray *objects = [query findObjects];
     
     if (objects && objects.count > 0) {
@@ -372,8 +373,8 @@
         for (PFObject *childImage in objects) {
             if ([[childImage[@"date"] stringValue] isEqualToString:transitionInfo[@"date"]]) {
                 _currentIndex = index;
+                [self cacheThumbnail:childImage];
             }
-            [self cacheThumbnail:childImage];
             index++;
         }
     }

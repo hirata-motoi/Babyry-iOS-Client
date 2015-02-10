@@ -556,7 +556,7 @@
         NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:text];
         // 色
         [str addAttribute:NSForegroundColorAttributeName
-                    value: [UIColor_Hex colorWithHexString:@"ff7f7f" alpha:1.0f]
+                    value: [UIColor_Hex colorWithHexString:@"ffffff" alpha:1.0f]
                     range:NSMakeRange(0, text.length)];
         // font
         [str addAttribute:NSFontAttributeName

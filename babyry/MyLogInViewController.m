@@ -75,7 +75,7 @@
     // ユーザー名 text field
     self.logInView.usernameField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"メールアドレス"
                                                                                          attributes:@{NSForegroundColorAttributeName:[ColorUtils getLoginTextFieldPaceHolderColor]}];
-    self.logInView.usernameField.keyboardType = UIKeyboardTypeASCIICapable;
+    self.logInView.usernameField.keyboardType = UIKeyboardTypeEmailAddress;
     self.logInView.usernameField.font = [UIFont fontWithName:@"HiraKakuProN-W3" size:16.0f];
     
     // パスワード text field
