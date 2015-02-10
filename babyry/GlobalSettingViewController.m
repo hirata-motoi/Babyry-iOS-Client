@@ -197,41 +197,40 @@
                 }
             } else {
                 if (notificationHistoryArray.count == 0) {
+                    cell.textLabel.text = @"お知らせはありません";
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     break;
                 }
-                if (indexPath.row == 4) {
-                    cell.detailTextLabel.text = @"お知らせをもっと見る";
-                    cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
-                    cell.detailTextLabel.font = cell.textLabel.font;
-                    cell.detailTextLabel.textColor = [UIColor blackColor];
-                    cell.backgroundColor = [ColorUtils getGlobalMenuLightGrayColor];
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-                } else {
-                    if (notificationHistoryArray.count > indexPath.row) {
-                        PFObject *histObject = notificationHistoryArray[indexPath.row];
-                        cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
-                        cell.textLabel.numberOfLines = 2;
-                        cell.textLabel.adjustsFontSizeToFitWidth = YES;
-                        if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
-                            cell.imageView.image = [UIImage imageNamed:@"IconMenuUploaded"];
-                        } else if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
-                            cell.imageView.image = [UIImage imageNamed:@"IconMenuComment"];
-                        } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
-                            cell.imageView.image = [UIImage imageNamed:@"IconMenuGMP"];
-                        } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
-                            cell.imageView.image = [UIImage imageNamed:@"IconMenuLike"];
-                        }
-                        if (![histObject[@"status"] isEqualToString:@"displayed"]) {
-                            cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
-                        }
+                if ([notificationHistoryArray count] >= 5) {
+                    if (indexPath.row == 4) {
+                        cell.detailTextLabel.text = @"お知らせをもっと見る";
+                        cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
+                        cell.detailTextLabel.font = cell.textLabel.font;
+                        cell.detailTextLabel.textColor = [UIColor blackColor];
+                        cell.backgroundColor = [ColorUtils getGlobalMenuLightGrayColor];
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-                    } else {
-                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                        break;
                     }
                 }
+                PFObject *histObject = notificationHistoryArray[indexPath.row];
+                cell.textLabel.text = [NotificationHistory getNotificationString:histObject];
+                cell.textLabel.numberOfLines = 2;
+                cell.textLabel.adjustsFontSizeToFitWidth = YES;
+                if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
+                    cell.imageView.image = [UIImage imageNamed:@"IconMenuUploaded"];
+                } else if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
+                    cell.imageView.image = [UIImage imageNamed:@"IconMenuComment"];
+                } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
+                    cell.imageView.image = [UIImage imageNamed:@"IconMenuGMP"];
+                } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
+                    cell.imageView.image = [UIImage imageNamed:@"IconMenuLike"];
+                }
+                if (![histObject[@"status"] isEqualToString:@"displayed"]) {
+                    cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+                }
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
             }
             break;
         case 1:
@@ -302,7 +301,13 @@
             if (!notificationHistoryArray) {
                 rowCount = 1;
             } else {
-                rowCount = 5;
+                if ([notificationHistoryArray count] == 0) {
+                    rowCount = 1;
+                } else if ([notificationHistoryArray count] < 5) {
+                    rowCount = [notificationHistoryArray count];
+                } else {
+                    rowCount = 5;
+                }
             }
             break;
         case 1:
