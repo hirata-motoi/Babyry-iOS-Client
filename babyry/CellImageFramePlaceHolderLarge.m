@@ -35,6 +35,11 @@
 
 - (void)setPlaceHolderForCell:(CalendarCollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath role:(NSString *)role candidateCount:(int)candidateCount
 {
+    // コンテナの位置をcellの高さに合わせて変更
+    CGRect frame = self.placeHolderContainer.frame;
+    frame.origin = CGPointMake(0, (cell.frame.size.height - self.placeHolderContainer.frame.size.height)*3/5);
+    self.placeHolderContainer.frame = frame;
+    
     if ([role isEqualToString:@"chooser"] && candidateCount < 1 && [DateUtils isInTwodayByIndexPath:indexPath]) {
         // チョイスで、candidateが無い場合、かつ2日以内は黄色いアイコン(Give me Photo用)を付ける
         self.placeHolderIcon.image = [UIImage imageNamed:@"IconGiveMePhoto"];
