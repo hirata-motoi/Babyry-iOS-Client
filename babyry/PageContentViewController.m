@@ -184,6 +184,8 @@
     if (childProperty[@"name"]) {
         [_delegate updateNavitagionTitle:childProperty[@"name"]];
     }
+    
+    [self adjustChildImages];
 }
 
 - (void)reloadView
