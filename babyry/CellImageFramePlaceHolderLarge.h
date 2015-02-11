@@ -14,6 +14,7 @@
 + (instancetype)view;
 - (void)setPlaceHolderForCell:(CalendarCollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath role:(NSString *)role candidateCount:(int)candidateCount;
 
+@property (strong, nonatomic) IBOutlet UIView *placeHolderContainer;
 @property (strong, nonatomic) IBOutlet UIImageView *placeHolderIcon;
 @property (strong, nonatomic) IBOutlet UILabel *placeHolderLabel;
 @property (strong, nonatomic) IBOutlet UILabel *suggestLabel;
