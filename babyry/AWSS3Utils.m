@@ -12,6 +12,7 @@
 #import "ChildProperties.h"
 #import "Logger.h"
 #import "AWSCommon.h"
+#import "ImageUtils.h"
 
 @implementation AWSS3Utils
 
@@ -20,12 +21,33 @@
     if ([downloadQueue count] == 0) {
         block();
     }
+    
+    // queueのなかの重複をまとめる
+    NSMutableArray *uniqDownloadQueue = [[NSMutableArray alloc] init];
+    for (NSMutableDictionary *queue in downloadQueue) {
+        if ([uniqDownloadQueue count] == 0) {
+            [uniqDownloadQueue addObject:queue];
+        } else {
+            BOOL duplicateId = NO;
+            for (NSMutableDictionary *uniqQueue in uniqDownloadQueue) {
+                if ([uniqQueue[@"objectId"] isEqualToString:queue[@"objectId"]]) {
+                    duplicateId = YES;
+                    for (NSString *key in queue) {
+                        uniqQueue[key] = queue[key];
+                    }
+                    break;
+                }
+            }
+            if (!duplicateId) {
+                [uniqDownloadQueue addObject:queue];
+            }
+        }
+    }
 
     AWSS3TransferManager *transferManager = [[AWSS3TransferManager alloc] initWithConfiguration:configuration identifier:@"S3"];
     
     int __block executedCount = 0;
-    for (NSMutableDictionary *queue in downloadQueue) {
-        
+    for (NSMutableDictionary *queue in uniqDownloadQueue) {
         NSMutableDictionary *childProperty = [ChildProperties getChildProperty:queue[@"childObjectId"]];
         
         AWSS3TransferManagerDownloadRequest *downloadRequest = [AWSS3TransferManagerDownloadRequest new];
@@ -53,31 +75,26 @@
                 
                 NSData *downloadData = [NSData dataWithContentsOfURL:downloadOutput.body];
                 UIImage *downloadImage = [ImageCache makeThumbNail:[UIImage imageWithData:downloadData]];
-                if (!queue[@"imageType"] || [queue[@"imageType"] isEqualToString:@"fullsize"]) {
-                    if ([queue[@"imageType"] isEqualToString:@"fullsize"]) {
-                        // fullsizeのimageをcache
-                        [ImageCache
-                         setCache:[queue[@"date"] stringValue]
-                         image:downloadData
-                         dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", queue[@"childObjectId"]]
-                         ];
-                    }
-                    // ChileImageオブジェクトのupdatedAtとtimestampを比較するためthumbnailは常に作る
-                    [ImageCache
-                     setCache:[queue[@"date"] stringValue]
-                     image:UIImageJPEGRepresentation(downloadImage, 0.7f)
-                     dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", queue[@"childObjectId"]]
+                if (queue[@"isFullSize"]) {
+                    [ImageCache setCache:[queue[@"date"] stringValue]
+                                   image:downloadData
+                                     dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", queue[@"childObjectId"]]
                      ];
-                } else if ([queue[@"imageType"] isEqualToString:@"candidate"]) {
-                    [ImageCache
-                     setCache:queue[@"objectId"]
-                     image:UIImageJPEGRepresentation(downloadImage, 0.7f)
-                     dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", queue[@"childObjectId"], queue[@"date"]]
+                }
+                if (queue[@"isBS"]) {
+                    [ImageCache setCache:[queue[@"date"] stringValue]
+                                   image:UIImageJPEGRepresentation(downloadImage, 0.7f)
+                                     dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", queue[@"childObjectId"]]
                      ];
-                    [ImageCache
-                     setCache:queue[@"objectId"]
-                     image:downloadData
-                     dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", queue[@"childObjectId"], queue[@"date"]]
+                }
+                if (queue[@"isCandidate"]) {
+                    [ImageCache setCache:queue[@"objectId"]
+                                   image:UIImageJPEGRepresentation(downloadImage, 0.7f)
+                                     dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", queue[@"childObjectId"], queue[@"date"]]
+                     ];
+                    [ImageCache setCache:queue[@"objectId"]
+                                   image:downloadData
+                                     dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", queue[@"childObjectId"], queue[@"date"]]
                      ];
                 }
                 [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@-tmp", queue[@"childObjectId"], queue[@"date"], queue[@"objectId"]]];
@@ -86,7 +103,7 @@
             // エラーも含め全てのキューが終わったらblockを返す
             // エラーになった物はキャッシュがセットされていないので画像が表示されないだけ(もう一度やって成功すれば表示される)
             executedCount++;
-            if (executedCount == [downloadQueue count]) {
+            if (executedCount == [uniqDownloadQueue count]) {
                 block();
             }
             return nil;
