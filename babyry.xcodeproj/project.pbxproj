@@ -99,8 +99,6 @@
 		88C0730219CEAE8F00BF6F6F /* PartnerInvitedEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C0730119CEAE8F00BF6F6F /* PartnerInvitedEntity.m */; };
 		88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4D8199386C500B56481 /* CalenderLabel.xib */; };
 		88CFF4DC19938A0600B56481 /* CalenderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4DB19938A0600B56481 /* CalenderLabel.m */; };
-		88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */; };
-		88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */; };
 		88CFF4F51998B02000B56481 /* ImageToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */; };
 		88CFF4FA19992A3F00B56481 /* ImageToolbarTrashIcon.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */; };
 		88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CFF4FF1999312100B56481 /* ImageToolbarTrashIcon.m */; };
@@ -157,18 +155,6 @@
 		F22C976C198B7E2A00A5BD19 /* ArrayUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F22C976B198B7E2A00A5BD19 /* ArrayUtils.m */; };
 		F22F208619E46A600089A592 /* ChildPropertyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = F22F208519E46A600089A592 /* ChildPropertyEntity.m */; };
 		F22F208F19E4739A0089A592 /* ChildProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F22F208E19E4739A0089A592 /* ChildProperties.m */; };
-		F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */; };
-		F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F230520B198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m */; };
-		F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */ = {isa = PBXBuildFile; fileRef = F230520D198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib */; };
-		F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305210198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m */; };
-		F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305212198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib */; };
-		F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305215198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m */; };
-		F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305218198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib */; };
-		F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F230521B198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m */; };
-		F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = F230521D198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib */; };
-		F2305221198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305220198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m */; };
-		F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */; };
-		F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */ = {isa = PBXBuildFile; fileRef = F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */; };
 		F2310C22198F43DF00E01DA3 /* DragView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2310C21198F43DF00E01DA3 /* DragView.m */; };
 		F233421519A114E900928101 /* FamilyApplyListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F233421419A114E900928101 /* FamilyApplyListCell.xib */; };
 		F233421819A115D900928101 /* FamilyApplyListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F233421719A115D900928101 /* FamilyApplyListCell.m */; };
@@ -447,9 +433,6 @@
 		88CFF4D8199386C500B56481 /* CalenderLabel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CalenderLabel.xib; path = ../CalenderLabel.xib; sourceTree = "<group>"; };
 		88CFF4DA19938A0600B56481 /* CalenderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalenderLabel.h; sourceTree = "<group>"; };
 		88CFF4DB19938A0600B56481 /* CalenderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalenderLabel.m; sourceTree = "<group>"; };
-		88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellBackgroundViewNoImage.xib; sourceTree = "<group>"; };
-		88CFF4E61997B91400B56481 /* CellBackgroundViewNoImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewNoImage.h; sourceTree = "<group>"; };
-		88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewNoImage.m; sourceTree = "<group>"; };
 		88CFF4F31998B02000B56481 /* ImageToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageToolbarViewController.h; sourceTree = "<group>"; };
 		88CFF4F41998B02000B56481 /* ImageToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageToolbarViewController.m; sourceTree = "<group>"; };
 		88CFF4F919992A3F00B56481 /* ImageToolbarTrashIcon.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageToolbarTrashIcon.xib; sourceTree = "<group>"; };
@@ -548,24 +531,6 @@
 		F22F208519E46A600089A592 /* ChildPropertyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildPropertyEntity.m; sourceTree = "<group>"; };
 		F22F208D19E4739A0089A592 /* ChildProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildProperties.h; sourceTree = "<group>"; };
 		F22F208E19E4739A0089A592 /* ChildProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildProperties.m; sourceTree = "<group>"; };
-		F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToEncourageUpload.xib; path = ../CellBackgroundViewToEncourageUpload.xib; sourceTree = "<group>"; };
-		F230520A198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CellBackgroundViewToEncourageUpload.h; path = ../CellBackgroundViewToEncourageUpload.h; sourceTree = "<group>"; };
-		F230520B198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CellBackgroundViewToEncourageUpload.m; path = ../CellBackgroundViewToEncourageUpload.m; sourceTree = "<group>"; };
-		F230520D198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToEncourageChoose.xib; path = ../CellBackgroundViewToEncourageChoose.xib; sourceTree = "<group>"; };
-		F230520F198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CellBackgroundViewToEncourageChoose.h; path = ../CellBackgroundViewToEncourageChoose.h; sourceTree = "<group>"; };
-		F2305210198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CellBackgroundViewToEncourageChoose.m; path = ../CellBackgroundViewToEncourageChoose.m; sourceTree = "<group>"; };
-		F2305212198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToWaitUpload.xib; path = ../CellBackgroundViewToWaitUpload.xib; sourceTree = "<group>"; };
-		F2305214198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CellBackgroundViewToWaitUpload.h; path = ../CellBackgroundViewToWaitUpload.h; sourceTree = "<group>"; };
-		F2305215198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CellBackgroundViewToWaitUpload.m; path = ../CellBackgroundViewToWaitUpload.m; sourceTree = "<group>"; };
-		F2305218198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CellBackgroundViewToEncourageChooseLarge.xib; sourceTree = "<group>"; };
-		F230521A198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewToEncourageChooseLarge.h; sourceTree = "<group>"; };
-		F230521B198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewToEncourageChooseLarge.m; sourceTree = "<group>"; };
-		F230521D198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToWaitUploadLarge.xib; path = ../CellBackgroundViewToWaitUploadLarge.xib; sourceTree = "<group>"; };
-		F230521F198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewToWaitUploadLarge.h; sourceTree = "<group>"; };
-		F2305220198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewToWaitUploadLarge.m; sourceTree = "<group>"; };
-		F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CellBackgroundViewToEncourageUploadLarge.xib; path = ../CellBackgroundViewToEncourageUploadLarge.xib; sourceTree = "<group>"; };
-		F2305224198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellBackgroundViewToEncourageUploadLarge.h; sourceTree = "<group>"; };
-		F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CellBackgroundViewToEncourageUploadLarge.m; sourceTree = "<group>"; };
 		F2310C20198F43DF00E01DA3 /* DragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragView.h; sourceTree = "<group>"; };
 		F2310C21198F43DF00E01DA3 /* DragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DragView.m; sourceTree = "<group>"; };
 		F233421419A114E900928101 /* FamilyApplyListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FamilyApplyListCell.xib; sourceTree = "<group>"; };
@@ -1106,20 +1071,6 @@
 				F2FAA56919E2DE6300546669 /* AddMonthToCalendarView.m */,
 				F2ABB121197D295B009E35CB /* CommentTableViewCell.h */,
 				F2ABB122197D295B009E35CB /* CommentTableViewCell.m */,
-				F2305214198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.h */,
-				F2305215198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m */,
-				F230520F198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.h */,
-				F2305210198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m */,
-				F230520A198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.h */,
-				F230520B198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m */,
-				F230521A198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.h */,
-				F230521B198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m */,
-				F230521F198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.h */,
-				F2305220198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m */,
-				F2305224198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.h */,
-				F2305225198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m */,
-				88CFF4E61997B91400B56481 /* CellBackgroundViewNoImage.h */,
-				88CFF4E71997B91400B56481 /* CellBackgroundViewNoImage.m */,
 				F233421619A115D900928101 /* FamilyApplyListCell.h */,
 				F233421719A115D900928101 /* FamilyApplyListCell.m */,
 				F2FB3BAB1A0A68FE00B0A2DD /* ChildFilterListCell.h */,
@@ -1138,13 +1089,6 @@
 			isa = PBXGroup;
 			children = (
 				88CFF4D8199386C500B56481 /* CalenderLabel.xib */,
-				F2305208198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib */,
-				F2305222198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib */,
-				F230521D198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib */,
-				F2305212198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib */,
-				F230520D198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib */,
-				F2305218198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib */,
-				88CFF4E41997B8D500B56481 /* CellBackgroundViewNoImage.xib */,
 				F2FAA56619E2DBF600546669 /* AddMonthToCalendarView.xib */,
 				F2ABB11F197D2633009E35CB /* CommentTableViewCell.xib */,
 				F233421419A114E900928101 /* FamilyApplyListCell.xib */,
@@ -1780,16 +1724,12 @@
 				F2B5BC221A710A0A0082185E /* ChildProfileIconCell.xib in Resources */,
 				88CFF4D9199386C500B56481 /* CalenderLabel.xib in Resources */,
 				F21BBBF619CAE690002D4623 /* TutorialFamilyApplyIntroduceView.xib in Resources */,
-				F230520E198FD4F0000F5E32 /* CellBackgroundViewToEncourageChoose.xib in Resources */,
 				F2CA4FF61A60B163003EA9E6 /* ChildProfileGenderCell.xib in Resources */,
-				F2305209198FD0F2000F5E32 /* CellBackgroundViewToEncourageUpload.xib in Resources */,
 				F21BBBEE19CAD5D1002D4623 /* TutorialUploadByUserView.xib in Resources */,
 				F21BBBD219CA6AF1002D4623 /* TutorialPartChangeExecView.xib in Resources */,
 				F2FAA55719DC04C900546669 /* CloseButtonView.xib in Resources */,
-				88CFF4E51997B8D500B56481 /* CellBackgroundViewNoImage.xib in Resources */,
 				88B18C8F193814CF00ED630C /* Images.xcassets in Resources */,
 				F285517119D160A500347BB6 /* TutorialImage_3.jpg in Resources */,
-				F2305223198FEF11000F5E32 /* CellBackgroundViewToEncourageUploadLarge.xib in Resources */,
 				8897178B1A10A5A300EAF8D2 /* AnnounceBoardView.xib in Resources */,
 				F2FAA56219DC4ABB00546669 /* PageFlickIntroductionView.xib in Resources */,
 				88B18C81193814CE00ED630C /* InfoPlist.strings in Resources */,
@@ -1804,11 +1744,9 @@
 				F226590F19D22575003A62BD /* TutorialSelectBestShotFinishedView.xib in Resources */,
 				882A6A28196BCE8000E07D60 /* 3_5_inch.storyboard in Resources */,
 				88610B561A09BD450042854B /* UploadPickerCollectionViewSectionHeader.xib in Resources */,
-				F2305219198FE7FF000F5E32 /* CellBackgroundViewToEncourageChooseLarge.xib in Resources */,
 				F2A8332A19AB0F0F00E2AB58 /* babyrydev-config.plist in Resources */,
 				F2AD4F12199FD3AB00037C72 /* ImageRequestIntroductionView.xib in Resources */,
 				88B18C8A193814CE00ED630C /* Main.storyboard in Resources */,
-				F230521E198FE93F000F5E32 /* CellBackgroundViewToWaitUploadLarge.xib in Resources */,
 				F226591719D22F88003A62BD /* TutorialImageUploadFinishedView.xib in Resources */,
 				F2A8332519AAC28600E2AB58 /* babyrydev-Info.plist in Resources */,
 				88962B2C1A581EE2001EEBED /* CellImageFramePlaceHolderLarge.xib in Resources */,
@@ -1829,7 +1767,6 @@
 				F2B7E0DE19C1F0ED0052981B /* LogoutIntroduceView.xib in Resources */,
 				F2FB3B9D1A09E99100B0A2DD /* UploadPastImagesIntroductionView.xib in Resources */,
 				F226592119D434C3003A62BD /* TutorialImage_0_2.jpg in Resources */,
-				F2305213198FDFE1000F5E32 /* CellBackgroundViewToWaitUpload.xib in Resources */,
 				F226592019D434C3003A62BD /* TutorialImage_0_1.jpg in Resources */,
 				F2DA213B1A5EA75C00C93A08 /* ImageSelectToolView.xib in Resources */,
 				F27AB6E319D52B3900285BEB /* TutorialSentApplyView.xib in Resources */,
@@ -1897,7 +1834,6 @@
 				F2B9698219CD92D900C14201 /* TutorialIntroductionView.m in Sources */,
 				F2106706196E29B400187119 /* ImageOperationViewController.m in Sources */,
 				F2310C22198F43DF00E01DA3 /* DragView.m in Sources */,
-				F2305226198FEF74000F5E32 /* CellBackgroundViewToEncourageUploadLarge.m in Sources */,
 				88CFF5001999312100B56481 /* ImageToolbarTrashIcon.m in Sources */,
 				88E2822219B4A8DE00225DD3 /* Child.m in Sources */,
 				88CFF50A1999367F00B56481 /* ImageToolbarCommentIcon.m in Sources */,
@@ -1913,7 +1849,6 @@
 				F215DDD819766ECC0092C712 /* ProfileViewController.m in Sources */,
 				88C072A419C17FEC00BF6F6F /* ChooseRegisterStepViewController.m in Sources */,
 				F2D934F319C84D30001F33D0 /* MultiUploadViewController+Logic+Tutorial.m in Sources */,
-				F2305211198FD588000F5E32 /* CellBackgroundViewToEncourageChoose.m in Sources */,
 				885A223719750DD20039B263 /* DateUtils.m in Sources */,
 				F2B5BC101A6CD14A0082185E /* ChildAddIconView.m in Sources */,
 				F215DDDE19777CD00092C712 /* PushNotification.m in Sources */,
@@ -1933,7 +1868,6 @@
 				F2CA4FF41A60AFD2003EA9E6 /* ChildProfileIconAndNameCell.m in Sources */,
 				F27AB6E619D52B7F00285BEB /* TutorialSentApplyView.m in Sources */,
 				F2CE8D3C1A4E9B2400F56FC2 /* ChildSwitchView.m in Sources */,
-				F2305216198FE06E000F5E32 /* CellBackgroundViewToWaitUpload.m in Sources */,
 				F2694AFF19827013008239F6 /* UIColor+Hex.m in Sources */,
 				88B89FB8193B2D52009474DC /* PageContentViewController.m in Sources */,
 				88962B2F1A581F45001EEBED /* CellImageFramePlaceHolderLarge.m in Sources */,
@@ -1960,7 +1894,6 @@
 				88449B9F1A51131B00839109 /* UIImage+ImageEffects.m in Sources */,
 				88610B5D1A09FFD30042854B /* AlbumTableViewController.m in Sources */,
 				88C072F619CC107800BF6F6F /* ParseUtils.m in Sources */,
-				F230520C198FD1A7000F5E32 /* CellBackgroundViewToEncourageUpload.m in Sources */,
 				F2B5BC281A710B390082185E /* ChildProfileIconCell.m in Sources */,
 				F21BBBE919CAA9B0002D4623 /* TutorialNavigator+UploadByUser.m in Sources */,
 				F21BBBD019CA1245002D4623 /* TutorialNavigator+PartChangeExec.m in Sources */,
@@ -1971,7 +1904,6 @@
 				F202B8411A5EFDFB009283A6 /* ImageSelectToolView.m in Sources */,
 				88AA2FFB196E93F600F4B40C /* ICTutorialOverlay.m in Sources */,
 				F25D29DB199B2D4200CD50D7 /* PrivacyPolicyViewController.m in Sources */,
-				88CFF4E81997B91400B56481 /* CellBackgroundViewNoImage.m in Sources */,
 				F21BBBC819CA0178002D4623 /* TutorialPartChangeView.m in Sources */,
 				F21BBBC319C9FF85002D4623 /* TutorialNavigator+PartChange.m in Sources */,
 				88C072C419C4599900BF6F6F /* TmpUserData.m in Sources */,
@@ -2015,7 +1947,6 @@
 				F2694B031983A232008239F6 /* ImagePageViewController.m in Sources */,
 				F261A884196513F60072BBD2 /* IdIssue.m in Sources */,
 				88C072D119C8798100BF6F6F /* PartnerInviteViewController.m in Sources */,
-				F2305221198FE985000F5E32 /* CellBackgroundViewToWaitUploadLarge.m in Sources */,
 				F21BBBBD19C9F944002D4623 /* TutorialSelectBestShotView.m in Sources */,
 				F2694AFC1982618C008239F6 /* Navigation.m in Sources */,
 				F226591D19D2314E003A62BD /* TutorialNavigator+ImageUploadFinished.m in Sources */,
@@ -2036,7 +1967,6 @@
 				88CFF5051999354800B56481 /* ImageToolbarSaveIcon.m in Sources */,
 				8814A99A1945469B0010F516 /* ImageCache.m in Sources */,
 				F2FB3BA81A0A61D200B0A2DD /* ChildFilterViewController.m in Sources */,
-				F230521C198FE87F000F5E32 /* CellBackgroundViewToEncourageChooseLarge.m in Sources */,
 				F2CA4FFE1A6221B3003EA9E6 /* ChildProfileBirthdayCell.m in Sources */,
 				88C072C719C459D600BF6F6F /* TmpUser.m in Sources */,
 				F25D29E3199B3E9800CD50D7 /* CollectionViewSectionHeader.m in Sources */,
@@ -2341,7 +2271,7 @@
 				INFOPLIST_FILE = "babyry/babyrydev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = babyry;
-				PROVISIONING_PROFILE = "3190433b-0514-432b-a205-00a4102f6409";
+				PROVISIONING_PROFILE = "6dc1d57d-479a-4d0c-98b1-c7405f9bb096";
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};

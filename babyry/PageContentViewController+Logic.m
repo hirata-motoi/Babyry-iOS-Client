@@ -16,7 +16,7 @@
 #import "AppSetting.h"
 #import "NotificationHistory.h"
 #import "ParseUtils.h"
-#import "ImageRequestIntroductionView.h"
+//#import "ImageRequestIntroductionView.h"
 #import "ChildProperties.h"
 #import "FamilyRole.h"
 #import "PushNotification.h"
@@ -251,24 +251,24 @@
     newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
     newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntroductionOfImageRequestView:) userInfo:nil repeats:NO];
+    //[NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntroductionOfImageRequestView:) userInfo:nil repeats:NO];
 }
 
-- (void)showIntroductionOfPageFlick:(NSMutableArray *)childProperties
-{
-    // 初回のみ
-    AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
-    if (appSetting || childProperties.count < 2 ) {
-        return;
-    }
-    AppSetting *newAppSetting = [AppSetting MR_createEntity];
-    newAppSetting.name = [Config config][@"FinishedIntroductionOfPageFlick"];
-    newAppSetting.value = @"";
-    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
-    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
-    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntroductionOfPageFlickView:) userInfo:nil repeats:NO];
-}
+//- (void)showIntroductionOfPageFlick:(NSMutableArray *)childProperties
+//{
+//    // 初回のみ
+//    AppSetting *appSetting = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
+//    if (appSetting || childProperties.count < 2 ) {
+//        return;
+//    }
+//    AppSetting *newAppSetting = [AppSetting MR_createEntity];
+//    newAppSetting.name = [Config config][@"FinishedIntroductionOfPageFlick"];
+//    newAppSetting.value = @"";
+//    newAppSetting.createdAt = [DateUtils setSystemTimezone:[NSDate date]];
+//    newAppSetting.updatedAt = [DateUtils setSystemTimezone:[NSDate date]];
+//    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+//    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self.pageContentViewController selector:@selector(addIntroductionOfPageFlickView:) userInfo:nil repeats:NO];
+//}
 
 - (void)removeUnnecessaryFullsizeCache
 {
@@ -422,8 +422,8 @@
             [self executeReload];
         } else if ([reloadType isEqualToString:@"reloadChildSwitchView"]) {
             [ChildIconManager syncChildIconsInBackground];
-        } else {
-            [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
+//        } else {
+//            [self showIntroductionOfPageFlick:(NSMutableArray *)childProperties];
         }
     }];
 }
