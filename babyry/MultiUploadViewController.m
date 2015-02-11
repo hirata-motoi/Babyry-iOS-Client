@@ -68,7 +68,8 @@
     
     // role で出し分けるものたち
     _myRole = [[NSString alloc] init];
-    _instructionLabel.backgroundColor = [ColorUtils getBackgroundColor];
+    _instructionLabel.backgroundColor = [ColorUtils getPositiveButtonColor];
+    _instructionLabel.layer.cornerRadius = 3;
     _instructionLabel.textColor = [UIColor whiteColor];
     _instructionLabel.font = [UIFont systemFontOfSize:14];
     if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
@@ -519,7 +520,7 @@
         _headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
         UILabel *tutorialLabel = [[UILabel alloc] init];
         tutorialLabel.frame = _headerView.frame;
-        tutorialLabel.textColor = [ColorUtils getSunDayCalColor];
+        tutorialLabel.textColor = [UIColor whiteColor];
         tutorialLabel.textAlignment = NSTextAlignmentCenter;
         tutorialLabel.font = [UIFont boldSystemFontOfSize:15.0f];
         tutorialLabel.numberOfLines = 2;
