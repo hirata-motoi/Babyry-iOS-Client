@@ -111,6 +111,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkHeaderView) name:@"receivedApplyEvent" object:nil]; // for tutorial
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(multiUploadImageInBackground) name:@"multiUploadImageInBackground" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncChildIcons) name:@"childIconChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetIconImageWithBlurWithCell) name:@"childSwitchViewIconChanged" object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -832,6 +833,11 @@
     titleLabel.adjustsFontSizeToFitWidth = YES;
     [self.navigationItem.titleView removeFromSuperview];
     self.navigationItem.titleView = titleLabel;
+}
+
+- (void)resetIconImageWithBlurWithCell
+{
+    [_pageContentViewController resetIconImageWithBlurWithCell];
 }
 
 #pragma mark - Child Create

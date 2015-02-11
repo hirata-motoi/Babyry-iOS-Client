@@ -1364,4 +1364,10 @@
     return trimmedIconImage;
 }
 
+- (void)resetIconImageWithBlurWithCell
+{
+    iconImage = nil;
+    [_pageContentCollectionView reloadData];
+}
+
 @end
