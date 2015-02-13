@@ -117,6 +117,7 @@
     AWSS3TransferManagerDownloadRequest *downloadRequest = [AWSS3TransferManagerDownloadRequest new];
     downloadRequest.bucket = [Config config][@"AWSBucketName"];
     downloadRequest.key = key;
+    downloadRequest.downloadingFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[key stringByReplacingOccurrencesOfString:@"/" withString:@"_"]]];
     downloadRequest.responseCacheControl = @"no-cache";
     
     [[transferManager download:downloadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
