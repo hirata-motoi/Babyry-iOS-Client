@@ -148,12 +148,12 @@
 
 + (NSNumber *)getTodayYMD
 {
-    return [self numberFromComps:[self dateCompsFromDate:[self setSystemTimezone:[NSDate date]]]];
+    return [self numberFromComps:[self dateCompsFromDate:[NSDate date]]];
 }
 
 + (NSNumber *)getYesterdayYMD
 {
-    return [self numberFromComps:[self dateCompsFromDate:[self setSystemTimezone:[NSDate dateWithTimeIntervalSinceNow:-24*60*60]]]];
+    return [self numberFromComps:[self dateCompsFromDate:[NSDate dateWithTimeIntervalSinceNow:-24*60*60]]];
 }
 
 + (BOOL)isTodayByIndexPath:(NSIndexPath *)index
@@ -184,7 +184,7 @@
 {
     // yyyymmddからindexPathを構築する
     NSDateComponents *targetComps = [self compsFromNumber:date];
-    NSDateComponents *todayComps = [self dateCompsFromDate:nil];
+    NSDateComponents *todayComps = [self compsFromNumber:[self getTodayYMD]];
     
     int section = 0;
     int row = 0;
