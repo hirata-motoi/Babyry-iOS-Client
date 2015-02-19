@@ -2150,6 +2150,46 @@
             </objects>
             <point key="canvasLocation" x="607" y="-1358"/>
         </scene>
+        <!--Child Icon Collection View Controller-->
+        <scene sceneID="1LS-kv-hqd">
+            <objects>
+                <collectionViewController storyboardIdentifier="ChildIconCollectionViewController" extendedLayoutIncludesOpaqueBars="YES" modalPresentationStyle="currentContext" hidesBottomBarWhenPushed="YES" id="7zS-Dv-FFo" customClass="ChildIconCollectionViewController" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Yof-ZP-kTr">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.93578040080000002" green="0.93578040080000002" blue="0.93578040080000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="LW6-TR-X20">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="RT9-M2-Ymd">
+                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="7zS-Dv-FFo" id="Zox-aO-2Lq"/>
+                            <outlet property="delegate" destination="7zS-Dv-FFo" id="j2h-81-Md6"/>
+                        </connections>
+                    </collectionView>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
+                    <navigationItem key="navigationItem" id="2SZ-7I-hmj"/>
+                    <connections>
+                        <outlet property="childIconCollectionView" destination="Yof-ZP-kTr" id="fLl-AH-cHA"/>
+                    </connections>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6FF-ur-keX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1622" y="-2601"/>
+        </scene>
     </scenes>
     <resources>
         <image name="introductionChoosePage" width="294" height="508"/>
