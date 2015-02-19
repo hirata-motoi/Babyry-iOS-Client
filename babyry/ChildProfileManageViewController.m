@@ -539,7 +539,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIView *sectionView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, 20.0f)];
-    sectionView.backgroundColor = [ColorUtils getLightPositiveColor];
+    sectionView.backgroundColor = [ColorUtils getSectionHeaderColor];
    
     CGRect labelRect = sectionView.frame;
     labelRect.origin.x = 10.0f;
