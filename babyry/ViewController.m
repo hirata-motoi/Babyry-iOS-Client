@@ -125,6 +125,7 @@
         NSDictionary *transitionInfo = [TransitionByPushNotification getInfo];
         if ([transitionInfo count] > 0) {
             [TransitionByPushNotification returnToTop:self];
+            return;
         }
     }
 }
@@ -174,14 +175,15 @@
         
     } else {
         if ([TransitionByPushNotification isReturnedToTop]) {
+            // 別ViewからTopに戻っていたら無条件でdispatch
             [TransitionByPushNotification dispatch:self];
             return;
         } else if ([TransitionByPushNotification checkAppLaunchedFlag]) {
+            // push通知から起動した場合にappLaunchflagがセットされる
             [TransitionByPushNotification removeAppLaunchFlag];
             [self applicationDidReceiveRemoteNotification];
-            return;
         }
-
+        
         // メンテナンス状態かどうか確認
         // バックグラウンドで行わないと一瞬固まる
         PFQuery *maintenanceQuery = [PFQuery queryWithClassName:@"Config"];
