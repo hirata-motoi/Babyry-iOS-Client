@@ -34,7 +34,7 @@
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailingMargin" secondItem="zBN-C6-cEs" secondAttribute="trailing" constant="24" id="5PI-d8-cRy"/>
-                    <constraint firstItem="6qG-le-iBh" firstAttribute="leading" secondItem="ku7-Nq-NJw" secondAttribute="leadingMargin" constant="5" id="vY5-mb-HfX"/>
+                    <constraint firstItem="6qG-le-iBh" firstAttribute="leading" secondItem="ku7-Nq-NJw" secondAttribute="leadingMargin" constant="6" id="vY5-mb-HfX"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
