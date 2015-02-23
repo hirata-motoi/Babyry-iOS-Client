@@ -16,10 +16,11 @@
 
 @end
 
-@interface ChildPropertyUtils : NSObject
+@interface ChildPropertyUtils : NSObject<UIActionSheetDelegate>
 @property (nonatomic,assign) id<ChildPropertyUtilsDelegate> delegate;
 
 - (void)saveChildProperty:(NSString *)childObjectId withParams:(NSMutableDictionary *)params;
-- (UIAlertController *)iconEditActionSheet:(NSString *)childObjectId;
+- (UIAlertController *)iconEditAlertController:(NSString *)childObjectId;
+- (UIActionSheet *)iconEditActionSheet:(NSString *)childObjectId;
 
 @end
