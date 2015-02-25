@@ -11,6 +11,8 @@
 @interface NotificationHistoryViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *notificationTableView;
+@property (strong, nonatomic) IBOutlet UIButton *allKidokuButton;
+- (IBAction)allKidokuButtonAction:(id)sender;
 
 @property NSMutableArray *notificationHistoryArray;
 
