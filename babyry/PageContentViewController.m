@@ -152,7 +152,7 @@
 {
     [super viewDidAppear:animated];
     [self initializeClosedCellCountBySection];
-    
+
     // Notification登録
     if (!alreadyRegisteredObserver) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -704,7 +704,7 @@
     [self setupChildImagesIndexMap];
     
     // scroll位置と表示月の関係
-    [self setupScrollPositionData];
+    //[self setupScrollPositionData];
 }
 
 - (void)addChildImagesWithStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
@@ -817,25 +817,32 @@
     }
     
     int n = 0;
-    for (NSMutableDictionary *section in _childImages) {
+    
+    NSArray *childImagesSnapShot = [[NSArray alloc] initWithArray:_childImages];
+    // _childImagesがforを回している間に別メソッドからいじられて落ちる事があるので
+    // forの間に変化したら処理をし直しするのが正しい気がするが、_childImagesを変えたらこのメソッド自体もその後呼び出されるので良しとする。
+    for (NSMutableDictionary *section in childImagesSnapShot) {
         NSString *ym = [NSString stringWithFormat:@"%@%02ld", section[@"year"], (long)[section[@"month"] integerValue]];
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
     }
 }
 
-- (void)setupScrollPositionData
-{
-    _scrollPositionData = [[NSMutableArray alloc]init];
-    for (NSMutableDictionary *section in _childImages) {
-        NSInteger cellCount = [[section objectForKey:@"images"] count];
-        double verticalCellCount = ceil(cellCount / 3);
-        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + [[Config config][@"CollectionViewSectionHeaderHeight"] intValue] + 60; // 60: わからんが微調整用に必要
-        NSNumber *n = [NSNumber numberWithDouble:requiredHeight];
-        NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
-        [_scrollPositionData addObject:sectionHeightInfo];
-    }
-}
+// 使ってないのでコメントアウト
+// コメント外すと起動時に落ちる事があります
+// _childImagesをforで回している時に中身が変わるため、コメント外す時はその辺りをチェックすること
+//- (void)setupScrollPositionData
+//{
+//    _scrollPositionData = [[NSMutableArray alloc]init];
+//    for (NSMutableDictionary *section in _childImages) {
+//        NSInteger cellCount = [[section objectForKey:@"images"] count];
+//        double verticalCellCount = ceil(cellCount / 3);
+//        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + [[Config config][@"CollectionViewSectionHeaderHeight"] intValue] + 60; // 60: わからんが微調整用に必要
+//        NSNumber *n = [NSNumber numberWithDouble:requiredHeight];
+//        NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
+//        [_scrollPositionData addObject:sectionHeightInfo];
+//    }
+//}
 
 - (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath withYmd:(NSString *)ymd
 {
