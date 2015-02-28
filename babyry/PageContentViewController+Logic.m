@@ -33,6 +33,7 @@
     [self updateChildProperties];
     [Comment updateCommentNumEntity];
     [self removeUnnecessaryGMPBadge];
+    [self showGlobalMenuBadge];
 }
 
 - (void)showChildImages
@@ -305,7 +306,9 @@
 
 - (void) showGlobalMenuBadge
 {
+    [self.pageContentViewController.delegate setGlobalMenuBadge:self.pageContentViewController.badgeNumber];
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:@"ready" withLimit:1000 withBlock:^(NSArray *objects){
+        self.pageContentViewController.badgeNumber = [objects count];
         [self.pageContentViewController.delegate setGlobalMenuBadge:[objects count]];
     }];
 }

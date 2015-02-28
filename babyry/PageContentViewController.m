@@ -108,6 +108,8 @@
     
     alreadyRegisteredObserver = NO;
     
+    _badgeNumber = 0;
+    
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.hidden = YES;
 	
