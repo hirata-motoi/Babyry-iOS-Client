@@ -29,6 +29,8 @@
             self.selectedSegmentIndex = 0;
         } else if ([params[@"gender"] isEqualToString:@"male"]) {
             self.selectedSegmentIndex = 1;
+        } else {
+            self.selectedSegmentIndex = -1;
         }
         
         self.frame = CGRectMake(0, 0, 100, 25);
