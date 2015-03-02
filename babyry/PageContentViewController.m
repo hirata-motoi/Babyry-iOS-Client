@@ -211,6 +211,9 @@
     if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) ) {
         [self showTutorialNavigator];
     }
+    
+    NSNotification *n = [NSNotification notificationWithName:@"childIconChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
 }
 
 - (void)onRefresh
