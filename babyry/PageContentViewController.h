@@ -88,4 +88,6 @@
 
 @property NSMutableDictionary *bestImageIds;
 
+@property int badgeNumber;
+
 @end
