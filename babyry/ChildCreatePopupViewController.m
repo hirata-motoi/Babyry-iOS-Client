@@ -182,7 +182,7 @@
         } else if ([c isKindOfClass:[ChildProfileGenderCell class]]) {
             // TODO cellで管理する
             ChildProfileGenderCell *cell = (ChildProfileGenderCell *)c;
-            if (cell.segmentControl.selected) {
+            if (cell.segmentControl.selectedSegmentIndex != -1) {
                 childInfo[@"sex"] = (cell.segmentControl.selectedSegmentIndex == 0) ? @"female" : @"male";
             }
         } else if ([c isKindOfClass:[ChildProfileBirthdayCell class]]) {
