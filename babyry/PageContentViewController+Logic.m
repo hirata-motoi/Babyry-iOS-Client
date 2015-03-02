@@ -50,6 +50,12 @@
             visibleDateDic[yyyymm] = currentDateComp;
         }
     }
+    if ([visibleCellIndex count] == 0) {
+        NSDateComponents *thisMonthComps = [DateUtils dateCompsFromDate:nil];
+        NSDateComponents *lastMonthComps = [DateUtils addDateComps:thisMonthComps withUnit:@"month" withValue:-1];
+        visibleDateDic[[NSString stringWithFormat:@"%04d%02d", thisMonthComps.year, thisMonthComps.month]] = thisMonthComps;
+        visibleDateDic[[NSString stringWithFormat:@"%04d%02d", lastMonthComps.year, lastMonthComps.month]] = lastMonthComps;
+    }
     
     for (NSString *yyyymm in visibleDateDic) {
         NSDateComponents *comp = visibleDateDic[yyyymm];
