@@ -235,6 +235,8 @@
     alreadyRegisteredObserver = NO;
     
     [self removeDialogs];
+    
+    iconImage = nil;
 }
 
 - (id)logic:(NSString *)methodName
