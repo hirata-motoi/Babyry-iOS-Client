@@ -434,18 +434,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="8Pf-Zg-qeA">
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" id="8Pf-Zg-qeA">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" red="0.73333333333333328" green="0.73333333333333328" blue="0.73333333333333328" alpha="1" colorSpace="calibratedRGB"/>
                                 <items>
-                                    <barButtonItem title="Item" style="plain" id="XmF-O1-Fgf">
+                                    <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="TCP-JQ-gtW"/>
+                                    <barButtonItem style="plain" id="XmF-O1-Fgf">
                                         <view key="customView" contentMode="scaleToFill" id="DE4-ng-Hcr">
-                                            <rect key="frame" x="16" y="6" width="33" height="33"/>
+                                            <rect key="frame" x="58" y="6" width="33" height="33"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                     </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="l0e-7I-BPA"/>
+                                    <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="Lih-Lw-ps2"/>
                                     <barButtonItem style="plain" id="Y71-fg-Mad">
                                         <view key="customView" contentMode="scaleToFill" id="6kw-rs-hTj">
                                             <rect key="frame" x="143" y="6" width="33" height="33"/>
@@ -453,7 +455,7 @@
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                     </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="bmi-N9-gu1"/>
+                                    <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="prn-Nt-Gxh"/>
                                     <barButtonItem style="plain" id="TSQ-Xy-etV">
                                         <view key="customView" contentMode="scaleToFill" id="aPW-ag-7BI">
                                             <rect key="frame" x="271" y="6" width="33" height="33"/>
@@ -462,9 +464,10 @@
                                         </view>
                                     </barButtonItem>
                                 </items>
+                                <color key="barTintColor" red="0.73333333329999995" green="0.73333333329999995" blue="0.73333333329999995" alpha="1" colorSpace="calibratedRGB"/>
                             </toolbar>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.73333333333333328" green="0.73333333333333328" blue="0.73333333333333328" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
@@ -472,9 +475,12 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="44"/>
                     <connections>
+                        <outlet property="firstSpace" destination="TCP-JQ-gtW" id="K8s-jl-KBO"/>
                         <outlet property="imageCommentView" destination="TSQ-Xy-etV" id="SBu-CE-JP0"/>
                         <outlet property="imageSaveView" destination="Y71-fg-Mad" id="sNP-0U-U9H"/>
                         <outlet property="imageTrashView" destination="XmF-O1-Fgf" id="OPW-qC-Tmk"/>
+                        <outlet property="secondSpace" destination="Lih-Lw-ps2" id="t35-1q-ddD"/>
+                        <outlet property="thirdSpace" destination="prn-Nt-Gxh" id="b7Z-V6-XYf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eYM-0D-EGx" userLabel="First Responder" sceneMemberID="firstResponder"/>

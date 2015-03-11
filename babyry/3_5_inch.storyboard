@@ -364,7 +364,9 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="xme-5b-fSF">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" red="0.73333333329999995" green="0.73333333329999995" blue="0.73333333329999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <items>
+                                    <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="ZMp-C7-5aj"/>
                                     <barButtonItem title="Item" style="plain" id="VVF-0d-ddv">
                                         <view key="customView" contentMode="scaleToFill" id="0zr-hN-PMD">
                                             <rect key="frame" x="16" y="6" width="33" height="33"/>
@@ -372,7 +374,7 @@
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                     </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="dzg-OM-5t8"/>
+                                    <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="vLs-EA-Sqx"/>
                                     <barButtonItem style="plain" id="lI5-ox-8Uo">
                                         <view key="customView" contentMode="scaleToFill" id="mgq-Jr-MEo">
                                             <rect key="frame" x="143" y="6" width="33" height="33"/>
@@ -380,7 +382,7 @@
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                     </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="k78-Ir-2K3"/>
+                                    <barButtonItem width="42" style="plain" systemItem="fixedSpace" id="E4p-3c-clD"/>
                                     <barButtonItem style="plain" id="LwS-gn-6dH">
                                         <view key="customView" contentMode="scaleToFill" id="coh-lb-7pJ">
                                             <rect key="frame" x="271" y="6" width="33" height="33"/>
@@ -389,9 +391,10 @@
                                         </view>
                                     </barButtonItem>
                                 </items>
+                                <color key="barTintColor" red="0.73333333329999995" green="0.73333333329999995" blue="0.73333333329999995" alpha="1" colorSpace="calibratedRGB"/>
                             </toolbar>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.73333333329999995" green="0.73333333329999995" blue="0.73333333329999995" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
@@ -399,9 +402,12 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="44"/>
                     <connections>
+                        <outlet property="firstSpace" destination="ZMp-C7-5aj" id="xwB-RR-8be"/>
                         <outlet property="imageCommentView" destination="LwS-gn-6dH" id="oof-2M-huI"/>
                         <outlet property="imageSaveView" destination="lI5-ox-8Uo" id="617-79-Awm"/>
                         <outlet property="imageTrashView" destination="VVF-0d-ddv" id="SkC-V4-DAb"/>
+                        <outlet property="secondSpace" destination="vLs-EA-Sqx" id="Lo4-i6-U7m"/>
+                        <outlet property="thirdSpace" destination="E4p-3c-clD" id="hKz-VN-AtU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jqd-CG-EEJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
