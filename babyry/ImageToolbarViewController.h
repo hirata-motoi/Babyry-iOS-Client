@@ -17,6 +17,9 @@
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *imageTrashView;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *imageSaveView;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *imageCommentView;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *firstSpace;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *secondSpace;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *thirdSpace;
 
 @property UploadViewController *uploadViewController;
 @property UIView *commentView;

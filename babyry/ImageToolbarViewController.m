@@ -16,12 +16,18 @@
 #import "Logger.h"
 #import "ChildProperties.h"
 #import "DateUtils.h"
+#import "ColorUtils.h"
 
 @interface ImageToolbarViewController ()
 
 @end
 
 @implementation ImageToolbarViewController
+{
+    ImageToolbarTrashIcon *trashButtonView;
+    ImageToolbarSaveIcon *saveButtonView;
+    ImageToolbarCommentIcon *commentButtonView;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -44,23 +50,34 @@
     commentViewContainerTap.numberOfTapsRequired = 1;
     [self.view addGestureRecognizer:commentViewContainerTap];
     
-    ImageToolbarTrashIcon *trashView = [ImageToolbarTrashIcon view];
-    _imageTrashView.customView = trashView;
+    CGRect buttonFrame = CGRectMake(0, 0, ceil(self.view.frame.size.width/3), self.view.frame.size.height);
+
+    trashButtonView = [ImageToolbarTrashIcon view];
+    trashButtonView.frame = buttonFrame;
+    _imageTrashView.customView = trashButtonView;
     UITapGestureRecognizer *imageTrashViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTrash)];
     imageTrashViewTap.numberOfTapsRequired = 1;
     [_imageTrashView.customView addGestureRecognizer:imageTrashViewTap];
     
-    ImageToolbarSaveIcon *saveView = [ImageToolbarSaveIcon view];
-    _imageSaveView.customView = saveView;
+    saveButtonView = [ImageToolbarSaveIcon view];
+    saveButtonView.frame = buttonFrame;
+    _imageSaveView.customView = saveButtonView;
     UITapGestureRecognizer *imageSaveViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageSave)];
     imageSaveViewTap.numberOfTapsRequired = 1;
     [_imageSaveView.customView addGestureRecognizer:imageSaveViewTap];
     
-    ImageToolbarCommentIcon *commentView = [ImageToolbarCommentIcon view];
-    _imageCommentView.customView = commentView;
+    commentButtonView = [ImageToolbarCommentIcon view];
+    commentButtonView.frame = buttonFrame;
+    _imageCommentView.customView = commentButtonView;
     UITapGestureRecognizer *imageCommentViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageComment)];
     imageCommentViewTap.numberOfTapsRequired = 1;
     [_imageCommentView.customView addGestureRecognizer:imageCommentViewTap];
+    
+    // 以下マジックナンバー
+    _firstSpace.width = -16;
+    _secondSpace.width = -9;
+    _thirdSpace.width = -9;
+    
     // commentアイコンにbadgeをつける
 //    if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
 //        NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
@@ -105,6 +122,8 @@
     // 大きくなるようなら別Classに移動
     // 実際には消さずに、ACLで誰にも見れない設定にする & キャッシュ消す & bestFlagをとりあえずremovedにしておいてみる
     
+    trashButtonView.backgroundColor = [ColorUtils getPositiveButtonColor];
+    
     UIAlertView *alert = [[UIAlertView alloc]
                           initWithTitle:@"確認"
                           message:@"削除してもよろしいですか？"
@@ -117,6 +136,7 @@
 - (void)imageSave
 {
     // 大きくなるようなら別Classに移動
+    saveButtonView.backgroundColor = [ColorUtils getPositiveButtonColor];
     
     _hud = [MBProgressHUD showHUDAddedTo:_uploadViewController.view animated:YES];
     _hud.labelText = @"画像保存中...";
@@ -150,6 +170,7 @@
             [alert show];
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in imageSave : %@", task.error]];
         }
+        saveButtonView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
         return nil;
     }];
 }
@@ -160,6 +181,7 @@
     CGRect currentFrame = _commentView.frame;
     if (currentFrame.origin.y <= 20 + 44) {
         // 閉じる
+        commentButtonView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
         [TransitionByPushNotification setCommentViewOpenFlag:NO];
         [TransitionByPushNotification setCurrentDate:@""];
         currentFrame.origin.y = self.parentViewController.view.frame.size.height;
@@ -175,6 +197,7 @@
                          }];
     } else {
         // 開く
+        commentButtonView.backgroundColor = [ColorUtils getPositiveButtonColor];
         [self disableNotificationHistories];
         [TransitionByPushNotification setCommentViewOpenFlag:YES];
         [TransitionByPushNotification setCurrentDate:_date];
@@ -203,6 +226,9 @@
 
 // 画像削除確認後に呼ばれる
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    // ボタンの色を戻す
+    trashButtonView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
     
     switch (buttonIndex) {
         case 0:
@@ -310,6 +336,5 @@
     NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"commentPosted", @"requestPhoto"];
     [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
 }
-
 
 @end
