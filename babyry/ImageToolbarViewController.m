@@ -17,6 +17,7 @@
 #import "ChildProperties.h"
 #import "DateUtils.h"
 #import "ColorUtils.h"
+#import <CustomBadge.h>
 
 @interface ImageToolbarViewController ()
 
@@ -27,6 +28,7 @@
     ImageToolbarTrashIcon *trashButtonView;
     ImageToolbarSaveIcon *saveButtonView;
     ImageToolbarCommentIcon *commentButtonView;
+    CustomBadge *commentBadge;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -78,12 +80,6 @@
     _secondSpace.width = -9;
     _thirdSpace.width = -9;
     
-    // commentアイコンにbadgeをつける
-//    if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
-//        NSInteger count = [_notificationHistoryByDay[@"commentPosted"] count];
-//        [self showCommentBadge:count];
-//    }
-    
     // 画像削除と保存はimageInfoが無い場合には表示させない(遅延ロードでimageInfoが取得されてから表示)
     // コメントは日付にひもづくものなのでなくても良い
     if (!_uploadViewController.imageInfo){
@@ -98,6 +94,10 @@
     if (_openCommentView) {
         [self imageComment];
     }
+    
+    [NotificationHistory getNotificationHistoryObjectsByDateInBackground:[PFUser currentUser][@"userId"] withType:@"commentPosted" withChild:_childObjectId date:[NSNumber numberWithInt:[_date intValue]] withBlock:^(NSArray *objects){
+        [self setCommentBadge:(int)objects.count];
+    }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -211,14 +211,7 @@
                          }
                          completion:^(BOOL finished){
                              // 未読commentのバッヂを消す
-//                             if (_notificationHistoryByDay[@"commentPosted"] && [_notificationHistoryByDay[@"commentPosted"] count] > 0) {
-//                                 for (PFObject *notification in _notificationHistoryByDay[@"commentPosted"]) {
-//                                     [NotificationHistory disableDisplayedNotificationsWithObject:notification];
-//                                 }
-//                                 PFObject *obj = [[PFObject alloc]initWithClassName:@"NotificationHistory"];
-//                                 [_notificationHistoryByDay[@"commentPosted"] addObject:obj];
-//                                 [_commentBadge removeFromSuperview];
-//                             }
+                            [commentBadge removeFromSuperview];
                          }];
     }
     
@@ -303,16 +296,6 @@
     }
 }
 
-- (void)showCommentBadge:(NSInteger)count
-{
-    _commentBadge = [Badge badgeViewWithType:nil withCount:count];
-    CGRect rect = _commentBadge.frame;
-    rect.origin.x = _imageCommentView.customView.frame.size.width - rect.size.width/2;
-    rect.origin.y = rect.size.height/2 * -1;
-    _commentBadge.frame = rect;
-    [_imageCommentView.customView addSubview:_commentBadge];
-}
-
 - (void)removeNotificationHistory:(NSString *)childObjectId withDate:(NSString *)date
 {
     // 今日 or　昨日であれば画像の数を確認
@@ -335,6 +318,24 @@
 {
     NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"commentPosted", @"requestPhoto"];
     [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
+}
+
+- (void)setCommentBadge:(int)badgeNumber
+{
+    if (badgeNumber < 1) {
+        [commentBadge removeFromSuperview];
+        return;
+    } else if (badgeNumber > 99) {
+        badgeNumber = 99;
+    }
+    commentBadge = [CustomBadge customBadgeWithString:[NSString stringWithFormat:@"%d", badgeNumber] withScale:0.8];
+    CGRect badgeFrame = commentBadge.frame;
+    badgeFrame.size.width = 20;
+    badgeFrame.size.height = 20;
+    badgeFrame.origin.x = commentButtonView.frame.size.width - 22;
+    badgeFrame.origin.y = 0;
+    commentBadge.frame = badgeFrame;
+    [commentButtonView addSubview:commentBadge];
 }
 
 @end

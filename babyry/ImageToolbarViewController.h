@@ -24,7 +24,6 @@
 @property UploadViewController *uploadViewController;
 @property UIView *commentView;
 @property MBProgressHUD *hud;
-@property UIImageView *commentBadge;
 @property BOOL openCommentView;
 @property NSString *childObjectId;
 @property NSString *date;
