@@ -125,7 +125,7 @@ NSString *const className = @"NotificationHistory";
                 NSString *date = object[@"date"];
                 
                 // 2日以上前のimageUploaded, requestPhotは除外
-                if ([type isEqualToString:@"imageUploaded"] || [type isEqualToString:@"requestPhot"]) {
+                if ([type isEqualToString:@"imageUploaded"] || [type isEqualToString:@"requestPhoto"]) {
                     NSNumber *yesterdayYMD = [DateUtils getYesterdayYMD];
                     if ([yesterdayYMD intValue] > [date intValue]) {
                         continue;
