@@ -126,4 +126,9 @@
     return [UIColor_Hex colorWithHexString:@"acacac" alpha:1.0];
 }
 
++(UIColor *)getDarkGrayColorImageIconString
+{
+    return [UIColor colorWithRed:(float)125/256 green:(float)125/256 blue:(float)125/256 alpha:1.0];
+}
+
 @end

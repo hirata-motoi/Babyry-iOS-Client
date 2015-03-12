@@ -123,6 +123,8 @@
     // 実際には消さずに、ACLで誰にも見れない設定にする & キャッシュ消す & bestFlagをとりあえずremovedにしておいてみる
     
     trashButtonView.backgroundColor = [ColorUtils getPositiveButtonColor];
+    trashButtonView.trashIconImage.image = [UIImage imageNamed:@"TrashWhite"];
+    trashButtonView.trashIconLabel.textColor = [UIColor whiteColor];
     
     UIAlertView *alert = [[UIAlertView alloc]
                           initWithTitle:@"確認"
@@ -137,6 +139,8 @@
 {
     // 大きくなるようなら別Classに移動
     saveButtonView.backgroundColor = [ColorUtils getPositiveButtonColor];
+    saveButtonView.saveIconImage.image = [UIImage imageNamed:@"DownloadWhite"];
+    saveButtonView.saveIconLabel.textColor = [UIColor whiteColor];
     
     _hud = [MBProgressHUD showHUDAddedTo:_uploadViewController.view animated:YES];
     _hud.labelText = @"画像保存中...";
@@ -171,6 +175,8 @@
             [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in imageSave : %@", task.error]];
         }
         saveButtonView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+        saveButtonView.saveIconImage.image = [UIImage imageNamed:@"DownloadGray"];
+        saveButtonView.saveIconLabel.textColor = [ColorUtils getDarkGrayColorImageIconString];
         return nil;
     }];
 }
@@ -182,6 +188,8 @@
     if (currentFrame.origin.y <= 20 + 44) {
         // 閉じる
         commentButtonView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+        commentButtonView.commentIconImage.image = [UIImage imageNamed:@"CommentGray"];
+        commentButtonView.commentIconLabel.textColor = [ColorUtils getDarkGrayColorImageIconString];
         [TransitionByPushNotification setCommentViewOpenFlag:NO];
         [TransitionByPushNotification setCurrentDate:@""];
         currentFrame.origin.y = self.parentViewController.view.frame.size.height;
@@ -198,6 +206,8 @@
     } else {
         // 開く
         commentButtonView.backgroundColor = [ColorUtils getPositiveButtonColor];
+        commentButtonView.commentIconImage.image = [UIImage imageNamed:@"CommentWhite"];
+        commentButtonView.commentIconLabel.textColor = [UIColor whiteColor];
         [self disableNotificationHistories];
         [TransitionByPushNotification setCommentViewOpenFlag:YES];
         [TransitionByPushNotification setCurrentDate:_date];
@@ -222,6 +232,8 @@
     
     // ボタンの色を戻す
     trashButtonView.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
+    trashButtonView.trashIconImage.image = [UIImage imageNamed:@"TrashGray"];
+    trashButtonView.trashIconLabel.textColor = [ColorUtils getDarkGrayColorImageIconString];
     
     switch (buttonIndex) {
         case 0:
