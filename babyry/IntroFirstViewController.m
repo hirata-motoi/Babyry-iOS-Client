@@ -44,6 +44,7 @@
     // PageViewController追加
     _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
     _pageViewController.dataSource = self;
+    _pageViewController.delegate = self;
     
     UIViewController *startingViewController = [self viewControllerAtIndex:0];
     _currentPageControl = 0;
@@ -54,17 +55,28 @@
     [self.view addSubview:_pageViewController.view];
     [_pageViewController didMoveToParentViewController:self];
    
-    // pageController
-    NSArray *subviews = _pageViewController.view.subviews;
-    UIPageControl *thisControl = nil;
-    for (int i=0; i<[subviews count]; i++) {
-        if ([[subviews objectAtIndex:i] isKindOfClass:[UIPageControl class]]) {
-            thisControl = (UIPageControl *)[subviews objectAtIndex:i];
-            thisControl.backgroundColor = [UIColor_Hex colorWithHexString:@"666666" alpha:1.0];
-            thisControl.pageIndicatorTintColor = [UIColor grayColor];
-            thisControl.currentPageIndicatorTintColor = [UIColor whiteColor];
-        }
-    }
+    _pageControl.numberOfPages = 5;
+    CGRect controlFrame = _pageControl.frame;
+    controlFrame.size.height = 27;
+    controlFrame.origin.y = self.view.frame.size.height - 27;
+    _pageControl.frame = controlFrame;
+    [_pageControl setBackgroundColor:[UIColor clearColor]];
+    _pageControl.pageIndicatorTintColor = [UIColor grayColor];
+    _pageControl.currentPageIndicatorTintColor = [UIColor whiteColor];
+    [self.view addSubview:_pageControl.viewForBaselineLayout];
+    _pageControl.currentPage = 0;
+//    // pageController
+//    NSArray *subviews = _pageViewController.view.subviews;
+//    UIPageControl *thisControl = nil;
+//    for (int i=0; i<[subviews count]; i++) {
+//        if ([[subviews objectAtIndex:i] isKindOfClass:[UIPageControl class]]) {
+//            thisControl = (UIPageControl *)[subviews objectAtIndex:i];
+//            [thisControl setBackgroundColor:[UIColor clearColor]];
+//            //thisControl.backgroundColor = [UIColor_Hex colorWithHexString:@"666666" alpha:0.0];
+//            //thisControl.pageIndicatorTintColor = [UIColor grayColor];
+//            //thisControl.currentPageIndicatorTintColor = [UIColor whiteColor];
+//        }
+//    }
     
     [Logger writeOneShot:@"info" message:@"Not-Login User Opend IntroFirstViewController"];
 }
@@ -119,7 +131,7 @@
 {
     NSInteger index = viewController.view.tag;
     
-    if (index >= 5 || index == NSNotFound) {
+    if (index >= 4 || index == NSNotFound) {
         return nil;
     }
     
@@ -140,8 +152,6 @@
     } else if (index == 3) {
         vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFourthViewController"];
     } else if (index == 4) {
-        vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageFifthViewController"];
-    } else if (index == 5) {
         vc = [self.storyboard instantiateViewControllerWithIdentifier:@"IntroPageSixthViewController"];
     }
     vc.delegate = self;
@@ -152,26 +162,34 @@
 }
 
 // 全体で何ページあるか返す Delegate Method コメント外すとPageControlがあらわれる
-
-- (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
-{
-    return 6;
-}
- 
-- (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
-{
-    return _currentPageControl;
-}
+//
+//- (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
+//{
+//    return 6;
+//}
+// 
+//- (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController
+//{
+//    return _currentPageControl;
+//}
 ///////////////////////////////////////
+
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
+{
+    IntroPageRootViewController *currentView = [pageViewController.viewControllers objectAtIndex:0];
+    _pageControl.currentPage = currentView.currentIndex;
+}
+
 - (void)skipToLast:(NSInteger)currentIndex
 {
     NSInteger waitIndex = 0;
-    for (NSInteger i = currentIndex+1; i <= 5; i++) {
+    for (NSInteger i = currentIndex+1; i <= 4; i++) {
         CGFloat interval = 0.1 * waitIndex;
         NSNumber *n = [NSNumber numberWithInteger:i];
         NSMutableDictionary *info = [[NSMutableDictionary alloc]initWithObjects:@[n] forKeys:@[@"index"]];
         [NSTimer scheduledTimerWithTimeInterval:interval target:self selector:@selector(nextPage:) userInfo:info repeats:NO];
         waitIndex++;
+        _pageControl.currentPage = i;
     }
 }
 

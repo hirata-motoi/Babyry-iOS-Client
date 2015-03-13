@@ -15,6 +15,7 @@
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property int introPageIndex;
 @property NSInteger currentPageControl;
+@property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
 
 - (void)skipToLast:(NSInteger)currentIndex;
 
