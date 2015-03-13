@@ -33,5 +33,6 @@
 +(UIColor *)getFacebookButtonColor;
 +(UIColor *)getIntroDarkGrayStringColor;
 +(UIColor *)getLoginTextFieldPaceHolderColor;
++(UIColor *)getDarkGrayColorImageIconString;
 
 @end
