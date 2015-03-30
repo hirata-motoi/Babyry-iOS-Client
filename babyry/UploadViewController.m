@@ -19,6 +19,7 @@
 #import "Logger.h"
 #import "ChildProperties.h"
 #import "DateUtils.h"
+#import "ImageCache.h"
 
 @interface UploadViewController ()
 
@@ -82,6 +83,7 @@
                 _uploadedImageView.image = s3Image;
                 CGRect imageRect = [self getUploadedImageFrame:s3Image];
                 _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
+                [self updateThumbmail:_imageInfo[@"date"] objectId:_imageInfo.objectId imageData:getResult.body bestFlag:_imageInfo[@"bestFlag"]];
             } else {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController : %@", task.error]];
             }
@@ -298,6 +300,37 @@
 {
     NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"requestPhoto"];
     [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
+}
+
+- (void)updateThumbmail:(NSNumber *)date objectId:(NSString *)objectId imageData:(NSData *)imageData bestFlag:(NSString *) bestFlag
+{
+    // 今日or昨日の場合には、candidateに突っ込む
+    if ([date isEqualToNumber:[DateUtils getYesterdayYMD]] || [date isEqualToNumber:[DateUtils getTodayYMD]]) {
+        [ImageCache setCache:objectId
+                       image:UIImageJPEGRepresentation([ImageCache makeThumbNail:[UIImage imageWithData:imageData]], 0.7f)
+                         dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, date]
+         ];
+        [ImageCache setCache:objectId
+                       image:imageData
+                         dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", _childObjectId, date]
+         ];
+    }
+    
+    // bestFlag = choosedの場合にはbestShotに突っ込む
+    if ([bestFlag isEqualToString:@"choosed"]) {
+        [ImageCache setCache:[date stringValue]
+                       image:UIImageJPEGRepresentation([ImageCache makeThumbNail:[UIImage imageWithData:imageData]], 0.7f)
+                         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
+         ];
+    }
+    
+    // 今日 かつ bestshotならfullsizeにする
+    if ([date isEqualToNumber:[DateUtils getTodayYMD]] && [bestFlag isEqualToString:@"choosed"]) {
+        [ImageCache setCache:[date stringValue]
+                       image:imageData
+                         dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", _childObjectId]
+         ];
+    }
 }
 
 @end
