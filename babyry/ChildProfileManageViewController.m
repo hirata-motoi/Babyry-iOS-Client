@@ -284,7 +284,13 @@
 
 - (void)showIconEditActionSheet:(NSString *)childObjectId
 {
-    [self presentViewController:[childPropertyUtils iconEditActionSheet:childObjectId] animated:YES completion:nil];
+    NSString *currentVersion = [[UIDevice currentDevice] systemVersion];
+    if([currentVersion compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending){
+        UIActionSheet *as = [childPropertyUtils iconEditActionSheet:childObjectId];
+        [as showInView:self.view];
+    } else {
+        [self presentViewController:[childPropertyUtils iconEditAlertController:childObjectId] animated:YES completion:nil];
+    }
 }
 
 - (void)openAlbumPicker:(NSString *)childObjectId

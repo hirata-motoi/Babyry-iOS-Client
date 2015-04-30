@@ -10,7 +10,9 @@
 #import "ChildProperties.h"
 #import "Logger.h"
 
-@implementation ChildPropertyUtils
+@implementation ChildPropertyUtils {
+    NSString *actionSheetChildObjectId;
+}
 
 - (void)saveChildProperty:(NSString *)childObjectId withParams:(NSMutableDictionary *)params
 {
@@ -77,7 +79,7 @@
     [alert show];
 }
 
-- (UIAlertController *)iconEditActionSheet:(NSString *)childObjectId
+- (UIAlertController *)iconEditAlertController:(NSString *)childObjectId
 {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
    
@@ -96,5 +98,32 @@
     return alertController;
 }
 
+- (UIActionSheet *)iconEditActionSheet:(NSString *)childObjectId
+{
+    actionSheetChildObjectId = childObjectId;
+    
+    UIActionSheet *as = [[UIActionSheet alloc]init];
+    as.delegate = self;
+    as.title = nil;
+    [as addButtonWithTitle:@"ベストショットから選択"];
+    [as addButtonWithTitle:@"アルバムから選択"];
+    [as addButtonWithTitle:@"キャンセル"];
+    as.cancelButtonIndex = 2;
+    return as;
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex) {
+    case 0:
+        [_delegate openIconEdit:actionSheetChildObjectId];
+        break;
+    case 1:
+        [_delegate openAlbumPicker:actionSheetChildObjectId];
+        break;
+    case 2:
+        break;
+    }
+}
 
 @end
