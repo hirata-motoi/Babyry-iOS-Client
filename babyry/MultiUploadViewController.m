@@ -253,7 +253,7 @@
 			[cell addGestureRecognizer:singleTapGestureRecognizer];
 			
 			// 以下の処理は一番最後 (gestureが一番上にくるように)
-			CGRect unSelectetFrame = CGRectMake(cell.frame.size.width*2/3, cell.frame.size.height*2/3, cell.frame.size.width/3, cell.frame.size.height/3);
+			CGRect unSelectetFrame = CGRectMake(cell.frame.size.width*2/3, cell.frame.size.height*2/3, cell.frame.size.width/3, cell.frame.size.height/3*0.925);
 			// choiceの場合だけunselectedは基本付ける
 			if (![_myRole isEqualToString:@"uploader"]) {
 				UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];

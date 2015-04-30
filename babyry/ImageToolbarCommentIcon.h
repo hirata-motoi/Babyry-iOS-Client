@@ -10,6 +10,9 @@
 
 @interface ImageToolbarCommentIcon : UIView
 
+@property (strong, nonatomic) IBOutlet UIImageView *commentIconImage;
+@property (strong, nonatomic) IBOutlet UILabel *commentIconLabel;
+
 + (instancetype)view;
 
 @end

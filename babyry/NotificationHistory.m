@@ -125,7 +125,7 @@ NSString *const className = @"NotificationHistory";
                 NSString *date = object[@"date"];
                 
                 // 2日以上前のimageUploaded, requestPhotは除外
-                if ([type isEqualToString:@"imageUploaded"] || [type isEqualToString:@"requestPhot"]) {
+                if ([type isEqualToString:@"imageUploaded"] || [type isEqualToString:@"requestPhoto"]) {
                     NSNumber *yesterdayYMD = [DateUtils getYesterdayYMD];
                     if ([yesterdayYMD intValue] > [date intValue]) {
                         continue;
@@ -275,10 +275,17 @@ NSString *const className = @"NotificationHistory";
     PFQuery *query = [PFQuery queryWithClassName:className];
     [query whereKey:@"toUserId" equalTo:userId];
     [query whereKey:@"status" equalTo:@"ready"];
-    [query whereKey:@"child" equalTo:childObjectId];
-    [query whereKey:@"date" equalTo:[NSNumber numberWithInt:[date intValue]]];
-    [query whereKey:@"type" containedIn:types];
+    if (childObjectId) {
+        [query whereKey:@"child" equalTo:childObjectId];
+    }
+    if (date) {
+        [query whereKey:@"date" equalTo:[NSNumber numberWithInt:[date intValue]]];
+    }
+    if (types) {
+        [query whereKey:@"type" containedIn:types];
+    }
     query.limit = 1000; // max
+    [query orderByDescending:@"createdAt"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if (!error) {
             for (PFObject *object in objects) {

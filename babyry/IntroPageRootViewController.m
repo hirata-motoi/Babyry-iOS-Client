@@ -71,12 +71,12 @@
     _skipFromThird.layer.cornerRadius = 6;
     _skipFromThird.layer.borderColor = cornerColor.CGColor;
     _skipFromThird.layer.borderWidth = 2;
-    _skipFromFourth.layer.cornerRadius = 6;
-    _skipFromFourth.layer.borderColor = cornerColor.CGColor;
-    _skipFromFourth.layer.borderWidth = 2;
-    _skipFromFifth.layer.cornerRadius = 6;
-    _skipFromFifth.layer.borderColor = cornerColor.CGColor;
-    _skipFromFifth.layer.borderWidth = 2;
+//    _skipFromFourth.layer.cornerRadius = 6;
+//    _skipFromFourth.layer.borderColor = cornerColor.CGColor;
+//    _skipFromFourth.layer.borderWidth = 2;
+//    _skipFromFifth.layer.cornerRadius = 6;
+//    _skipFromFifth.layer.borderColor = cornerColor.CGColor;
+//    _skipFromFifth.layer.borderWidth = 2;
 }
 
 - (void)viewDidAppear:(BOOL)animated

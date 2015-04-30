@@ -10,6 +10,9 @@
 
 @interface ImageToolbarTrashIcon : UIView
 
+@property (strong, nonatomic) IBOutlet UIImageView *trashIconImage;
+@property (strong, nonatomic) IBOutlet UILabel *trashIconLabel;
+
 + (instancetype)view;
 
 @end

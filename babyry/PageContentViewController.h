@@ -37,7 +37,7 @@
 @property NSMutableArray *bestFlagArray;
 @property NSMutableArray *childImages;
 @property NSMutableDictionary *childImagesIndexMap;
-@property NSMutableArray *scrollPositionData;
+//@property NSMutableArray *scrollPositionData;
 @property CGFloat nextSectionHeight;
 @property BOOL dragging;
 @property NSString *selfRole;
@@ -87,5 +87,7 @@
 @property NSNotificationCenter *notificationCenter;
 
 @property NSMutableDictionary *bestImageIds;
+
+@property int badgeNumber;
 
 @end

@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "TrashWhite.png"
+      "filename" : "ico_photo_trash_selected.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "TrashWhite-1.png"
+      "filename" : "ico_photo_trash_selected@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "TrashWhite-2.png"
+      "filename" : "ico_photo_trash_selected@3x.png"
     }
   ],
   "info" : {

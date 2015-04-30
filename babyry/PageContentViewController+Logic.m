@@ -33,6 +33,7 @@
     [self updateChildProperties];
     [Comment updateCommentNumEntity];
     [self removeUnnecessaryGMPBadge];
+    [self showGlobalMenuBadge];
 }
 
 - (void)showChildImages
@@ -48,6 +49,12 @@
             currentDateComp.month = [self.pageContentViewController.childImages[ip.section][@"month"] intValue];
             visibleDateDic[yyyymm] = currentDateComp;
         }
+    }
+    if ([visibleCellIndex count] == 0) {
+        NSDateComponents *thisMonthComps = [DateUtils dateCompsFromDate:nil];
+        NSDateComponents *lastMonthComps = [DateUtils addDateComps:thisMonthComps withUnit:@"month" withValue:-1];
+        visibleDateDic[[NSString stringWithFormat:@"%04d%02d", thisMonthComps.year, thisMonthComps.month]] = thisMonthComps;
+        visibleDateDic[[NSString stringWithFormat:@"%04d%02d", lastMonthComps.year, lastMonthComps.month]] = lastMonthComps;
     }
     
     for (NSString *yyyymm in visibleDateDic) {
@@ -305,7 +312,9 @@
 
 - (void) showGlobalMenuBadge
 {
+    [self.pageContentViewController.delegate setGlobalMenuBadge:self.pageContentViewController.badgeNumber];
     [NotificationHistory getNotificationHistoryInBackground:[PFUser currentUser][@"userId"] withType:nil withChild:nil withStatus:@"ready" withLimit:1000 withBlock:^(NSArray *objects){
+        self.pageContentViewController.badgeNumber = [objects count];
         [self.pageContentViewController.delegate setGlobalMenuBadge:[objects count]];
     }];
 }

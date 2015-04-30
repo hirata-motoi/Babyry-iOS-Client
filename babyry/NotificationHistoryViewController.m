@@ -15,6 +15,9 @@
 #import "Config.h"
 
 @interface NotificationHistoryViewController ()
+{
+    BOOL setDisplayedAllStatus;
+}
 
 @end
 
@@ -22,6 +25,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    _allKidokuButton.layer.cornerRadius = 3;
+    setDisplayedAllStatus = NO;
 
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@""
@@ -43,6 +49,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    setDisplayedAllStatus = NO;
     [self getNotificationHistory];
 }
 
@@ -84,10 +91,7 @@
         } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
             cell.imageView.image = [UIImage imageNamed:@"IconMenuLike"];
         }
-        if (![histObject[@"status"] isEqualToString:@"displayed"]) {
-            cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
-        }
-        if (![histObject[@"status"] isEqualToString:@"displayed"]) {
+        if (![histObject[@"status"] isEqualToString:@"displayed"] && !setDisplayedAllStatus) {
             cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
         }
     }
@@ -150,4 +154,10 @@
     }];
 }
 
+- (IBAction)allKidokuButtonAction:(id)sender {
+    // 本当はreloadが終わったらNOに戻したいが、reloadDataがbackgroundの処理なのでこのままにする。ページ遷移をすれば戻るので問題ない。
+    setDisplayedAllStatus = YES;
+    [_notificationTableView reloadData];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:nil withDate:nil withType:nil];
+}
 @end
