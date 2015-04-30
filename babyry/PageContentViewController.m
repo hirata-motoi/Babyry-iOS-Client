@@ -1328,8 +1328,13 @@
 // 7ヶ月以上前のsectionはデフォルトで閉じる
 - (void)initializeClosedCellCountBySection
 {
+    int max = 6;
+    CGRect rect = [UIScreen mainScreen].bounds;
+    if (rect.size.height == 480) {
+        max = 1;
+    }
     for (NSInteger i = 0; i < _childImages.count; i++) {
-        if (i > 6) { // TODO confに切り出し
+        if (i > max) { // TODO confに切り出し
             closedCellCountBySection[ [NSNumber numberWithInteger:i] ]
                 = [NSNumber numberWithInteger: [_childImages[i][@"images"] count] ];
         }

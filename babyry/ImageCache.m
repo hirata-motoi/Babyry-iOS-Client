@@ -46,6 +46,11 @@ ImageCache以下の構造
 
 + (void) setCache:name image:(NSData *)image dir:(NSString *)dir
 {
+    CGRect rect = [UIScreen mainScreen].bounds;
+    NSRange range = [dir rangeOfString:@"fullsize"];
+    if (rect.size.height == 480 && range.location == NSNotFound) {
+        image = UIImageJPEGRepresentation([self resizeImageFor3_5inchDevice:[UIImage imageWithData:image]], 0.7f);
+    }
     // Cache Dir
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirPath = [array objectAtIndex:0];
@@ -79,6 +84,9 @@ ImageCache以下の構造
                                                                                                                        saturationDeltaFactor:1
                                                                                                                        maskImage:nil]
                                                                withFilterName:@"CIMinimumComponent"], 0.7f);
+        if (rect.size.height == 480) {
+            imageGray = UIImageJPEGRepresentation([self resizeImageFor3_5inchDevice:[UIImage imageWithData:imageGray]], 0.7f);
+        }
         NSString *savedPathGray = [imageCacheDirPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Gray", name]];
         NSError *errorGray = nil;
         BOOL successGray = [fileManager createFileAtPath:savedPathGray contents:imageGray attributes:nil];
@@ -250,6 +258,21 @@ ImageCache以下の構造
     UIGraphicsEndImageContext();
     
     return thumbImage;
+}
+
++ (UIImage *) resizeImageFor3_5inchDevice:(UIImage *)orgImage
+{
+    float imageWidth = orgImage.size.width;
+    float imageHeight = orgImage.size.height;
+    float scale = 0.3;
+
+    CGSize resizedSize = CGSizeMake(imageWidth * scale, imageHeight * scale);
+    UIGraphicsBeginImageContext(resizedSize);
+    [orgImage drawInRect:CGRectMake(0, 0, resizedSize.width, resizedSize.height)];
+    UIImage* resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return resizedImage;
 }
 
 @end
