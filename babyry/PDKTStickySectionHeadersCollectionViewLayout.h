@@ -13,4 +13,8 @@
 @end
 @interface PDKTStickySectionHeadersCollectionViewLayout : UICollectionViewFlowLayout
 
+// for section expanding
+@property NSMutableArray *deleteIndexPaths;
+@property NSMutableArray *insertIndexPaths;
+
 @end

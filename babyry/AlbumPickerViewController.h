@@ -11,15 +11,21 @@
 #import "MultiUploadViewController.h"
 #import "MBProgressHUD.h"
 
-@interface AlbumPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
+@protocol AlbumPickerViewControllerDelegate <NSObject>
 
+- (void)closeAlbumTable;
+
+@end
+
+@interface AlbumPickerViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
+@property (nonatomic, assign)id<AlbumPickerViewControllerDelegate>delegate;
 @property (strong, nonatomic) IBOutlet UICollectionView *albumImageCollectionView;
+@property (strong, nonatomic) IBOutlet UIView *selectedImageBaseView;
 @property (strong, nonatomic) IBOutlet UICollectionView *selectedImageCollectionView;
 
 - (IBAction)sendImageButton:(id)sender;
-- (IBAction)backButton:(id)sender;
+- (void)setChildFirstIconWithImageData:(NSData *)imageData;
 
-@property (strong, nonatomic) IBOutlet UIButton *backLabel;
 @property (strong, nonatomic) IBOutlet UIButton *sendImageLabel;
 @property (strong, nonatomic) IBOutlet UILabel *picNumLabel;
 
@@ -37,15 +43,9 @@
 @property NSString *childObjectId;
 @property NSString *date;
 @property NSMutableArray *totalImageNum;
-@property NSIndexPath *indexPath;
-
-@property MBProgressHUD *hud;
-
-@property NSInteger uploadedImageCount;
+@property NSIndexPath *targetDateIndexPath;
 
 @property int multiUploadMax;
-
-@property NSMutableDictionary *notificationHistoryByDay;
 
 @property NSString *uploadType;
 @property NSMutableDictionary *section;

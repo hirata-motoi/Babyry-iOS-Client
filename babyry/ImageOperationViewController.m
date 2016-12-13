@@ -162,7 +162,6 @@
     ImageToolbarViewController *imageToolbarViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ImageToolbarViewController"];
     imageToolbarViewController.commentView = _commentView;
     imageToolbarViewController.uploadViewController = _uploadViewController;
-    imageToolbarViewController.notificationHistoryByDay = _notificationHistoryByDay;
     imageToolbarViewController.openCommentView = _openCommentView;
     imageToolbarViewController.childObjectId = _childObjectId;
     imageToolbarViewController.date = _date;
@@ -195,7 +194,7 @@
     int bestLabelWidth = self.view.frame.size.width/6;
     int x = self.view.frame.size.width - bestLabelWidth - 5;
     int y = self.view.frame.size.height -50 - bestLabelWidth -5;
-    _unSelectedBestshotView.frame = CGRectMake(x, y, bestLabelWidth, bestLabelWidth);
+    _unSelectedBestshotView.frame = CGRectMake(x, y, bestLabelWidth, bestLabelWidth*0.925);
     [self.view addSubview:_unSelectedBestshotView];
 
     // ベストショットのほうもはる

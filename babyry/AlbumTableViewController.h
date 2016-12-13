@@ -10,19 +10,22 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Parse/Parse.h>
 #import "UploadViewController.h"
+#import "AlbumPickerViewController.h"
 
-@interface AlbumTableViewController : UIViewController<UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface AlbumTableViewController : UIViewController<UIImagePickerControllerDelegate, UITableViewDelegate, UITableViewDataSource, AlbumPickerViewControllerDelegate>
 
 @property NSString *childObjectId;
 @property NSString *month;
 @property NSString *date;
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
-@property NSMutableDictionary *notificationHistoryByDay;
 
 @property NSMutableDictionary *section;
 @property UploadViewController *uploadViewController;
 
 @property NSString *uploadType;
+
+
+- (void)closeAlbumTable;
 
 @end

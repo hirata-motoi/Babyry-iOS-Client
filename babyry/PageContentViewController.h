@@ -8,20 +8,25 @@
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
-#import "DragView.h"
+//#import "DragView.h"
 #import "AWSCommon.h"
 #import "MBProgressHUD.h"
 #import <AudioToolbox/AudioServices.h>
 #import "CalendarCollectionViewCell.h"
 #import "TutorialNavigator.h"
 #import "TutorialFamilyApplyIntroduceView.h"
+#import "CollectionViewSectionHeader.h"
 
-//@protocol PageContentViewControllerDelegate <NSObject>
-//- (void) moveToTargetPage:(int)index;
-//@end
+@protocol PageContentViewControllerDelegate <NSObject>
+- (void) setGlobalMenuBadge:(int)badgeNumber;
+- (void) updateNavitagionTitle:(NSString *)childName;
+@end
 
-@interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, DragViewDelegate>
+@interface PageContentViewController : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource, CollectionViewSectionHeaderDelegate>
+
 @property (weak, nonatomic) IBOutlet UICollectionView *pageContentCollectionView;
+
+@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
 
 @property NSUInteger pageIndex;
 @property NSString *childObjectId;
@@ -32,13 +37,9 @@
 @property NSMutableArray *bestFlagArray;
 @property NSMutableArray *childImages;
 @property NSMutableDictionary *childImagesIndexMap;
-@property NSMutableArray *scrollPositionData;
+//@property NSMutableArray *scrollPositionData;
 @property CGFloat nextSectionHeight;
-@property DragView *dragView;
 @property BOOL dragging;
-@property CGFloat dragViewUpperLimitOffset;
-@property CGFloat dragViewLowerLimitOffset;
-@property BOOL dragViewZoomed;
 @property NSString *selfRole;
 @property NSInteger dragCount;
 @property NSMutableDictionary *imagesCountDic;
@@ -50,15 +51,13 @@
 @property UILabel *tutoSkipLabel;
 @property BOOL isLoading;
 @property NSDateComponents *dateComp;
-@property NSMutableDictionary *notificationHistory;
 @property BOOL isRotatingCells;
 @property BOOL skippedReloadData;
 
-- (void)drag:(DragView *)dragView;
 - (NSMutableDictionary *)getYearMonthMap;
 - (void)showAlertMessage;
-- (void)addIntroductionOfImageRequestView:(NSTimer *)timer;
-- (void)addIntroductionOfPageFlickView:(NSTimer *)timer;
+//- (void)addIntroductionOfImageRequestView:(NSTimer *)timer;
+//- (void)addIntroductionOfPageFlickView:(NSTimer *)timer;
 - (void)openFamilyApply;
 - (void)setImages;
 - (void)showTutorialNavigator;
@@ -69,12 +68,15 @@
 - (void)hideLoadingIcon;
 - (void)showIntroductionForFillingEmptyCells;
 - (void)setupChildImagesIndexMap;
+- (void)resetIconImageWithBlurWithCell;
 
 @property AWSServiceConfiguration *configuration;
 
 @property MBProgressHUD *hud;
 
 @property NSTimer *tm;
+
+@property UIRefreshControl *rc;
 
 // for tutorial
 @property CalendarCollectionViewCell *cellOfToday;
@@ -83,8 +85,10 @@
 @property NSTimer *instructionTimer;
 
 
-//@property (nonatomic,assign) id<PageContentViewControllerDelegate> delegate;
-
 @property NSNotificationCenter *notificationCenter;
+
+@property NSMutableDictionary *bestImageIds;
+
+@property int badgeNumber;
 
 @end

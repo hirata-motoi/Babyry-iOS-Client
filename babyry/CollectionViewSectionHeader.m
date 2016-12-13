@@ -28,25 +28,39 @@
 + (instancetype)view
 {
     NSString *className = NSStringFromClass([self class]);
-    return [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
+    CollectionViewSectionHeader *headerView = [[[NSBundle mainBundle] loadNibNamed:className owner:nil options:0] firstObject];
+    
+    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:headerView action:@selector(toggleCells)];
+    gesture.numberOfTapsRequired = 1;
+    [headerView addGestureRecognizer:gesture];
+    
+    return headerView;
 }
 
-- (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month withName:(NSString *)name
+- (void)setParmetersWithYear:(NSInteger)year withMonth:(NSInteger)month
 {
     _yearLabel.text = [NSString stringWithFormat:@"%ld", (long)year];
     _monthLabel.text = [NSString stringWithFormat:@"%ld月", (long)month];
-    _nameLabel.text = [NSString stringWithFormat:@"%@ちゃん", name];
     
     _yearLabel.textColor = [UIColor whiteColor];
     _yearLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
     
     _monthLabel.textColor = [UIColor whiteColor];
     _monthLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
-                                                            
-    _nameLabel.textColor = [UIColor whiteColor];
-    _nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
-                                                           
+                                                                                                                       
     self.backgroundColor = [ColorUtils getSectionHeaderColor];
+}
+
+- (void)toggleCells
+{
+    BOOL isExpanded = [_delegate toggleCells:_sectionIndex];
+    [self adjustStyle:isExpanded];
+}
+
+- (void)adjustStyle:(BOOL)isExpanded
+{
+    // 閉じている時はborderを表示
+    _borderBottom.hidden = isExpanded;
 }
 
 /*

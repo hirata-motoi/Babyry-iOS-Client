@@ -148,12 +148,12 @@
 
 + (NSNumber *)getTodayYMD
 {
-    return [self numberFromComps:[self dateCompsFromDate:[self setSystemTimezone:[NSDate date]]]];
+    return [self numberFromComps:[self dateCompsFromDate:[NSDate date]]];
 }
 
 + (NSNumber *)getYesterdayYMD
 {
-    return [self numberFromComps:[self dateCompsFromDate:[self setSystemTimezone:[NSDate dateWithTimeIntervalSinceNow:-24*60*60]]]];
+    return [self numberFromComps:[self dateCompsFromDate:[NSDate dateWithTimeIntervalSinceNow:-24*60*60]]];
 }
 
 + (BOOL)isTodayByIndexPath:(NSIndexPath *)index
@@ -169,7 +169,49 @@
     if (index.section == 0 && (index.row == 0 || index.row == 1)) {
         return YES;
     }
+
+    // 今日が1日の場合、昨日がsection=1, row=0の時がある
+    if (index.section == 1 && index.row == 0) {
+        NSIndexPath *yesterdayIndex = [self getIndexPathFromDate:[self getYesterdayYMD]];
+        if (index.section == yesterdayIndex.section && index.row == yesterdayIndex.row) {
+            return YES;
+        }
+    }
     return NO;
 }
+
++ (NSIndexPath *)getIndexPathFromDate:(NSNumber *)date
+{
+    // yyyymmddからindexPathを構築する
+    NSDateComponents *targetComps = [self compsFromNumber:date];
+    NSDateComponents *todayComps = [self compsFromNumber:[self getTodayYMD]];
+    
+    int section = 0;
+    int row = 0;
+    
+    int yearDiff = todayComps.year - targetComps.year;
+    section += 12 * yearDiff;
+    int monthDiff = todayComps.month - targetComps.month;
+    section += monthDiff;
+    
+    if (yearDiff == 0 && monthDiff == 0) {
+        row = todayComps.day - targetComps.day;
+    } else {
+        row = [self getLastDay:targetComps] - targetComps.day;
+    }
+    
+    return [NSIndexPath indexPathForRow:row inSection:section];
+}
+
++ (int) getLastDay:(NSDateComponents *)comps
+{
+    // ひと月足して、日付を1日にしてから、1日引くと最終日をgetできる
+    NSDateComponents *tmpComps = [self addDateComps:comps withUnit:@"month" withValue:1];
+    tmpComps.day = 1;
+    NSDateComponents *lastDayComps = [self addDateComps:tmpComps withUnit:@"day" withValue:-1];
+    
+    return lastDayComps.day;
+}
+
 
 @end

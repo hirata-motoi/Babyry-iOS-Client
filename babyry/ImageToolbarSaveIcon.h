@@ -10,6 +10,9 @@
 
 @interface ImageToolbarSaveIcon : UIView
 
+@property (strong, nonatomic) IBOutlet UIImageView *saveIconImage;
+@property (strong, nonatomic) IBOutlet UILabel *saveIconLabel;
+
 + (instancetype)view;
 
 @end

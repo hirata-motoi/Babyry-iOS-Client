@@ -10,13 +10,17 @@
 #import <Parse/Parse.h>
 #import <ParseFacebookUtils/PFFacebookUtils.h>
 #import "MySignUpViewController.h"
+#import "IntroPageRootViewController.h"
 
 @interface ChooseRegisterStepViewController : UIViewController<PFSignUpViewControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UILabel *noRegisterButton;
 @property (strong, nonatomic) IBOutlet UILabel *registerButton;
 @property (strong, nonatomic) IBOutlet UILabel *facebookLoginButton;
+@property (strong, nonatomic) IBOutlet UILabel *loginButton;
 
 @property BOOL isSignUpCompleted;
+
+@property IntroPageRootViewController *introPageRootViewController;
 
 @end

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="13F34" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="AppSetting" representedClassName="AppSetting" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="ChildPropertyEntity" representedClassName="ChildPropertyEntity" syncable="YES">
+        <attribute name="birthday" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="calendarStartDate" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="childImageShardIndex" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="commentShardIndex" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="createdBy" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="familyId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="iconVersion" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="lastDisplayedAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="objectId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="oldestChildImageDate" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="sex" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
+    </entity>
+    <entity name="CommentNumEntity" representedClassName="CommentNumEntity" syncable="YES">
+        <attribute name="key" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="value" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="PartnerInvitedEntity" representedClassName="PartnerInvitedEntity" syncable="YES">
+        <attribute name="familyId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="inputtedPinCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="PartnerInviteEntity" representedClassName="PartnerInviteEntity" syncable="YES">
+        <attribute name="linkComplete" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="pinCode" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="TmpUserData" representedClassName="TmpUserData" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="isRegistered" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TrackingLogEntity" representedClassName="TrackingLogEntity" syncable="YES">
+        <attribute name="lastViewController" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="logName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TutorialAttributes" representedClassName="TutorialAttributes" syncable="YES">
+        <attribute name="key" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TutorialBestShot" representedClassName="TutorialBestShot" syncable="YES">
+        <attribute name="imageObjectId" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TutorialStage" representedClassName="TutorialStage" syncable="YES">
+        <attribute name="currentStage" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="AppSetting" positionX="-45" positionY="0" width="128" height="105"/>
+        <element name="ChildPropertyEntity" positionX="-9" positionY="90" width="128" height="255"/>
+        <element name="CommentNumEntity" positionX="-9" positionY="153" width="128" height="73"/>
+        <element name="PartnerInvitedEntity" positionX="-9" positionY="90" width="128" height="73"/>
+        <element name="PartnerInviteEntity" positionX="18" positionY="126" width="128" height="73"/>
+        <element name="TmpUserData" positionX="-9" positionY="63" width="128" height="133"/>
+        <element name="TrackingLogEntity" positionX="27" positionY="135" width="128" height="90"/>
+        <element name="TutorialAttributes" positionX="-18" positionY="99" width="128" height="75"/>
+        <element name="TutorialBestShot" positionX="-9" positionY="171" width="128" height="58"/>
+        <element name="TutorialStage" positionX="-18" positionY="90" width="128" height="58"/>
+    </elements>
+</model>

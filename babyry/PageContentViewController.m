@@ -20,13 +20,8 @@
 #import "CalendarCollectionViewCell.h"
 #import "DateUtils.h"
 #import "DragView.h"
-#import "CellBackgroundViewToEncourageUpload.h"
-#import "CellBackgroundViewToEncourageUploadLarge.h"
-#import "CellBackgroundViewToEncourageChoose.h"
-#import "CellBackgroundViewToEncourageChooseLarge.h"
-#import "CellBackgroundViewToWaitUpload.h"
-#import "CellBackgroundViewToWaitUploadLarge.h"
-#import "CellBackgroundViewNoImage.h"
+#import "CellImageFramePlaceHolder.h"
+#import "CellImageFramePlaceHolderLarge.h"
 #import "AddMonthToCalendarView.h"
 #import "CalenderLabel.h"
 #import "PushNotification.h"
@@ -36,8 +31,8 @@
 #import "UIColor+Hex.h"
 #import "CollectionViewSectionHeader.h"
 #import <AudioToolbox/AudioServices.h>
-#import "ImageRequestIntroductionView.h"
-#import "PageFlickIntroductionView.h"
+//#import "ImageRequestIntroductionView.h"
+//#import "PageFlickIntroductionView.h"
 #import "Config.h"
 #import "Logger.h"
 #import "AppSetting.h"
@@ -54,6 +49,9 @@
 #import "Partner.h"
 #import "UploadPastImagesIntroductionView.h"
 #import "AnnounceBoardView.h"
+#import "Comment.h"
+#import "CommentNumLabel.h"
+#import "ImageUtils.h"
 
 @interface PageContentViewController ()
 
@@ -68,6 +66,11 @@
     CGSize bigRect;
     CGSize smallRect;
     BOOL alreadyRegisteredObserver;
+    NSMutableDictionary *closedCellCountBySection;
+    BOOL isTogglingCells;
+    UIImage *iconImage;
+    NSMutableDictionary *commentNumForDate;
+    NSString *requestPhotoDay;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -82,6 +85,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    closedCellCountBySection = [[NSMutableDictionary alloc]init];
     childProperty = [ChildProperties getChildProperty:_childObjectId];
   
     logicTutorial = [[PageContentViewController_Logic_Tutorial alloc]init];
@@ -94,9 +98,8 @@
     _isFirstLoad = 1;
     _currentUser = [PFUser currentUser];
     _imagesCountDic = [[NSMutableDictionary alloc]init];
-    [self initializeChildImages];
+    [self adjustChildImages];
     [self createCollectionView];
-    //[self setupScrollBarView];
     
     windowWidth = self.view.frame.size.width;
     windowHeight = self.view.frame.size.height;
@@ -105,8 +108,22 @@
     
     alreadyRegisteredObserver = NO;
     
+    _badgeNumber = 0;
+    
     _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     _hud.hidden = YES;
+	
+	_bestImageIds = [[NSMutableDictionary alloc] init];
+    
+    _rc = [[UIRefreshControl alloc] init];
+    [_rc addTarget:self action:@selector(onRefresh) forControlEvents:UIControlEventValueChanged];
+    [_pageContentCollectionView addSubview:_rc];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
+    
+    // コメント数を取得
+    commentNumForDate = [Comment getAllCommentNum];
 }
 
 - (void)applicationDidBecomeActive
@@ -130,22 +147,21 @@
         }
     }
     childProperty = [ChildProperties getChildProperty:_childObjectId];
-    
-    [self adjustChildImages];
     [self reloadView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    [self initializeClosedCellCountBySection];
+
     // Notification登録
     if (!alreadyRegisteredObserver) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"receivedCalendarAddedNotification" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:@"applicationWillEnterForeground" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadPageContentView) name:@"resetImage" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setImages) name:@"didUpdatedChildImageInfo" object:nil]; // for tutorial + icon change
         alreadyRegisteredObserver = YES;
     }
     
@@ -155,11 +171,23 @@
         _hud.hidden = NO;
     }
     
-    [self setImages];
+    //[self setImages];
+    // 少し待ってあげないと、cellの描画がおわらないので、いま画面に映っているcellのindexPathが取得できない
+    [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(setImages) userInfo:nil repeats:NO];
+    
     if (!_tm || ![_tm isValid]) {
         _tm = [NSTimer scheduledTimerWithTimeInterval:60.0f target:self selector:@selector(setImages) userInfo:nil repeats:YES];
     }
 //    [self showAnnounceBoard];
+
+    [logic showGlobalMenuBadge];
+    
+    // 子供がいたら子供の名前にnavigationのtitleを変更
+    if (childProperty[@"name"]) {
+        [_delegate updateNavitagionTitle:childProperty[@"name"]];
+    }
+    
+    [self adjustChildImages];
 }
 
 - (void)reloadView
@@ -169,11 +197,7 @@
         [Tutorial forwardStageWithNextStage:@"tutorialFinished"];
         [_instructionTimer invalidate];
         
-        [ChildProperties asyncChildPropertiesWithBlock:^(NSMutableArray *beforeSyncChildProperties) {
-            NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-            [[NSNotificationCenter defaultCenter] postNotification:n];
-        
-        }];
+        [logic updateChildProperties];
     }
     
     [FamilyRole updateCache];
@@ -187,6 +211,18 @@
     if ( !([currentStage.currentStage isEqualToString:@"chooseByUser"] || [currentStage.currentStage isEqualToString:@"uploadByUser"]) ) {
         [self showTutorialNavigator];
     }
+    
+    NSNotification *n = [NSNotification notificationWithName:@"childIconChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:n];
+}
+
+- (void)onRefresh
+{
+    // 上で引っ張って更新
+    // スクロールで読んで記録していたloadedComp(=dateComp)も初期化
+    [_rc beginRefreshing];
+    _dateComp = [logic dateComps];
+    [self setImages];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -202,6 +238,8 @@
     alreadyRegisteredObserver = NO;
     
     [self removeDialogs];
+    
+    iconImage = nil;
 }
 
 - (id)logic:(NSString *)methodName
@@ -231,6 +269,7 @@
 
 -(void)setImages
 {
+    commentNumForDate = [Comment getAllCommentNum];
     if ([[Tutorial currentStage].currentStage isEqualToString:@"uploadByUserFinished"]) {
         _hud.hidden = YES;
         return;
@@ -262,10 +301,12 @@
 // セルの数を指定するメソッド
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    if (section == _childImages.count - 1 && [[self logic:@"canAddCalendar"] canAddCalendar:section]) {
-        return [_childImages[section][@"images"] count] + 1;
+    NSInteger closedCellCount = 0;
+    if (closedCellCountBySection[ [NSNumber numberWithInteger:section] ]) {
+        closedCellCount = [closedCellCountBySection[ [NSNumber numberWithInteger:section] ] integerValue];
     }
-    return [_childImages[section][@"images"] count];
+    
+    return [_childImages[section][@"images"] count] - closedCellCount;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -304,37 +345,24 @@
             [cell removeGestureRecognizer:gesture];
         }
     }
-    
+    cell.backgroundColor = nil;
+   
     // indexPathの設定
     cell.currentSection = indexPath.section;
     cell.currentRow = indexPath.row;
    
-    // カレンダー追加用cell
-    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
-        [self setBackgroundViewOfCell:cell withImageCachePath:@"" withIndexPath:indexPath];
-        
-        if (indexPath.section == 0 && indexPath.row == 1) {
-            CGRect rect = cell.frame;
-            rect.origin.x = 0;
-            cell.frame = rect;
-        }
-        return cell;
-    }
-
     PFObject *childImage = [[[_childImages objectAtIndex:indexPath.section] objectForKey:@"images"] objectAtIndex:indexPath.row];
     
     // Cacheからはりつけ
     NSString *ymd = [childImage[@"date"] stringValue];
-    NSString *imageCachePath = ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row])
+    NSString *imageCachePath = ([DateUtils isTodayByIndexPath:indexPath])
         ? [NSString stringWithFormat:@"%@/bestShot/fullsize/%@", _childObjectId , ymd]
         : [NSString stringWithFormat:@"%@/bestShot/thumbnail/%@", _childObjectId , ymd];
 
-    [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath];
+    [self setBackgroundViewOfCell:cell withImageCachePath:imageCachePath withIndexPath:indexPath withYmd:ymd];
     
     // カレンダーラベル付ける
     [cell addSubview:[self makeCalenderLabel:indexPath cellFrame:cell.frame]];
-    
-    [self setBadgeToCell:cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd];
     
     // 月の2日目の時に、1日のサムネイルが中央寄せとなって表示されてしまうためorigin.xを無理矢理設定
     if (indexPath.section == 0 && indexPath.row == 1) {
@@ -365,21 +393,29 @@
         return;
     }
     
-    // カレンダー追加cell withinTwoDayがcallされる前にチェックしておく必要がある
-    if ([_childImages[indexPath.section][@"images"] count] <= indexPath.row) {
-        [[self logic:@"addMonthToCalendar"] addMonthToCalendar:indexPath];
-        return;
-    }
-    
-    // チェックの人がアップ催促する時は何の処理もしない
-    if ([_selfRole isEqualToString:@"chooser"] && [[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+    // チョイスの人がアップ催促する
+    // タップでアラートでて、Give Me PhotoをおくるならOK押す
+    if ([_selfRole isEqualToString:@"chooser"] && [DateUtils isInTwodayByIndexPath:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
+            // ださいんだが、alertに値を渡す方法がよくわからんのでこれに保持させる
+            if (indexPath.row == 0) {
+                requestPhotoDay = @"today";
+            } else {
+                requestPhotoDay = @"yesterday";
+            }
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Give Me Photo"
+                                                            message:@"アップロードをパートナーにおねがいしますか？"
+                                                           delegate:self
+                                                  cancelButtonTitle:@"キャンセル"
+                                                  otherButtonTitles:@"おねがいする", nil
+                                  ];
+            [alert show];
             return;
         }
     }
     
-    // チェック側、2日より前の時にも何もしない(No Image)
-    if ([_selfRole isEqualToString:@"chooser"] && ![[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
+    // チョイス側、2日より前の時にも何もしない(No Image)
+    if ([_selfRole isEqualToString:@"chooser"] && ![DateUtils isInTwodayByIndexPath:indexPath]) {
         if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
             return;
         }
@@ -397,7 +433,6 @@
             albumTableViewController.childObjectId = _childObjectId;
             albumTableViewController.date = [tappedChildImage[@"date"] stringValue];
             albumTableViewController.month = [[tappedChildImage[@"date"] stringValue] substringWithRange:NSMakeRange(0, 6)];
-            albumTableViewController.notificationHistoryByDay = _notificationHistory[[tappedChildImage[@"date"] stringValue]];
             
             // _childImagesを更新したいのでリファレンスを渡す(2階層くらい渡すので別の方法があれば変えたいが)。
             NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
@@ -429,8 +464,6 @@
         albumTableViewController.uploadType = @"single";
         [self.navigationController pushViewController:albumTableViewController animated:YES];
         return;
-
-    
     }
     
     [self moveToImagePageViewController:indexPath];
@@ -438,18 +471,23 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    return CGSizeMake(self.view.frame.size.width, 30);
+    return CGSizeMake(self.view.frame.size.width, [[Config config][@"CollectionViewSectionHeaderHeight"] intValue]);
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     UICollectionReusableView *headerView = [_pageContentCollectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"viewControllerHeader" forIndexPath:indexPath];
-    
+    for (UIView *v in [headerView subviews]) {
+        [v removeFromSuperview];
+    }
     
     NSString *year = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"year"];
     NSString *month = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"month"];
     
     CollectionViewSectionHeader *header = [CollectionViewSectionHeader view];
-    [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue] withName:childProperty[@"name"]];
+    header.delegate = self;
+    header.sectionIndex = indexPath.section;
+    [header setParmetersWithYear:[year integerValue] withMonth:[month integerValue]];
+    [header adjustStyle:[self isExpandedSection:indexPath.section]];
    
     [headerView addSubview:header];
     
@@ -463,12 +501,16 @@
     multiUploadViewController.date = date;
     multiUploadViewController.month = [date substringWithRange:NSMakeRange(0, 6)];
     multiUploadViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    multiUploadViewController.notificationHistoryByDay = _notificationHistory[[date substringWithRange:NSMakeRange(0, 8)]];
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
     multiUploadViewController.totalImageNum = totalImageNum;
     multiUploadViewController.indexPath = indexPath;
     multiUploadViewController.pCVC = self;
+	if (_bestImageIds[date]) {
+		multiUploadViewController.bestImageId = _bestImageIds[date];
+	} else {
+		multiUploadViewController.bestImageId = @"";
+	}
     
     [self.navigationController pushViewController:multiUploadViewController animated:YES];
 }
@@ -482,7 +524,6 @@
     pageViewController.showPageNavigation = NO; // PageContentViewControllerから表示する場合、全部で何枚あるかが可変なので出さない
     pageViewController.childObjectId = _childObjectId;
     pageViewController.imagesCountDic = _imagesCountDic;
-    pageViewController.notificationHistory = _notificationHistory;
     pageViewController.indexPath = indexPath;
     [self.navigationController setNavigationBarHidden:YES];
     [self.navigationController pushViewController:pageViewController animated:YES];
@@ -491,8 +532,6 @@
 - (UIView *) makeCalenderLabel:(NSIndexPath *)indexPath cellFrame:(CGRect)cellFrame
 {
     // 下準備
-    float cellWidth = cellFrame.size.width;
-    float cellHeight = cellFrame.size.height;
     NSMutableArray *weekdayArray = [[_childImages objectAtIndex:indexPath.section] objectForKey:@"weekdays"];
     NSString *weekdayString = [[NSString alloc] init];
     weekdayString = [DateUtils getWeekStringFromNum:[[weekdayArray objectAtIndex:indexPath.row] intValue]];
@@ -501,16 +540,18 @@
 
     // カレンダーラベル組み立て
     CalenderLabel *calLabelView = [CalenderLabel view];
-    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/6, cellHeight/6);
+    if ([DateUtils isTodayByIndexPath:indexPath]) {
+        calLabelView.frame = CGRectMake(2, 2, 54, 48);
+        calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, 16);
+        calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
     } else {
-        calLabelView.frame = CGRectMake(cellWidth/20, cellHeight/20, cellWidth/4, cellHeight/4);
+        calLabelView.frame = CGRectMake(2, 2, 26, 27);
+        calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, 9);
+        calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
     }
     calLabelView.calLabelBack.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height);
-    calLabelView.calLabelBack.layer.cornerRadius = calLabelView.calLabelBack.frame.size.width/20;
-    calLabelView.calLabelTop.frame = CGRectMake(0, 0, calLabelView.frame.size.width, calLabelView.frame.size.height/3);
-    calLabelView.calLabelTop.layer.cornerRadius = calLabelView.frame.size.width/20;
-    calLabelView.calLabelTopBehind.frame = CGRectMake(0, calLabelView.calLabelTop.frame.size.height/2, calLabelView.frame.size.width, calLabelView.calLabelTop.frame.size.height/2);
+    calLabelView.calLabelBack.layer.cornerRadius = 3;
+    calLabelView.calLabelTop.layer.cornerRadius = 3;
     
     if ([weekdayString isEqualToString:@"SUN"]) {
         calLabelView.calLabelTop.backgroundColor = [ColorUtils getSunDayCalColor];
@@ -527,19 +568,41 @@
     UILabel *calWeekLabel = [[UILabel alloc] initWithFrame:calLabelView.calLabelTop.frame];
     calWeekLabel.textColor = [UIColor whiteColor];
     calWeekLabel.text = weekdayString;
-    calWeekLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height*0.8];
     calWeekLabel.textAlignment = NSTextAlignmentCenter;
     [calLabelView.calLabelTop addSubview:calWeekLabel];
     
     // 日付ラベル
     UILabel *calDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, calLabelView.frame.size.height/3, calLabelView.frame.size.width, calLabelView.frame.size.height*2/3)];
-    calDateLabel.textColor = [UIColor blackColor];
+    calDateLabel.textColor = [ColorUtils getCalenderNumberColor];
     calDateLabel.text = dd;
-    calDateLabel.font = [UIFont systemFontOfSize:calLabelView.calLabelTop.frame.size.height];
     calDateLabel.textAlignment = NSTextAlignmentCenter;
     [calLabelView.calLabelBack addSubview:calDateLabel];
     
+    if ([DateUtils isTodayByIndexPath:indexPath]) {
+        calWeekLabel.font = [UIFont fontWithName:@"Helvetica Bold" size:10];
+        calDateLabel.font = [UIFont fontWithName:@"Helvetica" size:24];
+    } else {
+        calWeekLabel.font = [UIFont fontWithName:@"Helvetica Bold" size:7];
+        calDateLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
+    }
+    
     return calLabelView;
+}
+
+- (UIView *)makeCommentNumLabel:(NSString *)ymd cellFrame:(CGRect)cellFrame
+{
+    CommentNumLabel *commentLabel = [CommentNumLabel view];
+    CGRect frame = commentLabel.frame;
+    frame.origin.x = cellFrame.size.width - frame.size.width - 2;
+    frame.origin.y = cellFrame.size.height - frame.size.height - 1;
+    commentLabel.frame = frame;
+
+    NSString *key = [NSString stringWithFormat:@"%@%@", _childObjectId, ymd];
+    if (commentNumForDate[key]) {
+        [commentLabel setCommentNumber:[commentNumForDate[key] intValue]];
+        return commentLabel;
+    }
+    return nil;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -552,34 +615,28 @@
         _dragCount = 0;
     }
     
-    _dragView.hidden = NO;
-    // scroll位置からどの月を表示ようとしているかを判定
-    // その月のデータをまだとってなければ取得
-    [self reflectPageScrollToDragView];
-    
-    // 今のsection : _currentScrollSection
-    NSDateComponents *currentYearMonth = [self getCurrentYearMonthByScrollPosition];
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld%02ld", (long)currentYearMonth.year, (long)currentYearMonth.month];
+    NSArray* visibleCellIndex = _pageContentCollectionView.indexPathsForVisibleItems;
+    NSDateComponents *visibleDateComp = [logic dateComps];
+    int yyyymm = 999999;
+    for (NSIndexPath *ip in visibleCellIndex) {
+        int yyyymmTmp = [NSString stringWithFormat:@"%@%@", _childImages[ip.section][@"year"], _childImages[ip.section][@"month"]].intValue;
+        if (yyyymm > yyyymmTmp) {
+            yyyymm = yyyymmTmp;
+            visibleDateComp.year = [_childImages[ip.section][@"year"] intValue];
+            visibleDateComp.month = [_childImages[ip.section][@"month"] intValue];
+        }
+    }
     
     NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDate *currentDate = [cal dateFromComponents:currentYearMonth];
+    NSDate *visibleDate = [cal dateFromComponents:visibleDateComp];
     NSDate *loadedDate = [cal dateFromComponents:_dateComp];
-    if ([currentDate compare:loadedDate] == NSOrderedAscending) {
+    if ([visibleDate compare:loadedDate] == NSOrderedAscending) {
         if (_isLoading) {
             return;
         }
-        _dateComp = [DateUtils addDateComps:_dateComp withUnit:@"month" withValue:-1];
-        NSDate *firstDate = [[self logic:@"getCollectionViewFirstDay"] getCollectionViewFirstDay];
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyyMM"];
-        NSString *firstDateString = [dateFormatter stringFromDate:firstDate];
         
-        int firstDateInt = [firstDateString intValue];
-        int nextLoadInt = [[NSString stringWithFormat:@"%ld%02ld", (long)_dateComp.year, (long)_dateComp.month] intValue];
-        
-        if (firstDateInt <= nextLoadInt) {
-            [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:_dateComp.year withMonth:_dateComp.month withReload:YES];
-        }                  
+        _dateComp = visibleDateComp;
+        [[self logic:@"getChildImagesWithYear"] getChildImagesWithYear:visibleDateComp.year withMonth:visibleDateComp.month withReload:YES];
     }
 }
 
@@ -595,39 +652,12 @@
     }
 }
 
-- (void)setupScrollBarView
-{
-    _dragViewUpperLimitOffset = 20;
-    _dragViewLowerLimitOffset = self.view.bounds.size.height - 44 - 20 - 60;
-    
-    _dragView = [[DragView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 70, _dragViewUpperLimitOffset, 70, 60)];
-    _dragView.userInteractionEnabled = YES;
-    _dragView.delegate = self;
-    _dragView.dragViewLabel.text = [NSString stringWithFormat:@"%ld/%02ld", (long)_dateComp.year, (long)_dateComp.month];
-    _dragView.dragViewLowerLimitOffset = _dragViewLowerLimitOffset;
-    _dragView.dragViewUpperLimitOffset = _dragViewUpperLimitOffset;
-    
-    [self.view addSubview:_dragView];
-}
-
-- (void)drag:(DragView *)targetView
-{
-    _dragging = YES;
- 
-    // scrollViewを連動
-    CGFloat contentHeight = _pageContentCollectionView.contentSize.height - (self.view.bounds.size.height - 64);
-    CGFloat viewHeight = _dragViewLowerLimitOffset - _dragViewUpperLimitOffset;
-
-    CGFloat rate = contentHeight / viewHeight ;
-    
-    CGFloat scrolledHeight = (targetView.frame.origin.y - _dragViewUpperLimitOffset) * rate;
-    CGPoint scrolledPoint = CGPointMake(0, scrolledHeight);
-    [_pageContentCollectionView setContentOffset:scrolledPoint];
-    _dragging = NO;
-}
-
 - (void)adjustChildImages
 {
+    if (!_childImages || !_childImages.count < 1) {
+        [self initializeChildImages];
+        return;
+    }
     PFObject *latestChildImage;
     PFObject *oldestChildImage;
     
@@ -642,34 +672,22 @@
         return;
     }
     
-    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
     NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
     
-    NSNumber *calendarStartingDateNumber = [NSNumber numberWithInteger:
-                                            [[NSString stringWithFormat:@"%ld%02ld%02ld",
-                                              (long)calendarStartingDateComps.year,
-                                              (long)calendarStartingDateComps.month,
-                                              (long)calendarStartingDateComps.day
-                                              ] integerValue]];
     NSNumber *todayNumber = [NSNumber numberWithInteger:
                              [[NSString stringWithFormat:@"%ld%02ld%02ld",
                                (long)todayComps.year,
                                (long)todayComps.month,
                                (long)todayComps.day
                                ] integerValue]];
-                                                       
-    if (
-        [todayNumber compare:latestChildImage[@"date"]] == NSOrderedAscending ||
-        [calendarStartingDateNumber compare:oldestChildImage[@"date"]] == NSOrderedDescending
-    ) {
+    if ([todayNumber compare:latestChildImage[@"date"]] == NSOrderedAscending) {
         [_childImages removeAllObjects];
         [self initializeChildImages];
         return;
     }
-    
     if ( ! (
             [latestChildImage[@"date"] isEqualToNumber:todayNumber] &&
-            [oldestChildImage[@"date"] isEqualToNumber:calendarStartingDateNumber]
+            [oldestChildImage[@"date"] isEqualToNumber:[Config config][@"CalendarStartDate"]]
             
             )
     ) {
@@ -680,53 +698,39 @@
 
 - (void)initializeChildImages
 {
-    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[self getCalendarStartingDate]];
-    NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];
+    NSDateComponents *calendarStartingDateComps = [DateUtils compsFromNumber:[Config config][@"CalendarStartDate"]];
+    NSDateComponents *todayComps = [[self logic:@"dateComps"] dateComps];    
     
     if (!_childImages) {
         _childImages = [[NSMutableArray alloc]init];
     }
     
     // 始点と終点の日付(NSDateComponents)を与えるとchildPropertyに自動追加してくれるmethodを作る必要がある
-    [self addChildImages:_childImages withStartDateComps:calendarStartingDateComps withEndDateComps:todayComps];
+    [self addChildImagesWithStartDateComps:calendarStartingDateComps withEndDateComps:todayComps];
     
     [self setupChildImagesIndexMap];
     
     // scroll位置と表示月の関係
-    [self setupScrollPositionData];
+    //[self setupScrollPositionData];
 }
 
-- (NSNumber *)getCalendarStartingDate
+- (void)addChildImagesWithStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
 {
-    childProperty = [ChildProperties getChildProperty:_childObjectId];
-    NSNumber *calendarStartDate = childProperty[@"calendarStartDate"];
-    NSNumber *oldestChildImageDate = childProperty[@"oldestChildImageDate"];
-    NSDate *birthday = childProperty[@"birthday"] ? childProperty[@"birthday"] : childProperty[@"createdAt"];
+    NSDateComponents *twoMonthAgo = [DateUtils addDateComps:[logic dateComps] withUnit:@"month" withValue:-2];
+    NSDateComponents *twoMonthAndOneDayAgo = [DateUtils addDateComps:twoMonthAgo withUnit:@"day" withValue:-1];
+    [self addChildImagesFirstWithStartDateComps:twoMonthAgo withEndDateComps:endDateComps];
     
-    if (calendarStartDate) {
-        // calendarStartDateがある場合はcalendarStartDateをカレンダー開始日とする
-        
-        // ただしoldestChildImageDate < calendarStartDateの場合はoldestChildImageDateを起点にする
-        if (oldestChildImageDate && [oldestChildImageDate compare:calendarStartDate] == NSOrderedAscending) {
-            return oldestChildImageDate;
-        } else {
-            return calendarStartDate;
-        }
-    } else {
-        // calendarStartDateがない場合は誕生日をカレンダー開始日とする
-        NSDateComponents *birthdayComps = [DateUtils dateCompsFromDate:birthday];
-        NSNumber *birthdayNumber = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)birthdayComps.year, (long)birthdayComps.month, (long)birthdayComps.day] integerValue]];
-                                                                                                                                                                  
-        // ただしoldestChildImageDate < birthdayの場合はoldestChildImageDateを起点にする
-        if (oldestChildImageDate && [oldestChildImageDate compare:birthdayNumber] == NSOrderedAscending) {
-            return oldestChildImageDate;
-        } else {
-            return birthdayNumber;
-        }
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self addChildImagesFirstWithStartDateComps:startDateComps withEndDateComps:twoMonthAndOneDayAgo];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self setupChildImagesIndexMap];
+            [_pageContentCollectionView reloadData];
+            [self initializeClosedCellCountBySection];
+    });
+});
 }
 
-- (void)addChildImages:(NSMutableArray *)childImages withStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
+- (void)addChildImagesFirstWithStartDateComps:(NSDateComponents *)startDateComps withEndDateComps:(NSDateComponents *)endDateComps
 {
     NSCalendar *cal   = [NSCalendar currentCalendar];
     NSDate *startDate = [cal dateFromComponents:startDateComps];
@@ -736,15 +740,17 @@
     
     while ([endDate compare:startDate] == NSOrderedDescending || [endDate compare:startDate] == NSOrderedSame) {
         NSString *ym = [NSString stringWithFormat:@"%ld%02ld", (long)endDateComps.year, (long)endDateComps.month];
-                                                               
+        
+        // childImagesの中に格納されているsectionの中にいまwhileで回している対象のymと同じ物が合ったらtargetSectionに突っ込む
         NSMutableDictionary *targetSection;
-        for (NSMutableDictionary *section in childImages) {
+        for (NSMutableDictionary *section in _childImages) {
             NSString *yearMonthOfSection = [NSString stringWithFormat:@"%@%@", section[@"year"], section[@"month"]];
             if ([yearMonthOfSection isEqualToString:ym]) {
                 targetSection = section;
                 break;
             }
         }
+        // なかったら、targetSectionを作り直す
         if (!targetSection) {
             targetSection = [[NSMutableDictionary alloc]init];
             targetSection[@"images"]        = [[NSMutableArray alloc]init];
@@ -752,14 +758,12 @@
             targetSection[@"weekdays"]      = [[NSMutableArray alloc]init];
             targetSection[@"year"]          = [NSString stringWithFormat:@"%ld", (long)endDateComps.year];
             targetSection[@"month"]         = [NSString stringWithFormat:@"%02ld", (long)endDateComps.month];
-            [_childImages addObject:targetSection];                                
+            [_childImages addObject:targetSection];
         }
-      
+
         NSNumber *date = [NSNumber numberWithInteger:[[NSString stringWithFormat:@"%ld%02ld%02ld", (long)endDateComps.year, (long)endDateComps.month, (long)endDateComps.day] integerValue]];
         if ([self isDuplicatedChildImage:dicForCheckDuplicate withYearMonth:ym withDate:date withTargetSection:targetSection]) {
-            endDateComps = [DateUtils addDateComps:endDateComps withUnit:@"day" withValue:-1];
-            endDate = [cal dateFromComponents:endDateComps];
-            continue;
+            break; // childImagesが歯抜けになることはないので、duplicateになった時点で完成されていると判断する
         }
         
         PFObject *childImage = [[PFObject alloc]initWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
@@ -820,185 +824,97 @@
     }
     
     int n = 0;
-    for (NSMutableDictionary *section in _childImages) {
+    
+    NSArray *childImagesSnapShot = [[NSArray alloc] initWithArray:_childImages];
+    // _childImagesがforを回している間に別メソッドからいじられて落ちる事があるので
+    // forの間に変化したら処理をし直しするのが正しい気がするが、_childImagesを変えたらこのメソッド自体もその後呼び出されるので良しとする。
+    for (NSMutableDictionary *section in childImagesSnapShot) {
         NSString *ym = [NSString stringWithFormat:@"%@%02ld", section[@"year"], (long)[section[@"month"] integerValue]];
         [_childImagesIndexMap setObject:[[NSNumber numberWithInt:n] stringValue] forKey:ym];
         n++;
     }
 }
 
-- (void)setupScrollPositionData
-{
-    _scrollPositionData = [[NSMutableArray alloc]init];
-    for (NSMutableDictionary *section in _childImages) {
-        NSInteger cellCount = [[section objectForKey:@"images"] count];
-        double verticalCellCount = ceil(cellCount / 3);
-        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + 30 + 60; // 30 : section header  60: わからんが微調整用に必要
-        NSNumber *n = [NSNumber numberWithDouble:requiredHeight];
-        NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
-        [_scrollPositionData addObject:sectionHeightInfo];
-    }
-}
+// 使ってないのでコメントアウト
+// コメント外すと起動時に落ちる事があります
+// _childImagesをforで回している時に中身が変わるため、コメント外す時はその辺りをチェックすること
+//- (void)setupScrollPositionData
+//{
+//    _scrollPositionData = [[NSMutableArray alloc]init];
+//    for (NSMutableDictionary *section in _childImages) {
+//        NSInteger cellCount = [[section objectForKey:@"images"] count];
+//        double verticalCellCount = ceil(cellCount / 3);
+//        double requiredHeight = (verticalCellCount * self.view.frame.size.width / 3) + [[Config config][@"CollectionViewSectionHeaderHeight"] intValue] + 60; // 60: わからんが微調整用に必要
+//        NSNumber *n = [NSNumber numberWithDouble:requiredHeight];
+//        NSMutableDictionary *sectionHeightInfo = [[NSMutableDictionary alloc]initWithObjects:@[n, [section objectForKey:@"year"], [section objectForKey:@"month"]] forKeys:@[@"heightNumber", @"year", @"month"]];
+//        [_scrollPositionData addObject:sectionHeightInfo];
+//    }
+//}
 
-- (NSDateComponents *)getCurrentYearMonthByScrollPosition
-{
-    CGFloat hiddenHeight = _pageContentCollectionView.contentSize.height - (_pageContentCollectionView.contentOffset.y + (_pageContentCollectionView.bounds.size.height - 64)/2);
-    
-    NSDateComponents *c = [[NSDateComponents alloc]init];
-    [c setYear:[[[_childImages objectAtIndex:0] objectForKey:@"year"] intValue]];
-    [c setMonth:[[[_childImages objectAtIndex:0] objectForKey:@"month"] intValue]];
-    
-    CGFloat sectionHeightSum = 0.0f;
-    for (NSInteger i = [_scrollPositionData count] - 1; i >= 0; i--) {
-        CGFloat sectionHeight = [[[_scrollPositionData objectAtIndex:i] objectForKey:@"heightNumber"] floatValue];
-        sectionHeightSum += sectionHeight;
-        
-        if (sectionHeightSum >= hiddenHeight) {
-            
-            NSString *yearString = [[_scrollPositionData objectAtIndex:i] objectForKey:@"year"];
-            NSString *monthString = [[_scrollPositionData objectAtIndex:i] objectForKey:@"month"];
-            [c setYear: [yearString integerValue]];
-            [c setMonth: [monthString integerValue]];
-            break;
-        }
-    }
-    return c;
-}
-
-- (void)reflectPageScrollToDragView
-{
-    if (_dragging) {
-        return;
-    }
-    CGFloat contentHeight = _pageContentCollectionView.contentSize.height - (self.view.bounds.size.height - 64);
-    CGFloat viewHeight = _dragViewLowerLimitOffset - _dragViewUpperLimitOffset;
-
-    CGFloat rate = viewHeight / contentHeight;
-    CGFloat dragViewOffset = _pageContentCollectionView.contentOffset.y * rate;
-   
-    int dragViewOffsetInt = [[NSNumber numberWithFloat:dragViewOffset] intValue];
-    
-    CGPoint movedPoint = CGPointMake(_dragView.center.x, dragViewOffsetInt + _dragView.frame.size.height / 2 + _dragViewUpperLimitOffset);
-    _dragView.center = movedPoint;
-}
-
-- (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath
+- (void)setBackgroundViewOfCell:(CalendarCollectionViewCell *)cell withImageCachePath:(NSString *)imageCachePath withIndexPath:(NSIndexPath *)indexPath withYmd:(NSString *)ymd
 {
     NSData *imageCacheData = [ImageCache getCache:imageCachePath dir:@""];
     NSString *role = _selfRole;
     
     NSMutableDictionary *section = [_childImages objectAtIndex:indexPath.section];
     NSMutableArray *totalImageNum = [section objectForKey:@"totalImageNum"];
+    
+    // imageCacheDataが無い場合には条件によってPlaceHolderなどはめる
     if (!imageCacheData) {
-        if ([section[@"images"] count] <= indexPath.row) {
-            // カレンダー追加用のcell
-            PFObject *oldestChildImage = section[@"images"][indexPath.row - 1];
-            NSNumber *oldestChildImageDate = oldestChildImage[@"date"];
-            NSDateComponents *comps = [[self logic:@"compsToAdd"] compsToAdd:oldestChildImageDate];
-            AddMonthToCalendarView *backgroundView = [AddMonthToCalendarView view];
-            CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-            backgroundView.frame = rect;
-            backgroundView.messageLabel.text = [NSString stringWithFormat:@"カレンダー追加\n(%ld月分)", comps.month];
-            [cell addSubview:backgroundView];
-        } else if ([role isEqualToString:@"uploader"]) {
-            // アップの出し分け
-            // アップしたが、チョイスされていない(=> totalImageNum = (0|-1))場合 かつ 今日or昨日の場合 : チョイス催促アイコン
-            // それ以外 : アップアイコン
-            
-            if([[self logic:@"withinTwoDay"] withinTwoDay:indexPath] && [[self logic:@"isNoImage"] isNoImage:indexPath]) {
-                // チョイス催促をいれてもいいけど、いまは UP PHOTO アイコンをはめている
-                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
-                } else {
-                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
-                }
+        // 2日以内の場合には、candidateがあれば表示させる
+        NSArray *candidateCaches = [[NSMutableArray alloc] initWithArray:[ImageCache getListOfMultiUploadCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, ymd]]];
+        if ([DateUtils isInTwodayByIndexPath:indexPath]) {
+            if ([candidateCaches count] > 0) {
+                // candidateの中から選択してはめる
+                UIImage *multiCandidateImage = [ImageTrimming makeMultiCandidateImageWithBlur:candidateCaches childObjectId:_childObjectId ymd:ymd cellFrame:cell.frame];
+                cell.backgroundView = [[UIImageView alloc] initWithImage:multiCandidateImage];
             } else {
-                // アップアイコン
-                if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                    CellBackgroundViewToEncourageUploadLarge *backgroundView = [CellBackgroundViewToEncourageUploadLarge view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
+                UIImage *trimmedImage = [self makeIconImageWithBlurWithCell:cell.frame];
+                if (trimmedImage) {
+                    cell.backgroundView = [[UIImageView alloc] initWithImage:trimmedImage];
                 } else {
-                    CellBackgroundViewToEncourageUpload *backgroundView = [CellBackgroundViewToEncourageUpload view];
-                    CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                    backgroundView.frame = rect;
-                    backgroundView.iconView.frame = rect;
-                    [cell addSubview:backgroundView];
+                    cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
                 }
             }
         } else {
-            // チョイスの出し分け
-            // 今日 or 昨日
-            //// アップ済み : チョイス催促、　未アップ : アップ催促
-            // ２日以上たったらNoImage
-            if ([[self logic:@"withinTwoDay"] withinTwoDay:indexPath]) {
-                // アップ催促
-                if ([[self logic:@"isNoImage"] isNoImage:indexPath]) {
-                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                        CellBackgroundViewToWaitUploadLarge *backgroundView = [CellBackgroundViewToWaitUploadLarge view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        backgroundView.iconView.frame = rect;
-                        [cell addSubview:backgroundView];
-                    } else {
-                        CellBackgroundViewToWaitUpload *backgroundView = [CellBackgroundViewToWaitUpload view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        backgroundView.iconView.frame = rect;
-                        [cell addSubview:backgroundView];
-                    }
-                    // ダブルタップでプッシュ通知
-                    UITapGestureRecognizer *giveMePhotoGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(giveMePhoto:)];
-                    giveMePhotoGesture.numberOfTapsRequired = 2;
-                    [cell addGestureRecognizer:giveMePhotoGesture];
-                } else {
-                    // チョイス促進アイコン貼る
-                    NSNumber *uploadedNum = [totalImageNum objectAtIndex:indexPath.row];
-                    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
-                        CellBackgroundViewToEncourageChooseLarge *backgroundView = [CellBackgroundViewToEncourageChooseLarge view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 10, backgroundView.upCountLabel.frame.size.height);
-                        backgroundView.upCountLabel.frame = rect;
-                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
-                        [cell addSubview:backgroundView];
-                    } else {
-                        CellBackgroundViewToEncourageChoose *backgroundView = [CellBackgroundViewToEncourageChoose view];
-                        CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                        backgroundView.frame = rect;
-                        rect = CGRectMake(0, cell.frame.size.height - backgroundView.upCountLabel.frame.size.height, cell.frame.size.width - 5, backgroundView.upCountLabel.frame.size.height);
-                        backgroundView.upCountLabel.frame = rect;
-                        backgroundView.upCountLabel.text = [NSString stringWithFormat:@"%@ PHOTO AVAILABLE", uploadedNum];
-                        [cell addSubview:backgroundView];
-                    }
-                }
+            UIImage *trimmedImage = [self makeIconImageWithBlurWithCell:cell.frame];
+            if (trimmedImage) {
+                cell.backgroundView = [[UIImageView alloc] initWithImage:[self makeIconImageWithBlurWithCell:cell.frame]];
             } else {
-                CellBackgroundViewNoImage *backgroundView = [CellBackgroundViewNoImage view];
-                CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-                backgroundView.frame = rect;
-                backgroundView.iconView.frame = rect;
-                [cell addSubview:backgroundView];
+                cell.backgroundColor = [ColorUtils getGlobalMenuDarkGrayColor];
             }
+        }
+        
+        // PlaceHolderアイコンなどをはめる
+        if ([DateUtils isTodayByIndexPath:indexPath]) {
+            CellImageFramePlaceHolderLarge *placeHolder = [CellImageFramePlaceHolderLarge view];
+            CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+            placeHolder.frame = rect;
+            [placeHolder setPlaceHolderForCell:cell indexPath:indexPath role:role candidateCount:[candidateCaches count]];
+        } else {
+            CellImageFramePlaceHolder *placeHolder = [CellImageFramePlaceHolder view];
+            CGRect rect = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+            placeHolder.frame = rect;
+            [placeHolder setPlaceHolderForCell:cell indexPath:indexPath role:role candidateCount:[candidateCaches count]];
         }
         return;
     }
     
     // best shotが既に選択済の場合は普通に写真を表示
-    if ([[self logic:@"isToday"] isToday:indexPath.section withRow:indexPath.row]) {
+    if ([DateUtils isTodayByIndexPath:indexPath]) {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectTopImage:[UIImage imageWithData:imageCacheData] ratio:(cell.frame.size.height/cell.frame.size.width)]];
     } else {
         cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:imageCacheData]]];
     }
+    // コメント数を付ける
+    UIImageView *backgroundGridView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ImageBackgroundGrid"]];
+    backgroundGridView.frame = CGRectMake(0, cell.frame.size.height - backgroundGridView.frame.size.height, cell.frame.size.width, 24);
+    [cell.backgroundView addSubview:backgroundGridView];
+    UIView *commentNumView = [self makeCommentNumLabel:ymd cellFrame:cell.frame];
+    if (commentNumView) {
+        [cell addSubview:commentNumView];
+    }
+    
     cell.isChoosed = YES;
 }
 
@@ -1018,19 +934,10 @@
 }
 
 
-- (void) giveMePhoto:(id)sender
+- (void) giveMePhoto
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-    
-    CalendarCollectionViewCell *cell = [sender view];
-    for (id elem in [cell subviews]) {
-        if ([elem isKindOfClass:[CellBackgroundViewToWaitUpload class]] || [elem isKindOfClass:[CellBackgroundViewToWaitUploadLarge class]]) {
-            for (UIImageView *imageView in [elem subviews]) {
-                [self vibrateImageView:imageView];
-            }
-        }
-    }
-    
+
     NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
     transitionInfoDic[@"event"] = @"requestPhoto";
     transitionInfoDic[@"childObjectId"] = _childObjectId;
@@ -1040,108 +947,15 @@
                         forKeys:@[@"badge", @"transitionInfo"]];
     [PushNotification sendInBackground:@"requestPhoto" withOptions:options];
     
+    NSInteger date;
+    if ([requestPhotoDay isEqualToString:@"today"]) {
+        date = [[DateUtils getTodayYMD] integerValue];
+    } else {
+        date = [[DateUtils getYesterdayYMD] integerValue];
+    }
     
-    PFObject *childImage = [[[_childImages objectAtIndex:0] objectForKey:@"images"] objectAtIndex:[sender view].tag];
-    NSString *ymd = [childImage[@"date"] stringValue];
     PFObject *partner = (PFObject *)[Partner partnerUser];
-    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:[ymd integerValue]];
-}
-
-
-// コメントはコメントアイコン、それ以外はいわゆるbadgeを表示する
-- (void)setBadgeToCell:(CalendarCollectionViewCell *)cell withIndexPath:(NSIndexPath *)indexPath withYMD:ymd
-{
-    NSMutableDictionary *histories = _notificationHistory[ymd];
-    if (!histories) {
-        return;
-    }
-    
-    NSMutableArray *badges = [[NSMutableArray alloc]init];
-    
-    // コメント
-    NSMutableArray *commentNotifications = histories[@"commentPosted"];
-    if (commentNotifications && commentNotifications.count > 0) {
-        // コメントアイコン内に数字をいれる
-        UIImageView *commentBadge = [Badge badgeViewWithType:@"commentPosted" withCount:commentNotifications.count];
-        [badges addObject:commentBadge];
-    }
-   
-    // bestShotChanged・bestShotReply・imageUPloadedを取得
-    NSMutableArray *bestShotChangeNotifications = histories[@"bestShotChanged"];
-    if (!bestShotChangeNotifications) {
-        bestShotChangeNotifications = [[NSMutableArray alloc]init];
-    }
-    NSMutableArray *bestShotReplyNotifications = histories[@"bestShotReply"];
-    if (!bestShotReplyNotifications) {
-        bestShotReplyNotifications = [[NSMutableArray alloc]init];
-    }
-    NSMutableArray *imageUploadedNotifications = histories[@"imageUploaded"];
-    if (!imageUploadedNotifications) {
-        imageUploadedNotifications = [[NSMutableArray alloc]init];
-    }
-    if (bestShotChangeNotifications.count > 0 || bestShotReplyNotifications.count > 0 || imageUploadedNotifications.count > 0) {
-        // badgeをつける
-        NSInteger count = bestShotChangeNotifications.count + bestShotReplyNotifications.count + imageUploadedNotifications.count;
-        UIView *badge = [Badge badgeViewWithType:nil withCount:count];
-        [badges addObject:badge];
-    }
-   
-    // badgeをcell右下に配置
-    NSInteger c = 0;
-    for (UIView *badge in badges) {
-        CGRect rect = badge.frame;
-        rect.origin.y = cell.frame.size.height - rect.size.height - 5; // 5:余白
-        rect.origin.x = cell.frame.size.width - (rect.size.width + 5) * (c + 1);
-        badge.frame = rect;
-        [cell addSubview:badge];
-        c++;
-    }
-    
-    // give me photoのラベルはる
-    // 基本的には1つしか無いはずなので、最初の一つをとる
-    // ただし、表示するのは、section = 0, row = 0,1だけ
-    // かつ uploaderだけ
-//    if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
-//        if (indexPath.section == 0 && (indexPath.row == 0 || indexPath.row == 1)) {
-//            if (histories[@"requestPhoto"] && [histories[@"requestPhoto"] count] > 0) {
-//                // 左下にそっと出してみる
-//                float cellHeigt = cell.frame.size.height;
-//                float cellWidth = cell.frame.size.width;
-//                int widthRatio = 4;
-//                if (indexPath.row == 1) {
-//                    widthRatio = 3;
-//                }
-//                CGRect rect = CGRectMake(0, cellHeigt - cellHeigt/widthRatio, cellWidth/widthRatio, cellHeigt/widthRatio);
-//                UIImage *giveMePhotoIcon = [UIImage imageNamed:@"GiveMePhotoIcon"];
-//                UIImageView *giveMePhotoIconView = [[UIImageView alloc] initWithImage:giveMePhotoIcon];
-//                giveMePhotoIconView.frame = rect;
-//                [cell addSubview:giveMePhotoIconView];
-//            }
-//        }
-//    }
-}
-
-- (void)vibrateImageView:(UIImageView *)imageView
-{
-    CGRect rect = imageView.frame;
-    
-    CGRect rightRect = rect;
-    rightRect.origin.x += 5;
-    NSValue *rightRectObj = [NSValue valueWithCGRect:rightRect];
-    
-    CGRect leftRect = rect;
-    leftRect.origin.x -= 5;
-    NSValue *leftRectObj = [NSValue valueWithCGRect:leftRect];
-    
-    NSValue *originalRectObj = [NSValue valueWithCGRect:rect];
-    
-    
-    NSMutableArray *posList = [[NSMutableArray alloc]initWithObjects:rightRectObj, leftRectObj, rightRectObj, leftRectObj, originalRectObj , nil];
-    
-    NSMutableDictionary *info = [[NSMutableDictionary alloc]init];
-    info[@"imageView"] = imageView;
-    info[@"posList"] = posList;
-    NSTimer *tm = [NSTimer scheduledTimerWithTimeInterval:0.03f target:self selector:@selector(vibrate:) userInfo:info repeats:YES];
+    [NotificationHistory createNotificationHistoryWithType:@"requestPhoto" withTo:partner[@"userId"] withChild:_childObjectId withDate:date];
 }
 
 - (void)vibrate:(NSTimer *)timer
@@ -1160,41 +974,41 @@
     imageView.frame = rect;
 }
 
-- (void)addIntroductionOfImageRequestView:(NSTimer *)timer
-{
-    // すでにダイアログが表示されていたらCoreDataを戻してreturn
-    if ([self alreadyDisplayedDialog]) {
-        AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedFirstLaunch"]];
-        [as MR_deleteEntity];
-        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-        return;
-    }
-    // ダイアログを表示
-    ImageRequestIntroductionView *view = [ImageRequestIntroductionView view];
-    CGRect rect = view.frame;
-    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
-    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
-    view.frame = rect;
-    [self.view addSubview:view];
-}
+//- (void)addIntroductionOfImageRequestView:(NSTimer *)timer
+//{
+//    // すでにダイアログが表示されていたらCoreDataを戻してreturn
+//    if ([self alreadyDisplayedDialog]) {
+//        AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedFirstLaunch"]];
+//        [as MR_deleteEntity];
+//        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+//        return;
+//    }
+//    // ダイアログを表示
+//    ImageRequestIntroductionView *view = [ImageRequestIntroductionView view];
+//    CGRect rect = view.frame;
+//    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+//    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+//    view.frame = rect;
+//    [self.view addSubview:view];
+//}
 
-- (void)addIntroductionOfPageFlickView:(NSTimer *)timer
-{
-    // すでにダイアログが表示されていたらCoreDataを戻してreturn
-    if ([self alreadyDisplayedDialog]) {
-        AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
-        [as MR_deleteEntity];
-        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-        return;
-    }
-    // ダイアログを表示
-    PageFlickIntroductionView *view = [PageFlickIntroductionView view];
-    CGRect rect = view.frame;
-    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
-    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
-    view.frame = rect;
-    [self.view addSubview:view];
-}
+//- (void)addIntroductionOfPageFlickView:(NSTimer *)timer
+//{
+//    // すでにダイアログが表示されていたらCoreDataを戻してreturn
+//    if ([self alreadyDisplayedDialog]) {
+//        AppSetting *as = [AppSetting MR_findFirstByAttribute:@"name" withValue:[Config config][@"FinishedIntroductionOfPageFlick"]];
+//        [as MR_deleteEntity];
+//        [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+//        return;
+//    }
+//    // ダイアログを表示
+//    PageFlickIntroductionView *view = [PageFlickIntroductionView view];
+//    CGRect rect = view.frame;
+//    rect.origin.x = (self.view.frame.size.width - rect.size.width)/2;
+//    rect.origin.y = (self.view.frame.size.height - rect.size.height)/2;
+//    view.frame = rect;
+//    [self.view addSubview:view];
+//}
 
 - (void)showAlertMessage
 {
@@ -1248,10 +1062,11 @@
 - (BOOL)alreadyDisplayedDialog
 {
     NSArray *views = [self.view subviews];
+//    for (int i = 0; i < views.count; i++) {
+//        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
+//            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
     for (int i = 0; i < views.count; i++) {
-        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
-            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
-            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]] ||
+        if([views[i] isKindOfClass:[UploadPastImagesIntroductionView class]] ||
             [views[i] isKindOfClass:[AnnounceBoardView class]]) {
             return YES;
         }
@@ -1263,9 +1078,10 @@
 {
     NSArray *views = [self.view subviews];
     for (int i = 0; i < views.count; i++) {
-        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
-            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
-            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
+//        if ([views[i] isKindOfClass:[ImageRequestIntroductionView class]] ||
+//            [views[i] isKindOfClass:[PageFlickIntroductionView class]]    ||
+//            [views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
+        if ([views[i] isKindOfClass:[UploadPastImagesIntroductionView class]]) {
             [views[i] removeFromSuperview];
         }
     }
@@ -1466,15 +1282,113 @@
     [self rotateViewYAxis:indexPathList];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (BOOL)toggleCells:(NSInteger)sectionIndex
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    BOOL doExpand = ![self isExpandedSection:sectionIndex];
+    
+    // 処理中はsection headerのタップをblockする
+    if (isTogglingCells) {
+        return !doExpand; // blockした場合はdelegate元のisExpandを更新しない
+    }
+    isTogglingCells = YES;
+ 
+    // sectionIndexに含まれるcellのindexPathを作成
+    NSMutableArray *indexPaths = [[NSMutableArray alloc]init];
+    NSInteger i = -1;
+    for (PFObject *childImage in _childImages[sectionIndex][@"images"]) {
+        i++;
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
+        [indexPaths addObject:indexPath];
+    }
+    
+    if (doExpand) {
+        [_pageContentCollectionView performBatchUpdates:^{
+            closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] = [NSNumber numberWithInteger:0];
+            [_pageContentCollectionView insertItemsAtIndexPaths:indexPaths];
+        } completion:nil];
+    } else {
+        NSMutableArray *ips = [[NSMutableArray alloc]init];
+        for (NSInteger i = indexPaths.count - 1; i >= 0 ; i--) {
+            [ips addObject:indexPaths[i]];
+            if (i % 3 == 0) {
+                [_pageContentCollectionView performBatchUpdates:^{
+                    NSNumber *n = closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ];
+                    closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] = [NSNumber numberWithInteger:[n integerValue] + ips.count];
+                    [_pageContentCollectionView deleteItemsAtIndexPaths:ips];
+                    [ips removeAllObjects];
+                } completion:nil];
+            }
+        }
+    }
+    isTogglingCells = NO;
+    
+    return doExpand;
 }
-*/
+
+// 7ヶ月以上前のsectionはデフォルトで閉じる
+- (void)initializeClosedCellCountBySection
+{
+    int max = 6;
+    CGRect rect = [UIScreen mainScreen].bounds;
+    if (rect.size.height == 480) {
+        max = 1;
+    }
+    for (NSInteger i = 0; i < _childImages.count; i++) {
+        if (i > max) { // TODO confに切り出し
+            closedCellCountBySection[ [NSNumber numberWithInteger:i] ]
+                = [NSNumber numberWithInteger: [_childImages[i][@"images"] count] ];
+        }
+    }
+    
+}
+
+- (BOOL)isExpandedSection:(NSInteger)sectionIndex
+{
+    BOOL isExpand = YES;
+    if (closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ]) {
+        NSInteger closedCellCount = [closedCellCountBySection[ [NSNumber numberWithInteger:sectionIndex] ] integerValue];
+        if (closedCellCount > 0) {
+            isExpand = NO;
+        }
+    }
+    return isExpand;
+}
+
+- (void) downloadComplete
+{
+	[logic executeReload];
+}
+
+- (void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    switch (buttonIndex) {
+        case 0:
+            break;
+        case 1:
+        {
+            [self giveMePhoto];
+        }
+            break;
+    }
+}
+
+- (UIImage *)makeIconImageWithBlurWithCell:(CGRect)cellFrame
+{
+    if (!iconImage) {
+        iconImage = [UIImage imageWithData:[ImageCache getCache:[NSString stringWithFormat:@"%@Gray",[Config config][@"ChildIconFileName"]] dir:_childObjectId]];
+    }
+    
+    if (!iconImage) {
+        return nil;
+    }
+    
+    UIImage *trimmedIconImage = [ImageTrimming makeRectTopImage:iconImage ratio:(cellFrame.size.height/cellFrame.size.width)];
+    return trimmedIconImage;
+}
+
+- (void)resetIconImageWithBlurWithCell
+{
+    iconImage = nil;
+    [_pageContentCollectionView reloadData];
+}
 
 @end

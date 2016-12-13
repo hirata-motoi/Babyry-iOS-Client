@@ -9,7 +9,7 @@
 #import "TutorialNavigator+AddChild.h"
 #import "TutorialAddChildView.h"
 #import "ICTutorialOverlay.h"
-#import "GlobalSettingViewController.h"
+#import "ChildSwitchControlView.h"
 
 @implementation TutorialNavigator_AddChild {
     TutorialAddChildView *view;
@@ -26,12 +26,15 @@
     rect.origin.y = 340;
     view.frame = rect;
     
-    GlobalSettingViewController *vc = (GlobalSettingViewController *)self.targetViewController;
+    ChildSwitchControlView *childSwitchControlView = [ChildSwitchControlView sharedManager];
+    [childSwitchControlView setupChildSwitchViews];
+    [childSwitchControlView openChildSwitchViews];
+    ChildSwitchView *childAddIcon = [childSwitchControlView getChildAddIcon];
     
     overlay = [[ICTutorialOverlay alloc] init];
     overlay.hideWhenTapped = NO;
     overlay.animated = YES;
-    [overlay addHoleWithView:vc.addChildCell padding:8.0f offset:CGSizeZero form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
+    [overlay addHoleWithView:childAddIcon padding:8.0f offset:CGSizeZero form:ICTutorialOverlayHoleFormRoundedRectangle transparentEvent:YES];
     [overlay show];
     [overlay addSubview:view];
     

@@ -19,6 +19,7 @@
 #import "Logger.h"
 #import "ChildProperties.h"
 #import "DateUtils.h"
+#import "ImageCache.h"
 
 @interface UploadViewController ()
 
@@ -82,6 +83,7 @@
                 _uploadedImageView.image = s3Image;
                 CGRect imageRect = [self getUploadedImageFrame:s3Image];
                 _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
+                [self updateThumbmail:_imageInfo[@"date"] objectId:_imageInfo.objectId imageData:getResult.body bestFlag:_imageInfo[@"bestFlag"]];
             } else {
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController : %@", task.error]];
             }
@@ -90,18 +92,24 @@
         [self setupOperationView];
     } else {
         MBProgressHUD *hud;
-        if (!_uploadedImage) {
-            // _uploadedImageにキャッシュがセットされていないまま遷移してきた場合だけクルクル出す
-            hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            hud.labelText = @"画像ダウンロード中";
-        }
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"画像ダウンロード中";
         PFQuery *originalImageQuery = [PFQuery queryWithClassName:[NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]]];
         originalImageQuery.cachePolicy = kPFCachePolicyNetworkOnly;
         [originalImageQuery whereKey:@"imageOf" equalTo:_childObjectId];
-//        [originalImageQuery whereKey:@"bestFlag" equalTo:@"choosed"];
         [originalImageQuery whereKey:@"date" equalTo:[NSNumber numberWithInteger:[_date integerValue]]];
         [originalImageQuery orderByDescending:@"updatedAt"];
         [originalImageQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if ([objects count] == 0) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"画像がありません"
+                                                                message:[NSString stringWithFormat:@"%@の画像が存在しません、パートナーにより削除されている可能性があります。トップに戻ってご確認ください。", _date]
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"OK", nil
+                                      ];
+                [alert show];
+                return;
+            }
             if ([objects count] > 0) {
                 PFObject *object;
                 for (PFObject *tmpObject in objects) {
@@ -119,7 +127,21 @@
                 if (!object) {
                     // 正常系の動作であれば要らない判定、過去の写真が削除されたりした場合にここに入る事があるかも
                     if([_date isEqualToString:[[DateUtils getTodayYMD] stringValue]] || [_date isEqualToString:[[DateUtils getYesterdayYMD] stringValue]]) {
+                        // 1. Pushで飛んでくるとここに来る時がある。
+                        //    複数アップロードされて、かつ、コメントが付けられた場合にBSが決まっていなくても何かの画像を出さないと行けないので配列の一番最初の画像を入れてあげる。
                         object = [objects objectAtIndex:0];
+                    } else {
+                        // 2. そうでない場合には、画像が削除されているので、アラートを出してあげる。
+                        //    お知らせから飛んでくる場合にここがあり得るので、notificationHistoryも消してあげる。
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"画像がありません"
+                                                                        message:[NSString stringWithFormat:@"%@の画像が存在しません、パートナーにより削除されている可能性があります。トップに戻ってご確認ください。", _date]
+                                                                       delegate:nil
+                                                              cancelButtonTitle:nil
+                                                              otherButtonTitles:@"OK", nil
+                                              ];
+                        [alert show];
+                        [NotificationHistory removeNotificationsWithChild:_childObjectId withDate:_date withStatus:nil];
+                        return;
                     }
                 }
                 
@@ -135,15 +157,17 @@
                         _uploadedImageView.image = s3Image;
                         CGRect imageRect = [self getUploadedImageFrame:s3Image];
                         _uploadedImageView.frame = CGRectMake( (self.view.frame.size.width - imageRect.size.width)/2, (self.view.frame.size.height - imageRect.size.height)/2, imageRect.size.width, imageRect.size.height);
-                        [hud hide:YES];
                     } else {
                         [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest in UploadViewController(new image) : %@", task.error]];
                     }
+                    [hud hide:YES];
                     return nil;
                 }];
                 _imageInfo = object;
+                return;
             }
             if (error) {
+                [hud hide:YES];
                 [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in findObject in UploadViewController(new image) : %@", error]];
             }
         }];
@@ -215,7 +239,6 @@
     _operationViewController.uploadViewController  = self;
     _operationViewController.holdedBy = _holdedBy;
     _operationViewController.imageInfo = _imageInfo;
-    _operationViewController.notificationHistoryByDay = _notificationHistoryByDay;
     _operationViewController.fromMultiUpload = _fromMultiUpload;
     _operationViewController.imageFrame = _uploadedImageView.frame;
     _operationViewController.bestImageIndexArray = _bestImageIndexArray;
@@ -235,17 +258,6 @@
     [self.view addSubview:_operationViewController.view];
     _operationView = _operationViewController.view;
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 -(CGRect) getUploadedImageFrame:(UIImage *) image
 {
@@ -286,15 +298,38 @@
 
 - (void)disableNotificationHistories
 {
-    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged"];
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"requestPhoto"];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
+}
+
+- (void)updateThumbmail:(NSNumber *)date objectId:(NSString *)objectId imageData:(NSData *)imageData bestFlag:(NSString *) bestFlag
+{
+    // 今日or昨日の場合には、candidateに突っ込む
+    if ([date isEqualToNumber:[DateUtils getYesterdayYMD]] || [date isEqualToNumber:[DateUtils getTodayYMD]]) {
+        [ImageCache setCache:objectId
+                       image:UIImageJPEGRepresentation([ImageCache makeThumbNail:[UIImage imageWithData:imageData]], 0.7f)
+                         dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, date]
+         ];
+        [ImageCache setCache:objectId
+                       image:imageData
+                         dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", _childObjectId, date]
+         ];
+    }
     
-    for (NSString *type in notificationTypes) {
-        if (_notificationHistoryByDay[type] && [_notificationHistoryByDay[type] count] > 0) {
-            for (PFObject *notification in _notificationHistoryByDay[type]) {
-                [NotificationHistory disableDisplayedNotificationsWithObject:notification];
-            }
-            [_notificationHistoryByDay[type] removeAllObjects];
-        }
+    // bestFlag = choosedの場合にはbestShotに突っ込む
+    if ([bestFlag isEqualToString:@"choosed"]) {
+        [ImageCache setCache:[date stringValue]
+                       image:UIImageJPEGRepresentation([ImageCache makeThumbNail:[UIImage imageWithData:imageData]], 0.7f)
+                         dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", _childObjectId]
+         ];
+    }
+    
+    // 今日 かつ bestshotならfullsizeにする
+    if ([date isEqualToNumber:[DateUtils getTodayYMD]] && [bestFlag isEqualToString:@"choosed"]) {
+        [ImageCache setCache:[date stringValue]
+                       image:imageData
+                         dir:[NSString stringWithFormat:@"%@/bestShot/fullsize", _childObjectId]
+         ];
     }
 }
 

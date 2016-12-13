@@ -22,5 +22,5 @@
 + (NSNumber *)getYesterdayYMD;
 + (BOOL)isTodayByIndexPath:(NSIndexPath *)index;
 + (BOOL)isInTwodayByIndexPath:(NSIndexPath *)index;
-
++ (NSIndexPath *)getIndexPathFromDate:(NSNumber *)date;
 @end

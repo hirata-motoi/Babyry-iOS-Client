@@ -31,7 +31,6 @@
 {
     [self showChildImages];
     [self setupImagesCount];
-    [self setupNotificationHistory];
 }
 
 - (void)showChildImages
@@ -159,13 +158,22 @@
                                                    
         
         for (NSMutableDictionary *imageDic in imageSource[@"images"]) {
-            if (!imageDic[@"bestFlag"]) {
-                continue;
-            }
             NSString *imageFileName = imageDic[@"imageFileName"];
             UIImage *imageThumbnail = [ImageCache makeThumbNail:[UIImage imageNamed:imageFileName]];
             NSData *imageThumbnailData = [[NSData alloc] initWithData:UIImageJPEGRepresentation(imageThumbnail, 1.0f)];
-           [ImageCache setCache:[date stringValue] image:imageThumbnailData dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
+            
+            if (!!imageDic[@"bestFlag"]) {
+                [ImageCache setCache:imageFileName
+                               image:imageThumbnailData
+                                 dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", self.pageContentViewController.childObjectId, [date stringValue]]];
+                [ImageCache setCache:imageFileName
+                               image:[[NSData alloc] initWithData:UIImageJPEGRepresentation([UIImage imageNamed:imageFileName], 1.0f)]
+                                 dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", self.pageContentViewController.childObjectId, [date stringValue]]];
+            } else {
+                [ImageCache setCache:[date stringValue]
+                               image:imageThumbnailData
+                                 dir:[NSString stringWithFormat:@"%@/bestShot/thumbnail", self.pageContentViewController.childObjectId]];
+            }
         }
         i++;
     }
@@ -193,15 +201,11 @@
 - (void)forwardNextTutorial
 {
     [Tutorial forwardStageWithNextStage:@"familyApply"];
-    ViewController *vc = self.pageContentViewController.parentViewController.parentViewController;
+    ViewController *vc = (ViewController *)self.pageContentViewController.parentViewController;
     [vc setupHeaderView];
     [vc showTutorialNavigator];
     [self.pageContentViewController.pageContentCollectionView reloadData];
     [self.pageContentViewController viewDidAppear:YES];
 }
-
-// Tutorial中はnotification出さない
-- (void)setupNotificationHistory
-{}
 
 @end

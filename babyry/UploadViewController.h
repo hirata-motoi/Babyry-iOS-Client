@@ -39,10 +39,6 @@
 
 @property AWSServiceConfiguration *configuration;
 
-//@property NSMutableArray *totalImageNum;
-//@property NSInteger currentRow;
-@property NSMutableDictionary *notificationHistoryByDay;
-
 @property BOOL fromMultiUpload;
 @property NSString *myRole;
 @property NSNumber *bestImageIndexNumber;

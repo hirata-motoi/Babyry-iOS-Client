@@ -9,7 +9,6 @@
 #import "TransitionByPushNotification.h"
 #import "MultiUploadViewController.h"
 #import "ViewController.h"
-#import "PageViewController.h"
 #import "PageContentViewController.h"
 #import "UploadViewController.h"
 #import "FamilyRole.h"
@@ -303,6 +302,36 @@ static BOOL appLaunchFlag = NO;
     [vc.navigationController setNavigationBarHidden:YES];
     [vc.navigationController pushViewController:uploadViewController animated:YES onCompletion:^(void){
     }];
+}
+
+// globalSettingのお知らせから飛ぶ用で、Push後の遷移ではないが同じ遷移をするようにtransitionInfoを偽装
++ (void)createTransitionInfoAndTransition:(PFObject *)histObject viewController:(UIViewController *)vc
+{
+    NSMutableDictionary *transitionInfoDic = [[NSMutableDictionary alloc] init];
+    if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
+        transitionInfoDic[@"event"] = @"commentPosted";
+    } else if ([histObject[@"type"] isEqualToString:@"requestPhoto"]) {
+        transitionInfoDic[@"event"] = @"requestPhoto";
+    } else if ([histObject[@"type"] isEqualToString:@"bestShotChanged"]) {
+        transitionInfoDic[@"event"] = @"bestShotChosen";
+    } else if ([histObject[@"type"] isEqualToString:@"imageUploaded"]) {
+        transitionInfoDic[@"event"] = @"imageUpload";
+    }
+    transitionInfoDic[@"date"] = [NSString stringWithFormat:@"%@", histObject[@"date"]];
+    NSIndexPath *targetIndexPath = [DateUtils getIndexPathFromDate:[NSNumber numberWithInt:[histObject[@"date"] intValue]]];
+    transitionInfoDic[@"section"] = [NSString stringWithFormat:@"%d", targetIndexPath.section];
+    transitionInfoDic[@"row"] = [NSString stringWithFormat:@"%d", targetIndexPath.row];
+    transitionInfoDic[@"childObjectId"] = histObject[@"child"];
+    [self setInfo:transitionInfoDic];
+    if ([histObject[@"type"] isEqualToString:@"commentPosted"]) {
+        [self moveToUploadViewControllerWithCommentForPushTransition:vc];
+    } else {
+        if ([DateUtils isInTwodayByIndexPath:targetIndexPath]) {
+            [self moveToMultiUploadViewControllerForPushTransition:vc];
+        } else {
+            [self moveToImagePageViewControllerForPushTransition:vc];
+        }
+    }
 }
 
 @end

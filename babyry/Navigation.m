@@ -30,9 +30,10 @@
     
     label.font = [UIFont fontWithName:font size:fontSize];
     label.textColor = color;
+    label.adjustsFontSizeToFitWidth = YES;
     
     // 表示最大サイズ
-    CGSize bounds = CGSizeMake(320, 44);
+    CGSize bounds = CGSizeMake(280, 44);
     
     // 文字列全体のサイズを取得
     CGSize size;

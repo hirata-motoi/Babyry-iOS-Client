@@ -38,11 +38,8 @@
 
 @property NSString *bestImageId;
 
-@property int indexForCache;
-
 @property NSTimer *myTimer;
 @property BOOL needTimer;
-@property int tmpCacheCount;
 @property BOOL isTimperExecuting;
 
 @property UIPageViewController *pageViewController;
@@ -57,19 +54,14 @@
 @property int uploadUppeLimit;
 
 @property AWSServiceConfiguration *configuration;
-@property NSMutableDictionary *notificationHistoryByDay;
 
 @property BOOL imageLoadComplete;
-
-@property MBProgressHUD *hud;
 
 @property NSMutableArray *totalImageNum;
 @property NSIndexPath *indexPath;
 
 // for tutorial
 @property UIView *firstCellUnselectedBestShotView;
-
-@property int totalNewCacheNum;
 
 - (void)showTutorialNavigator;
 - (void)removeNavigationView;

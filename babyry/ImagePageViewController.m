@@ -121,22 +121,18 @@
     _indexPath = [NSIndexPath indexPathForRow:[transitionInfo[@"row"] intValue] inSection:[transitionInfo[@"section"] intValue]];
     
     NSDate *date = [DateUtils setSystemTimezoneAndZero:[NSDate date]];
-    
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *comps = [[NSDateComponents alloc]init];
-    comps.month = -_indexPath.section;
-    
-    NSDate *fromDate = [cal dateByAddingComponents:comps toDate:date options:0];
-    
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyyMM"];
+
+    NSString *yyyymmdd = transitionInfo[@"date"];
+    NSString *fromDate = [yyyymmdd substringToIndex:6];
     
     dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
     dispatch_group_t g = dispatch_group_create();
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(2);
     
     dispatch_group_async(g,q,^{
-        [self getChildImagesFrom:[[df stringFromDate:fromDate] integerValue] to:[[df stringFromDate:date] integerValue]];
+        [self getChildImagesFrom:[fromDate integerValue] to:[[df stringFromDate:date] integerValue]];
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         dispatch_semaphore_signal(semaphore);
     });
@@ -182,7 +178,6 @@
     uploadViewController.month = [NSString stringWithFormat:@"%@%@", year, month];
     uploadViewController.date = ymd;
     uploadViewController.tagAlbumPageIndex = index;
-    //uploadViewController.holdedBy = @"TagAlbumPageViewController";
     uploadViewController.fromMultiUpload = _fromMultiUpload;
     uploadViewController.indexPath = _indexPath;
     if (_fromMultiUpload) {
@@ -190,10 +185,6 @@
         uploadViewController.pageIndex = index;
         uploadViewController.myRole = _myRole;
         uploadViewController.childCachedImageArray = _childCachedImageArray;
-    }
-    
-    if (_notificationHistory[ymd]) {
-        uploadViewController.notificationHistoryByDay = _notificationHistory[ymd];
     }
     
     // Cacheからはりつけ
@@ -289,7 +280,6 @@
     //   次の月
     //     データがなければさらに次の月を再帰的にとりにいく
     //     現在の月はpreviousviewControllers.monthで取得可能
-    
     if (!_imagesCountDic || !_imagesCountDic[@"imagesCountNumber"]) {
         return;
     }
@@ -329,17 +319,13 @@
     NSDate *date = [cal dateFromComponents:comps];
     
     // 画像が取得できるまで処理する
-    // oldestChildImageDateに達したら終了(誕生日がなければ2010年1月まで)
+    // 2010/01/01に達したら終了
     // 画像が取得できたら終了
-    
-    NSDateComponents *oldestChildImageDateComps;
-    if (childProperty[@"oldestChildImageDate"]) {
-        oldestChildImageDateComps = [DateUtils compsFromNumber:childProperty[@"oldestChildImageDate"]];
-    } else {
-        oldestChildImageDateComps = [[NSDateComponents alloc] init];
-        oldestChildImageDateComps.year = 2010;
-        oldestChildImageDateComps.month = 1;
-    }
+   
+    // TODO cloud codeで一気に取得
+    NSDateComponents *oldestChildImageDateComps = [[NSDateComponents alloc] init];
+    oldestChildImageDateComps.year = 2010;
+    oldestChildImageDateComps.month = 1;
     oldestChildImageDateComps.day = 1;
     NSDate *oldestChildImageMonth = [cal dateFromComponents:oldestChildImageDateComps];
     
@@ -378,6 +364,7 @@
     [query whereKey:@"date" greaterThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", fromYM, 1] integerValue]]];
     [query whereKey:@"date" lessThanOrEqualTo:[NSNumber numberWithInteger:[[NSString stringWithFormat:@"%06d%02d", toYM, 31] integerValue]]];
     [query orderByDescending:@"date"];
+    query.limit = 1000;
     NSArray *objects = [query findObjects];
     
     if (objects && objects.count > 0) {
@@ -386,8 +373,8 @@
         for (PFObject *childImage in objects) {
             if ([[childImage[@"date"] stringValue] isEqualToString:transitionInfo[@"date"]]) {
                 _currentIndex = index;
+                [self cacheThumbnail:childImage];
             }
-            [self cacheThumbnail:childImage];
             index++;
         }
     }
@@ -443,17 +430,5 @@
         _imagesCountDic[@"imagesCountNumber"] = totalCount;
     }
 }
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

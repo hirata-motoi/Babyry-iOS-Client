@@ -12,7 +12,7 @@
 
 @property UIViewController *targetViewController;
 
-- (void)showNavigationView;
+- (BOOL)showNavigationView;
 - (void)removeNavigationView;
 - (UIButton *)createTutorialSkipButton;
 

@@ -11,21 +11,28 @@
 @interface ColorUtils : NSObject
 
 +(UIColor *) getSunDayCalColor;
-
 +(UIColor *) getSatDayCalColor;
-
 +(UIColor *) getWeekDayCalColor;
-
 +(UIColor *) getBackgroundColor;
-
 +(UIColor *) getSectionHeaderColor;
-
 +(UIColor *) getCellBackgroundDefaultColor;
-
 +(UIColor *) getBabyryColor;
-
 +(UIColor *) getLoginViewBackColor;
-
 +(UIColor *)getPastelRedColor;
++(UIColor *)getGlobalMenuPartSwitchColor;
++(UIColor *)getGlobalMenuLightGrayColor;
++(UIColor *)getGlobalMenuDarkGrayColor;
++(UIColor *)getCalenderNumberColor;
++(UIColor *)getBlurTintColor;
++(UIColor *) getPositiveColor;
++(UIColor *)getLightPositiveColor;
++(UIColor *)getNegativeColor;
++(UIColor *)getPositiveButtonColor;
++(UIColor *)getNegativeButtonColor;
++(UIColor *)getOtherButtonColor;
++(UIColor *)getFacebookButtonColor;
++(UIColor *)getIntroDarkGrayStringColor;
++(UIColor *)getLoginTextFieldPaceHolderColor;
++(UIColor *)getDarkGrayColorImageIconString;
 
 @end

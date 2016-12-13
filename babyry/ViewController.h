@@ -10,15 +10,17 @@
 #import <Parse/Parse.h>
 #import "PageContentViewController.h"
 #import "MBProgressHUD.h"
-#import "PageViewController.h"
 #import "HeaderViewManager.h"
+#import "ChildSwitchControlView.h"
+#import "GlobalSettingViewController.h"
+#import "ChildCreatePopupViewController.h"
 
-@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate>
+@interface ViewController : UIViewController<UINavigationControllerDelegate, HeaderViewManagerDelegate, ChildSwitchControlViewDelegate, GlobalSettingViewControllerDelegate, ChildCreatePopupViewControllerDelegate, PageContentViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *weekDateArray;
 @property (strong, nonatomic) PFObject *currentUser;
 @property (strong, nonatomic) PFObject *currentInstallation;
-@property (strong, nonatomic) PageViewController *pageViewController;
+@property (strong, nonatomic) PageContentViewController *pageContentViewController;
 @property (strong, nonatomic) NSArray *childArrayFoundFromParse;
 @property NSMutableDictionary *childImages;
 
@@ -32,5 +34,10 @@
 - (void)hideHeaderView;
 - (void)setupHeaderView;
 - (void)showTutorialNavigator;
+- (void)reloadPageContentViewController:(NSString *)childObjectId;
+- (void)removeChildSwitchControlView;
+- (void)viewDidAppear:(BOOL)animated;
+- (void)openAddChild;
+- (void)setGlobalMenuBadge:(int)badgeNumber;
 
 @end

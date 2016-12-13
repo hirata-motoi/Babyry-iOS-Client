@@ -14,6 +14,9 @@
 #import "PartnerInvitedEntity.h"
 #import "Logger.h"
 #import "CloseButtonView.h"
+#import "ChildProperties.h"
+#import "MBProgressHUD.h"
+#import "ColorUtils.h"
 
 @interface ChooseRegisterStepViewController ()
 
@@ -40,15 +43,35 @@
     UITapGestureRecognizer *openSignUpView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openSignUpView)];
     openSignUpView.numberOfTapsRequired = 1;
     [_registerButton addGestureRecognizer:openSignUpView];
+    _registerButton.layer.cornerRadius = 3;
     
     UITapGestureRecognizer *continueWithNoLogin = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(continueWithNoLogin)];
     continueWithNoLogin.numberOfTapsRequired = 1;
     [_noRegisterButton addGestureRecognizer:continueWithNoLogin];
+    _noRegisterButton.layer.cornerRadius = 3;
     
     UITapGestureRecognizer *facebookLogin = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(facebookLogin)];
     facebookLogin.numberOfTapsRequired = 1;
     [_facebookLoginButton addGestureRecognizer:facebookLogin];
+    _facebookLoginButton.layer.cornerRadius = 3;
     
+    UITapGestureRecognizer *openLoginView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openLoginView)];
+    openLoginView.numberOfTapsRequired = 1;
+    [_loginButton addGestureRecognizer:openLoginView];
+    _loginButton.layer.cornerRadius = 3;
+    
+    // アンダーラインを引く
+    NSString *text = @"以前登録した方はこちら";
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:text];
+    [str addAttribute:NSFontAttributeName
+                value:[UIFont fontWithName:@"HiraKakuProN-W3" size:14.0f]
+                range:NSMakeRange(0, text.length)];
+    [str addAttributes:@{NSStrokeColorAttributeName:[ColorUtils getIntroDarkGrayStringColor],
+                         NSUnderlineStyleAttributeName:[NSNumber numberWithInteger:NSUnderlineStyleSingle]}
+                 range:NSMakeRange(0, text.length)];
+
+    [_loginButton setAttributedText:str];
+
     _isSignUpCompleted = NO;
 }
 
@@ -158,6 +181,9 @@
     // Email Verify
     [Account sendVerifyEmail:user[@"emailCommon"]];
     
+    // 子供のデータがCoreDataにあれば全て消す
+    [ChildProperties removeChildPropertiesFromCoreData];
+    
     _isSignUpCompleted = YES;
     [self dismissViewControllerAnimated:YES completion:NULL]; // Dismiss the PFSignUpViewController
 }
@@ -178,16 +204,22 @@
 
 - (void)continueWithNoLogin
 {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"簡単会員ログイン中";
+    
     IdIssue *idIssue = [[IdIssue alloc] init];
     PFUser *user = [PFUser user];
     user.username = [idIssue randomStringWithLength:8];
     user.password = [idIssue randomStringWithLength:8];
     user[@"userId"] = [idIssue issue:@"user"];
     
+    [ChildProperties removeChildPropertiesFromCoreData];
+    
     // emailCommonは検索で使わなくなるから、本来は入れなくていいのだけど旧バージョンでは必要なのでuserIdを入れておく(申請までにはこのフローはなくなる)
     user[@"emailCommon"] = user.username;
     
     [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [hud hide:YES];
         if (!error) {
             [TmpUser setTmpUserToCoreData:user.username password:(NSString *)user.password];
             [self dismissViewControllerAnimated:YES completion:nil];
@@ -304,6 +336,13 @@
             }];
             [self dismissViewControllerAnimated:YES completion:NULL];
         }
+    }];
+}
+
+- (void) openLoginView
+{
+    [self dismissViewControllerAnimated:YES completion:^(void){
+        [_introPageRootViewController openLoginView];
     }];
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Parse/Parse.h>
 
 @interface TransitionByPushNotification : NSObject
 
@@ -26,5 +27,6 @@
 + (void) setAppLaunchedFlag;
 + (void) removeAppLaunchFlag;
 + (BOOL) checkAppLaunchedFlag;
++ (void)createTransitionInfoAndTransition:(PFObject *)histObject viewController:(UIViewController *)vc;
 
 @end

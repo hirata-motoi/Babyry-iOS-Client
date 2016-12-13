@@ -29,6 +29,7 @@
 #import "TutorialNavigator.h"
 #import "ChildProperties.h"
 #import "AlbumTableViewController.h"
+#import "ImageUploadInBackground.h"
 
 @interface MultiUploadViewController ()
 
@@ -67,7 +68,8 @@
     
     // role で出し分けるものたち
     _myRole = [[NSString alloc] init];
-    _instructionLabel.backgroundColor = [ColorUtils getBackgroundColor];
+    _instructionLabel.backgroundColor = [ColorUtils getPositiveButtonColor];
+    _instructionLabel.layer.cornerRadius = 3;
     _instructionLabel.textColor = [UIColor whiteColor];
     _instructionLabel.font = [UIFont systemFontOfSize:14];
     if ([[FamilyRole selfRole:@"useCache"] isEqualToString:@"uploader"]) {
@@ -95,7 +97,7 @@
     NSString *mm = [_month substringWithRange:NSMakeRange(4, 2)];
     NSString *dd = [_date substringWithRange:NSMakeRange(6, 2)];
     [Navigation setTitle:self.navigationItem withTitle:childProperty[@"name"] withSubtitle:[NSString stringWithFormat:@"%@年%@月%@日", yyyy, mm, dd] withFont:nil withFontSize:0 withColor:nil];
-                                                                     
+    
     // set cell size
     _cellHeight = 100.0f;
     _cellWidth = 100.0f;
@@ -103,7 +105,10 @@
     // best shot asset
     _selectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"SelectedBestshot"]];
     
-    _bestImageId = @"";
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(downloadComplete) name:@"downloadCompleteFromS3" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(partialDownloadComplete) name:@"partialDownloadCompleteFromS3" object:nil];
+    
+    [self disableNotificationHistories];
 }
 
 - (void)didReceiveMemoryWarning
@@ -114,12 +119,10 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+	[_multiUploadedImages reloadData];
     [super viewDidAppear:animated];
     
     [[self logic] disableNotificationHistory];
-        
-    _hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    _hud.labelText = @"データ同期中";
     
     _myTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f
                                                 target:self
@@ -174,17 +177,6 @@
     [self viewDidAppear:YES];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
 -(void)createCollectionView
 {
     // UICollectionViewの土台を作成
@@ -205,9 +197,17 @@
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     if ([_childCachedImageArray count] > [_childImageArray count]) {
-        return [_childCachedImageArray count];
+		if ([[_totalImageNum objectAtIndex:_indexPath.row] intValue] > [_childCachedImageArray count]) {
+			return [[_totalImageNum objectAtIndex:_indexPath.row] intValue];
+		} else {
+			return [_childCachedImageArray count];
+		}
     } else {
-        return [_childImageArray count];
+		if ([[_totalImageNum objectAtIndex:_indexPath.row] intValue] > [_childImageArray count]) {
+			return [[_totalImageNum objectAtIndex:_indexPath.row] intValue];
+		} else {
+			return [_childImageArray count];
+		}
     }
 }
 
@@ -227,123 +227,88 @@
     for (UIGestureRecognizer *gesture in [cell gestureRecognizers]) {
         [cell removeGestureRecognizer:gesture];
     }
-
-    // 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
-    NSArray *splitForTmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
-    NSString *splitForTmp = [splitForTmpArray lastObject];
-    
-    if (![splitForTmp isEqualToString:@"tmp"]) {
-        NSData *tmpImageData = [ImageCache
-                                getCache:[_childCachedImageArray objectAtIndex:indexPath.row]
-                                dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]];
-        cell.backgroundColor = [UIColor blackColor];
-        cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
-        
-        // 小さい画像の時は、、、みたいな分岐がselectedだと面倒そうだったのでここでgestureつける
-        UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-        singleTapGestureRecognizer.numberOfTapsRequired = 1;
-        [cell addGestureRecognizer:singleTapGestureRecognizer];
-        
-        // 以下の処理は一番最後 (gestureが一番上にくるように)
-        CGRect unSelectetFrame = CGRectMake(cell.frame.size.width*2/3, cell.frame.size.height*2/3, cell.frame.size.width/3, cell.frame.size.height/3);
-        // choiceの場合だけunselectedは基本付ける
-        if (![_myRole isEqualToString:@"uploader"]) {
-            UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
-            unSelectedBestshotView.frame = unSelectetFrame;
-            [cell addSubview:unSelectedBestshotView];
-            
-            unSelectedBestshotView.tag = indexPath.row;
-            unSelectedBestshotView.userInteractionEnabled = YES;
-            UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
-            selectBestShotGesture.numberOfTapsRequired = 1;
-            [unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
-           
-            // for tutorial
-            if (indexPath.row == 0) {
-                _firstCellUnselectedBestShotView = unSelectedBestshotView;
-            }
-        }
-        
-        NSArray *tmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
-        _selectedBestshotView.frame = unSelectetFrame;
-        if ([_bestImageId isEqualToString:[tmpArray lastObject]]) {
-            [cell addSubview:_selectedBestshotView];
-        }
-        cell.tag = indexPath.row;
-    } else {
-        // ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
-        cell.backgroundColor = [UIColor blackColor];
+	
+	// _childCachedImageArrayの配列数よりrowが大きくなった場合には、まだキャッシュがセットされていないという事でクルクルを出す
+	if ([_childCachedImageArray count] == 0 || [_childCachedImageArray count] <= indexPath.row) {
+		cell.backgroundColor = [UIColor blackColor];
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
-        hud.labelText = @"Uploading...";
+        hud.labelText = @"Loading...";
         hud.margin = 0;
         hud.labelFont = [UIFont systemFontOfSize:12];
-    }
+	} else {
+		// 仮に入れている小さい画像の方はまだアップロード中のものなのでクルクルを出す
+		NSArray *splitForTmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
+		NSString *splitForTmp = [splitForTmpArray lastObject];
+		
+		if (![splitForTmp isEqualToString:@"tmp"]) {
+			NSData *tmpImageData = [ImageCache
+									getCache:[_childCachedImageArray objectAtIndex:indexPath.row]
+									dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]];
+			cell.backgroundColor = [UIColor blackColor];
+			cell.backgroundView = [[UIImageView alloc] initWithImage:[ImageTrimming makeRectImage:[UIImage imageWithData:tmpImageData]]];
+			
+			// 小さい画像の時は、、、みたいな分岐がselectedだと面倒そうだったのでここでgestureつける
+			UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+			singleTapGestureRecognizer.numberOfTapsRequired = 1;
+			[cell addGestureRecognizer:singleTapGestureRecognizer];
+			
+			// 以下の処理は一番最後 (gestureが一番上にくるように)
+			CGRect unSelectetFrame = CGRectMake(cell.frame.size.width*2/3, cell.frame.size.height*2/3, cell.frame.size.width/3, cell.frame.size.height/3*0.925);
+			// choiceの場合だけunselectedは基本付ける
+			if (![_myRole isEqualToString:@"uploader"]) {
+				UIImageView *unSelectedBestshotView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"UnSelectedBestshot"]];
+				unSelectedBestshotView.frame = unSelectetFrame;
+				[cell addSubview:unSelectedBestshotView];
+				
+				unSelectedBestshotView.tag = indexPath.row;
+				unSelectedBestshotView.userInteractionEnabled = YES;
+				UITapGestureRecognizer *selectBestShotGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectBestShot:)];
+				selectBestShotGesture.numberOfTapsRequired = 1;
+				[unSelectedBestshotView addGestureRecognizer:selectBestShotGesture];
+				
+				// for tutorial
+				if (indexPath.row == 0) {
+					_firstCellUnselectedBestShotView = unSelectedBestshotView;
+				}
+			}
+			
+			NSArray *tmpArray = [[_childCachedImageArray objectAtIndex:indexPath.row] componentsSeparatedByString:@"-"];
+			_selectedBestshotView.frame = unSelectetFrame;
+			if ([_bestImageId isEqualToString:[tmpArray lastObject]]) {
+				[cell addSubview:_selectedBestshotView];
+			}
+			cell.tag = indexPath.row;
+		} else {
+			// ローカルにキャッシュがないのにcellが作られようとしている -> アップロード中の画像
+			cell.backgroundColor = [UIColor blackColor];
+			MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:cell animated:YES];
+			hud.labelText = @"Loading...";
+			hud.margin = 0;
+			hud.labelFont = [UIFont systemFontOfSize:12];
+		}
+	}
     
     [[self logic] prepareForTutorial:cell withIndexPath:indexPath];
     
     return cell;
 }
 
--(void)setCacheOfParseImage:(NSMutableArray *)objects
+-(void) downloadComplete
 {
-    if ([objects count] > 0) {
-        PFObject *object = [objects objectAtIndex:0];
-        
-        if ([object[@"isTmpData"] isEqualToString:@"TRUE"]) {
-            // 本画像がはまるまではtmpを付けておく
-            [ImageCache
-                setCache:[NSString stringWithFormat:@"%@-tmp", object.objectId]
-                image:UIImagePNGRepresentation([UIImage imageNamed:@"OnePx"])
-                dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]
-            ];
-            _tmpCacheCount++;
-            
-            _indexForCache++;
-            [objects removeObjectAtIndex:0];
-            [[self logic] setCacheOfParseImage:objects];
-        } else {
-            AWSS3GetObjectRequest *getRequest = [AWSS3GetObjectRequest new];
-            getRequest.bucket = [Config config][@"AWSBucketName"];
-            getRequest.key = [NSString stringWithFormat:@"%@/%@", [NSString stringWithFormat:@"ChildImage%ld", (long)[childProperty[@"childImageShardIndex"] integerValue]], object.objectId];
-            AWSS3 *awsS3 = [[AWSS3 new] initWithConfiguration:_configuration];
-            [[awsS3 getObject:getRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
-                if (!task.error && task.result) {
-                    AWSS3GetObjectOutput *getResult = (AWSS3GetObjectOutput *)task.result;
-                    UIImage *thumbImage = [ImageCache makeThumbNail:[UIImage imageWithData:getResult.body]];
-                    [ImageCache
-                        setCache:object.objectId
-                        image:UIImageJPEGRepresentation(thumbImage, 0.7f)
-                        dir:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail", _childObjectId, _date]
-                    ];
-                    [ImageCache removeCache:[NSString stringWithFormat:@"%@/candidate/%@/thumbnail/%@-tmp", _childObjectId, _date, object.objectId]];
-                    [ImageCache
-                        setCache:object.objectId
-                        image:getResult.body
-                        dir:[NSString stringWithFormat:@"%@/candidate/%@/fullsize", _childObjectId, _date]
-                    ];
-                    
-                    _indexForCache++;
-                    [objects removeObjectAtIndex:0];
-                    [[self logic] setCacheOfParseImage:objects];
-                } else {
-                    [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"Error in getRequest to S3 : %@", task.error]];
-                }
-                return nil;
-            }];
-        }
-    } else {
-        _imageLoadComplete = YES;
-        [[self logic] showCacheImages];
-        
-        if (_tmpCacheCount == 0){
-            _needTimer = NO;
-            [_myTimer invalidate];
-        }
-        
-        [_hud hide:YES];
-        
-        _isTimperExecuting = NO;
+    _imageLoadComplete = YES;
+    [[self logic] showCacheImages];
+    
+    if ([ImageUploadInBackground getUploadingQueueCount] == 0){
+        _needTimer = NO;
+        [_myTimer invalidate];
     }
+    
+    _isTimperExecuting = NO;
+}
+
+-(void) partialDownloadComplete
+{
+    [[self logic] showCacheImages];
 }
 
 -(void)handleUploadGesture:(id) sender {
@@ -360,7 +325,6 @@
     albumTableViewController.month = _month;
     albumTableViewController.totalImageNum = _totalImageNum;
     albumTableViewController.indexPath = _indexPath;
-    albumTableViewController.notificationHistoryByDay = _notificationHistoryByDay;
     albumTableViewController.uploadType = @"multi";
     [self.navigationController pushViewController:albumTableViewController animated:YES];
 }
@@ -463,7 +427,6 @@
         NSMutableDictionary *imagesCountDic = [[NSMutableDictionary alloc] init];
         [imagesCountDic setObject:[NSNumber numberWithInt:[childImageArraySorted count]] forKey:@"imagesCountNumber"];
         pageViewController.imagesCountDic = imagesCountDic;
-        pageViewController.notificationHistory = (_notificationHistoryByDay) ? [[NSMutableDictionary alloc]initWithObjects:@[ _notificationHistoryByDay ] forKeys:@[ _date ]] : nil;
         [self.navigationController setNavigationBarHidden:YES];
         [self.navigationController pushViewController:pageViewController animated:YES];
     }
@@ -557,7 +520,7 @@
         _headerView.backgroundColor = [ColorUtils getSectionHeaderColor];
         UILabel *tutorialLabel = [[UILabel alloc] init];
         tutorialLabel.frame = _headerView.frame;
-        tutorialLabel.textColor = [ColorUtils getSunDayCalColor];
+        tutorialLabel.textColor = [UIColor whiteColor];
         tutorialLabel.textAlignment = NSTextAlignmentCenter;
         tutorialLabel.font = [UIFont boldSystemFontOfSize:15.0f];
         tutorialLabel.numberOfLines = 2;
@@ -594,7 +557,7 @@
         NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:text];
         // 色
         [str addAttribute:NSForegroundColorAttributeName
-                    value: [UIColor_Hex colorWithHexString:@"ff7f7f" alpha:1.0f]
+                    value: [UIColor_Hex colorWithHexString:@"ffffff" alpha:1.0f]
                     range:NSMakeRange(0, text.length)];
         // font
         [str addAttribute:NSFontAttributeName
@@ -633,6 +596,12 @@
 - (void)forwardNextTutorial
 {
     [[self logic] forwardNextTutorial];
+}
+
+- (void)disableNotificationHistories
+{
+    NSArray *notificationTypes = @[@"imageUploaded", @"bestShotChanged", @"requestPhoto"];
+    [NotificationHistory disableDisplayedNotificationsWithUser:[PFUser currentUser][@"userId"] withChild:_childObjectId withDate:_date withType:notificationTypes];
 }
 
 @end

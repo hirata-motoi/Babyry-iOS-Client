@@ -9,13 +9,14 @@
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
 #import <ParseFacebookUtils/PFFacebookUtils.h>
+#import <ParseCrashReporting/ParseCrashReporting.h>
 #import "PageContentViewController.h"
-#import "Crittercism.h"
 #import "Config.h"
 #import "AppSetting.h"
 #import "DateUtils.h"
 #import "Logger.h"
 #import "FamilyRole.h"
+#import "ImageDownloadInBackground.h"
 
 @implementation AppDelegate
 
@@ -29,7 +30,7 @@
         
         self.window.rootViewController = rootViewController;
     }
-   
+    
     // global変数
     [self setGlobalVariables];
     
@@ -37,12 +38,15 @@
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"babyry.sqlite"];
     [self setupFirstLaunchUUID];
     
+    // Parse Crash Report
+    [ParseCrashReporting enable];
+    
     // Parse Authentification
     [Parse setApplicationId:[Config secretConfig][@"ParseApplicationId"] clientKey:[Config secretConfig][@"ParseClientKey"]];
-
+    
     // Facebood Auth
     [PFFacebookUtils initializeFacebook];
-
+    
     // Customize the Page Indicator
     UIPageControl *pageControl = [UIPageControl appearance];
     pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
@@ -69,10 +73,10 @@
         [application registerUserNotificationSettings:settings];
     }
     
-    //[application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    
     // Crittercism
-    [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
+//    [Crittercism enableWithAppID:[Config secretConfig][@"CrittercismAppId"]];
     
     [self setTrackingLogName:@""];
     
@@ -108,10 +112,60 @@
     [Logger writeOneShot:@"crit" message:[NSString stringWithFormat:@"failed to get device token %@", err]];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+//    /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
+//    NSInteger badgeNumber = [application applicationIconBadgeNumber];
+//    [application setApplicationIconBadgeNumber:++badgeNumber];
+//    NSLog(@"receive remote notification %d", badgeNumber);
+//    */
+//}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+{
     if (![PFUser currentUser]) {
         return;
     }
+    
+    if (application.applicationState == UIApplicationStateInactive) {
+        // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
+        [PFPush handlePush:userInfo];
+        if (userInfo[@"transitionInfo"]) {
+            if ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"imageUpload"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
+                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
+                [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
+            }
+        }
+        
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
+            // キャッシュを更新しておく
+            [FamilyRole selfRole:@"noCache"];
+            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
+                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotification:n];
+            }];
+        }
+        
+        // 各クラスに通知用
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        completionHandler(UIBackgroundFetchResultNewData);
+    }
+    
+    if (application.applicationState == UIApplicationStateBackground) {
+        // backgourndでpushを受け取った時に発動、裏で画像データを読む
+        
+        if (userInfo[@"transitionInfo"][@"imageIds"]) {
+            // 多重でpushがくるのでインスタンス化
+            ImageDownloadInBackground *imageDownloadInBackground = [[ImageDownloadInBackground alloc] init];
+            imageDownloadInBackground.completionHandler = completionHandler;
+            [imageDownloadInBackground downloadByPushInBackground:userInfo[@"transitionInfo"]];
+        }
+    }
+    
     if (application.applicationState == UIApplicationStateActive) {
         // アプリが起動している時に、push通知が届きpush通知から起動
         
@@ -131,56 +185,38 @@
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childAdded"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
                 || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"])) {
-            [PFPush handlePush:userInfo];
-        }
+                [PFPush handlePush:userInfo];
+            }
         
         if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"calendarAdded"]) {
             NSNotification *n = [NSNotification notificationWithName:@"receivedCalendarAddedNotification" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
+        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"childIconChanged"]) {
+            NSNotification *n = [NSNotification notificationWithName:@"childIconChanged" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
         if (userInfo[@"transitionInfo"] &&
             (
-                [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]  ||
-                [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
+             [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]  ||
+             [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
              )
-        ) {
+            ) {
             NSNotification *n = [NSNotification notificationWithName:@"receivedApplyEvent" object:nil];
             [[NSNotificationCenter defaultCenter] postNotification:n];
         }
-    }                                                                                  
-    
-    if (application.applicationState == UIApplicationStateInactive) {
-        // アプリがバックグラウンドで起動している時に、push通知が届きpush通知から起動
-        [PFPush handlePush:userInfo];
-        if (userInfo[@"transitionInfo"]) {
-            if ([userInfo[@"transitionInfo"][@"event"] isEqualToString:@"imageUpload"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"bestShotChosen"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"commentPosted"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"receiveApply"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"admitApply"]
-                || [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"requestPhoto"]) {
-            [TransitionByPushNotification setInfo:userInfo[@"transitionInfo"]];
-            }
-        }
         
-        if (userInfo[@"transitionInfo"] && [userInfo[@"transitionInfo"][@"event"] isEqualToString:@"partSwitched"]){
-            // キャッシュを更新しておく
-            [FamilyRole selfRole:@"noCache"];
-            [FamilyRole updateFamilyRoleCacheWithBlock:^(){
-                NSNotification *n = [NSNotification notificationWithName:@"childPropertiesChanged" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotification:n];
-            }];
-        }
+        // 各クラスに通知用
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+        
+        completionHandler(UIBackgroundFetchResultNewData);
     }
-    
-    /* バッジの追加、消すタイミングは追々の課題なのでいまはつけない
-    NSInteger badgeNumber = [application applicationIconBadgeNumber];
-    [application setApplicationIconBadgeNumber:++badgeNumber];
-    NSLog(@"receive remote notification %d", badgeNumber);
-    */
-    
-    // 各クラスに通知用
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"didReceiveRemoteNotification" object:nil];
+}
+
+- (void) application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+{
+    // このメソッドを書いておくと、バックグラウンドでNSURLSessionが呼ばれていた場合、そのdelegate method(ダウンロードが完了した場合のcallbackとか)が一斉に呼び出される
+    // 書いておかないと、アプリがforegroundになったときに一斉に呼ばれるので×
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -194,7 +230,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     [self insertLastLog];
 }
@@ -212,7 +248,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-
+    
     // Facebook
     [FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
 }
@@ -232,11 +268,11 @@
 - (void)setGlobalVariables
 {
     // env
-    #ifdef DEBUG
-        _env = @"dev";
-    #else
-        _env = @"prod";
-    #endif
+#ifdef DEBUG
+    _env = @"dev";
+#else
+    _env = @"prod";
+#endif
 }
 
 - (void)setupFirstLaunchUUID

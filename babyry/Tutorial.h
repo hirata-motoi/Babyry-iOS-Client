@@ -23,5 +23,6 @@
 + (void)forwardTutorialStageToLast;
 + (void)removeDefaultChild:(NSMutableArray *)childProperties;
 + (void)removeTutorialStage;
++ (BOOL)existsTutorialChild;
 
 @end

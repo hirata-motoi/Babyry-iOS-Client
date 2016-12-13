@@ -7,6 +7,10 @@
 //
 
 #import "ImageCache.h"
+#import "ImageUtils.h"
+#import "Config.h"
+#import "UIImage+ImageEffects.h"
+#import "ColorUtils.h"
 
 @implementation ImageCache
 
@@ -42,6 +46,11 @@ ImageCache以下の構造
 
 + (void) setCache:name image:(NSData *)image dir:(NSString *)dir
 {
+    CGRect rect = [UIScreen mainScreen].bounds;
+    NSRange range = [dir rangeOfString:@"fullsize"];
+    if (rect.size.height == 480 && range.location == NSNotFound) {
+        image = UIImageJPEGRepresentation([self resizeImageFor3_5inchDevice:[UIImage imageWithData:image]], 0.7f);
+    }
     // Cache Dir
     NSArray *array = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheDirPath = [array objectAtIndex:0];
@@ -67,7 +76,24 @@ ImageCache以下の構造
     if (!success) {
         NSLog(@"failed to save image. reason is %@ - %@", error, error.userInfo);
     }
-    //NSLog(@"saved at %@", savedPath);
+
+    // プロフィールアイコンの場合にはグレーのキャッシュも作る(グレーにするパフォーマンスが悪いからここで一緒に作っちゃう、ついでにブラーも)
+    if ([name isEqualToString:[Config config][@"ChildIconFileName"]]) {
+        NSData *imageGray = UIImageJPEGRepresentation([ImageUtils filterImage:[[UIImage imageWithData:image] applyBlurWithRadius:4
+                                                                                                                       tintColor:[ColorUtils getBlurTintColor]
+                                                                                                                       saturationDeltaFactor:1
+                                                                                                                       maskImage:nil]
+                                                               withFilterName:@"CIMinimumComponent"], 0.7f);
+        if (rect.size.height == 480) {
+            imageGray = UIImageJPEGRepresentation([self resizeImageFor3_5inchDevice:[UIImage imageWithData:imageGray]], 0.7f);
+        }
+        NSString *savedPathGray = [imageCacheDirPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Gray", name]];
+        NSError *errorGray = nil;
+        BOOL successGray = [fileManager createFileAtPath:savedPathGray contents:imageGray attributes:nil];
+        if (!successGray) {
+            NSLog(@"failed to save image in gray scale. reason is %@ - %@", errorGray, errorGray.userInfo);
+        }
+    }
 }
 
 + (NSData *) getCache:(NSString *)name dir:(NSString *)dir
@@ -155,7 +181,12 @@ ImageCache以下の構造
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if([fileManager fileExistsAtPath:imageCacheFilePath]) {
         NSMutableDictionary *fileAttribute = [NSMutableDictionary dictionaryWithDictionary:[[NSFileManager defaultManager] attributesOfItemAtPath:imageCacheFilePath error:nil]];
-        return [fileAttribute objectForKey:@"NSFileModificationDate"];
+		// ダウンロード失敗とかで、imageのサイズが0の時がある。この場合は、タイムスタンプを古くして再ダウンロードさせる
+		if ([[fileAttribute objectForKey:NSFileSize] intValue] == 0) {
+			return [NSDate dateWithTimeIntervalSinceNow:-30*365*24*60*60];
+		} else {
+			return [fileAttribute objectForKey:@"NSFileModificationDate"];
+		}
     } else {
         return [NSDate dateWithTimeIntervalSinceNow:-30*365*24*60*60];
     }
@@ -227,6 +258,21 @@ ImageCache以下の構造
     UIGraphicsEndImageContext();
     
     return thumbImage;
+}
+
++ (UIImage *) resizeImageFor3_5inchDevice:(UIImage *)orgImage
+{
+    float imageWidth = orgImage.size.width;
+    float imageHeight = orgImage.size.height;
+    float scale = 0.3;
+
+    CGSize resizedSize = CGSizeMake(imageWidth * scale, imageHeight * scale);
+    UIGraphicsBeginImageContext(resizedSize);
+    [orgImage drawInRect:CGRectMake(0, 0, resizedSize.width, resizedSize.height)];
+    UIImage* resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return resizedImage;
 }
 
 @end

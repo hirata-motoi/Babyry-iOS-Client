@@ -21,14 +21,14 @@
 #import "AWSMobileAnalyticsSessionClient.h"
 #import "AWSMobileAnalyticsSessionStore.h"
 
-FOUNDATION_EXPORT NSString *const SESSION_START_EVENT_TYPE;
-FOUNDATION_EXPORT NSString *const SESSION_STOP_EVENT_TYPE;
-FOUNDATION_EXPORT NSString *const SESSION_PAUSE_EVENT_TYPE;
-FOUNDATION_EXPORT NSString *const SESSION_RESUME_EVENT_TYPE;
-FOUNDATION_EXPORT NSString *const SESSION_ID_ATTRIBUTE_KEY;
-FOUNDATION_EXPORT NSString *const SESSION_DURATION_METRIC_KEY;
-FOUNDATION_EXPORT NSString *const SESSION_START_TIME_ATTRIBUTE_KEY;
-FOUNDATION_EXPORT NSString *const SESSION_END_TIME_ATTRIBUTE_KEY;
+FOUNDATION_EXPORT NSString *const AWSSessionStartEventType;
+FOUNDATION_EXPORT NSString *const AWSSessionStopEventType;
+FOUNDATION_EXPORT NSString *const AWSSessionPauseEventType;
+FOUNDATION_EXPORT NSString *const AWSSessionResumeEventType;
+FOUNDATION_EXPORT NSString *const AWSSessionIDAttributeKey;
+FOUNDATION_EXPORT NSString *const AWSSessionDurationMetricKey;
+FOUNDATION_EXPORT NSString *const AWSSessionStartTimeAttributeKey;
+FOUNDATION_EXPORT NSString *const AWSSessionEndTimeAttributeKey;
 
 typedef enum{
     SESSION_STATE_PAUSED,
@@ -54,14 +54,14 @@ typedef enum{
 @property (nonatomic, readonly) long sessionResumeDelayMs;
 
 /**
- * Static Constructor
+ * Constructor
  *
  * Requires Event and Delivery Client for Functionality
  * Requires Context for Session ID generation (passed to AWSMobileAnalyticsSession objects)
  */
-+ (id) sessionClientWithEventClient: (id<AWSMobileAnalyticsInternalEventClient>) eventClient
-                 withDeliveryClient: (id<AWSMobileAnalyticsDeliveryClient>)      deliveryClient
-                        withContext: (id<AWSMobileAnalyticsContext>)     context;
+- (instancetype)initWithEventClient:(id<AWSMobileAnalyticsInternalEventClient>)eventClient
+                 withDeliveryClient:(id<AWSMobileAnalyticsDeliveryClient>)deliveryClient
+                        withContext:(id<AWSMobileAnalyticsContext>)context;
 
 /**
  * Starts a Session
@@ -70,7 +70,7 @@ typedef enum{
  * - Starts Event Tagging by adding the Session's ID as a Global Attribute
  * - Enqueues a Session Start event in the Delivery Client
  */
-- (void) startSession;
+- (void)startSession;
 /**
  * Stops a Session
  *
@@ -78,6 +78,6 @@ typedef enum{
  * - Stops Event Tagging by removing the Session ID's Global Attribute
  * - Deactivates the Session by creating an immutable Session object
  */
-- (void) stopSession;
+- (void)stopSession;
 
 @end

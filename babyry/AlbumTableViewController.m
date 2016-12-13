@@ -155,17 +155,20 @@
     albumPickerViewController.month = _month;
     albumPickerViewController.childObjectId = _childObjectId;
     albumPickerViewController.date = _date;
-    albumPickerViewController.notificationHistoryByDay = _notificationHistoryByDay;
     albumPickerViewController.uploadType = _uploadType;
+    if ([_uploadType isEqualToString:@"icon"]) {
+        albumPickerViewController.delegate = self;
+    }
     if (_totalImageNum){
         albumPickerViewController.totalImageNum = _totalImageNum;
-        albumPickerViewController.indexPath = _indexPath;
     }
+    albumPickerViewController.targetDateIndexPath = _indexPath;
     if ([_uploadType isEqualToString:@"single"]) {
         albumPickerViewController.section = _section;
         albumPickerViewController.uploadViewController = _uploadViewController;
     }
-    [self presentViewController:albumPickerViewController animated:YES completion:NULL];
+    UINavigationController *naviController = [[UINavigationController alloc] initWithRootViewController:albumPickerViewController];
+    [self.navigationController presentViewController:naviController animated:YES completion:NULL];
 }
 
 // このアプリの写真への認証状態を取得する
@@ -215,6 +218,11 @@
             break;
     }
     return isAuthorization;
+}
+
+- (void)closeAlbumTable
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 /*
